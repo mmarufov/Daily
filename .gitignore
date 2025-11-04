@@ -5,3 +5,8 @@ xcuserdata/
 *.xcscmblueprint
 # macOS
 .DS_Store
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+.DS_Store
