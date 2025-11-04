@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject private var auth = AuthService.shared
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if auth.isAuthenticated {
+                SuccessView()
+            } else {
+                AuthView()
+            }
         }
-        .padding()
     }
 }
 
