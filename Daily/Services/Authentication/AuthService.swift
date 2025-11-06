@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @MainActor
 final class AuthService: ObservableObject {
@@ -19,7 +20,7 @@ final class AuthService: ObservableObject {
     private let keychain = KeychainHelper()
     private let tokenKey = "app_token"
 
-    private init(baseURL: URL = URL(string: "http://localhost:8000")!, urlSession: URLSession = .shared) {
+    private init(baseURL: URL = URL(string: "https://daily-backend.fly.dev")!, urlSession: URLSession = .shared) {
         self.baseURL = baseURL
         self.urlSession = urlSession
         self.restoreSession()
@@ -59,16 +60,44 @@ final class AuthService: ObservableObject {
         request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
 
         let (data, response) = try await urlSession.data(for: request)
-        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            throw NSError(domain: "AuthService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Auth failed"])
+        
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "AuthService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        
+        guard (200..<300).contains(http.statusCode) else {
+            // Try to decode error message from response
+            let errorMessage: String
+            if let errorData = try? JSONDecoder().decode([String: String].self, from: data),
+               let detail = errorData["detail"] {
+                errorMessage = detail
+            } else if let errorString = String(data: data, encoding: .utf8) {
+                errorMessage = errorString
+            } else {
+                errorMessage = "Auth failed with status \(http.statusCode)"
+            }
+            
+            print("Auth error: Status \(http.statusCode), Message: \(errorMessage)")
+            throw NSError(domain: "AuthService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
+        // Decode response
         struct AuthResponse: Codable { let token: String; let user: User }
-        let decoded = try JSONDecoder().decode(AuthResponse.self, from: data)
-        keychain.write(key: tokenKey, value: decoded.token)
+        do {
+            let decoded = try JSONDecoder().decode(AuthResponse.self, from: data)
+            keychain.write(key: tokenKey, value: decoded.token)
 
-        self.currentUser = decoded.user
-        self.isAuthenticated = true
+            self.currentUser = decoded.user
+            self.isAuthenticated = true
+        } catch {
+            print("Failed to decode auth response: \(error)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Response body: \(responseString)")
+            }
+            throw NSError(domain: "AuthService", code: 2, userInfo: [
+                NSLocalizedDescriptionKey: "Failed to parse server response: \(error.localizedDescription)"
+            ])
+        }
     }
 
     private func hydrateUser(with token: String) async {
