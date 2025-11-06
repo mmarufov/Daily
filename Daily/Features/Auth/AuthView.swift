@@ -6,75 +6,116 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct AuthView: View {
     @ObservedObject private var auth = AuthService.shared
-    @State private var googleIdToken: String = ""
-    @State private var appleIdentityToken: String = ""
-    @State private var isLoading: Bool = false
+    @State private var isAppleLoading: Bool = false
+    @State private var isGoogleLoading: Bool = false
     @State private var errorMessage: String?
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             Text("Sign in to continue")
                 .font(.title2)
+                .padding(.top, 40)
 
-            GroupBox("Google ID Token (for now)") {
-                VStack(alignment: .leading, spacing: 8) {
-                    TextField("Paste Google ID token", text: $googleIdToken)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                    Button(action: { Task { await signInWithGoogle() } }) {
-                        HStack { if isLoading { ProgressView() } ; Text("Continue with Google") }
+            // Apple Sign In Button
+            SignInWithAppleButton(
+                onRequest: { request in
+                    request.requestedScopes = [.fullName, .email]
+                },
+                onCompletion: { result in
+                    Task {
+                        await handleAppleSignIn(result)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(isLoading || googleIdToken.isEmpty)
                 }
-            }
+            )
+            .signInWithAppleButtonStyle(.black)
+            .frame(height: 50)
+            .cornerRadius(8)
 
-            GroupBox("Apple Identity Token (for now)") {
-                VStack(alignment: .leading, spacing: 8) {
-                    TextField("Paste Apple identity token", text: $appleIdentityToken)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                    Button(action: { Task { await signInWithApple() } }) {
-                        HStack { if isLoading { ProgressView() } ; Text("Continue with Apple") }
+            // Google Sign In Button
+            Button(action: { Task { await signInWithGoogle() } }) {
+                HStack {
+                    if isGoogleLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Image(systemName: "globe")
                     }
-                    .buttonStyle(.bordered)
-                    .disabled(isLoading || appleIdentityToken.isEmpty)
+                    Text("Continue with Google")
+                        .fontWeight(.semibold)
                 }
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .foregroundColor(.white)
+                .background(Color(red: 0.26, green: 0.52, blue: 0.96))
+                .cornerRadius(8)
             }
+            .disabled(isGoogleLoading || isAppleLoading)
 
             if let errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .font(.footnote)
+                    .padding(.top, 8)
             }
         }
-        .padding()
+        .padding(.horizontal, 32)
+    }
+
+    private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) async {
+        errorMessage = nil
+        isAppleLoading = true
+        defer { isAppleLoading = false }
+        
+        switch result {
+        case .success(let authorization):
+            guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let identityToken = appleIDCredential.identityToken else {
+                errorMessage = "Failed to get Apple token"
+                return
+            }
+            
+            // Convert JWT token Data to string
+            // JWT tokens are ASCII strings, so UTF-8 encoding should work
+            guard let tokenString = String(data: identityToken, encoding: .utf8) else {
+                errorMessage = "Failed to convert Apple token to string"
+                return
+            }
+            
+            do {
+                try await auth.authenticateWithApple(identityToken: tokenString)
+            } catch {
+                // Log error for debugging
+                print("Apple sign-in error: \(error)")
+                if let nsError = error as NSError? {
+                    print("Error domain: \(nsError.domain), code: \(nsError.code)")
+                    print("Error userInfo: \(nsError.userInfo)")
+                }
+                errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
+            }
+            
+        case .failure(let error):
+            if let authError = error as? ASAuthorizationError, authError.code != .canceled {
+                errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
+            }
+            // User canceled - don't show error
+        }
     }
 
     private func signInWithGoogle() async {
         errorMessage = nil
-        isLoading = true
-        defer { isLoading = false }
+        isGoogleLoading = true
+        defer { isGoogleLoading = false }
+        
         do {
-            try await auth.authenticateWithGoogle(idToken: googleIdToken)
+            let idToken = try await GoogleSignInHelper.signIn()
+            try await auth.authenticateWithGoogle(idToken: idToken)
         } catch {
-            errorMessage = "Google sign-in failed"
-        }
-    }
-
-    private func signInWithApple() async {
-        errorMessage = nil
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            try await auth.authenticateWithApple(identityToken: appleIdentityToken)
-        } catch {
-            errorMessage = "Apple sign-in failed"
+            print("Google sign-in error: \(error)")
+            errorMessage = "Google sign-in failed: \(error.localizedDescription)"
         }
     }
 }
