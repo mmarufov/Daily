@@ -13,7 +13,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if auth.isAuthenticated {
-                SuccessView()
+                MainTabView()
             } else {
                 AuthView()
             }
