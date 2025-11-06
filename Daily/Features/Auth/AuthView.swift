@@ -2,7 +2,7 @@
 //  AuthView.swift
 //  Daily
 //
-//  Created by Assistant on 11/4/25.
+//  Created by Muhammadjon on 11/4/25.
 //
 
 import SwiftUI
