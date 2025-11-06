@@ -273,3 +273,140 @@ async def me(Authorization: str | None = Header(default=None), conn=Depends(get_
         }
 
 
+@app.post("/chat")
+async def chat(payload: dict, Authorization: str | None = Header(default=None)):
+    """Chat with AI - requires authentication"""
+    token = _require_auth(Authorization)
+    
+    message = payload.get("message")
+    if not message:
+        raise HTTPException(status_code=400, detail="message is required")
+    
+    try:
+        from app.services.openai_service import get_openai_service
+        
+        openai_service = get_openai_service()
+        
+        # Simple chat - just send the user message
+        system_prompt = "You are a helpful AI assistant. Be concise and friendly."
+        
+        # Use OpenAI service to get response
+        import asyncio
+        response = await asyncio.to_thread(
+            openai_service.client.chat.completions.create,
+            model=openai_service.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": message}
+            ],
+            temperature=0.7,
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        return {
+            "response": ai_response,
+            "model": openai_service.model
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error chatting with AI: {str(e)}")
+
+
+@app.get("/news/headlines")
+async def get_headlines(Authorization: str | None = Header(default=None), limit: int = 5):
+    """Get top headlines - requires authentication"""
+    token = _require_auth(Authorization)
+    
+    try:
+        from app.services.newsapi_service import get_newsapi_service
+        import uuid
+        from datetime import datetime
+        
+        newsapi_service = get_newsapi_service()
+        
+        # Fetch top headlines
+        result = await newsapi_service.get_top_headlines(
+            country="us",
+            page_size=min(limit, 100)  # Cap at 100
+        )
+        
+        # Format articles to match NewsArticle structure
+        articles = []
+        for article in result.get("articles", [])[:limit]:
+            if not article.get("title"):  # Skip articles without titles
+                continue
+                
+            formatted = newsapi_service.format_article(article)
+            
+            # Parse published date - NewsAPI uses ISO 8601 format
+            published_at_str = None
+            if formatted.get("published_at"):
+                try:
+                    # NewsAPI format: "2024-01-01T12:00:00Z" or "2024-01-01T12:00:00+00:00"
+                    date_str = str(formatted["published_at"])
+                    if date_str.endswith("Z"):
+                        date_str = date_str.replace("Z", "+00:00")
+                    published_at = datetime.fromisoformat(date_str)
+                    published_at_str = published_at.isoformat()
+                except Exception as e:
+                    print(f"Error parsing date: {e}, date string: {formatted.get('published_at')}")
+                    published_at_str = None
+            
+            # Create article dict matching NewsArticle model
+            article_dict = {
+                "id": str(uuid.uuid4()),  # Generate unique ID
+                "title": formatted.get("title", "") or "Untitled",
+                "summary": formatted.get("description"),
+                "content": formatted.get("content"),
+                "author": formatted.get("author"),
+                "source": formatted.get("source") or "Unknown",
+                "image_url": formatted.get("image_url"),
+                "url": formatted.get("url"),
+                "published_at": published_at_str,
+                "category": formatted.get("category"),
+            }
+            articles.append(article_dict)
+        
+        return articles
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error fetching headlines: {str(e)}")
+
+
+@app.get("/news/test")
+async def test_news_api(Authorization: str | None = Header(default=None)):
+    """Test NewsAPI integration - requires authentication"""
+    token = _require_auth(Authorization)
+    
+    try:
+        from app.services.newsapi_service import get_newsapi_service
+        
+        newsapi_service = get_newsapi_service()
+        
+        # Fetch top headlines as a test
+        result = await newsapi_service.get_top_headlines(
+            country="us",
+            page_size=5
+        )
+        
+        # Format articles
+        articles = [newsapi_service.format_article(article) for article in result.get("articles", [])]
+        
+        return {
+            "status": "ok",
+            "total_results": result.get("totalResults", 0),
+            "articles": articles
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error fetching news: {str(e)}")
+
+
