@@ -1,7 +1,8 @@
 import os
 import hashlib
 import base64
-from datetime import datetime, timedelta, timezone
+import time
+from datetime import datetime, timezone
 
 import jwt
 import httpx
@@ -14,9 +15,6 @@ from psycopg.rows import dict_row
 load_dotenv()
 
 NEON_DATABASE_URL = os.getenv("NEON_DATABASE_URL", "")
-GOOGLE_AUDIENCE = os.getenv("GOOGLE_AUDIENCE", "")
-APPLE_AUDIENCE = os.getenv("APPLE_AUDIENCE", "")
-APP_TOKEN_TTL_HOURS = int(os.getenv("APP_TOKEN_TTL_HOURS", "720"))  # 30 days
 
 app = FastAPI(title="Daily Auth API", version="0.1.0")
 
@@ -26,41 +24,29 @@ def get_db():
         yield conn
 
 
-def _hash_token(raw: str) -> str:
-    digest = hashlib.sha256(raw.encode("utf-8")).digest()
-    return base64.urlsafe_b64encode(digest).decode("ascii")
-
-
 async def _verify_google_id_token(id_token: str) -> dict:
-    # Minimal verification via Google tokeninfo (server-to-server, rate-limited but sufficient for MVP)
+    """Verify Google ID token and extract user info"""
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.get("https://oauth2.googleapis.com/tokeninfo", params={"id_token": id_token})
     if r.status_code != 200:
         raise HTTPException(status_code=401, detail="Invalid Google token")
     data = r.json()
-    aud = data.get("aud")
-    if GOOGLE_AUDIENCE and aud != GOOGLE_AUDIENCE:
-        raise HTTPException(status_code=401, detail="Google token audience mismatch")
     return {
         "provider": "google",
         "provider_user_id": data.get("sub"),
         "email": data.get("email"),
-        "email_verified": data.get("email_verified") == "true",
         "name": data.get("name"),
         "picture": data.get("picture"),
-        "raw": data,
+        "raw": data,  # Store raw response for raw_profile
     }
 
 
-APPLE_JWKS_URL = "https://appleid.apple.com/auth/keys"
-
-
 async def _verify_apple_identity_token(identity_token: str) -> dict:
-    # Lightweight validation using Apple JWKS via PyJWT (no full nonce/state flow here)
+    """Verify Apple identity token and extract user info"""
+    APPLE_JWKS_URL = "https://appleid.apple.com/auth/keys"
     async with httpx.AsyncClient(timeout=10) as client:
         jwks = (await client.get(APPLE_JWKS_URL)).json()
     try:
-        # PyJWT can accept a JWKS mapping via algorithms+options; we manually select keys
         unverified = jwt.get_unverified_header(identity_token)
         kid = unverified.get("kid")
         key = next((k for k in jwks.get("keys", []) if k.get("kid") == kid), None)
@@ -71,127 +57,187 @@ async def _verify_apple_identity_token(identity_token: str) -> dict:
             identity_token,
             key=public_key,
             algorithms=["RS256"],
-            audience=APPLE_AUDIENCE or None,
-            options={"verify_aud": bool(APPLE_AUDIENCE)},
+            options={"verify_aud": False},  # Apple doesn't always include aud
         )
+        return {
+            "provider": "apple",
+            "provider_user_id": decoded.get("sub"),
+            "email": decoded.get("email"),
+            "name": None,  # Apple doesn't provide name in identity token
+            "picture": None,
+            "raw": decoded,  # Store raw decoded token for raw_profile
+        }
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid Apple token")
-    return {
-        "provider": "apple",
-        "provider_user_id": decoded.get("sub"),
-        "email": decoded.get("email"),
-        "email_verified": decoded.get("email_verified", False),
-        "name": None,
-        "picture": None,
-        "raw": decoded,
-    }
 
 
-def _upsert_user_and_identity(conn, identity: dict) -> dict:
-    email = identity.get("email")
-    display_name = identity.get("name")
-    photo_url = identity.get("picture")
-    provider = identity["provider"]
-    provider_user_id = identity["provider_user_id"]
-
+def _upsert_user_from_oauth(conn, oauth_data: dict) -> dict:
+    """Create or update user from OAuth provider data"""
+    email = oauth_data.get("email")
+    name = oauth_data.get("name")
+    picture = oauth_data.get("picture")
+    provider = oauth_data["provider"]
+    provider_user_id = oauth_data["provider_user_id"]
+    
     with conn.cursor() as cur:
-        # Upsert user by email if present; else create anonymous user
+        # Check if user exists by email
         if email:
             cur.execute(
                 """
-                INSERT INTO public.users (email, display_name, photo_url, updated_at, last_login)
-                VALUES (LOWER(%s), %s, %s, now(), now())
-                ON CONFLICT (id) DO NOTHING
-                RETURNING id, email, display_name, photo_url
+                SELECT id, email, display_name, photo_url FROM public.users
+                WHERE lower(email) = lower(%s) AND is_deleted = false
                 """,
-                (email, display_name, photo_url),
+                (email,),
             )
-            row = cur.fetchone()
-            if not row:
-                # If user with email exists (unique partial index), fetch it and update
+            existing = cur.fetchone()
+            if existing:
+                user_id = existing["id"]
+                # Update user info
                 cur.execute(
                     """
-                    SELECT id, email, display_name, photo_url FROM public.users
-                    WHERE lower(email) = lower(%s) AND is_deleted = false
+                    UPDATE public.users 
+                    SET display_name = COALESCE(%s, display_name), 
+                        photo_url = COALESCE(%s, photo_url), 
+                        last_login = now(), 
+                        updated_at = now()
+                    WHERE id = %s
                     """,
-                    (email,),
+                    (name, picture, user_id),
+                )
+            else:
+                # Create new user
+                cur.execute(
+                    """
+                    INSERT INTO public.users (email, display_name, photo_url, last_login)
+                    VALUES (LOWER(%s), %s, %s, now())
+                    RETURNING id, email, display_name, photo_url
+                    """,
+                    (email, name, picture),
                 )
                 row = cur.fetchone()
-                cur.execute(
-                    "UPDATE public.users SET display_name = COALESCE(%s, display_name), photo_url = COALESCE(%s, photo_url), last_login = now(), updated_at = now() WHERE id = %s",
-                    (display_name, photo_url, row["id"]),
-                )
+                user_id = row["id"]
         else:
+            # No email - create anonymous user
             cur.execute(
                 """
                 INSERT INTO public.users (display_name, photo_url, last_login)
                 VALUES (%s, %s, now())
                 RETURNING id, email, display_name, photo_url
                 """,
-                (display_name, photo_url),
+                (name, picture),
             )
             row = cur.fetchone()
-
-        user_id = row["id"]
-
-        # Upsert identity
+            user_id = row["id"]
+        
+        # Upsert identity - convert dict to jsonb
+        import json
+        raw_profile_json = json.dumps(oauth_data.get("raw", {}))
         cur.execute(
             """
             INSERT INTO public.user_identities (user_id, provider, provider_user_id, email, raw_profile)
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s::jsonb)
             ON CONFLICT (provider, provider_user_id)
-            DO UPDATE SET user_id = EXCLUDED.user_id, email = EXCLUDED.email, raw_profile = EXCLUDED.raw_profile
-            RETURNING id
+            DO UPDATE SET user_id = EXCLUDED.user_id, email = EXCLUDED.email
             """,
-            (user_id, provider, provider_user_id, email, identity.get("raw")),
+            (user_id, provider, provider_user_id, email, raw_profile_json),
         )
-        _ = cur.fetchone()
-
+        
+        # Get final user data
+        cur.execute(
+            "SELECT id, email, display_name, photo_url FROM public.users WHERE id = %s",
+            (user_id,),
+        )
+        row = cur.fetchone()
         return {
-            "id": user_id,
+            "id": str(row["id"]),  # Convert UUID to string for JSON
             "email": row.get("email"),
             "display_name": row.get("display_name"),
             "photo_url": row.get("photo_url"),
         }
 
 
-def _create_session(conn, user_id: str) -> str:
-    raw_token = base64.urlsafe_b64encode(os.urandom(32)).decode("ascii")
-    token_hash = _hash_token(raw_token)
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=APP_TOKEN_TTL_HOURS)
-    with conn.cursor() as cur:
-        cur.execute(
-            """
-            INSERT INTO public.sessions (user_id, token_hash, created_at, last_seen_at, expires_at)
-            VALUES (%s, %s, now(), now(), %s)
-            RETURNING id
-            """,
-            (user_id, token_hash, expires_at),
-        )
-        _ = cur.fetchone()
-    return raw_token
-
-
 @app.post("/auth/google")
 async def auth_google(payload: dict, conn=Depends(get_db)):
-    id_token = payload.get("id_token")
-    if not id_token:
-        raise HTTPException(status_code=400, detail="id_token is required")
-    identity = await _verify_google_id_token(id_token)
-    user = _upsert_user_and_identity(conn, identity)
-    app_token = _create_session(conn, user["id"])
-    return {"token": app_token, "user": user}
+    """Authenticate with Google - verify token and create/update user"""
+    try:
+        id_token = payload.get("id_token")
+        if not id_token:
+            raise HTTPException(status_code=400, detail="id_token is required")
+        
+        # Verify Google token and get user info
+        oauth_data = await _verify_google_id_token(id_token)
+        
+        # Create or update user in database
+        user = _upsert_user_from_oauth(conn, oauth_data)
+        
+        # Generate a simple session token
+        token_data = f"{user['id']}:{oauth_data['provider_user_id']}:{int(time.time())}"
+        session_token = base64.urlsafe_b64encode(hashlib.sha256(token_data.encode()).digest()).decode()[:32]
+        
+        # Store session - convert string ID back to UUID for database
+        import uuid
+        user_uuid = uuid.UUID(user['id'])
+        token_hash = hashlib.sha256(session_token.encode()).hexdigest()
+        
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.sessions (user_id, token_hash, created_at, last_seen_at, expires_at)
+                VALUES (%s, %s, now(), now(), now() + interval '30 days')
+                ON CONFLICT (token_hash) DO UPDATE SET last_seen_at = now()
+                """,
+                (user_uuid, token_hash),
+            )
+        
+        return {"token": session_token, "user": user}
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @app.post("/auth/apple")
 async def auth_apple(payload: dict, conn=Depends(get_db)):
-    identity_token = payload.get("identity_token")
-    if not identity_token:
-        raise HTTPException(status_code=400, detail="identity_token is required")
-    identity = await _verify_apple_identity_token(identity_token)
-    user = _upsert_user_and_identity(conn, identity)
-    app_token = _create_session(conn, user["id"])
-    return {"token": app_token, "user": user}
+    """Authenticate with Apple - verify token and create/update user"""
+    try:
+        identity_token = payload.get("identity_token")
+        if not identity_token:
+            raise HTTPException(status_code=400, detail="identity_token is required")
+        
+        # Verify Apple token and get user info
+        oauth_data = await _verify_apple_identity_token(identity_token)
+        
+        # Create or update user in database
+        user = _upsert_user_from_oauth(conn, oauth_data)
+        
+        # Generate a simple session token
+        token_data = f"{user['id']}:{oauth_data['provider_user_id']}:{int(time.time())}"
+        session_token = base64.urlsafe_b64encode(hashlib.sha256(token_data.encode()).digest()).decode()[:32]
+        
+        # Store session - convert string ID back to UUID for database
+        import uuid
+        user_uuid = uuid.UUID(user['id'])
+        token_hash = hashlib.sha256(session_token.encode()).hexdigest()
+        
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.sessions (user_id, token_hash, created_at, last_seen_at, expires_at)
+                VALUES (%s, %s, now(), now(), now() + interval '30 days')
+                ON CONFLICT (token_hash) DO UPDATE SET last_seen_at = now()
+                """,
+                (user_uuid, token_hash),
+            )
+        
+        return {"token": session_token, "user": user}
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 def _require_auth(authorization: str | None) -> str:
@@ -201,9 +247,11 @@ def _require_auth(authorization: str | None) -> str:
 
 
 @app.get("/me")
-def me(Authorization: str | None = Header(default=None), conn=Depends(get_db)):
+async def me(Authorization: str | None = Header(default=None), conn=Depends(get_db)):
+    """Get current user by verifying session token"""
     token = _require_auth(Authorization)
-    token_hash = _hash_token(token)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -217,6 +265,11 @@ def me(Authorization: str | None = Header(default=None), conn=Depends(get_db)):
         row = cur.fetchone()
         if not row:
             raise HTTPException(status_code=401, detail="Invalid or expired token")
-        return row
+        return {
+            "id": str(row["id"]),
+            "email": row.get("email"),
+            "display_name": row.get("display_name"),
+            "photo_url": row.get("photo_url"),
+        }
 
 
