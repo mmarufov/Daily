@@ -8,7 +8,7 @@
 import Foundation
 
 struct User: Codable, Identifiable, Equatable {
-    let id: UUID
+    let id: String  // Stack Auth uses string IDs
     let email: String?
     let display_name: String?
     let photo_url: String?
