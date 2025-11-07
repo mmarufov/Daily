@@ -151,6 +151,61 @@ final class BackendService {
         }
     }
     
+    // MARK: - Curation Endpoints
+    
+    func curateNews(accessToken: String, topic: String, limit: Int = 10) async throws -> [NewsArticle] {
+        let endpoint = baseURL.appendingPathComponent("/news/curate")
+        var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
+        components?.queryItems = [
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "topic", value: topic)
+        ]
+        
+        guard let url = components?.url else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (data, response) = try await urlSession.data(for: request)
+        
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        
+        guard (200..<300).contains(http.statusCode) else {
+            var errorMessage = "Request failed with status \(http.statusCode)"
+            if let dataString = String(data: data, encoding: .utf8) {
+                print("Error response from server: \(dataString)")
+                // Try to extract detail from JSON response
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let detail = json["detail"] as? String {
+                    errorMessage = detail
+                } else {
+                    errorMessage = dataString
+                }
+            }
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            let articles = try decoder.decode([NewsArticle].self, from: data)
+            print("Successfully decoded \(articles.count) curated articles")
+            return articles
+        } catch {
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Failed to decode curated articles. Response: \(jsonString.prefix(500))")
+            }
+            print("Decoding error: \(error)")
+            throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response: \(error.localizedDescription)"])
+        }
+    }
+    
     // MARK: - Chat Endpoints
     
     func sendChatMessage(message: String, accessToken: String) async throws -> String {
