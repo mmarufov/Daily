@@ -140,8 +140,15 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         if article.get("author"):
             parts.append(f"Author: {article['author']}")
         
-        if article.get("source", {}).get("name"):
-            parts.append(f"Source: {article['source']['name']}")
+        # Handle source - it might be a string or a dict
+        source = article.get("source")
+        if source:
+            if isinstance(source, dict):
+                source_name = source.get("name", "")
+            else:
+                source_name = str(source)
+            if source_name:
+                parts.append(f"Source: {source_name}")
         
         return "\n\n".join(parts) if parts else "No article content available"
 
