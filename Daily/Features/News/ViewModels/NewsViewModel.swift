@@ -8,12 +8,43 @@
 import Foundation
 import Combine
 
+enum NewsTopic: String, CaseIterable {
+    case newYork = "new_york"
+    case trump = "trump"
+    case ericAdams = "eric_adams"
+    
+    var displayName: String {
+        switch self {
+        case .newYork:
+            return "New York"
+        case .trump:
+            return "Trump"
+        case .ericAdams:
+            return "Eric Adams"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .newYork:
+            return "News about New York City and New York State"
+        case .trump:
+            return "News about Donald Trump"
+        case .ericAdams:
+            return "News about NYC Mayor Eric Adams"
+        }
+    }
+}
+
 @MainActor
 final class NewsViewModel: ObservableObject {
+    @Published var selectedTopic: NewsTopic? = nil
     @Published var headlines: [NewsArticle] = []
     @Published var articles: [NewsArticle] = []
+    @Published var curatedArticles: [NewsArticle] = []
     @Published var isLoading: Bool = false
     @Published var isLoadingHeadlines: Bool = false
+    @Published var isCurating: Bool = false
     @Published var isLoadingMore: Bool = false
     @Published var errorMessage: String?
     @Published var hasMore: Bool = true
@@ -81,6 +112,62 @@ final class NewsViewModel: ObservableObject {
     
     func refreshArticles() async {
         await loadArticles()
+    }
+    
+    func selectTopic(_ topic: NewsTopic) {
+        selectedTopic = topic
+        curatedArticles = [] // Clear previous articles when topic changes
+    }
+    
+    func curateNews() async {
+        guard !isCurating else { return }
+        guard let topic = selectedTopic else {
+            self.errorMessage = "Please select a topic first"
+            return
+        }
+        
+        isCurating = true
+        errorMessage = nil
+        
+        guard let token = authService.getAccessToken() else {
+            self.errorMessage = "Authentication required"
+            self.isCurating = false
+            return
+        }
+        
+        do {
+            // Fetch curated articles (AI-analyzed)
+            print("Starting to fetch curated news for topic: \(topic.displayName)...")
+            let curated = try await backendService.curateNews(
+                accessToken: token,
+                topic: topic.rawValue,
+                limit: 10
+            )
+            print("Successfully received \(curated.count) curated articles")
+            
+            // Ensure we have at least some articles
+            if curated.count < 5 && curated.count > 0 {
+                print("Warning: Received only \(curated.count) articles (expected at least 5)")
+                self.errorMessage = "Only found \(curated.count) articles. Please try again for more results."
+            } else if curated.isEmpty {
+                self.errorMessage = "No \(topic.displayName) articles found. The AI couldn't find relevant articles from the current news. Please try again later."
+            }
+            
+            self.curatedArticles = curated
+            self.isCurating = false
+            // Don't clear error message if we have articles but less than 5
+            if curated.count >= 5 {
+                self.errorMessage = nil
+            }
+        } catch {
+            print("Error curating news: \(error)")
+            if let nsError = error as NSError? {
+                print("Error domain: \(nsError.domain), code: \(nsError.code)")
+                print("Error userInfo: \(nsError.userInfo)")
+            }
+            self.errorMessage = error.localizedDescription
+            self.isCurating = false
+        }
     }
     
     // MARK: - Private Methods
