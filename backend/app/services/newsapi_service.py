@@ -198,3 +198,4 @@ def get_newsapi_service() -> NewsAPIService:
         _newsapi_service = NewsAPIService()
     return _newsapi_service
 
+
