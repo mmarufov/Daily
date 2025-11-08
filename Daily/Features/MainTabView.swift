@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct MainTabView: View {
     @State private var selectedTab = 0
@@ -14,15 +15,42 @@ struct MainTabView: View {
         TabView(selection: $selectedTab) {
             NewsView()
                 .tabItem {
-                    Label("News", systemImage: "newspaper")
+                    Label("News", systemImage: selectedTab == 0 ? "newspaper.fill" : "newspaper")
                 }
                 .tag(0)
             
             ChatView()
                 .tabItem {
-                    Label("Chat", systemImage: "bubble.left.and.bubble.right")
+                    Label("Chat", systemImage: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
                 }
                 .tag(1)
+        }
+        .accentColor(BrandColors.primary)
+        .onAppear {
+            // Customize tab bar appearance
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.systemBackground
+            appearance.shadowColor = UIColor.separator
+            
+            // Selected item
+            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(BrandColors.primary)
+            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+                .foregroundColor: UIColor(BrandColors.primary),
+                .font: UIFont.systemFont(ofSize: 12, weight: .semibold)
+            ]
+            
+            // Normal item
+            appearance.stackedLayoutAppearance.normal.iconColor = UIColor(BrandColors.textSecondary)
+            appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+                .foregroundColor: UIColor(BrandColors.textSecondary),
+                .font: UIFont.systemFont(ofSize: 12, weight: .regular)
+            ]
+            
+            UITabBar.appearance().standardAppearance = appearance
+            if #available(iOS 15.0, *) {
+                UITabBar.appearance().scrollEdgeAppearance = appearance
+            }
         }
     }
 }
