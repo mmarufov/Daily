@@ -18,10 +18,11 @@ struct ArticleCardView: View {
                     switch phase {
                     case .empty:
                         Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .frame(height: 200)
+                            .fill(BrandColors.secondaryBackground)
+                            .frame(height: 220)
                             .overlay {
                                 ProgressView()
+                                    .tint(BrandColors.primary)
                             }
                     case .success(let image):
                         image
@@ -29,77 +30,89 @@ struct ArticleCardView: View {
                             .aspectRatio(contentMode: .fill)
                     case .failure:
                         Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .frame(height: 200)
+                            .fill(AppGradients.card)
+                            .frame(height: 220)
                             .overlay {
                                 Image(systemName: "photo")
-                                    .foregroundColor(.gray)
+                                    .font(.system(size: 32, weight: .medium))
+                                    .foregroundColor(BrandColors.textSecondary)
                             }
                     @unknown default:
                         EmptyView()
                     }
                 }
-                .frame(height: 200)
+                .frame(height: 220)
                 .clipped()
             } else {
                 // Placeholder when no image
                 Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(height: 200)
+                    .fill(AppGradients.primary)
+                    .frame(height: 220)
                     .overlay {
                         Image(systemName: "newspaper.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 48, weight: .bold))
+                            .foregroundColor(.white.opacity(0.8))
                     }
             }
             
             // Content
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
                 // Source and Date
-                HStack(spacing: 8) {
-                    Text(article.displaySource)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
+                HStack(spacing: AppSpacing.sm) {
+                    HStack(spacing: AppSpacing.xs) {
+                        Circle()
+                            .fill(BrandColors.primary)
+                            .frame(width: 6, height: 6)
+                        
+                        Text(article.displaySource)
+                            .font(AppTypography.labelSmall)
+                            .fontWeight(.semibold)
+                            .foregroundColor(BrandColors.textSecondary)
+                    }
                     
                     if !article.formattedDate.isEmpty {
                         Text("•")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTypography.labelSmall)
+                            .foregroundColor(BrandColors.textTertiary)
                         
                         Text(article.formattedDate)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(AppTypography.labelSmall)
+                            .foregroundColor(BrandColors.textSecondary)
                     }
                 }
                 
                 // Title
                 Text(article.title)
-                    .font(.headline)
+                    .font(AppTypography.headlineMedium)
                     .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                    .foregroundColor(BrandColors.textPrimary)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 // Summary
                 if let summary = article.summary, !summary.isEmpty {
                     Text(summary)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(AppTypography.bodyMedium)
+                        .foregroundColor(BrandColors.textSecondary)
                         .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .padding(16)
+            .padding(AppSpacing.md)
         }
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 2)
+        .background(BrandColors.cardBackground)
+        .cornerRadius(AppCornerRadius.medium)
+        .overlay(
+            RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                .stroke(BrandColors.primary.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(
+            color: AppShadows.medium.color,
+            radius: AppShadows.medium.radius,
+            x: AppShadows.medium.x,
+            y: AppShadows.medium.y
+        )
     }
 }
 
