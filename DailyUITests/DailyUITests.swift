@@ -2,7 +2,7 @@
 //  DailyUITests.swift
 //  DailyUITests
 //
-//  Created by Muhammad on 3/11/25.
+//  Created by Muhammadjon on 3/11/25.
 //
 
 import XCTest
