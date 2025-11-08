@@ -2,7 +2,7 @@
 //  DailyApp.swift
 //  Daily
 //
-//  Created by Muhammad on 3/11/25.
+//  Created by Muhammadjon on 3/11/25.
 //
 
 import SwiftUI
