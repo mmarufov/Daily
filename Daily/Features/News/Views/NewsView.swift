@@ -17,116 +17,184 @@ struct NewsView: View {
             ZStack {
                 // Show topic selection if no topic is selected
                 if viewModel.selectedTopic == nil {
-                    VStack(spacing: 24) {
-                        Image(systemName: "newspaper.fill")
-                            .font(.system(size: 70))
-                            .foregroundColor(.blue)
+                    VStack(spacing: AppSpacing.lg) {
+                        ZStack {
+                            Circle()
+                                .fill(AppGradients.primary)
+                                .frame(width: 100, height: 100)
+                                .shadow(color: BrandColors.primary.opacity(0.2), radius: 15, x: 0, y: 8)
+                            
+                            Image(systemName: "newspaper.fill")
+                                .font(.system(size: 45, weight: .bold))
+                                .foregroundColor(.white)
+                        }
                         
-                        Text("Choose a Topic")
-                            .font(.title)
-                            .fontWeight(.bold)
+                        VStack(spacing: AppSpacing.sm) {
+                            Text("Choose a Topic")
+                                .font(AppTypography.displayMedium)
+                                .foregroundColor(BrandColors.textPrimary)
+                            
+                            Text("Select a topic to see curated news")
+                                .font(AppTypography.bodyMedium)
+                                .foregroundColor(BrandColors.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
                         
-                        Text("Select a topic to see curated news")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                        
-                        VStack(spacing: 16) {
+                        VStack(spacing: AppSpacing.md) {
                             ForEach(NewsTopic.allCases, id: \.self) { topic in
                                 Button(action: {
-                                    viewModel.selectTopic(topic)
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        viewModel.selectTopic(topic)
+                                    }
                                     Task {
                                         await viewModel.curateNews()
                                     }
                                 }) {
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            Text(topic.displayName)
-                                                .font(.headline)
-                                                .foregroundColor(.primary)
-                                            Text(topic.description)
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
+                                    HStack(spacing: AppSpacing.md) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(AppGradients.primary.opacity(0.15))
+                                                .frame(width: 44, height: 44)
+                                            
+                                            Image(systemName: topic.iconName)
+                                                .font(.system(size: 20, weight: .semibold))
+                                                .foregroundColor(BrandColors.primary)
                                         }
+                                        
+                                        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                            Text(topic.displayName)
+                                                .font(AppTypography.headlineMedium)
+                                                .foregroundColor(BrandColors.textPrimary)
+                                            Text(topic.description)
+                                                .font(AppTypography.bodySmall)
+                                                .foregroundColor(BrandColors.textSecondary)
+                                        }
+                                        
                                         Spacer()
+                                        
                                         Image(systemName: "chevron.right")
-                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundColor(BrandColors.textSecondary)
                                     }
-                                    .padding()
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(12)
+                                    .padding(AppSpacing.md)
+                                    .background(BrandColors.secondaryBackground)
+                                    .cornerRadius(AppCornerRadius.medium)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                                            .stroke(BrandColors.primary.opacity(0.1), lineWidth: 1)
+                                    )
                                 }
                                 .buttonStyle(.plain)
                             }
                         }
-                        .padding(.horizontal, 24)
-                        .padding(.top, 32)
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.xl)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(BrandColors.background)
                 }
                 // Show empty state only if topic is selected but no articles
                 else if viewModel.curatedArticles.isEmpty && !viewModel.isCurating {
                     // Empty state
-                    VStack(spacing: 16) {
-                        Image(systemName: "newspaper")
-                            .font(.system(size: 60))
-                            .foregroundColor(.secondary)
-                        Text("No articles available")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                        if let error = viewModel.errorMessage {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundColor(.red)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
+                    VStack(spacing: AppSpacing.lg) {
+                        ZStack {
+                            Circle()
+                                .fill(BrandColors.primary.opacity(0.1))
+                                .frame(width: 100, height: 100)
+                            
+                            Image(systemName: "newspaper")
+                                .font(.system(size: 45, weight: .medium))
+                                .foregroundColor(BrandColors.primary)
                         }
-                        Button("Get Fresh News") {
+                        
+                        VStack(spacing: AppSpacing.sm) {
+                            Text("No articles available")
+                                .font(AppTypography.headlineLarge)
+                                .foregroundColor(BrandColors.textPrimary)
+                            
+                            if let error = viewModel.errorMessage {
+                                Text(error)
+                                    .font(AppTypography.bodySmall)
+                                    .foregroundColor(BrandColors.error)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, AppSpacing.lg)
+                            } else {
+                                Text("Try refreshing to get the latest news")
+                                    .font(AppTypography.bodyMedium)
+                                    .foregroundColor(BrandColors.textSecondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        
+                        Button(action: {
                             Task {
                                 await viewModel.curateNews()
                             }
+                        }) {
+                            HStack(spacing: AppSpacing.sm) {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Get Fresh News")
+                                    .font(AppTypography.labelLarge)
+                            }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .brandedButton()
+                        .padding(.horizontal, AppSpacing.xl)
+                        .padding(.top, AppSpacing.md)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(BrandColors.background)
                 } else if viewModel.selectedTopic != nil {
                     ScrollView {
                         VStack(spacing: 0) {
                             // Error banner
                             if let error = viewModel.errorMessage, !error.isEmpty {
-                                HStack {
+                                HStack(spacing: AppSpacing.sm) {
                                     Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundColor(.orange)
+                                        .foregroundColor(BrandColors.warning)
+                                        .font(.system(size: 16))
                                     Text(error)
-                                        .font(.subheadline)
-                                        .foregroundColor(.primary)
+                                        .font(AppTypography.bodyMedium)
+                                        .foregroundColor(BrandColors.textPrimary)
                                     Spacer()
                                     Button("Dismiss") {
-                                        viewModel.errorMessage = nil
+                                        withAnimation {
+                                            viewModel.errorMessage = nil
+                                        }
                                     }
-                                    .font(.caption)
+                                    .font(AppTypography.labelSmall)
+                                    .foregroundColor(BrandColors.warning)
                                 }
-                                .padding()
-                                .background(Color.orange.opacity(0.1))
-                                .cornerRadius(8)
-                                .padding(.horizontal, 16)
-                                .padding(.top, 8)
+                                .padding(AppSpacing.md)
+                                .background(BrandColors.warning.opacity(0.1))
+                                .cornerRadius(AppCornerRadius.medium)
+                                .padding(.horizontal, AppSpacing.md)
+                                .padding(.top, AppSpacing.sm)
                             }
                             
                             // Curated Articles Section
                             if !viewModel.curatedArticles.isEmpty, let topic = viewModel.selectedTopic {
-                                VStack(alignment: .leading, spacing: 12) {
+                                VStack(alignment: .leading, spacing: AppSpacing.md) {
                                     HStack {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            HStack(spacing: 6) {
-                                                Image(systemName: "sparkles")
-                                                    .foregroundColor(.blue)
+                                        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                            HStack(spacing: AppSpacing.sm) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(AppGradients.primary.opacity(0.2))
+                                                        .frame(width: 32, height: 32)
+                                                    
+                                                    Image(systemName: "sparkles")
+                                                        .font(.system(size: 16, weight: .semibold))
+                                                        .foregroundColor(BrandColors.primary)
+                                                }
+                                                
                                                 Text("\(topic.displayName) News")
-                                                    .font(.title2)
-                                                    .fontWeight(.bold)
+                                                    .font(AppTypography.displaySmall)
+                                                    .foregroundColor(BrandColors.textPrimary)
                                             }
                                             Text("\(viewModel.curatedArticles.count) carefully selected articles")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
+                                                .font(AppTypography.bodySmall)
+                                                .foregroundColor(BrandColors.textSecondary)
                                         }
                                         Spacer()
                                         
@@ -134,7 +202,9 @@ struct NewsView: View {
                                         Menu {
                                             ForEach(NewsTopic.allCases, id: \.self) { otherTopic in
                                                 Button(action: {
-                                                    viewModel.selectTopic(otherTopic)
+                                                    withAnimation {
+                                                        viewModel.selectTopic(otherTopic)
+                                                    }
                                                     Task {
                                                         await viewModel.curateNews()
                                                     }
@@ -143,25 +213,27 @@ struct NewsView: View {
                                                         Text(otherTopic.displayName)
                                                         if otherTopic == topic {
                                                             Image(systemName: "checkmark")
+                                                                .foregroundColor(BrandColors.primary)
                                                         }
                                                     }
                                                 }
                                             }
                                         } label: {
-                                            Image(systemName: "ellipsis.circle")
-                                                .foregroundColor(.blue)
+                                            Image(systemName: "ellipsis.circle.fill")
+                                                .font(.system(size: 20))
+                                                .foregroundColor(BrandColors.primary)
                                         }
                                     }
-                                    .padding(.horizontal, 16)
-                                    .padding(.top, 16)
+                                    .padding(.horizontal, AppSpacing.md)
+                                    .padding(.top, AppSpacing.md)
                                     
                                     ForEach(viewModel.curatedArticles) { article in
                                         ArticleCardView(article: article)
-                                            .padding(.horizontal, 16)
-                                            .padding(.bottom, 12)
+                                            .padding(.horizontal, AppSpacing.md)
+                                            .padding(.bottom, AppSpacing.md)
                                     }
                                 }
-                                .padding(.bottom, 16)
+                                .padding(.bottom, AppSpacing.md)
                             }
                             
                             // Hide regular articles section - we only show headlines and curated articles
@@ -175,37 +247,49 @@ struct NewsView: View {
                 // Curating loading overlay
                 if viewModel.isCurating {
                     ZStack {
-                        Color.black.opacity(0.4)
+                        Color.black.opacity(0.5)
                             .ignoresSafeArea()
-                        VStack(spacing: 20) {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                                .tint(.blue)
-                            VStack(spacing: 8) {
+                        
+                        VStack(spacing: AppSpacing.lg) {
+                            ZStack {
+                                Circle()
+                                    .fill(AppGradients.primary.opacity(0.2))
+                                    .frame(width: 80, height: 80)
+                                
+                                ProgressView()
+                                    .scaleEffect(1.5)
+                                    .tint(BrandColors.primary)
+                                    .progressViewStyle(CircularProgressViewStyle())
+                            }
+                            
+                            VStack(spacing: AppSpacing.sm) {
                                 Text("Getting Fresh News")
-                                    .foregroundColor(.primary)
-                                    .font(.headline)
-                                    .fontWeight(.semibold)
+                                    .foregroundColor(BrandColors.textPrimary)
+                                    .font(AppTypography.headlineLarge)
+                                
                                 if let topic = viewModel.selectedTopic {
                                     Text("Finding \(topic.displayName) news articles...")
-                                        .foregroundColor(.secondary)
-                                        .font(.subheadline)
+                                        .foregroundColor(BrandColors.textSecondary)
+                                        .font(AppTypography.bodyMedium)
                                         .multilineTextAlignment(.center)
-                                        .padding(.horizontal)
                                 } else {
                                     Text("Finding news articles...")
-                                        .foregroundColor(.secondary)
-                                        .font(.subheadline)
+                                        .foregroundColor(BrandColors.textSecondary)
+                                        .font(AppTypography.bodyMedium)
                                         .multilineTextAlignment(.center)
-                                        .padding(.horizontal)
                                 }
                             }
                         }
-                        .padding(32)
-                        .background(Color(.systemBackground))
-                        .cornerRadius(20)
-                        .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
-                        .padding(.horizontal, 40)
+                        .padding(AppSpacing.xl)
+                        .background(BrandColors.cardBackground)
+                        .cornerRadius(AppCornerRadius.xlarge)
+                        .shadow(
+                            color: AppShadows.large.color,
+                            radius: AppShadows.large.radius,
+                            x: AppShadows.large.x,
+                            y: AppShadows.large.y
+                        )
+                        .padding(.horizontal, AppSpacing.xxl)
                     }
                 }
             }
@@ -218,18 +302,23 @@ struct NewsView: View {
                             await viewModel.curateNews()
                         }
                     }) {
-                        HStack(spacing: 4) {
+                        HStack(spacing: AppSpacing.xs) {
                             if viewModel.isCurating {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle())
+                                    .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.primary))
                                     .scaleEffect(0.8)
                             } else {
                                 Image(systemName: "sparkles")
+                                    .font(.system(size: 14, weight: .semibold))
                             }
                             Text("Get Fresh News")
-                                .font(.subheadline)
+                                .font(AppTypography.labelMedium)
                         }
-                        .foregroundColor(.blue)
+                        .foregroundColor(BrandColors.primary)
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xs)
+                        .background(BrandColors.primary.opacity(0.1))
+                        .cornerRadius(AppCornerRadius.small)
                     }
                     .disabled(viewModel.isCurating)
                 }
