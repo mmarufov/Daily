@@ -15,54 +15,124 @@ struct AuthView: View {
     @State private var errorMessage: String?
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text("Sign in to continue")
-                .font(.title2)
-                .padding(.top, 40)
-
-            // Apple Sign In Button
-            SignInWithAppleButton(
-                onRequest: { request in
-                    request.requestedScopes = [.fullName, .email]
-                },
-                onCompletion: { result in
-                    Task {
-                        await handleAppleSignIn(result)
+        ZStack {
+            // Background gradient
+            AppGradients.background
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                Spacer()
+                
+                // Brand Logo/Icon Section
+                VStack(spacing: AppSpacing.lg) {
+                    ZStack {
+                        Circle()
+                            .fill(AppGradients.primary)
+                            .frame(width: 120, height: 120)
+                            .shadow(color: BrandColors.primary.opacity(0.3), radius: 20, x: 0, y: 10)
+                        
+                        Image(systemName: "newspaper.fill")
+                            .font(.system(size: 50, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    
+                    VStack(spacing: AppSpacing.sm) {
+                        Text("Daily")
+                            .font(AppTypography.displayLarge)
+                            .foregroundColor(BrandColors.textPrimary)
+                        
+                        Text("Your personalized news companion")
+                            .font(AppTypography.bodyMedium)
+                            .foregroundColor(BrandColors.textSecondary)
+                            .multilineTextAlignment(.center)
                     }
                 }
-            )
-            .signInWithAppleButtonStyle(.black)
-            .frame(height: 50)
-            .cornerRadius(8)
+                .padding(.bottom, AppSpacing.xxl)
+                
+                // Sign In Buttons
+                VStack(spacing: AppSpacing.md) {
+                    // Apple Sign In Button
+                    SignInWithAppleButton(
+                        onRequest: { request in
+                            request.requestedScopes = [.fullName, .email]
+                        },
+                        onCompletion: { result in
+                            Task {
+                                await handleAppleSignIn(result)
+                            }
+                        }
+                    )
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(height: 56)
+                    .cornerRadius(AppCornerRadius.medium)
+                    .shadow(
+                        color: AppShadows.small.color,
+                        radius: AppShadows.small.radius,
+                        x: AppShadows.small.x,
+                        y: AppShadows.small.y
+                    )
 
-            // Google Sign In Button
-            Button(action: { Task { await signInWithGoogle() } }) {
-                HStack {
-                    if isGoogleLoading {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    } else {
-                        Image(systemName: "globe")
+                    // Google Sign In Button
+                    Button(action: { Task { await signInWithGoogle() } }) {
+                        HStack(spacing: AppSpacing.sm) {
+                            if isGoogleLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Image(systemName: "globe")
+                                    .font(.system(size: 18, weight: .semibold))
+                            }
+                            Text("Continue with Google")
+                                .font(AppTypography.labelLarge)
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(red: 0.26, green: 0.52, blue: 0.96), Color(red: 0.20, green: 0.45, blue: 0.90)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(AppCornerRadius.medium)
+                        .shadow(
+                            color: AppShadows.small.color,
+                            radius: AppShadows.small.radius,
+                            x: AppShadows.small.x,
+                            y: AppShadows.small.y
+                        )
                     }
-                    Text("Continue with Google")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .foregroundColor(.white)
-                .background(Color(red: 0.26, green: 0.52, blue: 0.96))
-                .cornerRadius(8)
-            }
-            .disabled(isGoogleLoading || isAppleLoading)
+                    .disabled(isGoogleLoading || isAppleLoading)
+                    .opacity(isGoogleLoading || isAppleLoading ? 0.6 : 1.0)
 
-            if let errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .font(.footnote)
-                    .padding(.top, 8)
+                    if let errorMessage {
+                        HStack(spacing: AppSpacing.sm) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundColor(BrandColors.error)
+                            Text(errorMessage)
+                                .font(AppTypography.bodySmall)
+                                .foregroundColor(BrandColors.error)
+                        }
+                        .padding(AppSpacing.md)
+                        .background(BrandColors.error.opacity(0.1))
+                        .cornerRadius(AppCornerRadius.small)
+                        .padding(.top, AppSpacing.sm)
+                    }
+                }
+                .padding(.horizontal, AppSpacing.xl)
+                
+                Spacer()
+                
+                // Footer
+                Text("By continuing, you agree to our Terms of Service")
+                    .font(AppTypography.bodySmall)
+                    .foregroundColor(BrandColors.textTertiary)
+                    .multilineTextAlignment(.center)
+                    .padding(.bottom, AppSpacing.xl)
             }
         }
-        .padding(.horizontal, 32)
     }
 
     private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) async {
