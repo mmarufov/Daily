@@ -11,7 +11,7 @@ import Combine
 enum NewsTopic: String, CaseIterable {
     case newYork = "new_york"
     case trump = "trump"
-    case ericAdams = "eric_adams"
+    case sanFrancisco = "san_francisco"
     
     var displayName: String {
         switch self {
@@ -19,8 +19,8 @@ enum NewsTopic: String, CaseIterable {
             return "New York"
         case .trump:
             return "Trump"
-        case .ericAdams:
-            return "Eric Adams"
+        case .sanFrancisco:
+            return "San Francisco"
         }
     }
     
@@ -30,8 +30,19 @@ enum NewsTopic: String, CaseIterable {
             return "News about New York City and New York State"
         case .trump:
             return "News about Donald Trump"
-        case .ericAdams:
-            return "News about NYC Mayor Eric Adams"
+        case .sanFrancisco:
+            return "News about San Francisco"
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .newYork:
+            return "building.2.fill"
+        case .trump:
+            return "person.fill"
+        case .sanFrancisco:
+            return "building.fill"
         }
     }
 }
