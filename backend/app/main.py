@@ -425,22 +425,22 @@ Return JSON with:
 - selected: false if the article does NOT contain these words
 - relevance_score: 0.0-1.0 based on how prominently Trump is mentioned (0.0 if not mentioned at all)
 - reasoning: brief explanation"""
-        elif topic == "eric_adams":
-            CURATION_PROMPT = """You are a strict news filter. Your job is to ONLY select articles that explicitly contain "Eric Adams" (or "Mayor Adams", "NYC Mayor Eric Adams") in the title, description, or content.
+        elif topic == "san_francisco":
+            CURATION_PROMPT = """You are a strict news filter. Your job is to ONLY select articles that explicitly contain "San Francisco" (or "SF", "San Francisco Bay Area", "Bay Area" in context of San Francisco) in the title, description, or content.
 
 CRITICAL RULES:
-1. The article MUST contain the literal words "Eric Adams", "Mayor Adams", or "NYC Mayor Eric Adams" somewhere in the text
+1. The article MUST contain the literal words "San Francisco", "SF", "San Francisco Bay Area", or "Bay Area" (when clearly referring to San Francisco) somewhere in the text
 2. If the article does NOT contain these phrases, set selected=false and relevance_score=0.0
 3. Do NOT select articles about:
-   - General NYC news that doesn't mention Eric Adams
-   - Other mayors or politicians
-   - NYC topics that might be related but don't name Eric Adams
-   - News that could be Adams-related but doesn't actually say "Eric Adams"
+   - General California news that doesn't mention San Francisco
+   - Other cities or regions
+   - National topics that might be related but don't name San Francisco
+   - News that could be San Francisco-related but doesn't actually say "San Francisco" or "SF"
 
 Return JSON with:
-- selected: true ONLY if the article contains "Eric Adams", "Mayor Adams", or "NYC Mayor Eric Adams"
+- selected: true ONLY if the article contains "San Francisco", "SF", "San Francisco Bay Area", or "Bay Area" (referring to San Francisco)
 - selected: false if the article does NOT contain these phrases
-- relevance_score: 0.0-1.0 based on how prominently Eric Adams is mentioned (0.0 if not mentioned at all)
+- relevance_score: 0.0-1.0 based on how prominently San Francisco is mentioned (0.0 if not mentioned at all)
 - reasoning: brief explanation"""
         else:
             # Default to New York
