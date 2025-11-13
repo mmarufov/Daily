@@ -12,14 +12,14 @@ struct ArticleCardView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Image
+            // Image with Apple-style rounded corners
             if let imageURL = article.imageURL, let url = URL(string: imageURL) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
                         Rectangle()
                             .fill(BrandColors.secondaryBackground)
-                            .frame(height: 220)
+                            .frame(height: 200)
                             .overlay {
                                 ProgressView()
                                     .tint(BrandColors.primary)
@@ -30,70 +30,66 @@ struct ArticleCardView: View {
                             .aspectRatio(contentMode: .fill)
                     case .failure:
                         Rectangle()
-                            .fill(AppGradients.card)
-                            .frame(height: 220)
+                            .fill(BrandColors.tertiaryBackground)
+                            .frame(height: 200)
                             .overlay {
                                 Image(systemName: "photo")
-                                    .font(.system(size: 32, weight: .medium))
-                                    .foregroundColor(BrandColors.textSecondary)
+                                    .font(.system(size: 28, weight: .light))
+                                    .foregroundColor(BrandColors.textTertiary)
                             }
                     @unknown default:
                         EmptyView()
                     }
                 }
-                .frame(height: 220)
+                .frame(height: 200)
                 .clipped()
             } else {
-                // Placeholder when no image
+                // Placeholder when no image - Apple style
                 Rectangle()
-                    .fill(AppGradients.primary)
-                    .frame(height: 220)
+                    .fill(BrandColors.tertiaryBackground)
+                    .frame(height: 200)
                     .overlay {
-                        Image(systemName: "newspaper.fill")
-                            .font(.system(size: 48, weight: .bold))
-                            .foregroundColor(.white.opacity(0.8))
+                        Image(systemName: "newspaper")
+                            .font(.system(size: 40, weight: .ultraLight))
+                            .foregroundColor(BrandColors.textTertiary)
                     }
             }
             
-            // Content
+            // Content - Apple style spacing
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                // Source and Date
-                HStack(spacing: AppSpacing.sm) {
-                    HStack(spacing: AppSpacing.xs) {
-                        Circle()
-                            .fill(BrandColors.primary)
-                            .frame(width: 6, height: 6)
-                        
-                        Text(article.displaySource)
-                            .font(AppTypography.labelSmall)
-                            .fontWeight(.semibold)
-                            .foregroundColor(BrandColors.textSecondary)
-                    }
+                // Source and Date - Refined typography
+                HStack(spacing: AppSpacing.xs) {
+                    Text(article.displaySource)
+                        .font(AppTypography.caption1)
+                        .fontWeight(.medium)
+                        .foregroundColor(BrandColors.textSecondary)
                     
                     if !article.formattedDate.isEmpty {
-                        Text("•")
-                            .font(AppTypography.labelSmall)
+                        Text("·")
+                            .font(AppTypography.caption1)
                             .foregroundColor(BrandColors.textTertiary)
                         
                         Text(article.formattedDate)
-                            .font(AppTypography.labelSmall)
-                            .foregroundColor(BrandColors.textSecondary)
+                            .font(AppTypography.caption1)
+                            .foregroundColor(BrandColors.textTertiary)
                     }
                 }
+                .padding(.bottom, AppSpacing.xs)
                 
-                // Title
+                // Title - Apple headline style
                 Text(article.title)
-                    .font(AppTypography.headlineMedium)
-                    .fontWeight(.bold)
+                    .font(AppTypography.headline)
+                    .fontWeight(.semibold)
                     .foregroundColor(BrandColors.textPrimary)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, AppSpacing.xs)
                 
-                // Summary
+                // Summary - Apple body style
                 if let summary = article.summary, !summary.isEmpty {
                     Text(summary)
-                        .font(AppTypography.bodyMedium)
+                        .font(AppTypography.subheadline)
                         .foregroundColor(BrandColors.textSecondary)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -102,16 +98,12 @@ struct ArticleCardView: View {
             .padding(AppSpacing.md)
         }
         .background(BrandColors.cardBackground)
-        .cornerRadius(AppCornerRadius.medium)
-        .overlay(
-            RoundedRectangle(cornerRadius: AppCornerRadius.medium)
-                .stroke(BrandColors.primary.opacity(0.1), lineWidth: 1)
-        )
+        .cornerRadius(AppCornerRadius.card)
         .shadow(
-            color: AppShadows.medium.color,
-            radius: AppShadows.medium.radius,
-            x: AppShadows.medium.x,
-            y: AppShadows.medium.y
+            color: AppShadows.card.color,
+            radius: AppShadows.card.radius,
+            x: AppShadows.card.x,
+            y: AppShadows.card.y
         )
     }
 }
