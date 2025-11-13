@@ -247,6 +247,25 @@ def _require_auth(authorization: str | None) -> str:
     return authorization.split(" ", 1)[1]
 
 
+def _get_user_id_from_token(conn, token: str) -> str:
+    """Resolve user_id (UUID as string) from session token"""
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT u.id
+            FROM public.sessions s
+            JOIN public.users u ON u.id = s.user_id
+            WHERE s.token_hash = %s AND (s.expires_at IS NULL OR s.expires_at > now())
+            """,
+            (token_hash,),
+        )
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        return str(row["id"])
+
+
 @app.get("/me")
 async def me(Authorization: str | None = Header(default=None), conn=Depends(get_db)):
     """Get current user by verifying session token"""
@@ -276,43 +295,360 @@ async def me(Authorization: str | None = Header(default=None), conn=Depends(get_
 
 @app.post("/chat")
 async def chat(payload: dict, Authorization: str | None = Header(default=None)):
-    """Chat with AI - requires authentication"""
+    """
+    General chat with AI - requires authentication.
+    Kept as a simple, non-onboarding chat.
+    """
     token = _require_auth(Authorization)
-    
+
     message = payload.get("message")
     if not message:
         raise HTTPException(status_code=400, detail="message is required")
-    
+
     try:
         from app.services.openai_service import get_openai_service
-        
+
         openai_service = get_openai_service()
-        
-        # Simple chat - just send the user message
+
         system_prompt = "You are a helpful AI assistant. Be concise and friendly."
-        
-        # Use OpenAI service to get response
+
         import asyncio
+
         response = await asyncio.to_thread(
             openai_service.client.chat.completions.create,
             model=openai_service.model,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": message}
+                {"role": "user", "content": message},
             ],
             temperature=0.7,
         )
-        
+
         ai_response = response.choices[0].message.content
-        
+
         return {
             "response": ai_response,
-            "model": openai_service.model
+            "model": openai_service.model,
         }
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error chatting with AI: {str(e)}")
+
+
+@app.get("/user/preferences")
+async def get_user_preferences(
+    Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """Fetch current user's news preferences and onboarding completion flag."""
+    token = _require_auth(Authorization)
+
+    user_id = _get_user_id_from_token(conn, token)
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, user_id, interests, ai_profile, completed, completed_at
+            FROM public.user_preferences
+            WHERE user_id = %s
+            """,
+            (user_id,),
+        )
+        row = cur.fetchone()
+
+    if not row:
+        # Default: not completed, no preferences yet
+        return {
+            "user_id": user_id,
+            "completed": False,
+            "interests": None,
+            "ai_profile": None,
+            "completed_at": None,
+        }
+
+    return {
+        "id": str(row["id"]),
+        "user_id": str(row["user_id"]),
+        "interests": row.get("interests"),
+        "ai_profile": row.get("ai_profile"),
+        "completed": row.get("completed", False),
+        "completed_at": row.get("completed_at").isoformat()
+        if row.get("completed_at")
+        else None,
+    }
+
+
+@app.post("/user/preferences")
+async def save_user_preferences(
+    payload: dict, Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """
+    Save user's interest onboarding result.
+
+    Expected payload:
+    - interests: arbitrary JSON structure describing user interests
+    - ai_profile: string that summarizes user preferences / contains filtering prompt
+    - completed: optional bool (defaults to true)
+
+    This endpoint assumes ai_profile and interests are already computed on the client.
+    For the main onboarding flow we instead recommend using /user/preferences/complete
+    which asks the AI to summarize the chat history and store a compact profile.
+    """
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    interests = payload.get("interests")
+    ai_profile = payload.get("ai_profile")
+    completed = bool(payload.get("completed", True))
+
+    if not ai_profile:
+        raise HTTPException(status_code=400, detail="ai_profile is required")
+
+    # Prepare JSON for interests (can be None)
+    import json
+    interests_json = json.dumps(interests) if interests is not None else None
+
+    with conn.cursor() as cur:
+        # Upsert row for this user
+        cur.execute(
+            """
+            INSERT INTO public.user_preferences (user_id, interests, ai_profile, completed, completed_at, updated_at)
+            VALUES (%s, %s, %s, %s, CASE WHEN %s THEN now() ELSE NULL END, now())
+            ON CONFLICT (user_id)
+            DO UPDATE SET
+                interests = EXCLUDED.interests,
+                ai_profile = EXCLUDED.ai_profile,
+                completed = EXCLUDED.completed,
+                completed_at = CASE WHEN EXCLUDED.completed THEN now() ELSE user_preferences.completed_at END,
+                updated_at = now()
+            RETURNING id, user_id, interests, ai_profile, completed, completed_at
+            """,
+            (user_id, interests_json, ai_profile, completed, completed),
+        )
+        row = cur.fetchone()
+
+    return {
+        "id": str(row["id"]),
+        "user_id": str(row["user_id"]),
+        "interests": row.get("interests"),
+        "ai_profile": row.get("ai_profile"),
+        "completed": row.get("completed", False),
+        "completed_at": row.get("completed_at").isoformat()
+        if row.get("completed_at")
+        else None,
+    }
+
+
+@app.post("/user/preferences/complete")
+async def complete_user_preferences(
+    payload: dict, Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """
+    Take the full onboarding chat history, ask AI to summarize it into a compact
+    filtering prompt and structured interests, then save that profile for the user.
+
+    Expected payload:
+    - history: list of { "role": "user" | "assistant", "content": "..." }
+    """
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    history = payload.get("history") or []
+    if not isinstance(history, list) or not history:
+        raise HTTPException(status_code=400, detail="history is required and must be a non-empty list")
+
+    try:
+        from app.services.openai_service import get_openai_service
+        import json
+
+        openai_service = get_openai_service()
+
+        # Convert history into readable transcript
+        transcript_lines = []
+        for turn in history:
+            role = turn.get("role", "")
+            content = (turn.get("content") or "").strip()
+            if not content:
+                continue
+            label = "User" if role == "user" else "Assistant"
+            transcript_lines.append(f"{label}: {content}")
+
+        transcript = "\n".join(transcript_lines)
+
+        system_prompt = """
+You are helping configure a personalized news feed for a single user.
+You will read the full chat transcript between the user and an assistant.
+
+Your task:
+- Extract what topics, people, locations, industries, and themes the user WANTS to see.
+- Extract what they explicitly do NOT want to see.
+- Produce a compact, robust prompt that another AI can use later to filter news.
+
+Output STRICTLY valid JSON with this exact shape:
+{
+  "ai_profile": "string - a single prompt the AI will use to filter and rank news for this user",
+  "interests": {
+    "topics": ["string"],
+    "people": ["string"],
+    "locations": ["string"],
+    "industries": ["string"],
+    "excluded_topics": ["string"],
+    "notes": "string - any extra nuance"
+  }
+}
+
+Do not include any other top-level keys. Do not wrap in backticks. Do not explain.
+"""
+
+        user_prompt = f"Here is the full transcript of our onboarding chat:\n\n{transcript}\n\nNow produce the JSON as specified."
+
+        import asyncio
+
+        response = await asyncio.to_thread(
+            openai_service.client.chat.completions.create,
+            model=openai_service.model,
+            messages=[
+                {"role": "system", "content": system_prompt.strip()},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.2,
+        )
+
+        content = response.choices[0].message.content
+
+        try:
+            summary = json.loads(content)
+        except json.JSONDecodeError:
+            # Fallback: treat whole content as ai_profile, keep interests minimal
+            summary = {
+                "ai_profile": content,
+                "interests": {
+                    "topics": [],
+                    "people": [],
+                    "locations": [],
+                    "industries": [],
+                    "excluded_topics": [],
+                    "notes": "Failed to parse structured JSON; using raw summary text only.",
+                },
+            }
+
+        ai_profile = summary.get("ai_profile")
+        interests = summary.get("interests")
+
+        if not ai_profile or not isinstance(ai_profile, str):
+            raise HTTPException(status_code=500, detail="AI did not return a valid ai_profile")
+
+        interests_json = json.dumps(interests) if interests is not None else None
+
+        # Save to database
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.user_preferences (user_id, interests, ai_profile, completed, completed_at, updated_at)
+                VALUES (%s, %s, %s, true, now(), now())
+                ON CONFLICT (user_id)
+                DO UPDATE SET
+                    interests = EXCLUDED.interests,
+                    ai_profile = EXCLUDED.ai_profile,
+                    completed = true,
+                    completed_at = now(),
+                    updated_at = now()
+                RETURNING id, user_id, interests, ai_profile, completed, completed_at
+                """,
+                (user_id, interests_json, ai_profile,),
+            )
+            row = cur.fetchone()
+
+        return {
+            "id": str(row["id"]),
+            "user_id": str(row["user_id"]),
+            "interests": row.get("interests"),
+            "ai_profile": row.get("ai_profile"),
+            "completed": row.get("completed", False),
+            "completed_at": row.get("completed_at").isoformat()
+            if row.get("completed_at")
+            else None,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error completing user preferences: {str(e)}")
+
+
+@app.post("/chat/interests")
+async def chat_interests(payload: dict, Authorization: str | None = Header(default=None)):
+    """
+    Onboarding chat specifically about user's news interests.
+
+    This endpoint does NOT save anything by itself; the client will call
+    /user/preferences with the final summary when user taps Save.
+    """
+    token = _require_auth(Authorization)
+
+    message = payload.get("message")
+    history = payload.get("history") or []
+
+    if not message and not history:
+        raise HTTPException(status_code=400, detail="message or history is required")
+
+    try:
+        from app.services.openai_service import get_openai_service
+
+        openai_service = get_openai_service()
+
+        system_prompt = """
+You are an onboarding assistant helping a user configure their personal news feed.
+
+Your goal:
+- Ask friendly, short questions to understand what kind of news they want to see.
+- Clarify topics, categories, locations, people, industries, and things they do NOT want.
+- Keep replies concise and conversational.
+
+IMPORTANT:
+- Do NOT output JSON or code.
+- Do NOT summarize their preferences here. Just continue the conversation.
+- The app will later summarize this chat into a profile.
+"""
+
+        messages = [{"role": "system", "content": system_prompt.strip()}]
+
+        # Optional: include prior chat turns
+        # history: [{ "role": "user"/"assistant", "content": "..." }, ...]
+        for h in history:
+            role = h.get("role")
+            content = h.get("content")
+            if role in ("user", "assistant") and content:
+                messages.append({"role": role, "content": content})
+
+        if message:
+            messages.append({"role": "user", "content": message})
+
+        import asyncio
+
+        response = await asyncio.to_thread(
+            openai_service.client.chat.completions.create,
+            model=openai_service.model,
+            messages=messages,
+            temperature=0.7,
+        )
+
+        ai_response = response.choices[0].message.content
+
+        return {
+            "response": ai_response,
+            "model": openai_service.model,
+        }
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=500, detail=f"Error chatting about interests: {str(e)}"
+        )
 
 
 @app.get("/news/headlines")
@@ -380,108 +716,155 @@ async def get_headlines(Authorization: str | None = Header(default=None), limit:
 
 
 @app.post("/news/curate")
-async def curate_news(Authorization: str | None = Header(default=None), limit: int = 10, topic: str = "new_york"):
-    """Fetch news from NewsAPI, analyze with AI, and return top selected articles"""
+async def curate_news(
+    Authorization: str | None = Header(default=None),
+    limit: int = 10,
+    topic: str | None = None,
+    conn=Depends(get_db),
+):
+    """
+    Fetch news from NewsAPI, analyze with AI, and return top selected articles.
+
+    If the user has completed onboarding and has a saved ai_profile, that will be used
+    as the primary filtering logic. Otherwise, an optional fallback `topic` can be used.
+    """
     token = _require_auth(Authorization)
-    
+
     try:
         from app.services.newsapi_service import get_newsapi_service
         from app.services.openai_service import get_openai_service
         import uuid
         from datetime import datetime
-        
-        # Generate prompt based on topic
-        if topic == "new_york":
-            CURATION_PROMPT = """You are a strict news filter. Your job is to ONLY select articles that explicitly contain "New York" (or "NYC", "New York City", "New York State") in the title, description, or content.
 
-CRITICAL RULES:
-1. The article MUST contain the literal words "New York", "NYC", "New York City", or "New York State" somewhere in the text
-2. If the article does NOT contain these phrases, set selected=false and relevance_score=0.0
-3. Do NOT select articles about:
-   - General US news that doesn't mention New York
-   - Other cities or states
-   - National topics that might be related but don't name New York
-   - News that could be New York-related but doesn't actually say "New York"
+        # 1) Load user preferences (if any)
+        user_id = _get_user_id_from_token(conn, token)
+        ai_profile = None
+        interests = None
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT interests, ai_profile, completed
+                FROM public.user_preferences
+                WHERE user_id = %s
+                """,
+                (user_id,),
+            )
+            pref = cur.fetchone()
+            if pref and pref.get("completed"):
+                ai_profile = pref.get("ai_profile")
+                interests = pref.get("interests")
 
-Return JSON with:
-- selected: true ONLY if the article contains "New York", "NYC", "New York City", or "New York State"
-- selected: false if the article does NOT contain these phrases
-- relevance_score: 0.0-1.0 based on how prominently New York is mentioned (0.0 if not mentioned at all)
-- reasoning: brief explanation"""
-        elif topic == "trump":
-            CURATION_PROMPT = """You are a strict news filter. Your job is to ONLY select articles that explicitly contain the word "Trump" or "Donald Trump" in the title, description, or content.
+        # 2) Build curation prompt
+        if ai_profile:
+            # Fully personalized prompt using saved profile
+            CURATION_PROMPT = f"""
+You are a strict personalized news filter for a single user.
 
-CRITICAL RULES:
-1. The article MUST contain the literal word "Trump" or "Donald Trump" somewhere in the text
-2. If the article does NOT contain "Trump" or "Donald Trump", set selected=false and relevance_score=0.0
-3. Do NOT select articles about:
-   - General politics, elections, or campaigns that don't mention Trump
-   - Other politicians (Biden, Harris, etc.) unless they mention Trump
-   - Political topics that might be related but don't name Trump
-   - News that could be Trump-related but doesn't actually say "Trump"
+User profile (from onboarding chat):
+{ai_profile}
 
-Return JSON with:
-- selected: true ONLY if the article contains "Trump" or "Donald Trump"
-- selected: false if the article does NOT contain these words
-- relevance_score: 0.0-1.0 based on how prominently Trump is mentioned (0.0 if not mentioned at all)
-- reasoning: brief explanation"""
-        elif topic == "san_francisco":
-            CURATION_PROMPT = """You are a strict news filter. Your job is to ONLY select articles that explicitly contain "San Francisco" (or "SF", "San Francisco Bay Area", "Bay Area" in context of San Francisco) in the title, description, or content.
-
-CRITICAL RULES:
-1. The article MUST contain the literal words "San Francisco", "SF", "San Francisco Bay Area", or "Bay Area" (when clearly referring to San Francisco) somewhere in the text
-2. If the article does NOT contain these phrases, set selected=false and relevance_score=0.0
-3. Do NOT select articles about:
-   - General California news that doesn't mention San Francisco
-   - Other cities or regions
-   - National topics that might be related but don't name San Francisco
-   - News that could be San Francisco-related but doesn't actually say "San Francisco" or "SF"
+Instructions:
+- ONLY select articles that match this user's interests and preferences.
+- Respect any topics or categories the user said they do NOT want.
+- Prefer highly relevant, recent, high-quality sources.
 
 Return JSON with:
-- selected: true ONLY if the article contains "San Francisco", "SF", "San Francisco Bay Area", or "Bay Area" (referring to San Francisco)
-- selected: false if the article does NOT contain these phrases
-- relevance_score: 0.0-1.0 based on how prominently San Francisco is mentioned (0.0 if not mentioned at all)
-- reasoning: brief explanation"""
+- selected: true or false
+- relevance_score: 0.0-1.0 (0.0 if not relevant)
+- reasoning: brief explanation
+"""
+            print("DEBUG: Using personalized curation prompt from user_preferences")
         else:
-            # Default to New York
-            CURATION_PROMPT = """You are a strict news filter. Your job is to ONLY select articles that explicitly contain "New York" (or "NYC", "New York City", "New York State") in the title, description, or content.
+            # Fallback: topic-based prompt as before (kept simple)
+            topic = topic or "general"
+            CURATION_PROMPT = f"""
+You are a strict news filter for topic: {topic}.
 
-CRITICAL RULES:
-1. The article MUST contain the literal words "New York", "NYC", "New York City", or "New York State" somewhere in the text
-2. If the article does NOT contain these phrases, set selected=false and relevance_score=0.0
+Select only articles that are strongly about this topic.
+Be conservative. If it is not clearly about this topic, set selected=false and relevance_score=0.0.
 
 Return JSON with:
-- selected: true ONLY if the article contains "New York", "NYC", "New York City", or "New York State"
-- selected: false if the article does NOT contain these phrases
-- relevance_score: 0.0-1.0 based on how prominently New York is mentioned (0.0 if not mentioned at all)
-- reasoning: brief explanation"""
-        
+- selected: true or false
+- relevance_score: 0.0-1.0 (0.0 if not relevant)
+- reasoning: brief explanation
+"""
+            print(f"DEBUG: Using fallback topic-based curation prompt for topic={topic}")
+
         newsapi_service = get_newsapi_service()
         openai_service = get_openai_service()
+
+        # 3) Build NewsAPI query
+        if ai_profile and isinstance(interests, dict):
+            # Very simple keyword strategy: join main interest keywords if present
+            keywords = interests.get("keywords") or interests.get("topics") or []
+            if isinstance(keywords, list) and keywords:
+                # Use first keyword as primary query; NewsAPI free tier works best with one term
+                query_variations = [str(keywords[0])]
+            else:
+                query_variations = ["news"]
+        else:
+            # Generic fallback queries
+            if topic and topic not in ("general", ""):
+                query_variations = [topic]
+            else:
+                query_variations = ["news"]
+
+        print(f"DEBUG: Will try query variations for NewsAPI: {query_variations}")
         
-        print(f"DEBUG: Curating news for topic: {topic}")
-        print(f"DEBUG: Using prompt for topic: {topic}")
-        
-        # Fetch articles - NewsAPI free tier only supports top-headlines
-        # We'll fetch top headlines and let AI filter for topic-related articles
-        try:
-            result = await newsapi_service.get_top_headlines(
-                country="us",
-                page_size=100  # Fetch maximum to have more options
-            )
-        except Exception as e:
-            print(f"Error fetching from NewsAPI: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            raise HTTPException(status_code=500, detail=f"Failed to fetch news from NewsAPI: {str(e)}")
-        
-        articles = result.get("articles", [])
-        print(f"DEBUG: NewsAPI returned {len(articles)} articles")
-        print(f"DEBUG: First article sample: {articles[0] if articles else 'N/A'}")
+        # Try queries in order until we get results
+        articles = []
+        total_results = 0
+        search_query = query_variations[0]  # Default to first variation
+
+        for query_variant in query_variations:
+            print(f"DEBUG: Trying NewsAPI search with query: {query_variant}")
+            try:
+                result = await newsapi_service.search_everything(
+                    query=query_variant,
+                    language="en",
+                    sort_by="publishedAt",
+                    page_size=100,
+                )
+                
+                articles = result.get("articles", [])
+                total_results = result.get("totalResults", 0)
+                search_query = query_variant
+                
+                print(f"DEBUG: NewsAPI search returned {len(articles)} articles (total available: {total_results}) for query: {query_variant}")
+                
+                if articles:
+                    print(f"DEBUG: First article title: {articles[0].get('title', 'N/A')[:100]}")
+                    print(f"DEBUG: First article description: {articles[0].get('description', 'N/A')[:200] if articles[0].get('description') else 'N/A'}")
+                    break  # Found results, stop trying other variations
+                else:
+                    print(f"DEBUG: No articles found for query: {query_variant}, trying next variation...")
+                    
+            except Exception as e:
+                print(f"Error fetching from NewsAPI with query '{query_variant}': {str(e)}")
+                # Continue to next query variation
+                continue
         
         if not articles:
-            print("ERROR: No articles returned from NewsAPI")
-            raise HTTPException(status_code=404, detail="No articles found from NewsAPI. Please check your API key and try again.")
+            print(f"ERROR: No articles returned from NewsAPI for any query variation: {query_variations}")
+            # Try a fallback: use top headlines for the country if it's a location-based topic
+            if topic in ["new_york", "san_francisco"]:
+                print(f"DEBUG: Attempting fallback to US top headlines...")
+                try:
+                    result = await newsapi_service.get_top_headlines(
+                        country="us",
+                        page_size=100
+                    )
+                    articles = result.get("articles", [])
+                    total_results = result.get("totalResults", 0)
+                    print(f"DEBUG: Fallback returned {len(articles)} US headlines")
+                except Exception as e:
+                    print(f"Fallback also failed: {str(e)}")
+            
+            if not articles:
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"No articles found for '{topic}'. NewsAPI may not have recent articles for this topic, or you may have hit the rate limit (100 requests/day on free tier). Try again later or consider upgrading your NewsAPI plan."
+                )
         
         print(f"Fetched {len(articles)} articles from NewsAPI, starting analysis...")
         
@@ -625,7 +1008,16 @@ Return JSON with:
         selected_articles = [a for a in analyzed_articles if a.get("_is_selected", False)]
         print(f"Found {len(selected_articles)} articles explicitly selected by AI as containing {topic} mentions")
         
-        # ONLY use articles that AI selected - no fallback to non-topic articles
+        # If AI rejected everything, log some examples to help debug
+        if len(selected_articles) == 0 and len(analyzed_articles) > 0:
+            print(f"WARNING: AI rejected all {len(analyzed_articles)} articles for topic {topic}")
+            print(f"Sample rejected articles (top 3 by relevance score):")
+            for i, article in enumerate(analyzed_articles[:3]):
+                print(f"  {i+1}. Title: {article.get('title', 'N/A')[:80]}")
+                print(f"     Relevance: {article.get('_relevance_score', 0.0):.2f}, Selected: {article.get('_is_selected', False)}")
+        
+        # Strategy: Use AI-selected articles, but if none selected, use top articles by relevance score
+        # This handles cases where AI is too strict but NewsAPI returned relevant articles
         if len(selected_articles) >= 5:
             curated_articles = selected_articles[:min(actual_limit, len(selected_articles))]
             print(f"Using {len(curated_articles)} AI-selected {topic} articles")
@@ -633,11 +1025,16 @@ Return JSON with:
             # If we have some but less than 5, return what we have
             curated_articles = selected_articles
             print(f"Using {len(curated_articles)} AI-selected {topic} articles (less than 5 found)")
+        elif len(analyzed_articles) > 0:
+            # FALLBACK: If AI rejected everything but we have analyzed articles, 
+            # use top articles by relevance score (they're already sorted)
+            # This helps when AI is too strict but NewsAPI search was good
+            print(f"WARNING: AI rejected all articles, but using top {min(5, len(analyzed_articles))} by relevance score as fallback")
+            curated_articles = analyzed_articles[:min(actual_limit, len(analyzed_articles))]
         else:
-            # If AI found NO articles with topic mentions, return empty
+            # If no articles were analyzed at all
             curated_articles = []
-            print(f"WARNING: AI found NO articles that mention {topic}. Returning empty list.")
-            print(f"All {len(analyzed_articles)} articles were analyzed but none contained {topic} mentions.")
+            print(f"ERROR: No articles were successfully analyzed for topic {topic}")
         
         print(f"Selected {len(curated_articles)} articles (min {min_articles_to_return}, max {max_articles_to_return}, from {len(analyzed_articles)} analyzed)")
         if curated_articles:
