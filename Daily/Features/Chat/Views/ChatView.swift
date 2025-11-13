@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ChatView: View {
     @StateObject private var viewModel = ChatViewModel()
@@ -24,23 +25,23 @@ struct ChatView: View {
                         ScrollView {
                             LazyVStack(spacing: AppSpacing.md) {
                                 if viewModel.messages.isEmpty {
-                                    VStack(spacing: AppSpacing.lg) {
+                                    VStack(spacing: AppSpacing.xl) {
                                         ZStack {
                                             Circle()
-                                                .fill(AppGradients.primary.opacity(0.15))
-                                                .frame(width: 100, height: 100)
+                                                .fill(BrandColors.primary.opacity(0.08))
+                                                .frame(width: 80, height: 80)
                                             
-                                            Image(systemName: "bubble.left.and.bubble.right.fill")
-                                                .font(.system(size: 45, weight: .medium))
+                                            Image(systemName: "bubble.left.and.bubble.right")
+                                                .font(.system(size: 36, weight: .light))
                                                 .foregroundColor(BrandColors.primary)
                                         }
                                         
-                                        VStack(spacing: AppSpacing.sm) {
+                                        VStack(spacing: AppSpacing.xs) {
                                             Text("Start a conversation")
-                                                .font(AppTypography.headlineLarge)
+                                                .font(AppTypography.title3)
                                                 .foregroundColor(BrandColors.textPrimary)
                                             Text("Ask me anything about the news!")
-                                                .font(AppTypography.bodyMedium)
+                                                .font(AppTypography.subheadline)
                                                 .foregroundColor(BrandColors.textSecondary)
                                                 .multilineTextAlignment(.center)
                                         }
@@ -95,26 +96,32 @@ struct ChatView: View {
                         .padding(.vertical, AppSpacing.sm)
                     }
                     
-                    // Input area
-                    HStack(spacing: AppSpacing.md) {
+                    // Input area - Apple style
+                    HStack(spacing: AppSpacing.sm) {
                         TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
-                            .font(AppTypography.bodyMedium)
-                            .padding(AppSpacing.md)
+                            .font(AppTypography.body)
+                            .padding(.horizontal, AppSpacing.md)
+                            .padding(.vertical, AppSpacing.sm)
                             .background(BrandColors.secondaryBackground)
-                            .cornerRadius(AppCornerRadius.medium)
+                            .cornerRadius(AppCornerRadius.large)
                             .overlay(
-                                RoundedRectangle(cornerRadius: AppCornerRadius.medium)
-                                    .stroke(isInputFocused ? BrandColors.primary : Color.clear, lineWidth: 2)
+                                RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                                    .stroke(isInputFocused ? BrandColors.primary.opacity(0.3) : Color.clear, lineWidth: 1.5)
                             )
                             .lineLimit(1...5)
                             .focused($isInputFocused)
                             .onSubmit {
-                                Task {
-                                    await viewModel.sendMessage()
+                                if !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                    Task {
+                                        await viewModel.sendMessage()
+                                    }
                                 }
                             }
                         
                         Button(action: {
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                            impactFeedback.impactOccurred()
+                            
                             Task {
                                 await viewModel.sendMessage()
                             }
@@ -124,24 +131,25 @@ struct ChatView: View {
                                     .fill(
                                         viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
                                         ? BrandColors.textTertiary
-                                        : AppGradients.primary
+                                        : BrandColors.primary
                                     )
-                                    .frame(width: 44, height: 44)
+                                    .frame(width: 36, height: 36)
                                     .shadow(
                                         color: viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
                                         ? Color.clear
-                                        : BrandColors.primary.opacity(0.3),
-                                        radius: 8,
+                                        : BrandColors.primary.opacity(0.2),
+                                        radius: 4,
                                         x: 0,
-                                        y: 4
+                                        y: 2
                                     )
                                 
                                 if viewModel.isLoading {
                                     ProgressView()
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(0.8)
                                 } else {
                                     Image(systemName: "arrow.up")
-                                        .font(.system(size: 16, weight: .bold))
+                                        .font(.system(size: 14, weight: .semibold))
                                         .foregroundColor(.white)
                                 }
                             }
@@ -149,12 +157,12 @@ struct ChatView: View {
                         .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
                     }
                     .padding(.horizontal, AppSpacing.md)
-                    .padding(.vertical, AppSpacing.md)
-                    .background(BrandColors.cardBackground)
+                    .padding(.vertical, AppSpacing.sm)
+                    .background(.ultraThinMaterial)
                     .overlay(
                         Rectangle()
-                            .frame(height: 1)
-                            .foregroundColor(BrandColors.secondaryBackground),
+                            .frame(height: 0.5)
+                            .foregroundColor(BrandColors.textQuaternary.opacity(0.3)),
                         alignment: .top
                     )
                 }
@@ -165,13 +173,16 @@ struct ChatView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if !viewModel.messages.isEmpty {
                         Button(action: {
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                            impactFeedback.impactOccurred()
+                            
                             viewModel.clearChat()
                         }) {
                             HStack(spacing: AppSpacing.xs) {
                                 Image(systemName: "trash")
-                                    .font(.system(size: 14, weight: .medium))
+                                    .font(.system(size: 13, weight: .medium))
                                 Text("Clear")
-                                    .font(AppTypography.labelMedium)
+                                    .font(AppTypography.labelSmall)
                             }
                             .foregroundColor(BrandColors.error)
                         }
@@ -188,38 +199,38 @@ struct ChatBubbleView: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: AppSpacing.sm) {
             if message.isUser {
-                Spacer(minLength: 60)
+                Spacer(minLength: 50)
             }
             
-            VStack(alignment: message.isUser ? .trailing : .leading, spacing: AppSpacing.xs) {
+            VStack(alignment: message.isUser ? .trailing : .leading, spacing: 4) {
                 Text(message.content)
-                    .font(AppTypography.bodyMedium)
-                    .padding(AppSpacing.md)
+                    .font(AppTypography.body)
+                    .padding(.horizontal, AppSpacing.md)
+                    .padding(.vertical, AppSpacing.sm)
                     .background(
                         message.isUser
-                        ? AppGradients.primary
+                        ? BrandColors.primary
                         : BrandColors.secondaryBackground
                     )
                     .foregroundColor(message.isUser ? .white : BrandColors.textPrimary)
-                    .cornerRadius(AppCornerRadius.medium)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppCornerRadius.medium)
-                            .stroke(
-                                message.isUser
-                                ? Color.clear
-                                : BrandColors.primary.opacity(0.1),
-                                lineWidth: 1
-                            )
+                    .cornerRadius(AppCornerRadius.large)
+                    .shadow(
+                        color: message.isUser 
+                            ? BrandColors.primary.opacity(0.15)
+                            : Color.clear,
+                        radius: 4,
+                        x: 0,
+                        y: 2
                     )
                 
                 Text(message.timestamp, style: .time)
-                    .font(AppTypography.labelSmall)
+                    .font(AppTypography.caption2)
                     .foregroundColor(BrandColors.textTertiary)
                     .padding(.horizontal, AppSpacing.xs)
             }
             
             if !message.isUser {
-                Spacer(minLength: 60)
+                Spacer(minLength: 50)
             }
         }
     }
