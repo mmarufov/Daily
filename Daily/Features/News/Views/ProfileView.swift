@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ProfileView: View {
     @ObservedObject private var auth = AuthService.shared
@@ -19,13 +20,13 @@ struct ProfileView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Profile Header
-                    VStack(spacing: AppSpacing.lg) {
+                    // Profile Header - Apple style
+                    VStack(spacing: AppSpacing.xl) {
                         // Profile Image
                         ZStack {
                             Circle()
-                                .fill(AppGradients.primary.opacity(0.2))
-                                .frame(width: 140, height: 140)
+                                .fill(BrandColors.primary.opacity(0.1))
+                                .frame(width: 120, height: 120)
                             
                             if let photoURL = auth.currentUser?.photo_url,
                                let url = URL(string: photoURL) {
@@ -37,36 +38,36 @@ struct ProfileView: View {
                                             .aspectRatio(contentMode: .fill)
                                     default:
                                         Image(systemName: "person.circle.fill")
-                                            .font(.system(size: 80, weight: .light))
+                                            .font(.system(size: 70, weight: .ultraLight))
                                             .foregroundColor(BrandColors.primary)
                                     }
                                 }
-                                .frame(width: 120, height: 120)
+                                .frame(width: 100, height: 100)
                                 .clipShape(Circle())
                                 .overlay(
                                     Circle()
-                                        .stroke(BrandColors.primary, lineWidth: 4)
+                                        .stroke(BrandColors.primary.opacity(0.2), lineWidth: 2)
                                 )
                             } else {
                                 Image(systemName: "person.circle.fill")
-                                    .font(.system(size: 80, weight: .light))
+                                    .font(.system(size: 70, weight: .ultraLight))
                                     .foregroundColor(BrandColors.primary)
-                                    .frame(width: 120, height: 120)
+                                    .frame(width: 100, height: 100)
                             }
                         }
                         .padding(.top, AppSpacing.xxl)
                         
-                        // User Info
-                        VStack(spacing: AppSpacing.sm) {
+                        // User Info - Apple style
+                        VStack(spacing: AppSpacing.xs) {
                             if let displayName = auth.currentUser?.display_name {
                                 Text(displayName)
-                                    .font(AppTypography.displaySmall)
+                                    .font(AppTypography.title2)
                                     .foregroundColor(BrandColors.textPrimary)
                             }
                             
                             if let email = auth.currentUser?.email {
                                 Text(email)
-                                    .font(AppTypography.bodyMedium)
+                                    .font(AppTypography.subheadline)
                                     .foregroundColor(BrandColors.textSecondary)
                             }
                         }
@@ -74,33 +75,30 @@ struct ProfileView: View {
                     
                     Spacer()
                     
-                    // Sign Out Button
+                    // Sign Out Button - Apple style
                     Button(action: {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                        impactFeedback.impactOccurred()
+                        
                         auth.signOut()
                         dismiss()
                     }) {
                         HStack(spacing: AppSpacing.sm) {
                             Image(systemName: "arrow.right.square")
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.system(size: 15, weight: .medium))
                             Text("Sign Out")
                                 .font(AppTypography.labelLarge)
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [BrandColors.error, BrandColors.error.opacity(0.8)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .cornerRadius(AppCornerRadius.medium)
+                        .frame(height: 50)
+                        .background(BrandColors.error)
+                        .cornerRadius(AppCornerRadius.button)
                         .shadow(
-                            color: BrandColors.error.opacity(0.3),
-                            radius: 8,
+                            color: BrandColors.error.opacity(0.2),
+                            radius: 6,
                             x: 0,
-                            y: 4
+                            y: 3
                         )
                     }
                     .padding(.horizontal, AppSpacing.xl)
@@ -114,7 +112,7 @@ struct ProfileView: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(AppTypography.labelLarge)
+                    .font(AppTypography.body)
                     .foregroundColor(BrandColors.primary)
                 }
             }
