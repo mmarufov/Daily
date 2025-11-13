@@ -8,48 +8,8 @@
 import Foundation
 import Combine
 
-enum NewsTopic: String, CaseIterable {
-    case newYork = "new_york"
-    case trump = "trump"
-    case sanFrancisco = "san_francisco"
-    
-    var displayName: String {
-        switch self {
-        case .newYork:
-            return "New York"
-        case .trump:
-            return "Trump"
-        case .sanFrancisco:
-            return "San Francisco"
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .newYork:
-            return "News about New York City and New York State"
-        case .trump:
-            return "News about Donald Trump"
-        case .sanFrancisco:
-            return "News about San Francisco"
-        }
-    }
-    
-    var iconName: String {
-        switch self {
-        case .newYork:
-            return "building.2.fill"
-        case .trump:
-            return "person.fill"
-        case .sanFrancisco:
-            return "building.fill"
-        }
-    }
-}
-
 @MainActor
 final class NewsViewModel: ObservableObject {
-    @Published var selectedTopic: NewsTopic? = nil
     @Published var headlines: [NewsArticle] = []
     @Published var articles: [NewsArticle] = []
     @Published var curatedArticles: [NewsArticle] = []
@@ -59,6 +19,7 @@ final class NewsViewModel: ObservableObject {
     @Published var isLoadingMore: Bool = false
     @Published var errorMessage: String?
     @Published var hasMore: Bool = true
+    @Published var hasLoadedInitialHeadlines: Bool = false
     
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
@@ -86,6 +47,7 @@ final class NewsViewModel: ObservableObject {
                 limit: 5
             )
             self.headlines = fetchedHeadlines
+            self.hasLoadedInitialHeadlines = true
             self.isLoadingHeadlines = false
         } catch {
             // Don't clear headlines on error - keep them if they were loaded before
@@ -93,6 +55,12 @@ final class NewsViewModel: ObservableObject {
             self.isLoadingHeadlines = false
             // Don't clear headlines array - keep existing ones
         }
+    }
+    
+    func loadInitialContent() async {
+        // For now we only show curated personalized news on demand.
+        // Headlines are optional and can be loaded separately if needed.
+        return
     }
     
     func loadArticles() async {
@@ -125,17 +93,8 @@ final class NewsViewModel: ObservableObject {
         await loadArticles()
     }
     
-    func selectTopic(_ topic: NewsTopic) {
-        selectedTopic = topic
-        curatedArticles = [] // Clear previous articles when topic changes
-    }
-    
     func curateNews() async {
         guard !isCurating else { return }
-        guard let topic = selectedTopic else {
-            self.errorMessage = "Please select a topic first"
-            return
-        }
         
         isCurating = true
         errorMessage = nil
@@ -147,11 +106,11 @@ final class NewsViewModel: ObservableObject {
         }
         
         do {
-            // Fetch curated articles (AI-analyzed)
-            print("Starting to fetch curated news for topic: \(topic.displayName)...")
+            // Fetch curated articles (AI-analyzed) using the saved per-user profile.
+            print("Starting to fetch curated news (personalized if available)...")
             let curated = try await backendService.curateNews(
                 accessToken: token,
-                topic: topic.rawValue,
+                topic: "",
                 limit: 10
             )
             print("Successfully received \(curated.count) curated articles")
@@ -161,7 +120,7 @@ final class NewsViewModel: ObservableObject {
                 print("Warning: Received only \(curated.count) articles (expected at least 5)")
                 self.errorMessage = "Only found \(curated.count) articles. Please try again for more results."
             } else if curated.isEmpty {
-                self.errorMessage = "No \(topic.displayName) articles found. The AI couldn't find relevant articles from the current news. Please try again later."
+                self.errorMessage = "No personalized articles found. The AI couldn't find relevant articles from the current news. Please try again later."
             }
             
             self.curatedArticles = curated
