@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import AuthenticationServices
 
 struct AuthView: View {
@@ -23,33 +24,34 @@ struct AuthView: View {
             VStack(spacing: 0) {
                 Spacer()
                 
-                // Brand Logo/Icon Section
-                VStack(spacing: AppSpacing.lg) {
+                // Brand Logo/Icon Section - Apple style
+                VStack(spacing: AppSpacing.xl) {
                     ZStack {
                         Circle()
-                            .fill(AppGradients.primary)
-                            .frame(width: 120, height: 120)
-                            .shadow(color: BrandColors.primary.opacity(0.3), radius: 20, x: 0, y: 10)
+                            .fill(BrandColors.primary)
+                            .frame(width: 100, height: 100)
+                            .shadow(color: BrandColors.primary.opacity(0.2), radius: 16, x: 0, y: 6)
                         
                         Image(systemName: "newspaper.fill")
-                            .font(.system(size: 50, weight: .bold))
+                            .font(.system(size: 44, weight: .medium))
                             .foregroundColor(.white)
                     }
                     
-                    VStack(spacing: AppSpacing.sm) {
+                    VStack(spacing: AppSpacing.xs) {
                         Text("Daily")
-                            .font(AppTypography.displayLarge)
+                            .font(AppTypography.largeTitle)
                             .foregroundColor(BrandColors.textPrimary)
                         
                         Text("Your personalized news companion")
-                            .font(AppTypography.bodyMedium)
+                            .font(AppTypography.subheadline)
                             .foregroundColor(BrandColors.textSecondary)
                             .multilineTextAlignment(.center)
+                            .padding(.horizontal, AppSpacing.xl)
                     }
                 }
                 .padding(.bottom, AppSpacing.xxl)
                 
-                // Sign In Buttons
+                // Sign In Buttons - Apple style
                 VStack(spacing: AppSpacing.md) {
                     // Apple Sign In Button
                     SignInWithAppleButton(
@@ -63,8 +65,8 @@ struct AuthView: View {
                         }
                     )
                     .signInWithAppleButtonStyle(.black)
-                    .frame(height: 56)
-                    .cornerRadius(AppCornerRadius.medium)
+                    .frame(height: 50)
+                    .cornerRadius(AppCornerRadius.button)
                     .shadow(
                         color: AppShadows.small.color,
                         radius: AppShadows.small.radius,
@@ -72,23 +74,28 @@ struct AuthView: View {
                         y: AppShadows.small.y
                     )
 
-                    // Google Sign In Button
-                    Button(action: { Task { await signInWithGoogle() } }) {
+                    // Google Sign In Button - Apple style
+                    Button(action: { 
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        
+                        Task { await signInWithGoogle() } 
+                    }) {
                         HStack(spacing: AppSpacing.sm) {
                             if isGoogleLoading {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             } else {
                                 Image(systemName: "globe")
-                                    .font(.system(size: 18, weight: .semibold))
+                                    .font(.system(size: 16, weight: .medium))
                             }
                             Text("Continue with Google")
                                 .font(AppTypography.labelLarge)
-                                .fontWeight(.semibold)
+                                .fontWeight(.medium)
                         }
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .frame(height: 50)
                         .background(
                             LinearGradient(
                                 colors: [Color(red: 0.26, green: 0.52, blue: 0.96), Color(red: 0.20, green: 0.45, blue: 0.90)],
@@ -96,7 +103,7 @@ struct AuthView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .cornerRadius(AppCornerRadius.medium)
+                        .cornerRadius(AppCornerRadius.button)
                         .shadow(
                             color: AppShadows.small.color,
                             radius: AppShadows.small.radius,
@@ -125,11 +132,12 @@ struct AuthView: View {
                 
                 Spacer()
                 
-                // Footer
+                // Footer - Apple style
                 Text("By continuing, you agree to our Terms of Service")
-                    .font(AppTypography.bodySmall)
+                    .font(AppTypography.caption1)
                     .foregroundColor(BrandColors.textTertiary)
                     .multilineTextAlignment(.center)
+                    .padding(.horizontal, AppSpacing.xl)
                     .padding(.bottom, AppSpacing.xl)
             }
         }
