@@ -10,6 +10,7 @@ import UIKit
 
 struct MainTabView: View {
     @State private var selectedTab = 0
+    @State private var showOnboarding = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -26,6 +27,14 @@ struct MainTabView: View {
                 .tag(1)
         }
         .accentColor(BrandColors.primary)
+        .task {
+            await checkOnboarding()
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingChatView {
+                showOnboarding = false
+            }
+        }
         .onAppear {
             // Customize tab bar appearance - Apple style
             let appearance = UITabBarAppearance()
@@ -53,6 +62,25 @@ struct MainTabView: View {
             if #available(iOS 15.0, *) {
                 UITabBar.appearance().scrollEdgeAppearance = appearance
             }
+        }
+    }
+    
+    private func checkOnboarding() async {
+        guard let token = AuthService.shared.getAccessToken() else {
+            return
+        }
+        
+        do {
+            let prefs = try await BackendService.shared.fetchUserPreferences(accessToken: token)
+            if !prefs.completed {
+                showOnboarding = true
+            } else {
+                // User already completed setup – trigger auto refresh of personalized news
+                NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
+            }
+        } catch {
+            // If we can't load preferences, assume onboarding is needed
+            showOnboarding = true
         }
     }
 }
