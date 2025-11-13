@@ -27,24 +27,26 @@ struct MainTabView: View {
         }
         .accentColor(BrandColors.primary)
         .onAppear {
-            // Customize tab bar appearance
+            // Customize tab bar appearance - Apple style
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor.systemBackground
-            appearance.shadowColor = UIColor.separator
             
-            // Selected item
+            // Add subtle separator
+            appearance.shadowColor = UIColor.separator.withAlphaComponent(0.3)
+            
+            // Selected item - Apple style
             appearance.stackedLayoutAppearance.selected.iconColor = UIColor(BrandColors.primary)
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
                 .foregroundColor: UIColor(BrandColors.primary),
-                .font: UIFont.systemFont(ofSize: 12, weight: .semibold)
+                .font: UIFont.systemFont(ofSize: 11, weight: .semibold)
             ]
             
-            // Normal item
+            // Normal item - Apple style
             appearance.stackedLayoutAppearance.normal.iconColor = UIColor(BrandColors.textSecondary)
             appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
                 .foregroundColor: UIColor(BrandColors.textSecondary),
-                .font: UIFont.systemFont(ofSize: 12, weight: .regular)
+                .font: UIFont.systemFont(ofSize: 11, weight: .regular)
             ]
             
             UITabBar.appearance().standardAppearance = appearance
