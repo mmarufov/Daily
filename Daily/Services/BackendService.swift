@@ -87,6 +87,47 @@ final class BackendService {
         }
     }
     
+    /// Fetch a full article by hitting the tool-calling backend endpoint that
+    /// extracts content and images from the original source URL.
+    func fetchFullArticle(from urlString: String, accessToken: String) async throws -> NewsArticle {
+        guard var components = URLComponents(url: baseURL.appendingPathComponent("/news/full-article"), resolvingAgainstBaseURL: false) else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid base URL"])
+        }
+        
+        components.queryItems = [
+            URLQueryItem(name: "url", value: urlString)
+        ]
+        
+        guard let url = components.url else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (data, response) = try await urlSession.data(for: request)
+        
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode(NewsArticle.self, from: data)
+        } catch {
+            print("Failed to decode full article: \(error)")
+            throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response: \(error.localizedDescription)"])
+        }
+    }
+    
     // MARK: - Headlines Endpoints
     
     func fetchHeadlines(accessToken: String, limit: Int = 5) async throws -> [NewsArticle] {
