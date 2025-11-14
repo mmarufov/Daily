@@ -3,7 +3,11 @@ OpenAI Service for analyzing news articles
 """
 import os
 import asyncio
+import json
 from typing import Dict, List, Optional
+
+import httpx
+from bs4 import BeautifulSoup
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -151,6 +155,215 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
                 parts.append(f"Source: {source_name}")
         
         return "\n\n".join(parts) if parts else "No article content available"
+
+    async def extract_article_with_tools(self, article_url: str) -> Dict:
+        """
+        Use OpenAI tool calling to fetch a news article page and extract:
+        - Cleaned main text
+        - Title
+        - Best image URL (e.g., og:image)
+        - Source name (domain)
+        """
+
+        async def fetch_and_extract_article(url: str) -> Dict:
+            """Fetch HTML and extract main content + metadata."""
+            try:
+                async with httpx.AsyncClient(timeout=15.0) as client:
+                    response = await client.get(
+                        url,
+                        headers={
+                            "User-Agent": "Mozilla/5.0 (compatible; DailyNewsBot/1.0)"
+                        },
+                    )
+                    response.raise_for_status()
+                    html = response.text
+            except Exception as e:
+                return {
+                    "error": f"Error fetching URL: {str(e)}",
+                    "html": "",
+                    "title": "",
+                    "image_url": "",
+                    "source_name": "",
+                }
+
+            soup = BeautifulSoup(html, "html.parser")
+
+            # Title from og:title or <title>
+            title = ""
+            og_title = soup.find("meta", property="og:title") or soup.find(
+                "meta", attrs={"name": "og:title"}
+            )
+            if og_title and og_title.get("content"):
+                title = og_title["content"].strip()
+            elif soup.title and soup.title.string:
+                title = soup.title.string.strip()
+
+            # Main image from og:image if available
+            image_url = ""
+            og_image = soup.find("meta", property="og:image") or soup.find(
+                "meta", attrs={"name": "og:image"}
+            )
+            if og_image and og_image.get("content"):
+                image_url = og_image["content"].strip()
+
+            # Very simple main-text extraction: prefer <article>, then <main>, then body text
+            main_node = soup.find("article") or soup.find("main") or soup.body
+            if main_node:
+                # Remove scripts/styles/nav/footer/header from main_node
+                for tag in main_node.find_all(
+                    ["script", "style", "nav", "footer", "header", "aside"]
+                ):
+                    tag.decompose()
+                raw_text = main_node.get_text(separator="\n", strip=True)
+            else:
+                raw_text = soup.get_text(separator="\n", strip=True)
+
+            # Limit length to keep token usage manageable
+            cleaned_text = raw_text[:8000]
+
+            # Basic source name from domain
+            source_name = ""
+            try:
+                from urllib.parse import urlparse
+
+                domain = urlparse(url).netloc
+                source_name = domain.replace("www.", "")
+            except Exception:
+                source_name = ""
+
+            return {
+                "error": "",
+                "html": "",
+                "title": title,
+                "content": cleaned_text,
+                "image_url": image_url,
+                "source_name": source_name,
+            }
+
+        tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "fetch_and_extract_article",
+                    "description": "Fetch a news article by URL and return cleaned main text plus basic metadata",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "url": {
+                                "type": "string",
+                                "description": "The URL of the article to fetch",
+                            }
+                        },
+                        "required": ["url"],
+                    },
+                },
+            }
+        ]
+
+        system_prompt = (
+            "You are a news article formatter. You will be given cleaned article text "
+            "and basic metadata from a tool. Return a JSON object with:\n"
+            '- "title": short, clean title for the article (string)\n'
+            '- "summary": 1–3 sentence intro/lede (string)\n'
+            '- "content": 4–8 paragraphs of readable article text (string)\n'
+            '- "image_url": URL of the best image to show (string, can be empty)\n'
+            '- "source_name": short human-readable source name (string)\n'
+        )
+
+        user_prompt = (
+            "Fetch and format this news article so it can be read comfortably in a mobile app. "
+            f"URL: {article_url}\n\n"
+            "1. Use the tool to fetch and extract the article.\n"
+            "2. Based on the extracted text, write a clear, neutral news article.\n"
+            "3. Do not invent facts that are not supported by the text.\n"
+            "4. Return only JSON as specified."
+        )
+
+        # First call: let the model decide to call the tool
+        first_response = await asyncio.to_thread(
+            self.client.chat.completions.create,
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            tools=tools,
+            tool_choice="auto",
+            temperature=0.3,
+        )
+
+        first_message = first_response.choices[0].message
+        tool_calls = getattr(first_message, "tool_calls", None)
+
+        if not tool_calls:
+            # Fallback: we didn't get a tool call, just return a minimal structure
+            return {
+                "title": "",
+                "summary": "",
+                "content": "",
+                "image_url": "",
+                "source_name": "",
+            }
+
+        # For now we handle a single tool call
+        tool_call = tool_calls[0]
+        if tool_call.function.name != "fetch_and_extract_article":
+            return {
+                "title": "",
+                "summary": "",
+                "content": "",
+                "image_url": "",
+                "source_name": "",
+            }
+
+        # Parse arguments and run the tool
+        try:
+            args = json.loads(tool_call.function.arguments)
+            url = args.get("url", article_url)
+        except Exception:
+            url = article_url
+
+        extracted = await fetch_and_extract_article(url)
+
+        # Second call: send tool result back so model can structure the final article JSON
+        second_response = await asyncio.to_thread(
+            self.client.chat.completions.create,
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+                first_message,
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "name": "fetch_and_extract_article",
+                    "content": json.dumps(extracted),
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.2,
+        )
+
+        try:
+            result_raw = second_response.choices[0].message.content
+            result = json.loads(result_raw)
+        except Exception:
+            # If parsing fails, fall back to extracted text
+            return {
+                "title": extracted.get("title", ""),
+                "summary": "",
+                "content": extracted.get("content", ""),
+                "image_url": extracted.get("image_url", ""),
+                "source_name": extracted.get("source_name", ""),
+            }
+
+        return {
+            "title": result.get("title", extracted.get("title", "")),
+            "summary": result.get("summary", ""),
+            "content": result.get("content", extracted.get("content", "")),
+            "image_url": result.get("image_url", extracted.get("image_url", "")),
+            "source_name": result.get("source_name", extracted.get("source_name", "")),
+        }
 
 
 # Singleton instance
