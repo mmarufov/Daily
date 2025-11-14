@@ -76,6 +76,10 @@ struct AppTypography {
     static let labelMedium = Font.system(size: 15, weight: .medium, design: .default)
     static let labelSmall = Font.system(size: 13, weight: .medium, design: .default)
     
+    // Article-specific typography (New York-style serif for long-form reading)
+    static let articleTitle = Font.system(size: 26, weight: .bold, design: .serif)
+    static let articleBody = Font.system(size: 19, weight: .regular, design: .serif)
+    
     // Legacy support
     static let displayLarge = Font.system(size: 34, weight: .bold, design: .default)
     static let displayMedium = Font.system(size: 28, weight: .bold, design: .default)
