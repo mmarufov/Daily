@@ -117,11 +117,14 @@ struct NewsView: View {
                                     .padding(.horizontal, AppSpacing.md)
                                     .padding(.top, AppSpacing.md)
                                     
-                                    // Articles list - Apple style spacing
+                                    // Articles list - Apple style spacing with navigation to detail
                                     ForEach(viewModel.curatedArticles) { article in
-                                        ArticleCardView(article: article)
-                                            .padding(.horizontal, AppSpacing.md)
-                                            .padding(.bottom, AppSpacing.sm)
+                                        NavigationLink(destination: ArticleDetailView(article: article)) {
+                                            ArticleCardView(article: article)
+                                                .padding(.horizontal, AppSpacing.md)
+                                                .padding(.bottom, AppSpacing.sm)
+                                        }
+                                        .buttonStyle(.plain)
                                     }
                                 }
                                 .padding(.bottom, AppSpacing.lg)
