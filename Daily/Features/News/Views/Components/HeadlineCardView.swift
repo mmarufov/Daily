@@ -9,9 +9,13 @@ import SwiftUI
 
 struct HeadlineCardView: View {
     let article: NewsArticle
+    var onTap: () -> Void = {}
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        Button(action: {
+            onTap()
+        }) {
+            VStack(alignment: .leading, spacing: 0) {
             // Image
             if let imageURL = article.imageURL, let url = URL(string: imageURL) {
                 AsyncImage(url: url) { phase in
@@ -55,65 +59,67 @@ struct HeadlineCardView: View {
                     }
             }
             
-            // Content
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                // Source and Date
-                HStack(spacing: AppSpacing.sm) {
-                    HStack(spacing: AppSpacing.xs) {
-                        Circle()
-                            .fill(BrandColors.primary)
-                            .frame(width: 5, height: 5)
+                // Content
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    // Source and Date
+                    HStack(spacing: AppSpacing.sm) {
+                        HStack(spacing: AppSpacing.xs) {
+                            Circle()
+                                .fill(BrandColors.primary)
+                                .frame(width: 5, height: 5)
+                            
+                            Text(article.displaySource)
+                                .font(AppTypography.labelSmall)
+                                .fontWeight(.semibold)
+                                .foregroundColor(BrandColors.textSecondary)
+                        }
                         
-                        Text(article.displaySource)
-                            .font(AppTypography.labelSmall)
-                            .fontWeight(.semibold)
-                            .foregroundColor(BrandColors.textSecondary)
+                        if !article.formattedDate.isEmpty {
+                            Text("•")
+                                .font(AppTypography.labelSmall)
+                                .foregroundColor(BrandColors.textTertiary)
+                            
+                            Text(article.formattedDate)
+                                .font(AppTypography.labelSmall)
+                                .foregroundColor(BrandColors.textSecondary)
+                        }
                     }
                     
-                    if !article.formattedDate.isEmpty {
-                        Text("•")
-                            .font(AppTypography.labelSmall)
-                            .foregroundColor(BrandColors.textTertiary)
-                        
-                        Text(article.formattedDate)
-                            .font(AppTypography.labelSmall)
+                    // Title
+                    Text(article.title)
+                        .font(AppTypography.headlineMedium)
+                        .fontWeight(.bold)
+                        .foregroundColor(BrandColors.textPrimary)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    // Summary (optional, shown if available)
+                    if let summary = article.summary, !summary.isEmpty {
+                        Text(summary)
+                            .font(AppTypography.bodySmall)
                             .foregroundColor(BrandColors.textSecondary)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                
-                // Title
-                Text(article.title)
-                    .font(AppTypography.headlineMedium)
-                    .fontWeight(.bold)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                
-                // Summary (optional, shown if available)
-                if let summary = article.summary, !summary.isEmpty {
-                    Text(summary)
-                        .font(AppTypography.bodySmall)
-                        .foregroundColor(BrandColors.textSecondary)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                .padding(AppSpacing.md)
             }
-            .padding(AppSpacing.md)
+            .frame(width: 320)
+            .background(BrandColors.cardBackground)
+            .cornerRadius(AppCornerRadius.large)
+            .overlay(
+                RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                    .stroke(BrandColors.primary.opacity(0.15), lineWidth: 1.5)
+            )
+            .shadow(
+                color: AppShadows.medium.color,
+                radius: AppShadows.medium.radius,
+                x: AppShadows.medium.x,
+                y: AppShadows.medium.y
+            )
         }
-        .frame(width: 320)
-        .background(BrandColors.cardBackground)
-        .cornerRadius(AppCornerRadius.large)
-        .overlay(
-            RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                .stroke(BrandColors.primary.opacity(0.15), lineWidth: 1.5)
-        )
-        .shadow(
-            color: AppShadows.medium.color,
-            radius: AppShadows.medium.radius,
-            x: AppShadows.medium.x,
-            y: AppShadows.medium.y
-        )
+        .buttonStyle(.plain)
     }
 }
 
