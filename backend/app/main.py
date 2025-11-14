@@ -4,14 +4,16 @@ import base64
 import time
 import asyncio
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 import jwt
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi import FastAPI, HTTPException, Header, Depends, Query
 from fastapi.responses import JSONResponse
 import psycopg
 from psycopg.rows import dict_row
+from app.services.openai_service import get_openai_service
 
 load_dotenv()
 
@@ -658,6 +660,7 @@ async def get_headlines(Authorization: str | None = Header(default=None), limit:
     
     try:
         from app.services.newsapi_service import get_newsapi_service
+        from app.services.openai_service import get_openai_service
         import uuid
         from datetime import datetime
         
@@ -1110,4 +1113,50 @@ async def test_news_api(Authorization: str | None = Header(default=None)):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error fetching news: {str(e)}")
 
+
+@app.get("/news/full-article")
+async def get_full_article_from_url(
+    url: str = Query(..., description="Original article URL"),
+    Authorization: str | None = Header(default=None),
+):
+    """
+    Use OpenAI tool-calling to fetch and extract a full article from the original URL.
+
+    Returns data shaped like the NewsArticle model used by the iOS app so it can be
+    decoded directly on the client.
+    """
+    token = _require_auth(Authorization)
+
+    try:
+        openai_service = get_openai_service()
+        extracted = await openai_service.extract_article_with_tools(url)
+
+        # Map tool result into the NewsArticle JSON shape used on iOS
+        # We generate a transient ID since these articles are not persisted yet.
+        article_id = hashlib.sha256(url.encode("utf-8")).hexdigest()
+
+        # Try to build a friendly source name from tool result or URL
+        source_name = extracted.get("source_name") or urlparse(url).netloc.replace(
+            "www.", ""
+        )
+
+        return {
+            "id": article_id,
+            "title": extracted.get("title") or "Untitled",
+            "summary": extracted.get("summary") or "",
+            "content": extracted.get("content") or "",
+            "author": None,
+            "source": source_name,
+            "image_url": extracted.get("image_url") or None,
+            "url": url,
+            "published_at": None,
+            "category": None,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error fetching full article: {str(e)}")
 
