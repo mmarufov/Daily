@@ -11,6 +11,7 @@ import UIKit
 struct ProfileView: View {
     @ObservedObject private var auth = AuthService.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var showPersonalizationSettings = false
     
     var body: some View {
         NavigationView {
@@ -75,34 +76,79 @@ struct ProfileView: View {
                     
                     Spacer()
                     
-                    // Sign Out Button - Apple style
-                    Button(action: {
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                        impactFeedback.impactOccurred()
-                        
-                        auth.signOut()
-                        dismiss()
-                    }) {
-                        HStack(spacing: AppSpacing.sm) {
-                            Image(systemName: "arrow.right.square")
-                                .font(.system(size: 15, weight: .medium))
-                            Text("Sign Out")
-                                .font(AppTypography.labelLarge)
+                    // Settings Section
+                    VStack(spacing: AppSpacing.md) {
+                        // Personalization Button
+                        Button(action: {
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                            impactFeedback.impactOccurred()
+                            showPersonalizationSettings = true
+                        }) {
+                            HStack(spacing: AppSpacing.md) {
+                                Image(systemName: "person.text.rectangle")
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundColor(BrandColors.primary)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Personalization")
+                                        .font(AppTypography.body)
+                                        .foregroundColor(BrandColors.textPrimary)
+                                    Text("Customize your news preferences")
+                                        .font(AppTypography.footnote)
+                                        .foregroundColor(BrandColors.textSecondary)
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(BrandColors.textTertiary)
+                            }
+                            .padding(.horizontal, AppSpacing.md)
+                            .padding(.vertical, AppSpacing.md)
+                            .background(BrandColors.cardBackground)
+                            .cornerRadius(AppCornerRadius.medium)
+                            .shadow(
+                                color: AppShadows.card.color,
+                                radius: AppShadows.card.radius,
+                                x: AppShadows.card.x,
+                                y: AppShadows.card.y
+                            )
                         }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(BrandColors.error)
-                        .cornerRadius(AppCornerRadius.button)
-                        .shadow(
-                            color: BrandColors.error.opacity(0.2),
-                            radius: 6,
-                            x: 0,
-                            y: 3
-                        )
+                        .padding(.horizontal, AppSpacing.xl)
+                        .sheet(isPresented: $showPersonalizationSettings) {
+                            PersonalizationSettingsView()
+                        }
+                        
+                        // Sign Out Button - Apple style
+                        Button(action: {
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                            impactFeedback.impactOccurred()
+                            
+                            auth.signOut()
+                            dismiss()
+                        }) {
+                            HStack(spacing: AppSpacing.sm) {
+                                Image(systemName: "arrow.right.square")
+                                    .font(.system(size: 15, weight: .medium))
+                                Text("Sign Out")
+                                    .font(AppTypography.labelLarge)
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(BrandColors.error)
+                            .cornerRadius(AppCornerRadius.button)
+                            .shadow(
+                                color: BrandColors.error.opacity(0.2),
+                                radius: 6,
+                                x: 0,
+                                y: 3
+                            )
+                        }
+                        .padding(.horizontal, AppSpacing.xl)
+                        .padding(.bottom, AppSpacing.xl)
                     }
-                    .padding(.horizontal, AppSpacing.xl)
-                    .padding(.bottom, AppSpacing.xl)
                 }
             }
             .navigationTitle("Profile")
