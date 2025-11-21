@@ -4,6 +4,7 @@ import base64
 import time
 import asyncio
 from datetime import datetime, timezone
+from typing import Optional
 from urllib.parse import urlparse
 
 import jwt
@@ -25,6 +26,197 @@ app = FastAPI(title="Daily Auth API", version="0.1.0")
 def get_db():
     with psycopg.connect(NEON_DATABASE_URL, row_factory=dict_row, autocommit=True) as conn:
         yield conn
+
+
+def _ensure_user_curated_articles_table(conn) -> None:
+    """
+    Ensure the table for storing per-user curated news exists.
+
+    This uses simple CREATE IF NOT EXISTS statements so it is safe to call
+    on every request that needs the table.
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS public.user_curated_articles (
+                id uuid PRIMARY KEY,
+                user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                title text NOT NULL,
+                summary text,
+                content text,
+                author text,
+                source text,
+                image_url text,
+                url text,
+                published_at timestamptz,
+                category text,
+                created_at timestamptz NOT NULL DEFAULT now()
+            );
+            """
+        )
+        cur.execute(
+            """
+            CREATE INDEX IF NOT EXISTS user_curated_articles_user_created_idx
+            ON public.user_curated_articles (user_id, created_at DESC);
+            """
+        )
+
+
+def _replace_user_curated_articles(conn, user_id: str, articles: list[dict]) -> None:
+    """
+    Replace the current curated articles for a user with the given list.
+
+    This is called after a fresh curation run – it deletes any existing rows
+    for the user and inserts the new set returned to the client.
+    """
+    import uuid as _uuid
+
+    _ensure_user_curated_articles_table(conn)
+
+    # Convert user_id string to UUID for database operations
+    try:
+        user_uuid = _uuid.UUID(user_id)
+    except (ValueError, TypeError) as e:
+        print(f"Error converting user_id to UUID: {user_id}, error: {e}")
+        raise ValueError(f"Invalid user_id format: {user_id}")
+
+    with conn.cursor() as cur:
+        # Remove previous curated set for this user
+        cur.execute(
+            "DELETE FROM public.user_curated_articles WHERE user_id = %s",
+            (user_uuid,),
+        )
+
+        if not articles:
+            print(f"No articles to save for user {user_id}")
+            return
+
+        print(f"Saving {len(articles)} curated articles for user {user_id}")
+
+        for article in articles:
+            # Convert article ID to UUID, or generate a new one
+            article_id_str = article.get("id") or str(_uuid.uuid4())
+            try:
+                article_id = _uuid.UUID(article_id_str)
+            except (ValueError, TypeError):
+                # If ID is not a valid UUID, generate a new one
+                article_id = _uuid.uuid4()
+                print(f"Warning: Invalid article ID '{article_id_str}', generated new UUID: {article_id}")
+
+            title = (article.get("title") or "").strip() or "Untitled"
+            summary = article.get("summary")
+            content = article.get("content")
+            author = article.get("author")
+            source = article.get("source")
+            image_url = article.get("image_url")
+            url = article.get("url")
+            published_at = article.get("published_at")
+            category = article.get("category")
+
+            try:
+                cur.execute(
+                    """
+                    INSERT INTO public.user_curated_articles (
+                        id,
+                        user_id,
+                        title,
+                        summary,
+                        content,
+                        author,
+                        source,
+                        image_url,
+                        url,
+                        published_at,
+                        category
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        article_id,
+                        user_uuid,
+                        title,
+                        summary,
+                        content,
+                        author,
+                        source,
+                        image_url,
+                        url,
+                        published_at,
+                        category,
+                    ),
+                )
+            except Exception as e:
+                print(f"Error inserting article '{title[:50]}...': {e}")
+                import traceback
+                traceback.print_exc()
+                raise
+
+        print(f"Successfully saved {len(articles)} curated articles for user {user_id}")
+
+
+def _load_user_curated_articles(conn, user_id: str) -> list[dict]:
+    """
+    Load the most recently stored curated articles for a user from Neon.
+
+    Returns a list shaped exactly like the NewsArticle JSON used by the iOS app.
+    """
+    import uuid as _uuid
+
+    _ensure_user_curated_articles_table(conn)
+
+    # Convert user_id string to UUID for database query
+    try:
+        user_uuid = _uuid.UUID(user_id)
+    except (ValueError, TypeError) as e:
+        print(f"Error converting user_id to UUID: {user_id}, error: {e}")
+        return []  # Return empty list instead of raising
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+                id,
+                title,
+                summary,
+                content,
+                author,
+                source,
+                image_url,
+                url,
+                published_at,
+                category
+            FROM public.user_curated_articles
+            WHERE user_id = %s
+            ORDER BY created_at DESC, published_at DESC NULLS LAST
+            """,
+            (user_uuid,),
+        )
+        rows = cur.fetchall()
+
+    articles: list[dict] = []
+    for row in rows:
+        published_at = row.get("published_at")
+        if isinstance(published_at, datetime):
+            published_at_str = published_at.replace(tzinfo=timezone.utc).isoformat()
+        else:
+            published_at_str = None
+
+        articles.append(
+            {
+                "id": str(row["id"]),
+                "title": row.get("title") or "Untitled",
+                "summary": row.get("summary"),
+                "content": row.get("content"),
+                "author": row.get("author"),
+                "source": row.get("source"),
+                "image_url": row.get("image_url"),
+                "url": row.get("url"),
+                "published_at": published_at_str,
+                "category": row.get("category"),
+            }
+        )
+
+    return articles
 
 
 async def _verify_google_id_token(id_token: str) -> dict:
@@ -1019,25 +1211,29 @@ Return JSON with:
                 print(f"  {i+1}. Title: {article.get('title', 'N/A')[:80]}")
                 print(f"     Relevance: {article.get('_relevance_score', 0.0):.2f}, Selected: {article.get('_is_selected', False)}")
         
-        # Strategy: Use AI-selected articles, but if none selected, use top articles by relevance score
-        # This handles cases where AI is too strict but NewsAPI returned relevant articles
-        if len(selected_articles) >= 5:
-            curated_articles = selected_articles[:min(actual_limit, len(selected_articles))]
-            print(f"Using {len(curated_articles)} AI-selected {topic} articles")
-        elif len(selected_articles) > 0:
-            # If we have some but less than 5, return what we have
-            curated_articles = selected_articles
-            print(f"Using {len(curated_articles)} AI-selected {topic} articles (less than 5 found)")
-        elif len(analyzed_articles) > 0:
-            # FALLBACK: If AI rejected everything but we have analyzed articles, 
-            # use top articles by relevance score (they're already sorted)
-            # This helps when AI is too strict but NewsAPI search was good
-            print(f"WARNING: AI rejected all articles, but using top {min(5, len(analyzed_articles))} by relevance score as fallback")
-            curated_articles = analyzed_articles[:min(actual_limit, len(analyzed_articles))]
-        else:
-            # If no articles were analyzed at all
+        # Determine how many articles we want to return overall
+        target_count = min(actual_limit, len(analyzed_articles))
+        if target_count == 0:
             curated_articles = []
-            print(f"ERROR: No articles were successfully analyzed for topic {topic}")
+        else:
+            curated_articles = selected_articles[:target_count]
+            if curated_articles:
+                print(f"Using {len(curated_articles)} AI-selected {topic} articles")
+            else:
+                print("WARNING: AI rejected all articles – falling back to top by relevance")
+            
+            if len(curated_articles) < target_count and analyzed_articles:
+                used_ids = {article.get("id") for article in curated_articles}
+                for article in analyzed_articles:
+                    article_id = article.get("id")
+                    if used_ids and article_id in used_ids:
+                        continue
+                    curated_articles.append(article)
+                    if used_ids is not None:
+                        used_ids.add(article_id)
+                    if len(curated_articles) >= target_count:
+                        break
+                print(f"Filled up to {len(curated_articles)} articles using top relevance scores fallback")
         
         print(f"Selected {len(curated_articles)} articles (min {min_articles_to_return}, max {max_articles_to_return}, from {len(analyzed_articles)} analyzed)")
         if curated_articles:
@@ -1070,6 +1266,94 @@ Return JSON with:
             # NO FALLBACK - only return articles that explicitly mention the topic
 
         print(f"Returning {len(final_articles)} curated articles (only articles that mention {topic})")
+
+        # Find images for articles without images using Unsplash + ChatGPT
+        articles_needing_images = [
+            article for article in final_articles 
+            if not article.get("image_url")
+        ]
+
+        if articles_needing_images:
+            print(f"Finding images for {len(articles_needing_images)} articles without images using Unsplash...")
+            
+            async def find_image_for_article(article: Dict) -> Optional[str]:
+                """Find best image for article using Unsplash + ChatGPT"""
+                try:
+                    title = article.get("title", "")
+                    summary = article.get("summary", "")
+                    
+                    # Extract search keywords from title (simple approach)
+                    # Remove common news prefixes
+                    search_query = title.replace("Breaking:", "").replace("UPDATE:", "").replace("EXCLUSIVE:", "").strip()
+                    # Take first few words as keywords
+                    keywords = " ".join(search_query.split()[:5])
+                    
+                    if not keywords:
+                        return None
+                    
+                    # Search Unsplash
+                    image_candidates = await openai_service.search_unsplash_images(keywords, per_page=10)
+                    
+                    if not image_candidates:
+                        print(f"No Unsplash results for '{title[:50]}...'")
+                        return None
+                    
+                    # Use ChatGPT to select best match
+                    selected_image = await openai_service.select_best_image(article, image_candidates)
+                    
+                    if selected_image:
+                        print(f"Selected image for '{title[:50]}...': {selected_image.get('description', 'No desc')[:50] if selected_image.get('description') else 'No desc'}")
+                        return selected_image.get("url")
+                    else:
+                        print(f"ChatGPT found no good match for '{title[:50]}...', using first result")
+                        return image_candidates[0].get("url") if image_candidates else None
+                        
+                except Exception as e:
+                    print(f"Error finding image for article '{article.get('title', 'Unknown')}': {e}")
+                    import traceback
+                    traceback.print_exc()
+                    return None
+            
+            # Process in batches (5 at a time - Unsplash is fast)
+            batch_size = 5
+            image_results = {}
+            
+            for i in range(0, len(articles_needing_images), batch_size):
+                batch = articles_needing_images[i:i + batch_size]
+                print(f"Finding images for batch {i//batch_size + 1} ({len(batch)} articles)...")
+                
+                results = await asyncio.gather(*[
+                    find_image_for_article(article) for article in batch
+                ])
+                
+                # Store results
+                for article, image_url in zip(batch, results):
+                    if image_url:
+                        image_results[article.get("id")] = image_url
+            
+            # Update final_articles with found image URLs
+            for article in final_articles:
+                article_id = article.get("id")
+                if article_id in image_results:
+                    article["image_url"] = image_results[article_id]
+                    print(f"Updated article '{article.get('title', 'Unknown')[:50]}...' with image")
+            
+            print(f"Image finding complete: {len(image_results)}/{len(articles_needing_images)} images found")
+
+        # Persist this curated set to Neon so the iOS app can load it on next launch
+        # IMPORTANT: Save even if empty list, so we know the user has no articles
+        try:
+            print(f"Attempting to save {len(final_articles)} articles to Neon for user {user_id}...")
+            _replace_user_curated_articles(conn, user_id, final_articles)
+            print(f"Successfully persisted curated articles to Neon for user {user_id}")
+        except Exception as e:
+            # Log error but don't fail the request - user still gets their articles
+            import traceback
+
+            print(f"ERROR: Failed to save curated articles for user {user_id}: {e}")
+            traceback.print_exc()
+            # Don't raise - let the user still get their articles even if save fails
+
         return final_articles
         
     except ValueError as e:
@@ -1080,6 +1364,34 @@ Return JSON with:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error curating news: {str(e)}")
+
+
+@app.get("/news/curated")
+async def get_curated_news(
+    Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """
+    Return the most recently saved curated news for the authenticated user
+    from the Neon database, without hitting external news APIs.
+    
+    Returns an empty list if no articles are found (this is not an error).
+    """
+    token = _require_auth(Authorization)
+
+    try:
+        user_id = _get_user_id_from_token(conn, token)
+        articles = _load_user_curated_articles(conn, user_id)
+        # Always return a list, even if empty
+        return articles if articles else []
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        # Return empty list instead of raising error - empty is a valid state
+        print(f"Error loading curated news for user: {e}")
+        return []
 
 
 @app.get("/news/test")
@@ -1159,4 +1471,144 @@ async def get_full_article_from_url(
 
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error fetching full article: {str(e)}")
+
+
+@app.post("/news/prepare-articles")
+async def prepare_articles(
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """
+    Extract and cache full content for all curated articles for the current user.
+    This processes articles in parallel and updates the database with full content.
+    
+    Returns status with counts of processed articles.
+    """
+    token = _require_auth(Authorization)
+    
+    try:
+        import uuid as _uuid
+        import asyncio
+        
+        user_id = _get_user_id_from_token(conn, token)
+        
+        # Load all curated articles for this user
+        articles = _load_user_curated_articles(conn, user_id)
+        
+        if not articles:
+            return {
+                "status": "success",
+                "message": "No articles to prepare",
+                "total": 0,
+                "processed": 0,
+                "failed": 0
+            }
+        
+        print(f"Preparing {len(articles)} articles for user {user_id}")
+        
+        openai_service = get_openai_service()
+        processed_count = 0
+        failed_count = 0
+        
+        # Process articles in batches to avoid overwhelming the API
+        batch_size = 3  # Process 3 at a time to balance speed and API limits
+        user_uuid = _uuid.UUID(user_id)
+        
+        async def extract_and_update_article(article: dict) -> bool:
+            """Extract full content for a single article and update database"""
+            try:
+                article_url = article.get("url")
+                if not article_url:
+                    print(f"Skipping article {article.get('id')} - no URL")
+                    return False
+                
+                # Check if article already has full content (more than 500 chars)
+                existing_content = article.get("content", "")
+                if existing_content and len(existing_content) > 500:
+                    print(f"Article {article.get('id')} already has full content, skipping")
+                    return True  # Already prepared
+                
+                print(f"Extracting full content for article: {article.get('title', 'Unknown')[:50]}...")
+                
+                # Extract full article content
+                extracted = await openai_service.extract_article_with_tools(article_url)
+                
+                # Update the article in database
+                article_id = _uuid.UUID(article["id"])
+                
+                with conn.cursor() as cur:
+                    # Update content, summary, and image_url if we got better data
+                    update_fields = []
+                    update_values = []
+                    
+                    if extracted.get("content"):
+                        update_fields.append("content = %s")
+                        update_values.append(extracted.get("content"))
+                    
+                    if extracted.get("summary"):
+                        update_fields.append("summary = %s")
+                        update_values.append(extracted.get("summary"))
+                    
+                    if extracted.get("image_url"):
+                        update_fields.append("image_url = %s")
+                        update_values.append(extracted.get("image_url"))
+                    
+                    if update_fields:
+                        update_values.append(article_id)
+                        update_values.append(user_uuid)
+                        
+                        query = f"""
+                            UPDATE public.user_curated_articles
+                            SET {', '.join(update_fields)}
+                            WHERE id = %s AND user_id = %s
+                        """
+                        cur.execute(query, tuple(update_values))
+                        # No need to commit - autocommit=True is set on connection
+                        
+                        print(f"Successfully updated article {article.get('id')}")
+                        return True
+                    else:
+                        print(f"No content extracted for article {article.get('id')}")
+                        return False
+                        
+            except Exception as e:
+                print(f"Error extracting article {article.get('id', 'unknown')}: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                return False
+        
+        # Process articles in batches
+        for i in range(0, len(articles), batch_size):
+            batch = articles[i:i + batch_size]
+            batch_num = i // batch_size + 1
+            total_batches = (len(articles) + batch_size - 1) // batch_size
+            
+            print(f"Processing batch {batch_num}/{total_batches} ({len(batch)} articles)...")
+            
+            # Process batch in parallel
+            results = await asyncio.gather(*[extract_and_update_article(article) for article in batch])
+            
+            # Count successes and failures
+            for success in results:
+                if success:
+                    processed_count += 1
+                else:
+                    failed_count += 1
+        
+        print(f"Preparation complete: {processed_count} processed, {failed_count} failed out of {len(articles)} total")
+        
+        return {
+            "status": "success",
+            "message": f"Prepared {processed_count} articles",
+            "total": len(articles),
+            "processed": processed_count,
+            "failed": failed_count
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error preparing articles: {str(e)}")
 

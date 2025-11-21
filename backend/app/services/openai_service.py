@@ -365,6 +365,132 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             "source_name": result.get("source_name", extracted.get("source_name", "")),
         }
 
+    async def search_unsplash_images(
+        self,
+        query: str,
+        per_page: int = 10
+    ) -> List[Dict]:
+        """
+        Search Unsplash for images matching the query.
+        
+        Args:
+            query: Search keywords
+            per_page: Number of results to fetch (max 30)
+        
+        Returns:
+            List of image dicts with url, description, alt_description
+        """
+        unsplash_key = os.getenv("UNSPLASH_ACCESS_KEY")
+        
+        if not unsplash_key:
+            print("Warning: UNSPLASH_ACCESS_KEY not set, skipping image search")
+            return []
+        
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(
+                    "https://api.unsplash.com/search/photos",
+                    params={
+                        "query": query[:100],  # Limit query length
+                        "per_page": min(per_page, 30),
+                        "orientation": "landscape",  # Better for article thumbnails
+                    },
+                    headers={"Authorization": f"Client-ID {unsplash_key}"}
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    results = data.get("results", [])
+                    
+                    # Format results
+                    images = []
+                    for img in results:
+                        images.append({
+                            "url": img["urls"]["regular"],  # or "small" for faster loading
+                            "description": img.get("description"),
+                            "alt_description": img.get("alt_description"),
+                            "id": img.get("id")
+                        })
+                    return images
+                else:
+                    print(f"Unsplash API error: {response.status_code} - {response.text}")
+                    return []
+        except Exception as e:
+            print(f"Error searching Unsplash: {e}")
+            import traceback
+            traceback.print_exc()
+            return []
+
+    async def select_best_image(
+        self,
+        article: Dict,
+        image_candidates: List[Dict]
+    ) -> Optional[Dict]:
+        """
+        Use ChatGPT to select the best matching image from Unsplash results.
+        
+        Args:
+            article: Article dict with title, summary, etc.
+            image_candidates: List of dicts with 'url', 'description', 'alt_description' from Unsplash
+        
+        Returns:
+            Best matching image dict, or None if none match well
+        """
+        if not image_candidates:
+            return None
+        
+        article_text = f"Title: {article.get('title', '')}\n"
+        if article.get('summary'):
+            article_text += f"Summary: {article.get('summary', '')[:300]}"
+        
+        # Format image candidates for GPT
+        image_list = []
+        for i, img in enumerate(image_candidates):
+            desc = img.get('description') or img.get('alt_description') or 'No description'
+            image_list.append(f"{i+1}. {desc}")
+        
+        system_prompt = """You are an image selector for news articles. 
+Analyze the article and select the best matching image from the candidates.
+
+Return JSON with:
+- selected_index: 0-based index of best image (or -1 if none match well)
+- reasoning: brief explanation of why this image matches
+
+Only select an image if it's clearly relevant to the article topic."""
+        
+        user_prompt = f"""Article:
+{article_text}
+
+Available Images:
+{chr(10).join(image_list)}
+
+Select the best matching image (0-based index) or return -1 if none are relevant."""
+        
+        try:
+            response = await asyncio.to_thread(
+                self.client.chat.completions.create,
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.3,
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            selected_index = result.get("selected_index", -1)
+            
+            if selected_index >= 0 and selected_index < len(image_candidates):
+                return image_candidates[selected_index]
+            return None
+        except Exception as e:
+            print(f"Error selecting image: {e}")
+            import traceback
+            traceback.print_exc()
+            # Fallback: return first image
+            return image_candidates[0] if image_candidates else None
+
 
 # Singleton instance
 _openai_service: Optional[OpenAIService] = None
