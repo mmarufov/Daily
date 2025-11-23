@@ -16,6 +16,9 @@ struct NewsView: View {
     var body: some View {
         NavigationView {
             ZStack {
+                BrandColors.background
+                    .ignoresSafeArea(edges: [])
+                
                 // Show empty state only if no curated articles yet - Apple style
                 if viewModel.curatedArticles.isEmpty && !viewModel.isCurating {
                     // Empty state
@@ -95,7 +98,7 @@ struct NewsView: View {
                                 .padding(AppSpacing.md)
                                 .background(BrandColors.warning.opacity(0.1))
                                 .cornerRadius(AppCornerRadius.medium)
-                                .padding(.horizontal, AppSpacing.md)
+                                .padding(.horizontal, AppSpacing.lg)
                                 .padding(.top, AppSpacing.sm)
                             }
                             
@@ -103,7 +106,7 @@ struct NewsView: View {
                             if !viewModel.curatedArticles.isEmpty {
                                 VStack(alignment: .leading, spacing: AppSpacing.lg) {
                                     // Header - Apple style
-                                    HStack(alignment: .top) {
+                                    HStack(alignment: .top, spacing: AppSpacing.sm) {
                                         VStack(alignment: .leading, spacing: AppSpacing.xs) {
                                             Text("For you")
                                                 .font(AppTypography.title3)
@@ -111,17 +114,64 @@ struct NewsView: View {
                                             Text("\(viewModel.curatedArticles.count) carefully selected articles")
                                                 .font(AppTypography.footnote)
                                                 .foregroundColor(BrandColors.textSecondary)
+                                                .fixedSize(horizontal: false, vertical: true)
                                         }
-                                        Spacer()
+                                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                                        
+                                        // Prepare Articles Button
+                                        Button(action: {
+                                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                            impactFeedback.impactOccurred()
+                                            
+                                            Task {
+                                                await viewModel.prepareAllArticles()
+                                            }
+                                        }) {
+                                            HStack(spacing: AppSpacing.xs) {
+                                                if viewModel.isPreparingArticles {
+                                                    ProgressView()
+                                                        .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.primary))
+                                                        .scaleEffect(0.7)
+                                                } else {
+                                                    Image(systemName: "bolt.fill")
+                                                        .font(.system(size: 12, weight: .medium))
+                                                }
+                                                Text(viewModel.isPreparingArticles ? "Preparing..." : "Prepare All")
+                                                    .font(AppTypography.labelSmall)
+                                                    .lineLimit(1)
+                                                    .minimumScaleFactor(0.8)
+                                            }
+                                            .foregroundColor(BrandColors.primary)
+                                            .padding(.horizontal, AppSpacing.sm)
+                                            .padding(.vertical, AppSpacing.xs)
+                                            .background(BrandColors.primary.opacity(0.1))
+                                            .cornerRadius(AppCornerRadius.small)
+                                        }
+                                        .disabled(viewModel.isPreparingArticles)
                                     }
-                                    .padding(.horizontal, AppSpacing.md)
+                                    .padding(.horizontal, AppSpacing.lg)
                                     .padding(.top, AppSpacing.md)
+                                    
+                                    // Preparation status message
+                                    if let status = viewModel.preparationStatus {
+                                        HStack(spacing: AppSpacing.sm) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(BrandColors.success)
+                                                .font(.system(size: 14))
+                                            Text(status)
+                                                .font(AppTypography.footnote)
+                                                .foregroundColor(BrandColors.textSecondary)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                        }
+                                        .padding(.horizontal, AppSpacing.lg)
+                                        .padding(.top, AppSpacing.xs)
+                                    }
                                     
                                     // Articles list - Apple style spacing with navigation to detail
                                     ForEach(viewModel.curatedArticles) { article in
                                         NavigationLink(destination: ArticleDetailView(article: article)) {
                                             ArticleCardView(article: article)
-                                                .padding(.horizontal, AppSpacing.md)
+                                                .padding(.horizontal, AppSpacing.lg)
                                                 .padding(.bottom, AppSpacing.sm)
                                         }
                                         .buttonStyle(.plain)
@@ -133,8 +183,8 @@ struct NewsView: View {
                             // Hide regular articles section - we only show headlines and curated articles
                         }
                     }
-                    .refreshable {
-                        await viewModel.curateNews()
+                    .safeAreaInset(edge: .bottom) {
+                        Color.clear.frame(height: 0)
                     }
                 }
                 
@@ -150,15 +200,23 @@ struct NewsView: View {
                                 .tint(BrandColors.primary)
                                 .progressViewStyle(CircularProgressViewStyle())
                             
-                            VStack(spacing: AppSpacing.xs) {
+                            VStack(spacing: AppSpacing.md) {
                                 Text("Getting Fresh News")
                                     .foregroundColor(BrandColors.textPrimary)
                                     .font(AppTypography.headline)
                                 
-                                Text("Finding news articles for you...")
-                                    .foregroundColor(BrandColors.textSecondary)
-                                    .font(AppTypography.subheadline)
-                                    .multilineTextAlignment(.center)
+                                VStack(spacing: AppSpacing.xs) {
+                                    Text("Finding news articles for you...")
+                                        .foregroundColor(BrandColors.textSecondary)
+                                        .font(AppTypography.subheadline)
+                                        .multilineTextAlignment(.center)
+                                    
+                                    Text("You can leave the app and come back later to see your personalized news")
+                                        .foregroundColor(BrandColors.textSecondary)
+                                        .font(AppTypography.footnote)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.top, AppSpacing.xs)
+                                }
                             }
                         }
                         .padding(AppSpacing.xl)
@@ -238,13 +296,8 @@ struct NewsView: View {
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
             }
-            // Auto-refresh personalized news after onboarding completes
-            .onReceive(NotificationCenter.default.publisher(for: .onboardingCompleted)) { _ in
-                Task {
-                    await viewModel.curateNews()
-                }
-            }
         }
+        .navigationViewStyle(.stack)
     }
 }
 
