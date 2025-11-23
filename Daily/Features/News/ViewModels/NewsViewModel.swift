@@ -20,14 +20,97 @@ final class NewsViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var hasMore: Bool = true
     @Published var hasLoadedInitialHeadlines: Bool = false
+    @Published var isPreparingArticles: Bool = false
+    @Published var preparationStatus: String?
+    
+    // Background-aware curated news state
+    @Published var lastCuratedFetchDate: Date?
     
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
+    private let backgroundFetcher = BackgroundNewsFetcher.shared
     
     private var currentOffset: Int = 0
     private let pageSize: Int = 20
     
+    // MARK: - Init
+    
+    init() {
+        // Load any previously saved curated articles for this user from the backend/Neon DB.
+        Task {
+            await loadSavedCuratedNews()
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: .curatedNewsReady,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                await self?.handleCuratedNewsReady()
+            }
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - Private Helpers
+    
+    @MainActor
+    private func handleCuratedNewsReady() async {
+        let articles = backgroundFetcher.lastCuratedArticles
+        curatedArticles = articles
+        isCurating = false
+        errorMessage = backgroundFetcher.lastErrorMessage
+        lastCuratedFetchDate = UserDefaults.standard.object(forKey: "BackgroundNewsFetcher.lastFetchDate") as? Date
+        
+        // Ensure images are preloaded when articles come from background fetch
+        ImageCacheService.shared.preloadImages(for: articles)
+    }
+    
     // MARK: - Public Methods
+    
+    /// Load the last curated news set for the current user from the backend database.
+    /// This does NOT trigger a fresh fetch; it only reads what was saved previously.
+    func loadSavedCuratedNews() async {
+        guard !isCurating else { return }
+        
+        errorMessage = nil
+        
+        guard let token = authService.getAccessToken() else {
+            // Don't set error message if not authenticated - user might not be logged in yet
+            return
+        }
+        
+        do {
+            let articles = try await backendService.fetchCuratedNews(accessToken: token)
+            await MainActor.run {
+                self.curatedArticles = articles
+                if !articles.isEmpty {
+                    ImageCacheService.shared.preloadImages(for: articles)
+                } else {
+                    // Empty list is valid - user hasn't fetched news yet or no articles were saved
+                    print("No saved curated articles found in database")
+                }
+            }
+        } catch {
+            // Only show error if it's not a "not found" or empty response
+            let errorMsg = error.localizedDescription.lowercased()
+            if errorMsg.contains("not found") || errorMsg.contains("404") {
+                // Empty state is fine - user just hasn't fetched news yet
+                await MainActor.run {
+                    self.curatedArticles = []
+                    self.errorMessage = nil
+                }
+            } else {
+                await MainActor.run {
+                    self.errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
     
     func loadHeadlines() async {
         guard !isLoadingHeadlines else { return }
@@ -96,47 +179,69 @@ final class NewsViewModel: ObservableObject {
     func curateNews() async {
         guard !isCurating else { return }
         
-        isCurating = true
-        errorMessage = nil
-        
         guard let token = authService.getAccessToken() else {
             self.errorMessage = "Authentication required"
-            self.isCurating = false
             return
         }
         
+        isCurating = true
+        errorMessage = nil
+        
+        // Start a background-capable curated fetch. This call returns immediately;
+        // the result will be delivered via NotificationCenter / published state.
+        backgroundFetcher.startCuratedNewsFetch(accessToken: token, topic: "", limit: 10)
+    }
+    
+    /// Prepare all curated articles by extracting and caching their full content.
+    /// This will make articles open instantly when users tap on them.
+    func prepareAllArticles() async {
+        guard !isPreparingArticles else { return }
+        guard !curatedArticles.isEmpty else {
+            self.errorMessage = "No articles to prepare"
+            return
+        }
+        
+        guard let token = authService.getAccessToken() else {
+            self.errorMessage = "Authentication required"
+            return
+        }
+        
+        isPreparingArticles = true
+        preparationStatus = "Starting preparation..."
+        errorMessage = nil
+        
         do {
-            // Fetch curated articles (AI-analyzed) using the saved per-user profile.
-            print("Starting to fetch curated news (personalized if available)...")
-            let curated = try await backendService.curateNews(
-                accessToken: token,
-                topic: "",
-                limit: 10
-            )
-            print("Successfully received \(curated.count) curated articles")
+            let response = try await backendService.prepareArticles(accessToken: token)
             
-            // Ensure we have at least some articles
-            if curated.count < 5 && curated.count > 0 {
-                print("Warning: Received only \(curated.count) articles (expected at least 5)")
-                self.errorMessage = "Only found \(curated.count) articles. Please try again for more results."
-            } else if curated.isEmpty {
-                self.errorMessage = "No personalized articles found. The AI couldn't find relevant articles from the current news. Please try again later."
-            }
-            
-            self.curatedArticles = curated
-            self.isCurating = false
-            // Don't clear error message if we have articles but less than 5
-            if curated.count >= 5 {
-                self.errorMessage = nil
+            await MainActor.run {
+                self.isPreparingArticles = false
+                self.preparationStatus = response.message
+                
+                // Reload articles to get updated content
+                Task {
+                    await self.loadSavedCuratedNews()
+                }
+                
+                // Show success message briefly
+                if response.processed > 0 {
+                    self.errorMessage = nil
+                    // Clear status after a delay
+                    Task {
+                        try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+                        await MainActor.run {
+                            self.preparationStatus = nil
+                        }
+                    }
+                } else if response.failed > 0 {
+                    self.errorMessage = "Some articles failed to prepare. Please try again."
+                }
             }
         } catch {
-            print("Error curating news: \(error)")
-            if let nsError = error as NSError? {
-                print("Error domain: \(nsError.domain), code: \(nsError.code)")
-                print("Error userInfo: \(nsError.userInfo)")
+            await MainActor.run {
+                self.isPreparingArticles = false
+                self.preparationStatus = nil
+                self.errorMessage = "Failed to prepare articles: \(error.localizedDescription)"
             }
-            self.errorMessage = error.localizedDescription
-            self.isCurating = false
         }
     }
     
