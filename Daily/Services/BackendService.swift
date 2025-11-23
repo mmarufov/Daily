@@ -192,6 +192,75 @@ final class BackendService {
         }
     }
     
+    /// Load the most recently saved curated news for the current user from the backend/Neon database,
+    /// without triggering a fresh curation run.
+    func fetchCuratedNews(accessToken: String) async throws -> [NewsArticle] {
+        let endpoint = baseURL.appendingPathComponent("/news/curated")
+        
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (data, response) = try await urlSession.data(for: request)
+        
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            return try decoder.decode([NewsArticle].self, from: data)
+        } catch {
+            print("Failed to decode curated news: \(error)")
+            throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response: \(error.localizedDescription)"])
+        }
+    }
+    
+    /// Prepare all curated articles by extracting and caching their full content.
+    /// This processes articles in the background and updates them in the database.
+    func prepareArticles(accessToken: String) async throws -> PrepareArticlesResponse {
+        let endpoint = baseURL.appendingPathComponent("/news/prepare-articles")
+        
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (data, response) = try await urlSession.data(for: request)
+        
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            return try decoder.decode(PrepareArticlesResponse.self, from: data)
+        } catch {
+            print("Failed to decode prepare articles response: \(error)")
+            throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response: \(error.localizedDescription)"])
+        }
+    }
+    
+    struct PrepareArticlesResponse: Decodable {
+        let status: String
+        let message: String
+        let total: Int
+        let processed: Int
+        let failed: Int
+    }
+    
     // MARK: - Curation Endpoints
     
     func curateNews(accessToken: String, topic: String, limit: Int = 10) async throws -> [NewsArticle] {
