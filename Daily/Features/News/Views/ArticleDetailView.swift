@@ -42,106 +42,118 @@ struct ArticleDetailView: View {
             } else {
                 // Show article content after it's loaded
                 ScrollView {
-                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    VStack(alignment: .leading, spacing: 0) {
                         // Title at the top, using the loaded title
                         if let full = fullArticle {
-                            Text(full.title)
-                                .font(AppTypography.articleTitle)
-                                .foregroundColor(BrandColors.textPrimary)
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.horizontal, AppSpacing.xxl)
+                            // Title section - centered with max width
+                            HStack {
+                                Spacer()
+                                Text(full.title)
+                                    .font(AppTypography.articleTitle)
+                                    .foregroundColor(BrandColors.textPrimary)
+                                    .multilineTextAlignment(.leading)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: 700)
+                                Spacer()
+                            }
+                            .padding(.horizontal, AppSpacing.xxl)
+                            .padding(.top, AppSpacing.sm)
                             
-                            // Article image directly under the title
+                            // Article image directly under the title (full width, no padding)
                             headerImage
                             
-                            VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                // Source, category & date
-                                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                                    HStack(spacing: AppSpacing.xs) {
-                                        Text(full.displaySource.uppercased())
-                                            .font(AppTypography.caption2)
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(BrandColors.primary)
-                                        
-                                        if let category = full.category, !category.isEmpty {
-                                            Text("•")
+                            // Content section with same padding as title - centered with max width
+                            HStack {
+                                Spacer()
+                                VStack(alignment: .leading, spacing: AppSpacing.md) {
+                                    // Source, category & date
+                                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                        HStack(spacing: AppSpacing.xs) {
+                                            Text(full.displaySource.uppercased())
                                                 .font(AppTypography.caption2)
-                                                .foregroundColor(BrandColors.textTertiary)
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(BrandColors.primary)
                                             
-                                            Text(category)
-                                                .font(AppTypography.caption2)
+                                            if let category = full.category, !category.isEmpty {
+                                                Text("•")
+                                                    .font(AppTypography.caption2)
+                                                    .foregroundColor(BrandColors.textTertiary)
+                                                
+                                                Text(category)
+                                                    .font(AppTypography.caption2)
+                                                    .foregroundColor(BrandColors.textSecondary)
+                                            }
+                                        }
+                                        
+                                        if !full.formattedDate.isEmpty {
+                                            Text(full.formattedDate)
+                                                .font(AppTypography.caption1)
                                                 .foregroundColor(BrandColors.textSecondary)
                                         }
                                     }
                                     
-                                    if !full.formattedDate.isEmpty {
-                                        Text(full.formattedDate)
-                                            .font(AppTypography.caption1)
+                                    // Author – only after full article is loaded
+                                    if let author = full.author,
+                                       !author.isEmpty {
+                                        Text("By \(author)")
+                                            .font(AppTypography.subheadline)
                                             .foregroundColor(BrandColors.textSecondary)
                                     }
-                                }
-                                
-                                // Author – only after full article is loaded
-                                if let author = full.author,
-                                   !author.isEmpty {
-                                    Text("By \(author)")
-                                        .font(AppTypography.subheadline)
-                                        .foregroundColor(BrandColors.textSecondary)
-                                }
-                                
-                                // Summary callout – only from full article / AI extraction
-                                if let summary = full.summary,
-                                   !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                    Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
-                                        .font(AppTypography.callout)
-                                        .foregroundColor(BrandColors.textPrimary)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .padding(.all, AppSpacing.md)
-                                        .background(BrandColors.secondaryBackground)
-                                        .cornerRadius(AppCornerRadius.medium)
-                                }
-                                
-                                // Full content (cleaned and nicely formatted) – ONLY from fullArticle.
-                                if let content = full.content,
-                                   !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                    VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                        ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
-                                            Text(paragraph)
-                                                .font(AppTypography.articleBody)
-                                                .foregroundColor(BrandColors.textPrimary)
-                                                .multilineTextAlignment(.leading)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                                .lineSpacing(4)
-                                        }
+                                    
+                                    // Summary callout – only from full article / AI extraction
+                                    if let summary = full.summary,
+                                       !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                        Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
+                                            .font(AppTypography.callout)
+                                            .foregroundColor(BrandColors.textPrimary)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .padding(.all, AppSpacing.md)
+                                            .background(BrandColors.secondaryBackground)
+                                            .cornerRadius(AppCornerRadius.medium)
                                     }
-                                    .padding(.top, AppSpacing.md)
-                                }
-                                
-                                // External link
-                                if let urlString = full.url,
-                                   let url = URL(string: urlString) {
-                                    Link(destination: url) {
-                                        HStack(spacing: AppSpacing.sm) {
-                                            Image(systemName: "safari.fill")
-                                                .font(.system(size: 16, weight: .medium))
-                                            Text("Open Original Article")
-                                                .font(AppTypography.labelMedium)
+                                    
+                                    // Full content (cleaned and nicely formatted) – ONLY from fullArticle.
+                                    if let content = full.content,
+                                       !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                        VStack(alignment: .leading, spacing: AppSpacing.md) {
+                                            ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
+                                                Text(paragraph)
+                                                    .font(AppTypography.articleBody)
+                                                    .foregroundColor(BrandColors.textPrimary)
+                                                    .multilineTextAlignment(.leading)
+                                                    .lineSpacing(4)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                            }
                                         }
-                                        .foregroundColor(.white)
-                                        .padding(.horizontal, AppSpacing.lg)
-                                        .padding(.vertical, AppSpacing.sm)
-                                        .background(BrandColors.primary)
-                                        .cornerRadius(AppCornerRadius.button)
+                                        .padding(.top, AppSpacing.md)
                                     }
-                                    .padding(.top, AppSpacing.lg)
+                                    
+                                    // External link
+                                    if let urlString = full.url,
+                                       let url = URL(string: urlString) {
+                                        Link(destination: url) {
+                                            HStack(spacing: AppSpacing.sm) {
+                                                Image(systemName: "safari.fill")
+                                                    .font(.system(size: 16, weight: .medium))
+                                                Text("Open Original Article")
+                                                    .font(AppTypography.labelMedium)
+                                            }
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, AppSpacing.lg)
+                                            .padding(.vertical, AppSpacing.sm)
+                                            .background(BrandColors.primary)
+                                            .cornerRadius(AppCornerRadius.button)
+                                        }
+                                        .padding(.top, AppSpacing.lg)
+                                    }
                                 }
+                                .frame(maxWidth: 700)
+                                Spacer()
                             }
                             .padding(.horizontal, AppSpacing.xxl)
                             .padding(.bottom, AppSpacing.xl)
                         }
                     }
-                    .padding(.top, AppSpacing.sm)
                 }
                 .background(BrandColors.background.ignoresSafeArea())
             }
@@ -154,10 +166,10 @@ struct ArticleDetailView: View {
     
     // MARK: - Subviews
     
+    @ViewBuilder
     private var headerImage: some View {
         Group {
-            let imageURLToUse = fullArticle?.imageURL ?? article.imageURL
-            if let imageURL = imageURLToUse,
+            if let imageURL = fullArticle?.imageURL ?? article.imageURL,
                let url = URL(string: imageURL) {
                 AsyncImage(url: url) { phase in
                     switch phase {
@@ -216,6 +228,15 @@ struct ArticleDetailView: View {
               fullArticle == nil,
               let urlString = article.url,
               !urlString.isEmpty else {
+            return
+        }
+        
+        // Check if article already has full content (more than 500 chars)
+        // If so, use it directly without fetching
+        if let existingContent = article.content,
+           existingContent.count > 500 {
+            // Article already has full content, use it
+            fullArticle = article
             return
         }
         
