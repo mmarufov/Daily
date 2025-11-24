@@ -14,290 +14,330 @@ struct NewsView: View {
     @State private var showingProfile = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-                BrandColors.background
-                    .ignoresSafeArea(edges: [])
+                AppleBackgroundView()
                 
-                // Show empty state only if no curated articles yet - Apple style
-                if viewModel.curatedArticles.isEmpty && !viewModel.isCurating {
-                    // Empty state
+                ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: AppSpacing.xl) {
-                        ZStack {
-                            Circle()
-                                .fill(BrandColors.primary.opacity(0.08))
-                                .frame(width: 80, height: 80)
-                            
-                            Image(systemName: "newspaper")
-                                .font(.system(size: 36, weight: .light))
-                                .foregroundColor(BrandColors.primary)
-                        }
+                        heroHeader
                         
-                        VStack(spacing: AppSpacing.xs) {
-                            Text("No articles available")
-                                .font(AppTypography.title3)
-                                .foregroundColor(BrandColors.textPrimary)
-                            
-                            if let error = viewModel.errorMessage {
-                                Text(error)
-                                    .font(AppTypography.subheadline)
-                                    .foregroundColor(BrandColors.error)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, AppSpacing.xl)
-                            } else {
-                                Text("Try refreshing to get the latest news")
-                                    .font(AppTypography.subheadline)
-                                    .foregroundColor(BrandColors.textSecondary)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, AppSpacing.xl)
-                            }
-                        }
-                        
-                        Button(action: {
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            impactFeedback.impactOccurred()
-                            
-                            Task {
-                                await viewModel.curateNews()
-                            }
-                        }) {
-                            HStack(spacing: AppSpacing.sm) {
-                                Image(systemName: "arrow.clockwise")
-                                    .font(.system(size: 15, weight: .medium))
-                                Text("Get Fresh News")
-                                    .font(AppTypography.labelLarge)
-                            }
-                        }
-                        .brandedButton()
-                        .padding(.horizontal, AppSpacing.xl)
-                        .padding(.top, AppSpacing.md)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(BrandColors.background)
-                } else {
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            // Error banner
+                        if viewModel.curatedArticles.isEmpty && !viewModel.isCurating {
+                            emptyStateCard
+                        } else {
                             if let error = viewModel.errorMessage, !error.isEmpty {
-                                HStack(spacing: AppSpacing.sm) {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundColor(BrandColors.warning)
-                                        .font(.system(size: 16))
-                                    Text(error)
-                                        .font(AppTypography.bodyMedium)
-                                        .foregroundColor(BrandColors.textPrimary)
-                                    Spacer()
-                                    Button("Dismiss") {
-                                        withAnimation {
-                                            viewModel.errorMessage = nil
-                                        }
-                                    }
-                                    .font(AppTypography.labelSmall)
-                                    .foregroundColor(BrandColors.warning)
-                                }
-                                .padding(AppSpacing.md)
-                                .background(BrandColors.warning.opacity(0.1))
-                                .cornerRadius(AppCornerRadius.medium)
-                                .padding(.horizontal, AppSpacing.lg)
-                                .padding(.top, AppSpacing.sm)
+                                errorBanner(error)
                             }
                             
-                            // Curated Articles Section - Apple style
-                            if !viewModel.curatedArticles.isEmpty {
-                                VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                                    // Header - Apple style
-                                    HStack(alignment: .top, spacing: AppSpacing.sm) {
-                                        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                                            Text("For you")
-                                                .font(AppTypography.title3)
-                                                .foregroundColor(BrandColors.textPrimary)
-                                            Text("\(viewModel.curatedArticles.count) carefully selected articles")
-                                                .font(AppTypography.footnote)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                        }
-                                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                                        
-                                        // Prepare Articles Button
-                                        Button(action: {
-                                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                                            impactFeedback.impactOccurred()
-                                            
-                                            Task {
-                                                await viewModel.prepareAllArticles()
-                                            }
-                                        }) {
-                                            HStack(spacing: AppSpacing.xs) {
-                                                if viewModel.isPreparingArticles {
-                                                    ProgressView()
-                                                        .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.primary))
-                                                        .scaleEffect(0.7)
-                                                } else {
-                                                    Image(systemName: "bolt.fill")
-                                                        .font(.system(size: 12, weight: .medium))
-                                                }
-                                                Text(viewModel.isPreparingArticles ? "Preparing..." : "Prepare All")
-                                                    .font(AppTypography.labelSmall)
-                                                    .lineLimit(1)
-                                                    .minimumScaleFactor(0.8)
-                                            }
-                                            .foregroundColor(BrandColors.primary)
-                                            .padding(.horizontal, AppSpacing.sm)
-                                            .padding(.vertical, AppSpacing.xs)
-                                            .background(BrandColors.primary.opacity(0.1))
-                                            .cornerRadius(AppCornerRadius.small)
-                                        }
-                                        .disabled(viewModel.isPreparingArticles)
-                                    }
-                                    .padding(.horizontal, AppSpacing.lg)
-                                    .padding(.top, AppSpacing.md)
-                                    
-                                    // Preparation status message
-                                    if let status = viewModel.preparationStatus {
-                                        HStack(spacing: AppSpacing.sm) {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .foregroundColor(BrandColors.success)
-                                                .font(.system(size: 14))
-                                            Text(status)
-                                                .font(AppTypography.footnote)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                        }
-                                        .padding(.horizontal, AppSpacing.lg)
-                                        .padding(.top, AppSpacing.xs)
-                                    }
-                                    
-                                    // Articles list - Apple style spacing with navigation to detail
-                                    ForEach(viewModel.curatedArticles) { article in
-                                        NavigationLink(destination: ArticleDetailView(article: article)) {
-                                            ArticleCardView(article: article)
-                                                .padding(.horizontal, AppSpacing.lg)
-                                                .padding(.bottom, AppSpacing.sm)
-                                        }
-                                        .buttonStyle(.plain)
-                                    }
-                                }
-                                .padding(.bottom, AppSpacing.lg)
-                            }
-                            
-                            // Hide regular articles section - we only show headlines and curated articles
+                            curatedSection
                         }
                     }
-                    .safeAreaInset(edge: .bottom) {
-                        Color.clear.frame(height: 0)
-                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.vertical, AppSpacing.lg)
                 }
                 
-                // Curating loading overlay - Apple style
                 if viewModel.isCurating {
-                    ZStack {
-                        Color.black.opacity(0.3)
-                            .ignoresSafeArea()
-                        
-                        VStack(spacing: AppSpacing.lg) {
-                            ProgressView()
-                                .scaleEffect(1.2)
-                                .tint(BrandColors.primary)
-                                .progressViewStyle(CircularProgressViewStyle())
-                            
-                            VStack(spacing: AppSpacing.md) {
-                                Text("Getting Fresh News")
-                                    .foregroundColor(BrandColors.textPrimary)
-                                    .font(AppTypography.headline)
-                                
-                                VStack(spacing: AppSpacing.xs) {
-                                    Text("Finding news articles for you...")
-                                        .foregroundColor(BrandColors.textSecondary)
-                                        .font(AppTypography.subheadline)
-                                        .multilineTextAlignment(.center)
-                                    
-                                    Text("You can leave the app and come back later to see your personalized news")
-                                        .foregroundColor(BrandColors.textSecondary)
-                                        .font(AppTypography.footnote)
-                                        .multilineTextAlignment(.center)
-                                        .padding(.top, AppSpacing.xs)
-                                }
-                            }
-                        }
-                        .padding(AppSpacing.xl)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(AppCornerRadius.sheet)
-                        .shadow(
-                            color: AppShadows.large.color,
-                            radius: AppShadows.large.radius,
-                            x: AppShadows.large.x,
-                            y: AppShadows.large.y
-                        )
-                        .padding(.horizontal, AppSpacing.xxl)
-                    }
+                    curatingOverlay
                 }
             }
             .navigationTitle("Daily")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                        impactFeedback.impactOccurred()
-                        
-                        Task {
-                            await viewModel.curateNews()
-                        }
-                    }) {
-                        HStack(spacing: AppSpacing.xs) {
-                            if viewModel.isCurating {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.primary))
-                                    .scaleEffect(0.7)
-                            } else {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 13, weight: .medium))
-                            }
-                            Text("Get Fresh News")
-                                .font(AppTypography.labelSmall)
-                        }
-                        .foregroundColor(BrandColors.primary)
-                        .padding(.horizontal, AppSpacing.sm)
-                        .padding(.vertical, AppSpacing.xs)
-                        .background(BrandColors.primary.opacity(0.1))
-                        .cornerRadius(AppCornerRadius.small)
-                    }
-                    .disabled(viewModel.isCurating)
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingProfile = true
-                    }) {
-                        if let photoURL = auth.currentUser?.photo_url,
-                           let url = URL(string: photoURL) {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                default:
-                                    Image(systemName: "person.circle.fill")
-                                        .font(.title3)
-                                        .foregroundColor(BrandColors.primary)
-                                }
-                            }
-                            .frame(width: 28, height: 28)
-                            .clipShape(Circle())
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .font(.title3)
-                                .foregroundColor(BrandColors.primary)
-                        }
-                    }
-                }
+                toolbarContent
             }
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
             }
         }
-        .navigationViewStyle(.stack)
+    }
+}
+
+// MARK: - Private builders
+
+private extension NewsView {
+    var heroHeader: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Text(greetingTitle)
+                .font(AppTypography.title2)
+                .foregroundColor(.white)
+            
+            Text(heroSubtitle)
+                .font(AppTypography.bodyMedium)
+                .foregroundColor(.white.opacity(0.85))
+            
+            HStack(spacing: AppSpacing.sm) {
+                Button(action: {
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedback.impactOccurred()
+                    Task { await viewModel.curateNews() }
+                }) {
+                    HStack(spacing: AppSpacing.xs) {
+                        if viewModel.isCurating {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        Text(viewModel.isCurating ? "Working..." : "Get Fresh News")
+                            .font(AppTypography.labelMedium)
+                            .fontWeight(.semibold)
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.vertical, AppSpacing.sm)
+                    .background(.white.opacity(0.18))
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+                }
+                .disabled(viewModel.isCurating)
+                
+                if viewModel.curatedArticles.count > 0 {
+                    Text("\(viewModel.curatedArticles.count) stories ready")
+                        .font(AppTypography.caption1)
+                        .foregroundColor(.white.opacity(0.8))
+                        .padding(.horizontal, AppSpacing.md)
+                        .padding(.vertical, AppSpacing.xs)
+                        .background(.white.opacity(0.12))
+                        .clipShape(Capsule())
+                }
+                
+                Spacer()
+            }
+        }
+        .padding(AppSpacing.lg)
+        .background(
+            LinearGradient(
+                colors: [BrandColors.primary, BrandColors.primaryDark],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(AppCornerRadius.xlarge)
+        .shadow(color: BrandColors.primary.opacity(0.25), radius: 30, x: 0, y: 20)
+    }
+    
+    var emptyStateCard: some View {
+        VStack(spacing: AppSpacing.lg) {
+            Image(systemName: "rectangle.and.text.magnifyingglass")
+                .font(.system(size: 42, weight: .light))
+                .foregroundColor(BrandColors.primary)
+                .padding()
+                .background(BrandColors.primary.opacity(0.08))
+                .clipShape(Circle())
+            
+            VStack(spacing: AppSpacing.sm) {
+                Text("No articles yet")
+                    .font(AppTypography.title3)
+                    .foregroundColor(BrandColors.textPrimary)
+                
+                Text(viewModel.errorMessage ?? "Tap the button above to curate a fresh Apple-style briefing.")
+                    .font(AppTypography.subheadline)
+                    .foregroundColor(viewModel.errorMessage == nil ? BrandColors.textSecondary : BrandColors.error)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(AppSpacing.xl)
+        .glassCard()
+    }
+    
+    func errorBanner(_ message: String) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(BrandColors.warning)
+            Text(message)
+                .font(AppTypography.bodyMedium)
+                .foregroundColor(BrandColors.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+            Button("Dismiss") {
+                withAnimation {
+                    viewModel.errorMessage = nil
+                }
+            }
+            .font(AppTypography.labelSmall)
+            .foregroundColor(BrandColors.warning)
+        }
+        .padding(AppSpacing.md)
+        .glassCard(cornerRadius: AppCornerRadius.large)
+    }
+    
+    var curatedSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text("Curated for you")
+                        .font(AppTypography.title3)
+                        .foregroundColor(BrandColors.textPrimary)
+                    Text("Handpicked to match your interests")
+                        .font(AppTypography.footnote)
+                        .foregroundColor(BrandColors.textSecondary)
+                }
+                Spacer()
+                Button(action: {
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedback.impactOccurred()
+                    Task { await viewModel.prepareAllArticles() }
+                }) {
+                    HStack(spacing: AppSpacing.xs) {
+                        if viewModel.isPreparingArticles {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.primary))
+                                .scaleEffect(0.7)
+                        } else {
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 13, weight: .medium))
+                        }
+                        Text(viewModel.isPreparingArticles ? "Preparing…" : "Preload")
+                            .font(AppTypography.labelSmall)
+                    }
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xs)
+                    .background(BrandColors.primary.opacity(0.12))
+                    .foregroundColor(BrandColors.primary)
+                    .clipShape(Capsule())
+                }
+                .disabled(viewModel.isPreparingArticles)
+            }
+            
+            if let status = viewModel.preparationStatus {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(BrandColors.success)
+                        .font(.system(size: 14))
+                    Text(status)
+                        .font(AppTypography.footnote)
+                        .foregroundColor(BrandColors.textSecondary)
+                    Spacer()
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .padding(.vertical, AppSpacing.sm)
+                .background(BrandColors.secondaryBackground.opacity(0.6))
+                .cornerRadius(AppCornerRadius.medium)
+            }
+            
+            VStack(spacing: AppSpacing.md) {
+                ForEach(viewModel.curatedArticles) { article in
+                    NavigationLink(destination: ArticleDetailView(article: article)) {
+                        ArticleCardView(article: article)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+    
+    var curatingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.35)
+                .ignoresSafeArea()
+            
+            VStack(spacing: AppSpacing.lg) {
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .tint(BrandColors.primary)
+                
+                Text("Curating your briefing")
+                    .font(AppTypography.headline)
+                    .foregroundColor(BrandColors.textPrimary)
+                
+                Text("Feel free to close the app. We’ll notify you when the stories are ready.")
+                    .font(AppTypography.body)
+                    .foregroundColor(BrandColors.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(AppSpacing.xl)
+            .glassCard(cornerRadius: AppCornerRadius.sheet)
+            .padding(.horizontal, AppSpacing.xxl)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button(action: {
+                showingProfile = true
+            }) {
+                if let photoURL = auth.currentUser?.photo_url,
+                   let url = URL(string: photoURL) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        default:
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.system(size: 28))
+                        .foregroundColor(.white)
+                }
+            }
+        }
+        
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button(action: {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                Task { await viewModel.curateNews() }
+            }) {
+                HStack(spacing: AppSpacing.xs) {
+                    if viewModel.isCurating {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.primary))
+                            .scaleEffect(0.7)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    Text(viewModel.isCurating ? "Refreshing" : "Refresh")
+                        .font(AppTypography.labelSmall)
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .padding(.vertical, AppSpacing.xs)
+                .background(BrandColors.cardBackground.opacity(0.9))
+                .clipShape(Capsule())
+                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+            }
+            .disabled(viewModel.isCurating)
+        }
+    }
+    
+    var greetingTitle: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12:
+            return "Good morning"
+        case 12..<17:
+            return "Good afternoon"
+        case 17..<22:
+            return "Good evening"
+        default:
+            return "Hello"
+        }
+    }
+    
+    var heroSubtitle: String {
+        if let date = viewModel.lastCuratedFetchDate {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.unitsStyle = .short
+            let relative = formatter.localizedString(for: date, relativeTo: Date())
+            return "Last refreshed \(relative)"
+        } else {
+            return "Tap refresh to build your briefing"
+        }
     }
 }
 
