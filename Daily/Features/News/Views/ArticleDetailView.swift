@@ -15,150 +15,66 @@ struct ArticleDetailView: View {
     @State private var loadErrorMessage: String?
     
     var body: some View {
-        Group {
-            if isLoadingFullContent && fullArticle == nil {
-                // Show only loading indicator while loading
-                VStack {
-                    Spacer()
-                    ProgressView()
-                        .scaleEffect(1.5)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(BrandColors.background.ignoresSafeArea())
-            } else if let error = loadErrorMessage, fullArticle == nil {
-                // Show error if loading failed
-                VStack {
-                    Spacer()
-                    Text(error)
-                        .font(AppTypography.footnote)
-                        .foregroundColor(BrandColors.error)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, AppSpacing.xxl)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(BrandColors.background.ignoresSafeArea())
-            } else {
-                // Show article content after it's loaded
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Title at the top, using the loaded title
-                        if let full = fullArticle {
-                            // Title section - centered with max width
-                            HStack {
-                                Spacer()
-                                Text(full.title)
-                                    .font(AppTypography.articleTitle)
-                                    .foregroundColor(BrandColors.textPrimary)
-                                    .multilineTextAlignment(.leading)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: 700)
-                                Spacer()
-                            }
+        ZStack {
+            AppleBackgroundView()
+            
+            Group {
+                if isLoadingFullContent && fullArticle == nil {
+                    VStack {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let error = loadErrorMessage, fullArticle == nil {
+                    VStack {
+                        Text(error)
+                            .font(AppTypography.footnote)
+                            .foregroundColor(BrandColors.error)
+                            .multilineTextAlignment(.center)
                             .padding(.horizontal, AppSpacing.xxl)
-                            .padding(.top, AppSpacing.sm)
-                            
-                            // Article image directly under the title (full width, no padding)
-                            headerImage
-                            
-                            // Content section with same padding as title - centered with max width
-                            HStack {
-                                Spacer()
-                                VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                    // Source, category & date
-                                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                                        HStack(spacing: AppSpacing.xs) {
-                                            Text(full.displaySource.uppercased())
-                                                .font(AppTypography.caption2)
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(BrandColors.primary)
-                                            
-                                            if let category = full.category, !category.isEmpty {
-                                                Text("•")
-                                                    .font(AppTypography.caption2)
-                                                    .foregroundColor(BrandColors.textTertiary)
-                                                
-                                                Text(category)
-                                                    .font(AppTypography.caption2)
-                                                    .foregroundColor(BrandColors.textSecondary)
-                                            }
-                                        }
-                                        
-                                        if !full.formattedDate.isEmpty {
-                                            Text(full.formattedDate)
-                                                .font(AppTypography.caption1)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                        }
-                                    }
-                                    
-                                    // Author – only after full article is loaded
-                                    if let author = full.author,
-                                       !author.isEmpty {
-                                        Text("By \(author)")
-                                            .font(AppTypography.subheadline)
-                                            .foregroundColor(BrandColors.textSecondary)
-                                    }
-                                    
-                                    // Summary callout – only from full article / AI extraction
-                                    if let summary = full.summary,
-                                       !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                        Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
-                                            .font(AppTypography.callout)
-                                            .foregroundColor(BrandColors.textPrimary)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                            .padding(.all, AppSpacing.md)
-                                            .background(BrandColors.secondaryBackground)
-                                            .cornerRadius(AppCornerRadius.medium)
-                                    }
-                                    
-                                    // Full content (cleaned and nicely formatted) – ONLY from fullArticle.
-                                    if let content = full.content,
-                                       !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                        VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                            ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
-                                                Text(paragraph)
-                                                    .font(AppTypography.articleBody)
-                                                    .foregroundColor(BrandColors.textPrimary)
-                                                    .multilineTextAlignment(.leading)
-                                                    .lineSpacing(4)
-                                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                            }
-                                        }
-                                        .padding(.top, AppSpacing.md)
-                                    }
-                                    
-                                    // External link
-                                    if let urlString = full.url,
-                                       let url = URL(string: urlString) {
-                                        Link(destination: url) {
-                                            HStack(spacing: AppSpacing.sm) {
-                                                Image(systemName: "safari.fill")
-                                                    .font(.system(size: 16, weight: .medium))
-                                                Text("Open Original Article")
-                                                    .font(AppTypography.labelMedium)
-                                            }
-                                            .foregroundColor(.white)
-                                            .padding(.horizontal, AppSpacing.lg)
-                                            .padding(.vertical, AppSpacing.sm)
-                                            .background(BrandColors.primary)
-                                            .cornerRadius(AppCornerRadius.button)
-                                        }
-                                        .padding(.top, AppSpacing.lg)
-                                    }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 0) {
+                            if let full = fullArticle {
+                                HStack {
+                                    Spacer()
+                                    Text(full.title)
+                                        .font(AppTypography.articleTitle)
+                                        .foregroundColor(BrandColors.textPrimary)
+                                        .multilineTextAlignment(.leading)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: 700)
+                                    Spacer()
                                 }
-                                .frame(maxWidth: 700)
-                                Spacer()
+                                .padding(.horizontal, AppSpacing.xxl)
+                                .padding(.top, AppSpacing.sm)
+                                
+                                headerImage
+                                
+                                HStack {
+                                    Spacer()
+                                    VStack(alignment: .leading, spacing: AppSpacing.md) {
+                                        metaSection(for: full)
+                                        summarySection(for: full)
+                                        contentSection(for: full)
+                                        externalLink(for: full)
+                                    }
+                                    .frame(maxWidth: 700)
+                                    Spacer()
+                                }
+                                .padding(.horizontal, AppSpacing.xxl)
+                                .padding(.bottom, AppSpacing.xl)
                             }
-                            .padding(.horizontal, AppSpacing.xxl)
-                            .padding(.bottom, AppSpacing.xl)
                         }
                     }
                 }
-                .background(BrandColors.background.ignoresSafeArea())
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .task {
             await loadFullArticleIfNeeded()
         }
@@ -293,6 +209,92 @@ struct ArticleDetailView: View {
         return rawParagraphs
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+    }
+    
+    @ViewBuilder
+    private func metaSection(for article: NewsArticle) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            HStack(spacing: AppSpacing.xs) {
+                Text(article.displaySource.uppercased())
+                    .font(AppTypography.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(BrandColors.primary)
+                
+                if let category = article.category, !category.isEmpty {
+                    Text("•")
+                        .font(AppTypography.caption2)
+                        .foregroundColor(BrandColors.textTertiary)
+                    
+                    Text(category)
+                        .font(AppTypography.caption2)
+                        .foregroundColor(BrandColors.textSecondary)
+                }
+            }
+            
+            if !article.formattedDate.isEmpty {
+                Text(article.formattedDate)
+                    .font(AppTypography.caption1)
+                    .foregroundColor(BrandColors.textSecondary)
+            }
+            
+            if let author = article.author, !author.isEmpty {
+                Text("By \(author)")
+                    .font(AppTypography.subheadline)
+                    .foregroundColor(BrandColors.textSecondary)
+                    .padding(.top, AppSpacing.xs)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func summarySection(for article: NewsArticle) -> some View {
+        if let summary = article.summary, !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
+                .font(AppTypography.callout)
+                .foregroundColor(BrandColors.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.all, AppSpacing.md)
+                .glassCard(cornerRadius: AppCornerRadius.large)
+        }
+    }
+    
+    @ViewBuilder
+    private func contentSection(for article: NewsArticle) -> some View {
+        if let content = article.content,
+           !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
+                    Text(paragraph)
+                        .font(AppTypography.articleBody)
+                        .foregroundColor(BrandColors.textPrimary)
+                        .multilineTextAlignment(.leading)
+                        .lineSpacing(4)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .padding(.top, AppSpacing.md)
+        }
+    }
+    
+    @ViewBuilder
+    private func externalLink(for article: NewsArticle) -> some View {
+        if let urlString = article.url,
+           let url = URL(string: urlString) {
+            Link(destination: url) {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "safari.fill")
+                        .font(.system(size: 16, weight: .medium))
+                    Text("Open Original Article")
+                        .font(AppTypography.labelMedium)
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.vertical, AppSpacing.sm)
+                .background(BrandColors.primary)
+                .cornerRadius(AppCornerRadius.button)
+            }
+            .padding(.top, AppSpacing.lg)
+        }
     }
 }
 
