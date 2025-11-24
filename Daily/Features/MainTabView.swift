@@ -13,20 +13,24 @@ struct MainTabView: View {
     @State private var showOnboarding = false
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            NewsView()
-                .tabItem {
-                    Label("News", systemImage: selectedTab == 0 ? "newspaper.fill" : "newspaper")
-                }
-                .tag(0)
+        ZStack {
+            AppleBackgroundView()
             
-            ChatView()
-                .tabItem {
-                    Label("Chat", systemImage: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
-                }
-                .tag(1)
+            TabView(selection: $selectedTab) {
+                NewsView()
+                    .tabItem {
+                        Label("News", systemImage: selectedTab == 0 ? "newspaper.fill" : "newspaper")
+                    }
+                    .tag(0)
+                
+                ChatView()
+                    .tabItem {
+                        Label("Chat", systemImage: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
+                    }
+                    .tag(1)
+            }
+            .accentColor(BrandColors.primary)
         }
-        .accentColor(BrandColors.primary)
         .task {
             await checkOnboarding()
         }
@@ -38,11 +42,15 @@ struct MainTabView: View {
         .onAppear {
             // Customize tab bar appearance - Apple style
             let appearance = UITabBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.systemBackground
+            appearance.configureWithDefaultBackground()
+            appearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
+            appearance.backgroundColor = UIColor.clear
+            appearance.shadowImage = UIImage()
+            appearance.shadowColor = UIColor.clear
             
             // Add subtle separator
-            appearance.shadowColor = UIColor.separator.withAlphaComponent(0.3)
+            let separator = UIImage()
+            appearance.shadowImage = separator
             
             // Selected item - Apple style
             appearance.stackedLayoutAppearance.selected.iconColor = UIColor(BrandColors.primary)
@@ -59,9 +67,9 @@ struct MainTabView: View {
             ]
             
             UITabBar.appearance().standardAppearance = appearance
-            if #available(iOS 15.0, *) {
-                UITabBar.appearance().scrollEdgeAppearance = appearance
-            }
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+            UITabBar.appearance().isTranslucent = true
+            UITabBar.appearance().backgroundColor = UIColor.clear
         }
     }
     
