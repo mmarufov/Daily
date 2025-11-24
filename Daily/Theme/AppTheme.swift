@@ -231,3 +231,82 @@ extension View {
     }
 }
 
+// MARK: - Apple-inspired reusable elements
+
+struct AppleBackgroundView: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    BrandColors.background.opacity(0.95),
+                    BrandColors.secondaryBackground,
+                    BrandColors.background.opacity(0.9)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            
+            RadialGradient(
+                colors: [
+                    BrandColors.primary.opacity(0.45),
+                    .clear
+                ],
+                center: .topLeading,
+                startRadius: 80,
+                endRadius: 420
+            )
+            .blur(radius: 120)
+            
+            RadialGradient(
+                colors: [
+                    BrandColors.accent.opacity(0.4),
+                    .clear
+                ],
+                center: .bottomTrailing,
+                startRadius: 60,
+                endRadius: 360
+            )
+            .blur(radius: 120)
+            
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            .white.opacity(0.05),
+                            .white.opacity(0.01)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .blendMode(.softLight)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+struct GlassCardModifier: ViewModifier {
+    var cornerRadius: CGFloat = AppCornerRadius.xlarge
+    var shadowOpacity: Double = 0.15
+    
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .stroke(Color.white.opacity(0.18), lineWidth: 0.8)
+                            .blendMode(.overlay)
+                    )
+            )
+            .shadow(color: .black.opacity(shadowOpacity), radius: 20, x: 0, y: 12)
+    }
+}
+
+extension View {
+    func glassCard(cornerRadius: CGFloat = AppCornerRadius.xlarge, shadowOpacity: Double = 0.12) -> some View {
+        modifier(GlassCardModifier(cornerRadius: cornerRadius, shadowOpacity: shadowOpacity))
+    }
+}
+
