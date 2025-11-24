@@ -11,6 +11,7 @@ import UIKit
 struct OnboardingChatView: View {
     @StateObject private var viewModel = OnboardingChatViewModel()
     @Environment(\.dismiss) private var dismiss
+    @FocusState private var isInputFocused: Bool
     
     /// Called after preferences are successfully saved.
     var onCompleted: (() -> Void)?
@@ -20,40 +21,16 @@ struct OnboardingChatView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-                BrandColors.background
-                    .ignoresSafeArea()
+                AppleBackgroundView()
                 
                 VStack(spacing: 0) {
-                    // Messages list
                     ScrollViewReader { proxy in
-                        ScrollView {
+                        ScrollView(.vertical, showsIndicators: false) {
                             LazyVStack(spacing: AppSpacing.md) {
                                 if viewModel.messages.isEmpty {
-                                    VStack(spacing: AppSpacing.xl) {
-                                        ZStack {
-                                            Circle()
-                                                .fill(BrandColors.primary.opacity(0.08))
-                                                .frame(width: 80, height: 80)
-                                            
-                                            Image(systemName: "slider.horizontal.3")
-                                                .font(.system(size: 36, weight: .light))
-                                                .foregroundColor(BrandColors.primary)
-                                        }
-                                        
-                                        VStack(spacing: AppSpacing.xs) {
-                                            Text("Personalize your Daily")
-                                                .font(AppTypography.title3)
-                                                .foregroundColor(BrandColors.textPrimary)
-                                            Text("Tell me what kind of news you care about and what you want to avoid.")
-                                                .font(AppTypography.subheadline)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                                .multilineTextAlignment(.center)
-                                        }
-                                    }
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .padding(AppSpacing.xl)
+                                    introCard
                                 } else {
                                     ForEach(viewModel.messages) { message in
                                         ChatBubbleView(message: message)
@@ -64,8 +41,7 @@ struct OnboardingChatView: View {
                                         HStack(spacing: AppSpacing.sm) {
                                             ProgressView()
                                                 .tint(BrandColors.primary)
-                                                .padding(AppSpacing.sm)
-                                            Text("Thinking about your feed...")
+                                            Text("Thinking about your feed…")
                                                 .font(AppTypography.bodySmall)
                                                 .foregroundColor(BrandColors.textSecondary)
                                             Spacer()
@@ -75,93 +51,42 @@ struct OnboardingChatView: View {
                                     }
                                 }
                             }
-                            .padding(.vertical, AppSpacing.md)
+                            .padding(.top, AppSpacing.lg)
+                            .padding(.bottom, AppSpacing.xl)
                         }
                         .onChange(of: viewModel.messages.count) { _ in
                             if let lastMessage = viewModel.messages.last {
-                                withAnimation(.easeInOut(duration: 0.3)) {
+                                withAnimation(.easeInOut(duration: 0.25)) {
                                     proxy.scrollTo(lastMessage.id, anchor: .bottom)
                                 }
                             }
                         }
                     }
                     
-                    // Error message
                     if let errorMessage = viewModel.errorMessage {
                         HStack(spacing: AppSpacing.sm) {
-                            Image(systemName: "exclamationmark.circle.fill")
+                            Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundColor(BrandColors.error)
                             Text(errorMessage)
                                 .font(AppTypography.bodySmall)
                                 .foregroundColor(BrandColors.error)
+                            Spacer()
                         }
-                        .padding(AppSpacing.sm)
-                        .background(BrandColors.error.opacity(0.1))
-                        .cornerRadius(AppCornerRadius.small)
+                        .padding(AppSpacing.md)
+                        .background(BrandColors.error.opacity(0.12))
+                        .cornerRadius(AppCornerRadius.medium)
                         .padding(.horizontal, AppSpacing.md)
-                        .padding(.vertical, AppSpacing.sm)
+                        .padding(.bottom, AppSpacing.sm)
                     }
                     
-                    // Input area
-                    HStack(spacing: AppSpacing.sm) {
-                        TextField("Type your interests...", text: $viewModel.inputText, axis: .vertical)
-                            .font(AppTypography.body)
-                            .padding(.horizontal, AppSpacing.md)
-                            .padding(.vertical, AppSpacing.sm)
-                            .background(BrandColors.secondaryBackground)
-                            .cornerRadius(AppCornerRadius.large)
-                            .lineLimit(1...5)
-                            .onSubmit {
-                                if !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                    Task {
-                                        await viewModel.sendMessage()
-                                    }
-                                }
-                            }
-                        
-                        Button(action: {
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            impactFeedback.impactOccurred()
-                            
-                            Task {
-                                await viewModel.sendMessage()
-                            }
-                        }) {
-                            ZStack {
-                                Circle()
-                                    .fill(
-                                        viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
-                                        ? BrandColors.textTertiary
-                                        : BrandColors.primary
-                                    )
-                                    .frame(width: 36, height: 36)
-                                
-                                if viewModel.isLoading {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .scaleEffect(0.8)
-                                } else {
-                                    Image(systemName: "arrow.up")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundColor(.white)
-                                }
-                            }
-                        }
-                        .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
-                    }
-                    .padding(.horizontal, AppSpacing.md)
-                    .padding(.vertical, AppSpacing.sm)
-                    .background(.ultraThinMaterial)
-                    .overlay(
-                        Rectangle()
-                            .frame(height: 0.5)
-                            .foregroundColor(BrandColors.textQuaternary.opacity(0.3)),
-                        alignment: .top
-                    )
+                    inputArea
                 }
             }
             .navigationTitle("Your Daily preferences")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Close") {
@@ -182,13 +107,102 @@ struct OnboardingChatView: View {
                                 onCompleted?()
                                 dismiss()
                             } catch {
-                                // error is already surfaced via viewModel.errorMessage
+                                // surfaced via error message
                             }
                         }
                     }
                     .disabled(viewModel.messages.isEmpty || viewModel.isSaving)
                 }
             }
+        }
+    }
+}
+
+private extension OnboardingChatView {
+    var introCard: some View {
+        VStack(spacing: AppSpacing.sm) {
+            Image(systemName: "slider.horizontal.3")
+                .font(.system(size: 48, weight: .light))
+                .foregroundColor(BrandColors.primary)
+                .padding()
+                .background(BrandColors.primary.opacity(0.15))
+                .clipShape(Circle())
+            
+            Text("Personalize your Daily")
+                .font(AppTypography.title3)
+                .foregroundColor(BrandColors.textPrimary)
+            
+            Text("Tell us what topics you love, the tone you prefer, and what you’d rather skip.")
+                .font(AppTypography.subheadline)
+                .foregroundColor(BrandColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, AppSpacing.lg)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(AppSpacing.xl)
+        .glassCard()
+        .padding(.horizontal, AppSpacing.lg)
+    }
+    
+    var inputArea: some View {
+        HStack(spacing: AppSpacing.sm) {
+            TextField("Type your interests…", text: $viewModel.inputText, axis: .vertical)
+                .font(AppTypography.body)
+                .padding(.horizontal, AppSpacing.md)
+                .padding(.vertical, AppSpacing.sm)
+                .background(BrandColors.cardBackground.opacity(0.9))
+                .cornerRadius(AppCornerRadius.large)
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                        .stroke(isInputFocused ? BrandColors.primary.opacity(0.3) : Color.clear, lineWidth: 1)
+                )
+                .lineLimit(1...5)
+                .focused($isInputFocused)
+                .onSubmit {
+                    submit()
+                }
+            
+            Button(action: {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
+                submit()
+            }) {
+                ZStack {
+                    Circle()
+                        .fill(
+                            viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
+                            ? BrandColors.textTertiary
+                            : BrandColors.primary
+                        )
+                        .frame(width: 42, height: 42)
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
+        }
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.vertical, AppSpacing.sm)
+        .background(.ultraThinMaterial)
+        .overlay(
+            Rectangle()
+                .frame(height: 0.5)
+                .foregroundColor(BrandColors.textQuaternary.opacity(0.3)),
+            alignment: .top
+        )
+    }
+    
+    func submit() {
+        guard !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        Task {
+            await viewModel.sendMessage()
         }
     }
 }
