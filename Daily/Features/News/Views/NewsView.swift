@@ -63,10 +63,11 @@ private extension NewsView {
             Text(greetingTitle)
                 .font(AppTypography.title2)
                 .foregroundColor(.white)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             
             Text(heroSubtitle)
                 .font(AppTypography.bodyMedium)
-                .foregroundColor(.white.opacity(0.85))
+                .foregroundColor(.white.opacity(0.9))
             
             HStack(spacing: AppSpacing.sm) {
                 Button(action: {
@@ -88,20 +89,39 @@ private extension NewsView {
                             .fontWeight(.semibold)
                     }
                     .padding(.horizontal, AppSpacing.lg)
-                    .padding(.vertical, AppSpacing.sm)
-                    .background(.white.opacity(0.18))
+                    .padding(.vertical, AppSpacing.sm + 2)
+                    .background(
+                        ZStack {
+                            Capsule()
+                                .fill(.white.opacity(0.25))
+                            Capsule()
+                                .fill(.white.opacity(0.1))
+                                .blur(radius: 10)
+                        }
+                    )
                     .foregroundColor(.white)
-                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(.white.opacity(0.3), lineWidth: 1)
+                    )
+                    .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
                 }
                 .disabled(viewModel.isCurating)
+                .scaleEffect(viewModel.isCurating ? 0.98 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.isCurating)
                 
                 if viewModel.curatedArticles.count > 0 {
                     Text("\(viewModel.curatedArticles.count) stories ready")
                         .font(AppTypography.caption1)
-                        .foregroundColor(.white.opacity(0.8))
+                        .fontWeight(.medium)
+                        .foregroundColor(.white.opacity(0.9))
                         .padding(.horizontal, AppSpacing.md)
-                        .padding(.vertical, AppSpacing.xs)
-                        .background(.white.opacity(0.12))
+                        .padding(.vertical, AppSpacing.xs + 2)
+                        .background(.white.opacity(0.15))
+                        .overlay(
+                            Capsule()
+                                .stroke(.white.opacity(0.25), lineWidth: 1)
+                        )
                         .clipShape(Capsule())
                 }
                 
@@ -110,24 +130,64 @@ private extension NewsView {
         }
         .padding(AppSpacing.lg)
         .background(
-            LinearGradient(
-                colors: [BrandColors.primary, BrandColors.primaryDark],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            ZStack {
+                LinearGradient(
+                    colors: [BrandColors.primary, BrandColors.primaryDark],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                
+                // Add subtle texture overlay
+                RadialGradient(
+                    colors: [
+                        .white.opacity(0.1),
+                        .clear
+                    ],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 200
+                )
+            }
         )
         .cornerRadius(AppCornerRadius.xlarge)
-        .shadow(color: BrandColors.primary.opacity(0.25), radius: 30, x: 0, y: 20)
+        .overlay(
+            RoundedRectangle(cornerRadius: AppCornerRadius.xlarge)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            .white.opacity(0.2),
+                            .white.opacity(0.05)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: BrandColors.primary.opacity(0.3), radius: 30, x: 0, y: 20)
+        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
     
     var emptyStateCard: some View {
         VStack(spacing: AppSpacing.lg) {
-            Image(systemName: "rectangle.and.text.magnifyingglass")
-                .font(.system(size: 42, weight: .light))
-                .foregroundColor(BrandColors.primary)
-                .padding()
-                .background(BrandColors.primary.opacity(0.08))
-                .clipShape(Circle())
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                BrandColors.primary.opacity(0.12),
+                                BrandColors.primary.opacity(0.06)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 80, height: 80)
+                
+                Image(systemName: "rectangle.and.text.magnifyingglass")
+                    .font(.system(size: 36, weight: .light))
+                    .foregroundColor(BrandColors.primary)
+            }
             
             VStack(spacing: AppSpacing.sm) {
                 Text("No articles yet")
@@ -138,6 +198,7 @@ private extension NewsView {
                     .font(AppTypography.subheadline)
                     .foregroundColor(viewModel.errorMessage == nil ? BrandColors.textSecondary : BrandColors.error)
                     .multilineTextAlignment(.center)
+                    .lineSpacing(2)
             }
         }
         .frame(maxWidth: .infinity)
@@ -147,20 +208,37 @@ private extension NewsView {
     
     func errorBanner(_ message: String) -> some View {
         HStack(spacing: AppSpacing.sm) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(BrandColors.warning)
+            ZStack {
+                Circle()
+                    .fill(BrandColors.warning.opacity(0.15))
+                    .frame(width: 32, height: 32)
+                
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(BrandColors.warning)
+            }
+            
             Text(message)
                 .font(AppTypography.bodyMedium)
                 .foregroundColor(BrandColors.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
+            
             Spacer()
+            
             Button("Dismiss") {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback.impactOccurred()
                 withAnimation {
                     viewModel.errorMessage = nil
                 }
             }
             .font(AppTypography.labelSmall)
+            .fontWeight(.medium)
             .foregroundColor(BrandColors.warning)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.vertical, AppSpacing.xs)
+            .background(BrandColors.warning.opacity(0.1))
+            .clipShape(Capsule())
         }
         .padding(AppSpacing.md)
         .glassCard(cornerRadius: AppCornerRadius.large)
@@ -194,11 +272,24 @@ private extension NewsView {
                         }
                         Text(viewModel.isPreparingArticles ? "Preparing…" : "Preload")
                             .font(AppTypography.labelSmall)
+                            .fontWeight(.medium)
                     }
-                    .padding(.horizontal, AppSpacing.sm)
-                    .padding(.vertical, AppSpacing.xs)
-                    .background(BrandColors.primary.opacity(0.12))
+                    .padding(.horizontal, AppSpacing.md)
+                    .padding(.vertical, AppSpacing.xs + 2)
+                    .background(
+                        ZStack {
+                            Capsule()
+                                .fill(BrandColors.primary.opacity(0.12))
+                            Capsule()
+                                .fill(BrandColors.primary.opacity(0.06))
+                                .blur(radius: 8)
+                        }
+                    )
                     .foregroundColor(BrandColors.primary)
+                    .overlay(
+                        Capsule()
+                            .stroke(BrandColors.primary.opacity(0.2), lineWidth: 1)
+                    )
                     .clipShape(Capsule())
                 }
                 .disabled(viewModel.isPreparingArticles)
@@ -216,11 +307,21 @@ private extension NewsView {
                 }
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.sm)
-                .background(BrandColors.secondaryBackground.opacity(0.6))
-                .cornerRadius(AppCornerRadius.medium)
+                .background(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                            .fill(BrandColors.success.opacity(0.08))
+                        RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                            .fill(BrandColors.secondaryBackground.opacity(0.4))
+                    }
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                        .stroke(BrandColors.success.opacity(0.15), lineWidth: 1)
+                )
             }
             
-            VStack(spacing: AppSpacing.md) {
+            VStack(spacing: AppSpacing.md + 4) {
                 ForEach(viewModel.curatedArticles) { article in
                     NavigationLink(destination: ArticleDetailView(article: article)) {
                         ArticleCardView(article: article)
@@ -233,22 +334,40 @@ private extension NewsView {
     
     var curatingOverlay: some View {
         ZStack {
-            Color.black.opacity(0.35)
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
             
             VStack(spacing: AppSpacing.lg) {
-                ProgressView()
-                    .scaleEffect(1.2)
-                    .tint(BrandColors.primary)
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    BrandColors.primary.opacity(0.15),
+                                    BrandColors.primary.opacity(0.08)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 80, height: 80)
+                    
+                    ProgressView()
+                        .scaleEffect(1.3)
+                        .tint(BrandColors.primary)
+                }
                 
-                Text("Curating your briefing")
-                    .font(AppTypography.headline)
-                    .foregroundColor(BrandColors.textPrimary)
-                
-                Text("Feel free to close the app. We’ll notify you when the stories are ready.")
-                    .font(AppTypography.body)
-                    .foregroundColor(BrandColors.textSecondary)
-                    .multilineTextAlignment(.center)
+                VStack(spacing: AppSpacing.sm) {
+                    Text("Curating your briefing")
+                        .font(AppTypography.headline)
+                        .foregroundColor(BrandColors.textPrimary)
+                    
+                    Text("Feel free to close the app. We'll notify you when the stories are ready.")
+                        .font(AppTypography.body)
+                        .foregroundColor(BrandColors.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(2)
+                }
             }
             .padding(AppSpacing.xl)
             .glassCard(cornerRadius: AppCornerRadius.sheet)
@@ -304,14 +423,29 @@ private extension NewsView {
                     }
                     Text(viewModel.isCurating ? "Refreshing" : "Refresh")
                         .font(AppTypography.labelSmall)
+                        .fontWeight(.medium)
                 }
                 .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, AppSpacing.xs)
-                .background(BrandColors.cardBackground.opacity(0.9))
+                .padding(.vertical, AppSpacing.xs + 2)
+                .background(
+                    ZStack {
+                        Capsule()
+                            .fill(BrandColors.cardBackground.opacity(0.95))
+                        Capsule()
+                            .fill(.white.opacity(0.3))
+                            .blur(radius: 10)
+                    }
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+                )
                 .clipShape(Capsule())
-                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
             }
             .disabled(viewModel.isCurating)
+            .scaleEffect(viewModel.isCurating ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: viewModel.isCurating)
         }
     }
     
