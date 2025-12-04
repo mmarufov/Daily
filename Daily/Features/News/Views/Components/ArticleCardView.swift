@@ -18,7 +18,16 @@ struct ArticleCardView: View {
                     switch phase {
                     case .empty:
                         Rectangle()
-                            .fill(BrandColors.secondaryBackground)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        BrandColors.secondaryBackground,
+                                        BrandColors.tertiaryBackground
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(height: 200)
                             .overlay {
                                 ProgressView()
@@ -28,9 +37,28 @@ struct ArticleCardView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
+                            .overlay(
+                                LinearGradient(
+                                    colors: [
+                                        .clear,
+                                        .black.opacity(0.02)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
                     case .failure:
                         Rectangle()
-                            .fill(BrandColors.tertiaryBackground)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        BrandColors.tertiaryBackground,
+                                        BrandColors.secondaryBackground
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(height: 200)
                             .overlay {
                                 Image(systemName: "photo")
@@ -46,12 +74,21 @@ struct ArticleCardView: View {
             } else {
                 // Placeholder when no image - Apple style
                 Rectangle()
-                    .fill(BrandColors.tertiaryBackground)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                BrandColors.primary.opacity(0.08),
+                                BrandColors.primary.opacity(0.04)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                     .frame(height: 200)
                     .overlay {
                         Image(systemName: "newspaper")
                             .font(.system(size: 40, weight: .ultraLight))
-                            .foregroundColor(BrandColors.textTertiary)
+                            .foregroundColor(BrandColors.primary.opacity(0.4))
                     }
             }
             
@@ -61,13 +98,13 @@ struct ArticleCardView: View {
                 HStack(spacing: AppSpacing.xs) {
                     Text(article.displaySource)
                         .font(AppTypography.caption1)
-                        .fontWeight(.medium)
-                        .foregroundColor(BrandColors.textSecondary)
+                        .fontWeight(.semibold)
+                        .foregroundColor(BrandColors.primary)
                     
                     if !article.formattedDate.isEmpty {
-                        Text("·")
-                            .font(AppTypography.caption1)
-                            .foregroundColor(BrandColors.textTertiary)
+                        Circle()
+                            .fill(BrandColors.textTertiary)
+                            .frame(width: 3, height: 3)
                         
                         Text(article.formattedDate)
                             .font(AppTypography.caption1)
@@ -99,11 +136,24 @@ struct ArticleCardView: View {
         }
         .background(BrandColors.cardBackground)
         .cornerRadius(AppCornerRadius.card)
+        .overlay(
+            RoundedRectangle(cornerRadius: AppCornerRadius.card)
+                .stroke(
+                    Color.black.opacity(0.04),
+                    lineWidth: 0.5
+                )
+        )
         .shadow(
             color: AppShadows.card.color,
-            radius: AppShadows.card.radius,
+            radius: AppShadows.card.radius + 2,
             x: AppShadows.card.x,
-            y: AppShadows.card.y
+            y: AppShadows.card.y + 1
+        )
+        .shadow(
+            color: Color.black.opacity(0.03),
+            radius: 4,
+            x: 0,
+            y: 2
         )
     }
 }
