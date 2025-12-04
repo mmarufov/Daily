@@ -112,23 +112,38 @@ struct ChatView: View {
 
 private extension ChatView {
     var introCard: some View {
-        VStack(spacing: AppSpacing.sm) {
-            Image(systemName: "bubble.left.and.bubble.right.fill")
-                .font(.system(size: 48, weight: .light))
-                .foregroundColor(BrandColors.primary)
-                .padding()
-                .background(BrandColors.primary.opacity(0.15))
-                .clipShape(Circle())
+        VStack(spacing: AppSpacing.lg) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                BrandColors.primary.opacity(0.18),
+                                BrandColors.primary.opacity(0.10)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 90, height: 90)
+                
+                Image(systemName: "bubble.left.and.bubble.right.fill")
+                    .font(.system(size: 42, weight: .light))
+                    .foregroundColor(BrandColors.primary)
+            }
             
-            Text("Start a conversation")
-                .font(AppTypography.title3)
-                .foregroundColor(BrandColors.textPrimary)
-            
-            Text("Ask anything about the news, get concise explanations, or let Daily craft a briefing for you.")
-                .font(AppTypography.subheadline)
-                .foregroundColor(BrandColors.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, AppSpacing.lg)
+            VStack(spacing: AppSpacing.sm) {
+                Text("Start a conversation")
+                    .font(AppTypography.title3)
+                    .foregroundColor(BrandColors.textPrimary)
+                
+                Text("Ask anything about the news, get concise explanations, or let Daily craft a briefing for you.")
+                    .font(AppTypography.subheadline)
+                    .foregroundColor(BrandColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+                    .padding(.horizontal, AppSpacing.lg)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(AppSpacing.xl)
@@ -141,16 +156,31 @@ private extension ChatView {
             HStack(spacing: AppSpacing.sm) {
                 ForEach(quickPrompts, id: \.self) { prompt in
                     Button(action: {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
                         sendPrompt(prompt)
                     }) {
                         Text(prompt)
                             .font(AppTypography.caption1)
+                            .fontWeight(.medium)
                             .foregroundColor(BrandColors.textPrimary)
                             .padding(.horizontal, AppSpacing.md)
-                            .padding(.vertical, AppSpacing.sm)
-                            .background(BrandColors.cardBackground.opacity(0.8))
+                            .padding(.vertical, AppSpacing.sm + 2)
+                            .background(
+                                ZStack {
+                                    Capsule()
+                                        .fill(BrandColors.cardBackground.opacity(0.9))
+                                    Capsule()
+                                        .fill(.white.opacity(0.3))
+                                        .blur(radius: 10)
+                                }
+                            )
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+                            )
                             .clipShape(Capsule())
-                            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 4)
+                            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
                     }
                 }
             }
@@ -164,18 +194,31 @@ private extension ChatView {
                 TextField("Type a message…", text: $viewModel.inputText, axis: .vertical)
                     .font(AppTypography.body)
                     .padding(.horizontal, AppSpacing.md)
-                    .padding(.vertical, AppSpacing.sm)
-                    .background(BrandColors.cardBackground.opacity(0.9))
-                    .cornerRadius(AppCornerRadius.large)
+                    .padding(.vertical, AppSpacing.sm + 2)
+                    .background(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                                .fill(BrandColors.cardBackground.opacity(0.95))
+                            RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                                .fill(.white.opacity(0.3))
+                                .blur(radius: 10)
+                        }
+                    )
                     .overlay(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                            .stroke(isInputFocused ? BrandColors.primary.opacity(0.3) : Color.clear, lineWidth: 1)
+                            .stroke(
+                                isInputFocused 
+                                ? BrandColors.primary.opacity(0.4) 
+                                : Color.black.opacity(0.08), 
+                                lineWidth: isInputFocused ? 1.5 : 1
+                            )
                     )
                     .lineLimit(1...5)
                     .focused($isInputFocused)
                     .onSubmit {
                         submitMessage()
                     }
+                    .animation(.easeInOut(duration: 0.2), value: isInputFocused)
                 
                 Button(action: {
                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -185,16 +228,26 @@ private extension ChatView {
                     ZStack {
                         Circle()
                             .fill(
-                                viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
-                                ? BrandColors.textTertiary
-                                : BrandColors.primary
+                                LinearGradient(
+                                    colors: viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
+                                    ? [
+                                        BrandColors.textTertiary,
+                                        BrandColors.textTertiary.opacity(0.8)
+                                    ]
+                                    : [
+                                        BrandColors.primary,
+                                        BrandColors.primaryDark
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             )
-                            .frame(width: 42, height: 42)
+                            .frame(width: 44, height: 44)
                             .shadow(
                                 color: viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
                                 ? Color.clear
-                                : BrandColors.primary.opacity(0.25),
-                                radius: 8,
+                                : BrandColors.primary.opacity(0.3),
+                                radius: 10,
                                 x: 0,
                                 y: 4
                             )
@@ -210,6 +263,8 @@ private extension ChatView {
                     }
                 }
                 .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
+                .scaleEffect(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading ? 0.95 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: viewModel.inputText.isEmpty)
             }
         }
         .padding(.horizontal, AppSpacing.md)
@@ -218,7 +273,7 @@ private extension ChatView {
         .overlay(
             Rectangle()
                 .frame(height: 0.5)
-                .foregroundColor(BrandColors.textQuaternary.opacity(0.3)),
+                .foregroundColor(BrandColors.textQuaternary.opacity(0.2)),
             alignment: .top
         )
     }
@@ -248,21 +303,34 @@ struct ChatBubbleView: View {
                 Text(message.content)
                     .font(AppTypography.body)
                     .padding(.horizontal, AppSpacing.md)
-                    .padding(.vertical, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.sm + 2)
                     .background(bubbleBackground)
                     .foregroundColor(message.isUser ? .white : BrandColors.textPrimary)
                     .cornerRadius(AppCornerRadius.large)
                     .overlay(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                            .stroke(message.isUser ? Color.white.opacity(0.2) : Color.clear, lineWidth: 0.6)
+                            .stroke(
+                                message.isUser 
+                                ? Color.white.opacity(0.25) 
+                                : Color.black.opacity(0.06), 
+                                lineWidth: 0.5
+                            )
                     )
                     .shadow(
                         color: message.isUser
-                            ? BrandColors.primary.opacity(0.18)
-                            : Color.black.opacity(0.05),
-                        radius: 8,
+                            ? BrandColors.primary.opacity(0.2)
+                            : Color.black.opacity(0.06),
+                        radius: 10,
                         x: 0,
                         y: 4
+                    )
+                    .shadow(
+                        color: message.isUser
+                            ? Color.clear
+                            : Color.black.opacity(0.02),
+                        radius: 4,
+                        x: 0,
+                        y: 2
                     )
                 
                 Text(message.timestamp, style: .time)
@@ -286,7 +354,11 @@ struct ChatBubbleView: View {
                     endPoint: .bottomTrailing
                 )
             } else {
-                BrandColors.cardBackground.opacity(0.85)
+                ZStack {
+                    BrandColors.cardBackground.opacity(0.9)
+                    BrandColors.cardBackground.opacity(0.5)
+                        .blur(radius: 10)
+                }
             }
         }
     }
