@@ -104,11 +104,17 @@ private extension AuthView {
                         )
                     )
                     .frame(width: 120, height: 120)
-                    .shadow(color: BrandColors.primary.opacity(0.25), radius: 30, x: 0, y: 20)
+                    .overlay(
+                        Circle()
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: BrandColors.primary.opacity(0.3), radius: 30, x: 0, y: 20)
+                    .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
                 
                 Image(systemName: "newspaper.columns")
                     .font(.system(size: 46, weight: .medium))
                     .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
             
             Text("Daily")
@@ -116,10 +122,11 @@ private extension AuthView {
                 .foregroundColor(BrandColors.textPrimary)
                 .padding(.top, AppSpacing.sm)
             
-            Text("Stay effortlessly informed with a personalized briefing inspired by Apple’s calm, elegant interfaces.")
+            Text("Stay effortlessly informed with a personalized briefing inspired by Apple's calm, elegant interfaces.")
                 .font(AppTypography.subheadline)
                 .foregroundColor(BrandColors.textSecondary)
                 .multilineTextAlignment(.center)
+                .lineSpacing(2)
                 .padding(.horizontal, AppSpacing.xl)
         }
         .frame(maxWidth: .infinity)
@@ -178,6 +185,7 @@ private extension AuthView {
                         }
                         Text("Continue with Google")
                             .font(AppTypography.labelLarge)
+                            .fontWeight(.semibold)
                     }
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
@@ -190,24 +198,50 @@ private extension AuthView {
                         )
                     )
                     .cornerRadius(AppCornerRadius.button)
-                    .shadow(color: BrandColors.primary.opacity(0.2), radius: 12, x: 0, y: 8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppCornerRadius.button)
+                            .stroke(.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: BrandColors.primary.opacity(0.25), radius: 12, x: 0, y: 8)
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                 }
                 .disabled(isGoogleLoading || isAppleLoading)
                 .opacity(isGoogleLoading || isAppleLoading ? 0.6 : 1)
+                .scaleEffect(isGoogleLoading || isAppleLoading ? 0.98 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: isGoogleLoading || isAppleLoading)
             }
             
             if let errorMessage {
                 HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "exclamationmark.circle.fill")
-                        .foregroundColor(BrandColors.error)
+                    ZStack {
+                        Circle()
+                            .fill(BrandColors.error.opacity(0.15))
+                            .frame(width: 28, height: 28)
+                        
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(BrandColors.error)
+                    }
+                    
                     Text(errorMessage)
                         .font(AppTypography.bodySmall)
                         .foregroundColor(BrandColors.error)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(AppSpacing.md)
-                .background(BrandColors.error.opacity(0.08))
-                .cornerRadius(AppCornerRadius.medium)
+                .background(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                            .fill(BrandColors.error.opacity(0.1))
+                        RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                            .fill(BrandColors.error.opacity(0.05))
+                            .blur(radius: 8)
+                    }
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                        .stroke(BrandColors.error.opacity(0.2), lineWidth: 1)
+                )
             }
         }
         .padding(AppSpacing.lg)
