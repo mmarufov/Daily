@@ -253,6 +253,7 @@ struct ArticleDetailView: View {
                 .font(AppTypography.callout)
                 .foregroundColor(BrandColors.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(3)
                 .padding(.all, AppSpacing.md)
                 .glassCard(cornerRadius: AppCornerRadius.large)
         }
@@ -286,12 +287,24 @@ struct ArticleDetailView: View {
                         .font(.system(size: 16, weight: .medium))
                     Text("Open Original Article")
                         .font(AppTypography.labelMedium)
+                        .fontWeight(.semibold)
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.sm)
-                .background(BrandColors.primary)
+                .padding(.vertical, AppSpacing.sm + 2)
+                .background(
+                    LinearGradient(
+                        colors: [BrandColors.primary, BrandColors.primaryDark],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
                 .cornerRadius(AppCornerRadius.button)
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppCornerRadius.button)
+                        .stroke(.white.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: BrandColors.primary.opacity(0.3), radius: 12, x: 0, y: 6)
             }
             .padding(.top, AppSpacing.lg)
         }
