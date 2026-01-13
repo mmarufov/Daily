@@ -59,6 +59,7 @@ struct ArticleCardView: View {
                                     endPoint: .bottomTrailing
                                 )
                             )
+                            .frame(maxWidth: .infinity)
                             .frame(height: 200)
                             .overlay {
                                 Image(systemName: "photo")
@@ -69,6 +70,7 @@ struct ArticleCardView: View {
                         EmptyView()
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .frame(height: 200)
                 .clipped()
             } else {
@@ -84,6 +86,7 @@ struct ArticleCardView: View {
                             endPoint: .bottomTrailing
                         )
                     )
+                    .frame(maxWidth: .infinity)
                     .frame(height: 200)
                     .overlay {
                         Image(systemName: "newspaper")
@@ -134,6 +137,7 @@ struct ArticleCardView: View {
             }
             .padding(AppSpacing.md)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(BrandColors.cardBackground)
         .cornerRadius(AppCornerRadius.card)
         .overlay(
