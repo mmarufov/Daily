@@ -60,7 +60,7 @@ final class NewsViewModel: ObservableObject {
     
     @MainActor
     private func handleCuratedNewsReady() async {
-        let articles = backgroundFetcher.lastCuratedArticles
+        let articles = backgroundFetcher.lastCuratedArticles.map { $0.normalizedForDisplay() }
         curatedArticles = articles
         isCurating = false
         errorMessage = backgroundFetcher.lastErrorMessage
@@ -85,7 +85,7 @@ final class NewsViewModel: ObservableObject {
         }
         
         do {
-            let articles = try await backendService.fetchCuratedNews(accessToken: token)
+            let articles = try await backendService.fetchCuratedNews(accessToken: token).map { $0.normalizedForDisplay() }
             await MainActor.run {
                 self.curatedArticles = articles
                 if !articles.isEmpty {
