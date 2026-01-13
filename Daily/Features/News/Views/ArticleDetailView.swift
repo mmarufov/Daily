@@ -36,38 +36,31 @@ struct ArticleDetailView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 0) {
+                        VStack(spacing: AppSpacing.lg) {
                             if let full = fullArticle {
-                                HStack {
-                                    Spacer()
+                                headerImage
+                                    .frame(maxWidth: .infinity)
+                                
+                                VStack(alignment: .leading, spacing: AppSpacing.md) {
                                     Text(full.title)
                                         .font(AppTypography.articleTitle)
                                         .foregroundColor(BrandColors.textPrimary)
                                         .multilineTextAlignment(.leading)
                                         .fixedSize(horizontal: false, vertical: true)
-                                        .frame(maxWidth: 700)
-                                    Spacer()
+                                    
+                                    metaSection(for: full)
+                                    summarySection(for: full)
+                                    contentSection(for: full)
+                                    externalLink(for: full)
                                 }
-                                .padding(.horizontal, AppSpacing.xxl)
-                                .padding(.top, AppSpacing.sm)
-                                
-                                headerImage
-                                
-                                HStack {
-                                    Spacer()
-                                    VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                        metaSection(for: full)
-                                        summarySection(for: full)
-                                        contentSection(for: full)
-                                        externalLink(for: full)
-                                    }
-                                    .frame(maxWidth: 700)
-                                    Spacer()
-                                }
-                                .padding(.horizontal, AppSpacing.xxl)
+                                .frame(maxWidth: 700, alignment: .leading)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.horizontal, AppSpacing.lg)
                                 .padding(.bottom, AppSpacing.xl)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, AppSpacing.md)
                     }
                 }
             }
@@ -152,7 +145,7 @@ struct ArticleDetailView: View {
         if let existingContent = article.content,
            existingContent.count > 500 {
             // Article already has full content, use it
-            fullArticle = article
+            fullArticle = article.normalizedForDisplay()
             return
         }
         
@@ -177,7 +170,7 @@ struct ArticleDetailView: View {
                 publishedAt: fetched.publishedAt ?? article.publishedAt,
                 category: fetched.category ?? article.category,
                 url: fetched.url ?? article.url
-            )
+            ).normalizedForDisplay()
             isLoadingFullContent = false
         } catch {
             loadErrorMessage = error.localizedDescription
@@ -189,24 +182,13 @@ struct ArticleDetailView: View {
     /// - Removes the trailing "[+1234 chars]" marker
     /// - Normalizes whitespace so it wraps nicely in the UI
     private func cleanedContent(from content: String) -> String {
-        var text = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        // Remove the typical NewsAPI suffix like: " [+2095 chars]"
-        if let range = text.range(of: #"\s*\[\+\d+\s+chars\]"#, options: .regularExpression) {
-            text.removeSubrange(range)
-        }
-        
-        return text
+        ArticleTextNormalizer.normalizeBody(content)
     }
     
     private func contentParagraphs(from content: String) -> [String] {
         let normalized = cleanedContent(from: content)
-        
-        let rawParagraphs = normalized
-            .replacingOccurrences(of: "\\n", with: "\n")
-            .components(separatedBy: CharacterSet.newlines.union(.init(charactersIn: "\n\n")))
-        
-        return rawParagraphs
+        return normalized
+            .components(separatedBy: "\n\n")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
@@ -265,12 +247,7 @@ struct ArticleDetailView: View {
            !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
                 ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
-                    Text(paragraph)
-                        .font(AppTypography.articleBody)
-                        .foregroundColor(BrandColors.textPrimary)
-                        .multilineTextAlignment(.leading)
-                        .lineSpacing(4)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ArticleBodyTextView(text: paragraph, lineSpacing: 4)
                 }
             }
             .padding(.top, AppSpacing.md)
