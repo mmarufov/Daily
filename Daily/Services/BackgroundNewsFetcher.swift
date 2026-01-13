@@ -133,7 +133,7 @@ final class BackgroundNewsFetcher: NSObject, ObservableObject {
         do {
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
-            let articles = try decoder.decode([NewsArticle].self, from: data)
+            let articles = try decoder.decode([NewsArticle].self, from: data).map { $0.normalizedForDisplay() }
             
             // Persist to UserDefaults for retrieval after background fetch.
             let encoded = try JSONEncoder().encode(articles)
