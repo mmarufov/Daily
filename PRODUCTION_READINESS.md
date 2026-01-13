@@ -6,7 +6,7 @@ This document outlines all the changes needed to make the Daily app production-r
 
 ### Backend Improvements
 
-#### 1. Structured Logging
+#### 1. Structured Loggin
 **Current State:** Using `print()` statements throughout the codebase  
 **Action Required:**
 - Replace all `print()` statements with proper logging using Python's `logging` module or `structlog`
