@@ -19,7 +19,7 @@ struct NewsView: View {
                 AppleBackgroundView()
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: AppSpacing.xl) {
+                    LazyVStack(alignment: .leading, spacing: AppSpacing.xl) {
                         heroHeader
                         
                         if viewModel.curatedArticles.isEmpty && !viewModel.isCurating {
@@ -32,6 +32,7 @@ struct NewsView: View {
                             curatedSection
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.lg)
                 }
@@ -164,6 +165,7 @@ private extension NewsView {
                     lineWidth: 1
                 )
         )
+        .frame(maxWidth: .infinity, alignment: .leading)
         .shadow(color: BrandColors.primary.opacity(0.3), radius: 30, x: 0, y: 20)
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
     }
@@ -330,6 +332,7 @@ private extension NewsView {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     var curatingOverlay: some View {
