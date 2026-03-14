@@ -63,7 +63,20 @@ VENV_DIR="$PROJECT_ROOT/backend/venv"
 
 if [ ! -d "$VENV_DIR" ]; then
   echo "==> Creating Python virtual environment..."
-  python3 -m venv "$VENV_DIR"
+  # psycopg 3.2+ requires Python 3.10+; prefer explicit versioned binary if available
+  PYTHON_BIN=""
+  for candidate in python3.13 python3.12 python3.11 python3.10; do
+    if command -v "$candidate" &>/dev/null; then
+      PYTHON_BIN="$candidate"
+      break
+    fi
+  done
+  if [ -z "$PYTHON_BIN" ]; then
+    echo "    ERROR: Python 3.10+ is required but not found"
+    exit 1
+  fi
+  echo "    Using $PYTHON_BIN ($(${PYTHON_BIN} --version))"
+  "$PYTHON_BIN" -m venv "$VENV_DIR"
 fi
 
 echo "==> Installing Python dependencies..."
