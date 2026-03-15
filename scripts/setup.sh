@@ -56,6 +56,7 @@ copy_file() {
 }
 
 copy_file "backend/.env" "backend/.env"
+copy_file "Daily/GoogleService-Info.plist" "Daily/GoogleService-Info.plist"
 
 # ── 2. Python venv + dependencies ─────────────────────────────────────────────
 
@@ -63,17 +64,26 @@ VENV_DIR="$PROJECT_ROOT/backend/venv"
 
 if [ ! -d "$VENV_DIR" ]; then
   echo "==> Creating Python virtual environment..."
-  # psycopg 3.2+ requires Python 3.10+; prefer explicit versioned binary if available
+  # psycopg 3.2+ requires Python 3.10+; search PATH and common Homebrew locations
   PYTHON_BIN=""
-  for candidate in python3.13 python3.12 python3.11 python3.10; do
-    if command -v "$candidate" &>/dev/null; then
+  for candidate in \
+    python3.13 python3.12 python3.11 python3.10 \
+    /opt/homebrew/bin/python3.13 /opt/homebrew/bin/python3.12 \
+    /opt/homebrew/bin/python3.11 /opt/homebrew/bin/python3.10 \
+    /usr/local/bin/python3.13 /usr/local/bin/python3.12 \
+    /usr/local/bin/python3.11 /usr/local/bin/python3.10; do
+    if command -v "$candidate" &>/dev/null || [ -x "$candidate" ]; then
       PYTHON_BIN="$candidate"
       break
     fi
   done
   if [ -z "$PYTHON_BIN" ]; then
-    echo "    ERROR: Python 3.10+ is required but not found"
-    exit 1
+    echo "    Python 3.10+ not found — installing via Homebrew..."
+    BREW="/opt/homebrew/bin/brew"
+    [ -x "$BREW" ] || BREW="/usr/local/bin/brew"
+    "$BREW" install python@3.12
+    PYTHON_BIN="/opt/homebrew/bin/python3.12"
+    [ -x "$PYTHON_BIN" ] || PYTHON_BIN="/usr/local/bin/python3.12"
   fi
   echo "    Using $PYTHON_BIN ($(${PYTHON_BIN} --version))"
   "$PYTHON_BIN" -m venv "$VENV_DIR"
@@ -112,6 +122,19 @@ if [ ${#MISSING[@]} -gt 0 ]; then
   echo "    Backend will not work until these are set."
 else
   echo "    All required backend keys present"
+fi
+
+# ── 5. Check iOS GoogleService-Info.plist ─────────────────────────────────────
+
+if [ -f "Daily/GoogleService-Info.plist" ]; then
+  if grep -qE "YOUR_|your-|example\.com" "Daily/GoogleService-Info.plist" 2>/dev/null; then
+    echo "    WARNING: Daily/GoogleService-Info.plist still contains placeholder values"
+    echo "      Download the real file from Firebase Console and replace it"
+  else
+    echo "    Daily/GoogleService-Info.plist looks configured"
+  fi
+else
+  echo "    WARNING: Daily/GoogleService-Info.plist missing — iOS Firebase will not work"
 fi
 
 echo ""
