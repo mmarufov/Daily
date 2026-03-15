@@ -12,7 +12,7 @@ CONDUCTOR_REPO_ROOT="${CONDUCTOR_ROOT:+$CONDUCTOR_ROOT/repos/$REPO_NAME}"
 
 cd "$PROJECT_ROOT"
 
-echo "==> Setting up Daily workspace in $PROJECT_ROOT"
+echo "==> Setting up Daily/houston workspace in $PROJECT_ROOT"
 
 # ── 1. Copy env / config files ────────────────────────────────────────────────
 
@@ -56,8 +56,9 @@ copy_file() {
 }
 
 copy_file "backend/.env" "backend/.env"
+copy_file "Daily/GoogleService-Info.plist" "Daily/GoogleService-Info.plist"
 
-# ── 2. Python venv + dependencies ─────────────────────────────────────────────
+# ── 2. Python venv + dependencies ────────────────────────────────────────────
 
 VENV_DIR="$PROJECT_ROOT/backend/venv"
 
@@ -85,7 +86,7 @@ source "$VENV_DIR/bin/activate"
 pip install --quiet --upgrade pip
 pip install --quiet -r backend/requirements.txt
 
-# ── 3. Create .context directory ──────────────────────────────────────────────
+# ── 3. Create .context directory ─────────────────────────────────────────────
 
 if [ ! -d ".context" ]; then
   mkdir -p .context
@@ -93,7 +94,7 @@ if [ ! -d ".context" ]; then
   echo "==> Created .context/ directory"
 fi
 
-# ── 4. Check required env vars in backend/.env ────────────────────────────────
+# ── 4. Check required env vars in backend/.env ───────────────────────────────
 
 echo "==> Checking backend env vars..."
 MISSING=()
@@ -112,6 +113,20 @@ if [ ${#MISSING[@]} -gt 0 ]; then
   echo "    Backend will not work until these are set."
 else
   echo "    All required backend keys present"
+fi
+
+# ── 5. Check iOS Firebase config ─────────────────────────────────────────────
+
+if [ -f "Daily/GoogleService-Info.plist" ]; then
+  if grep -qE "YOUR_|IS_ADS_ENABLED|example\.com" "Daily/GoogleService-Info.plist" 2>/dev/null; then
+    echo "    WARNING: Daily/GoogleService-Info.plist still contains placeholder values"
+    echo "      Download the real file from Firebase Console and place it at Daily/GoogleService-Info.plist"
+  else
+    echo "    Daily/GoogleService-Info.plist looks configured"
+  fi
+else
+  echo "    WARNING: Daily/GoogleService-Info.plist missing — Firebase will not work"
+  echo "      Download from Firebase Console: Project Settings → iOS app → GoogleService-Info.plist"
 fi
 
 echo ""

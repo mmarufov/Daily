@@ -3,6 +3,6 @@
   "scripts": {
     "setup": "bash scripts/setup.sh",
     "run": "cd backend && source venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload",
-    "archive": "rm -rf backend/venv backend/__pycache__ backend/app/__pycache__"
+    "archive": "rm -rf backend/venv $(find backend -type d -name __pycache__ | tr '\\n' ' ')"
   }
 }
