@@ -12,7 +12,7 @@ import UIKit
 
 struct ArticleBodyTextView: UIViewRepresentable {
     let text: String
-    var lineSpacing: CGFloat = 4
+    var lineSpacing: CGFloat = 6
 
     func makeUIView(context: Context) -> UITextView {
         let view = UITextView()

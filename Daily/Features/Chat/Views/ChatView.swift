@@ -20,8 +20,8 @@ struct ChatView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppleBackgroundView()
-                
+                Color(.systemBackground).ignoresSafeArea()
+
                 VStack(spacing: 0) {
                     ScrollViewReader { proxy in
                         ScrollView(.vertical, showsIndicators: false) {
@@ -82,9 +82,6 @@ struct ChatView: View {
             }
             .navigationTitle("AI Briefing")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if !viewModel.messages.isEmpty {
@@ -115,28 +112,19 @@ private extension ChatView {
         VStack(spacing: AppSpacing.lg) {
             ZStack {
                 Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                BrandColors.primary.opacity(0.18),
-                                BrandColors.primary.opacity(0.10)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 90, height: 90)
-                
+                    .fill(BrandColors.primary.opacity(0.08))
+                    .frame(width: 80, height: 80)
+
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(.system(size: 42, weight: .light))
+                    .font(.system(size: 36, weight: .light))
                     .foregroundColor(BrandColors.primary)
             }
-            
+
             VStack(spacing: AppSpacing.sm) {
                 Text("Start a conversation")
                     .font(AppTypography.title3)
                     .foregroundColor(BrandColors.textPrimary)
-                
+
                 Text("Ask anything about the news, get concise explanations, or let Daily craft a briefing for you.")
                     .font(AppTypography.subheadline)
                     .foregroundColor(BrandColors.textSecondary)
@@ -147,7 +135,6 @@ private extension ChatView {
         }
         .frame(maxWidth: .infinity)
         .padding(AppSpacing.xl)
-        .glassCard()
         .padding(.horizontal, AppSpacing.lg)
     }
     
@@ -167,20 +154,14 @@ private extension ChatView {
                             .padding(.horizontal, AppSpacing.md)
                             .padding(.vertical, AppSpacing.sm + 2)
                             .background(
-                                ZStack {
-                                    Capsule()
-                                        .fill(BrandColors.cardBackground.opacity(0.9))
-                                    Capsule()
-                                        .fill(.white.opacity(0.3))
-                                        .blur(radius: 10)
-                                }
+                                Capsule()
+                                    .fill(Color(.secondarySystemGroupedBackground))
                             )
                             .overlay(
                                 Capsule()
-                                    .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
+                                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
                             )
                             .clipShape(Capsule())
-                            .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
                     }
                 }
             }
@@ -196,13 +177,8 @@ private extension ChatView {
                     .padding(.horizontal, AppSpacing.md)
                     .padding(.vertical, AppSpacing.sm + 2)
                     .background(
-                        ZStack {
-                            RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                                .fill(BrandColors.cardBackground.opacity(0.95))
-                            RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                                .fill(.white.opacity(0.3))
-                                .blur(radius: 10)
-                        }
+                        RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                            .fill(Color(.secondarySystemGroupedBackground))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large)
@@ -354,11 +330,7 @@ struct ChatBubbleView: View {
                     endPoint: .bottomTrailing
                 )
             } else {
-                ZStack {
-                    BrandColors.cardBackground.opacity(0.9)
-                    BrandColors.cardBackground.opacity(0.5)
-                        .blur(radius: 10)
-                }
+                Color(.secondarySystemGroupedBackground)
             }
         }
     }

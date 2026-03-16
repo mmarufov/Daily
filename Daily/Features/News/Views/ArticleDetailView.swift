@@ -2,163 +2,195 @@
 //  ArticleDetailView.swift
 //  Daily
 //
-//  Created by AI on 11/13/25.
+//  Created by Muhammadjon on 3/11/25.
 //
 
 import SwiftUI
 
 struct ArticleDetailView: View {
     let article: NewsArticle
-    
+
     @State private var fullArticle: NewsArticle?
     @State private var isLoadingFullContent = false
     @State private var loadErrorMessage: String?
-    
+
     var body: some View {
-        ZStack {
-            AppleBackgroundView()
-            
-            Group {
-                if isLoadingFullContent && fullArticle == nil {
-                    VStack {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let error = loadErrorMessage, fullArticle == nil {
-                    VStack {
-                        Text(error)
-                            .font(AppTypography.footnote)
-                            .foregroundColor(BrandColors.error)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, AppSpacing.xxl)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ScrollView {
-                        VStack(spacing: AppSpacing.lg) {
-                            if let full = fullArticle {
-                                headerImage
-                                    .frame(maxWidth: .infinity)
-                                
-                                VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                    Text(full.title)
-                                        .font(AppTypography.articleTitle)
-                                        .foregroundColor(BrandColors.textPrimary)
-                                        .multilineTextAlignment(.leading)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    
-                                    metaSection(for: full)
-                                    summarySection(for: full)
-                                    contentSection(for: full)
-                                    externalLink(for: full)
+        Group {
+            if isLoadingFullContent && fullArticle == nil {
+                VStack(spacing: AppSpacing.md) {
+                    ProgressView()
+                        .scaleEffect(1.1)
+                    Text("Loading article...")
+                        .font(AppTypography.subheadline)
+                        .foregroundColor(BrandColors.textSecondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let error = loadErrorMessage, fullArticle == nil {
+                VStack(spacing: AppSpacing.md) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 28, weight: .light))
+                        .foregroundColor(BrandColors.textTertiary)
+                    Text(error)
+                        .font(AppTypography.subheadline)
+                        .foregroundColor(BrandColors.error)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, AppSpacing.xxl)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        if let full = fullArticle {
+                            headerImage(for: full)
+
+                            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                                // Source + category
+                                HStack(spacing: AppSpacing.sm) {
+                                    Text(full.displaySource.uppercased())
+                                        .font(AppTypography.sourceLabel)
+                                        .tracking(0.8)
+                                        .foregroundColor(BrandColors.primary)
+
+                                    if let category = full.category, !category.isEmpty {
+                                        Circle()
+                                            .fill(BrandColors.textQuaternary)
+                                            .frame(width: 3, height: 3)
+                                        Text(category.uppercased())
+                                            .font(.system(size: 11, weight: .medium))
+                                            .tracking(0.6)
+                                            .foregroundColor(BrandColors.textTertiary)
+                                    }
                                 }
-                                .frame(maxWidth: 700, alignment: .leading)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.horizontal, AppSpacing.lg)
-                                .padding(.bottom, AppSpacing.xl)
+
+                                // Title
+                                Text(full.title)
+                                    .font(AppTypography.articleTitle)
+                                    .foregroundColor(BrandColors.textPrimary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .lineSpacing(4)
+
+                                // Author + Date
+                                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                                    if let author = full.author, !author.isEmpty {
+                                        Text("By \(author)")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(BrandColors.textSecondary)
+                                    }
+                                    if let publishedAt = full.publishedAt {
+                                        Text(formattedFullDate(publishedAt))
+                                            .font(AppTypography.caption1)
+                                            .foregroundColor(BrandColors.textTertiary)
+                                    }
+                                }
+
+                                // Divider
+                                HairlineDivider()
+
+                                // Summary / lede
+                                if let summary = full.summary,
+                                   !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                    Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
+                                        .font(.system(size: 17, weight: .medium, design: .serif))
+                                        .foregroundColor(BrandColors.textPrimary)
+                                        .lineSpacing(4)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
+                                // Content
+                                contentSection(for: full)
+
+                                // External link
+                                externalLink(for: full)
                             }
+                            .frame(maxWidth: 700, alignment: .leading)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.top, AppSpacing.lg)
+                            .padding(.bottom, AppSpacing.xxl)
                         }
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, AppSpacing.md)
                     }
                 }
             }
         }
+        .background(Color(.systemBackground))
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
         .task {
             await loadFullArticleIfNeeded()
         }
     }
-    
-    // MARK: - Subviews
-    
+
+    // MARK: - Header Image
+
     @ViewBuilder
-    private var headerImage: some View {
-        Group {
-            if let imageURL = fullArticle?.imageURL ?? article.imageURL,
-               let url = URL(string: imageURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        Rectangle()
-                            .fill(AppGradients.subtle)
-                            .frame(height: 260)
-                            .overlay {
-                                ProgressView()
-                                    .tint(.white)
-                            }
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity)
-                    case .failure:
-                        placeholderHeader
-                    @unknown default:
-                        placeholderHeader
-                    }
+    private func headerImage(for article: NewsArticle) -> some View {
+        if let imageURL = fullArticle?.imageURL ?? self.article.imageURL,
+           let url = URL(string: imageURL) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 260)
+                        .clipped()
+                default:
+                    Rectangle()
+                        .fill(Color(.tertiarySystemFill))
+                        .frame(height: 200)
                 }
-                .frame(height: 260)
-                .clipped()
-            } else {
-                placeholderHeader
             }
         }
-        .overlay(
-            LinearGradient(
-                colors: [Color.black.opacity(0.35), Color.clear],
-                startPoint: .bottom,
-                endPoint: .top
-            )
-            .frame(height: 120),
-            alignment: .bottom
-        )
     }
-    
-    private var placeholderHeader: some View {
-        Rectangle()
-            .fill(AppGradients.subtle)
-            .frame(height: 260)
-            .overlay {
-                Image(systemName: "newspaper.fill")
-                    .font(.system(size: 54, weight: .bold))
-                    .foregroundColor(.white.opacity(0.9))
+
+    // MARK: - Content
+
+    @ViewBuilder
+    private func contentSection(for article: NewsArticle) -> some View {
+        if let content = article.content,
+           !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
+                    ArticleBodyTextView(text: paragraph, lineSpacing: 6)
+                }
             }
+        }
     }
-    
+
+    @ViewBuilder
+    private func externalLink(for article: NewsArticle) -> some View {
+        if let urlString = article.url,
+           let url = URL(string: urlString) {
+            Link(destination: url) {
+                HStack(spacing: AppSpacing.xs) {
+                    Text("Read full article at \(article.displaySource)")
+                        .font(.system(size: 15, weight: .medium))
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .foregroundColor(BrandColors.primary)
+            }
+            .padding(.top, AppSpacing.md)
+        }
+    }
+
     // MARK: - Helpers
-    
+
     private func loadFullArticleIfNeeded() async {
-        // Only attempt if we have a source URL and haven't loaded yet
-        guard !isLoadingFullContent,
-              fullArticle == nil,
-              let urlString = article.url,
-              !urlString.isEmpty else {
-            return
-        }
-        
-        // Check if article already has full content (more than 500 chars)
-        // If so, use it directly without fetching
-        if let existingContent = article.content,
-           existingContent.count > 500 {
-            // Article already has full content, use it
+        guard !isLoadingFullContent, fullArticle == nil else { return }
+
+        if let existingContent = article.content, existingContent.count > 500 {
             fullArticle = article.normalizedForDisplay()
             return
         }
-        
-        guard let token = AuthService.shared.getAccessToken() else {
-            return
-        }
-        
+
+        guard let token = AuthService.shared.getAccessToken() else { return }
+
         isLoadingFullContent = true
         loadErrorMessage = nil
-        
+
         do {
-            let fetched = try await BackendService.shared.fetchFullArticle(from: urlString, accessToken: token)
-            // Merge: prefer fetched fields but keep original id/url/category if needed
+            let fetched = try await BackendService.shared.fetchFeedArticle(id: article.id, accessToken: token)
             fullArticle = NewsArticle(
                 id: fetched.id,
                 title: fetched.title,
@@ -177,114 +209,19 @@ struct ArticleDetailView: View {
             isLoadingFullContent = false
         }
     }
-    
-    /// Clean up raw content coming from NewsAPI:
-    /// - Removes the trailing "[+1234 chars]" marker
-    /// - Normalizes whitespace so it wraps nicely in the UI
-    private func cleanedContent(from content: String) -> String {
-        ArticleTextNormalizer.normalizeBody(content)
-    }
-    
+
     private func contentParagraphs(from content: String) -> [String] {
-        let normalized = cleanedContent(from: content)
-        return normalized
+        ArticleTextNormalizer.normalizeBody(content)
             .components(separatedBy: "\n\n")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
-    
-    @ViewBuilder
-    private func metaSection(for article: NewsArticle) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            HStack(spacing: AppSpacing.xs) {
-                Text(article.displaySource.uppercased())
-                    .font(AppTypography.caption2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(BrandColors.primary)
-                
-                if let category = article.category, !category.isEmpty {
-                    Text("•")
-                        .font(AppTypography.caption2)
-                        .foregroundColor(BrandColors.textTertiary)
-                    
-                    Text(category)
-                        .font(AppTypography.caption2)
-                        .foregroundColor(BrandColors.textSecondary)
-                }
-            }
-            
-            if !article.formattedDate.isEmpty {
-                Text(article.formattedDate)
-                    .font(AppTypography.caption1)
-                    .foregroundColor(BrandColors.textSecondary)
-            }
-            
-            if let author = article.author, !author.isEmpty {
-                Text("By \(author)")
-                    .font(AppTypography.subheadline)
-                    .foregroundColor(BrandColors.textSecondary)
-                    .padding(.top, AppSpacing.xs)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func summarySection(for article: NewsArticle) -> some View {
-        if let summary = article.summary, !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
-                .font(AppTypography.callout)
-                .foregroundColor(BrandColors.textPrimary)
-                .fixedSize(horizontal: false, vertical: true)
-                .lineSpacing(3)
-                .padding(.all, AppSpacing.md)
-                .glassCard(cornerRadius: AppCornerRadius.large)
-        }
-    }
-    
-    @ViewBuilder
-    private func contentSection(for article: NewsArticle) -> some View {
-        if let content = article.content,
-           !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            VStack(alignment: .leading, spacing: AppSpacing.md) {
-                ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
-                    ArticleBodyTextView(text: paragraph, lineSpacing: 4)
-                }
-            }
-            .padding(.top, AppSpacing.md)
-        }
-    }
-    
-    @ViewBuilder
-    private func externalLink(for article: NewsArticle) -> some View {
-        if let urlString = article.url,
-           let url = URL(string: urlString) {
-            Link(destination: url) {
-                HStack(spacing: AppSpacing.sm) {
-                    Image(systemName: "safari.fill")
-                        .font(.system(size: 16, weight: .medium))
-                    Text("Open Original Article")
-                        .font(AppTypography.labelMedium)
-                        .fontWeight(.semibold)
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.vertical, AppSpacing.sm + 2)
-                .background(
-                    LinearGradient(
-                        colors: [BrandColors.primary, BrandColors.primaryDark],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .cornerRadius(AppCornerRadius.button)
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppCornerRadius.button)
-                        .stroke(.white.opacity(0.2), lineWidth: 1)
-                )
-                .shadow(color: BrandColors.primary.opacity(0.3), radius: 12, x: 0, y: 6)
-            }
-            .padding(.top, AppSpacing.lg)
-        }
+
+    private func formattedFullDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        return formatter.string(from: date)
     }
 }
 
@@ -294,8 +231,8 @@ struct ArticleDetailView: View {
             article: NewsArticle(
                 id: "1",
                 title: "Sample Article Title for Detail View",
-                summary: "This is a concise summary of the article to give the reader context before diving into the full story.",
-                content: "This is the first paragraph of the article body, written in a human-friendly, readable way.\n\nThis is another paragraph that continues the story with more details and background information.",
+                summary: "This is a concise summary of the article to give the reader context.",
+                content: "This is the first paragraph.\n\nThis is another paragraph with more details.",
                 author: "John Doe",
                 source: "Tech News",
                 imageURL: nil,
@@ -306,5 +243,3 @@ struct ArticleDetailView: View {
         )
     }
 }
-
-

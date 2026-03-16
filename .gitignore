@@ -12,6 +12,14 @@ xcuserdata/
 *.env
 !.env.example
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+*.egg-info/
+
 # Temporary files
 *.tmp
 *.temp
