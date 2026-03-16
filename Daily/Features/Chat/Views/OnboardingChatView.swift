@@ -23,8 +23,8 @@ struct OnboardingChatView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppleBackgroundView()
-                
+                Color(.systemBackground).ignoresSafeArea()
+
                 VStack(spacing: 0) {
                     ScrollViewReader { proxy in
                         ScrollView(.vertical, showsIndicators: false) {
@@ -84,9 +84,6 @@ struct OnboardingChatView: View {
             }
             .navigationTitle("Your Daily preferences")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Close") {
@@ -122,16 +119,16 @@ private extension OnboardingChatView {
     var introCard: some View {
         VStack(spacing: AppSpacing.sm) {
             Image(systemName: "slider.horizontal.3")
-                .font(.system(size: 48, weight: .light))
+                .font(.system(size: 40, weight: .light))
                 .foregroundColor(BrandColors.primary)
                 .padding()
-                .background(BrandColors.primary.opacity(0.15))
+                .background(BrandColors.primary.opacity(0.08))
                 .clipShape(Circle())
-            
+
             Text("Personalize your Daily")
                 .font(AppTypography.title3)
                 .foregroundColor(BrandColors.textPrimary)
-            
+
             Text("Tell us what topics you love, the tone you prefer, and what you’d rather skip.")
                 .font(AppTypography.subheadline)
                 .foregroundColor(BrandColors.textSecondary)
@@ -140,7 +137,6 @@ private extension OnboardingChatView {
         }
         .frame(maxWidth: .infinity)
         .padding(AppSpacing.xl)
-        .glassCard()
         .padding(.horizontal, AppSpacing.lg)
     }
     
