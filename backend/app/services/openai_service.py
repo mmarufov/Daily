@@ -156,6 +156,70 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         
         return "\n\n".join(parts) if parts else "No article content available"
 
+    async def score_articles_batch(
+        self,
+        articles: List[Dict],
+        user_profile: str,
+    ) -> List[float]:
+        """
+        Score up to 50 articles for relevance to a user profile in a SINGLE API call.
+        Uses gpt-4.1-nano (cheapest model, sufficient for classification).
+
+        Returns a list of float scores (0.0-1.0), one per article.
+        """
+        if not articles:
+            return []
+
+        # Build numbered article list (title + summary only to save tokens)
+        article_lines = []
+        for i, article in enumerate(articles):
+            title = article.get("title", "Untitled")
+            summary = (article.get("summary") or article.get("description") or "")[:200]
+            source = article.get("source") or article.get("source_name") or ""
+            article_lines.append(f"{i}. [{source}] {title}\n   {summary}")
+
+        articles_text = "\n\n".join(article_lines)
+
+        system_prompt = (
+            "You are a news relevance scorer. Given a user profile and a list of articles, "
+            "score each article from 0.0 (not relevant) to 1.0 (highly relevant).\n\n"
+            "Return ONLY a JSON object with a single key \"scores\" containing an array of numbers, "
+            "one per article in the same order. Example: {\"scores\": [0.9, 0.3, 0.7, ...]}\n\n"
+            "Be strict: only give high scores to articles that clearly match the user's interests."
+        )
+
+        user_prompt = (
+            f"User Profile:\n{user_profile}\n\n"
+            f"Articles to score:\n{articles_text}\n\n"
+            f"Return JSON with \"scores\" array ({len(articles)} scores, one per article)."
+        )
+
+        try:
+            response = await asyncio.to_thread(
+                self.client.chat.completions.create,
+                model="gpt-4.1-nano",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.2,
+            )
+
+            result = json.loads(response.choices[0].message.content)
+            scores = result.get("scores", [])
+
+            # Ensure we have the right number of scores
+            if len(scores) < len(articles):
+                scores.extend([0.5] * (len(articles) - len(scores)))
+
+            return [float(s) for s in scores[:len(articles)]]
+
+        except Exception as e:
+            print(f"Error in batch scoring: {e}")
+            # Fallback: return neutral scores
+            return [0.5] * len(articles)
+
     async def extract_article_with_tools(self, article_url: str) -> Dict:
         """
         Use OpenAI tool calling to fetch a news article page and extract:
