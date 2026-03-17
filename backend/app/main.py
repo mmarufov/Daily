@@ -480,7 +480,8 @@ async def me(Authorization: str | None = Header(default=None), conn=Depends(get_
 async def chat(payload: dict, Authorization: str | None = Header(default=None)):
     """
     General chat with AI - requires authentication.
-    Kept as a simple, non-onboarding chat.
+    Supports optional conversation history and article context for the
+    "Discuss Article" feature.
     """
     token = _require_auth(Authorization)
 
@@ -488,22 +489,68 @@ async def chat(payload: dict, Authorization: str | None = Header(default=None)):
     if not message:
         raise HTTPException(status_code=400, detail="message is required")
 
+    history = payload.get("history") or []
+    article_context = payload.get("article_context")
+
     try:
         from app.services.openai_service import get_openai_service
 
         openai_service = get_openai_service()
 
-        system_prompt = "You are a helpful AI assistant. Be concise and friendly."
+        system_prompt = (
+            "You are Daily's AI — a sharp, knowledgeable news analyst built into a personalized news app.\n\n"
+            "Your role:\n"
+            "- Help users understand the news: explain context, implications, who's involved, and why it matters.\n"
+            "- When discussing a specific article, reference its details naturally. Offer analysis, not just summaries.\n"
+            "- Give balanced perspectives. Flag when something is opinion vs fact.\n"
+            "- Be conversational but substantive — like a smart friend who reads everything.\n"
+            "- Keep responses concise (2-4 paragraphs max) unless the user asks for depth.\n"
+            "- Use plain language. No jargon unless the user clearly knows the domain.\n\n"
+            "You can:\n"
+            "- Compare current events to historical parallels\n"
+            "- Explain technical/financial/political concepts simply\n"
+            "- Identify what's missing from a story or what to watch next\n"
+            "- Give \"so what?\" analysis — why should the reader care?\n\n"
+            "Never:\n"
+            "- Make up facts or statistics\n"
+            "- Give financial, legal, or medical advice\n"
+            "- Be preachy or condescending"
+        )
+
+        messages = [{"role": "system", "content": system_prompt}]
+
+        # If discussing a specific article, inject its content as context
+        if article_context and isinstance(article_context, dict):
+            ctx_title = article_context.get("title", "")
+            ctx_source = article_context.get("source", "")
+            ctx_summary = article_context.get("summary", "")
+            ctx_content = (article_context.get("content") or "")[:3000]
+
+            article_msg = (
+                "The user is reading this article and wants to discuss it:\n\n"
+                f"Title: {ctx_title}\n"
+                f"Source: {ctx_source}\n"
+                f"Summary: {ctx_summary}\n\n"
+                f"Full text:\n{ctx_content}"
+            )
+            messages.append({"role": "system", "content": article_msg})
+
+        # Append conversation history
+        for h in history:
+            role = h.get("role")
+            content = h.get("content")
+            if role in ("user", "assistant") and content:
+                messages.append({"role": role, "content": content})
+
+        # Append current message
+        messages.append({"role": "user", "content": message})
 
         import asyncio
 
         response = await asyncio.to_thread(
             openai_service.client.chat.completions.create,
             model=openai_service.model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": message},
-            ],
+            messages=messages,
             temperature=0.7,
         )
 

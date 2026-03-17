@@ -11,6 +11,7 @@ import UIKit
 struct MainTabView: View {
     @State private var selectedTab = 0
     @State private var showOnboarding = false
+    @StateObject private var chatViewModel = ChatViewModel()
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -20,19 +21,36 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-            ChatView()
+            BookmarksView()
                 .tabItem {
-                    Label("Chat", systemImage: selectedTab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
+                    Label("Saved", systemImage: selectedTab == 1 ? "bookmark.fill" : "bookmark")
                 }
                 .tag(1)
+
+            ChatView(viewModel: chatViewModel)
+                .tabItem {
+                    Label("Chat", systemImage: selectedTab == 2 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
+                }
+                .tag(2)
         }
         .tint(BrandColors.primary)
+        .onChange(of: selectedTab) { _ in
+            HapticService.selection()
+        }
         .task {
             await checkOnboarding()
         }
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingChatView {
                 showOnboarding = false
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .discussArticle)) { notification in
+            if let article = notification.object as? NewsArticle {
+                chatViewModel.startArticleDiscussion(article)
+                withAnimation {
+                    selectedTab = 2
+                }
             }
         }
         .onAppear {
@@ -78,6 +96,10 @@ struct MainTabView: View {
             showOnboarding = true
         }
     }
+}
+
+extension Notification.Name {
+    static let discussArticle = Notification.Name("discussArticle")
 }
 
 #Preview {

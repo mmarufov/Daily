@@ -13,6 +13,7 @@ import UIKit
 struct ArticleBodyTextView: UIViewRepresentable {
     let text: String
     var lineSpacing: CGFloat = 6
+    var fontSizeMultiplier: CGFloat = 1.0
 
     func makeUIView(context: Context) -> UITextView {
         let view = UITextView()
@@ -53,8 +54,9 @@ struct ArticleBodyTextView: UIViewRepresentable {
     }
 
     private func articleBodyUIFont() -> UIFont {
-        let base = UIFont.systemFont(ofSize: 19, weight: .regular)
-        let designed = base.fontDescriptor.withDesign(.serif).map { UIFont(descriptor: $0, size: 19) } ?? base
+        let fontSize = 19 * fontSizeMultiplier
+        let base = UIFont.systemFont(ofSize: fontSize, weight: .regular)
+        let designed = base.fontDescriptor.withDesign(.serif).map { UIFont(descriptor: $0, size: fontSize) } ?? base
         return UIFontMetrics(forTextStyle: .body).scaledFont(for: designed)
     }
 }
