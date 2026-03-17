@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SafariServices
 
 struct ArticleDetailView: View {
     let article: NewsArticle
@@ -13,6 +14,17 @@ struct ArticleDetailView: View {
     @State private var fullArticle: NewsArticle?
     @State private var isLoadingFullContent = false
     @State private var loadErrorMessage: String?
+    @State private var showingSafari = false
+    @State private var showingTextSize = false
+    @AppStorage("articleFontSize") private var fontSizeIndex: Int = 2 // 0-4, default middle
+
+    @ObservedObject private var bookmarks = BookmarkService.shared
+
+    private var fontSizeMultiplier: CGFloat {
+        [0.8, 0.9, 1.0, 1.15, 1.3][fontSizeIndex]
+    }
+
+    private let fontSizeLabels = ["XS", "S", "M", "L", "XL"]
 
     var body: some View {
         Group {
@@ -69,15 +81,23 @@ struct ArticleDetailView: View {
                                     .fixedSize(horizontal: false, vertical: true)
                                     .lineSpacing(4)
 
-                                // Author + Date
+                                // Author + Date + Reading Time
                                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                                     if let author = full.author, !author.isEmpty {
                                         Text("By \(author)")
                                             .font(.system(size: 14, weight: .medium))
                                             .foregroundColor(BrandColors.textSecondary)
                                     }
-                                    if let publishedAt = full.publishedAt {
-                                        Text(formattedFullDate(publishedAt))
+                                    HStack(spacing: AppSpacing.xs) {
+                                        if let publishedAt = full.publishedAt {
+                                            Text(formattedFullDate(publishedAt))
+                                                .font(AppTypography.caption1)
+                                                .foregroundColor(BrandColors.textTertiary)
+                                        }
+                                        Circle()
+                                            .fill(BrandColors.textQuaternary)
+                                            .frame(width: 3, height: 3)
+                                        Text("\(full.estimatedReadingTime) min read")
                                             .font(AppTypography.caption1)
                                             .foregroundColor(BrandColors.textTertiary)
                                     }
@@ -99,8 +119,11 @@ struct ArticleDetailView: View {
                                 // Content
                                 contentSection(for: full)
 
+                                // Discuss with AI
+                                discussButton(for: full)
+
                                 // External link
-                                externalLink(for: full)
+                                externalLinkButton(for: full)
                             }
                             .frame(maxWidth: 700, alignment: .leading)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -114,7 +137,71 @@ struct ArticleDetailView: View {
         }
         .background(Color(.systemBackground))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                // Discuss
+                Button {
+                    HapticService.impact(.medium)
+                    if let full = fullArticle {
+                        NotificationCenter.default.post(name: .discussArticle, object: full)
+                    }
+                } label: {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 14, weight: .medium))
+                }
+                .tint(BrandColors.primary)
+
+                // Bookmark
+                Button {
+                    HapticService.impact(.medium)
+                    if let full = fullArticle ?? Optional(article) {
+                        bookmarks.toggleBookmark(full)
+                    }
+                } label: {
+                    Image(systemName: bookmarks.isBookmarked(article.id) ? "bookmark.fill" : "bookmark")
+                        .font(.system(size: 14, weight: .medium))
+                }
+                .tint(BrandColors.primary)
+
+                // Share
+                if let urlString = (fullArticle ?? article).url, let url = URL(string: urlString) {
+                    ShareLink(item: url) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 14, weight: .medium))
+                    }
+                    .tint(BrandColors.primary)
+                }
+
+                // Text size
+                Menu {
+                    ForEach(0..<fontSizeLabels.count, id: \.self) { index in
+                        Button {
+                            fontSizeIndex = index
+                            HapticService.selection()
+                        } label: {
+                            HStack {
+                                Text(fontSizeLabels[index])
+                                if index == fontSizeIndex {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Image(systemName: "textformat.size")
+                        .font(.system(size: 14, weight: .medium))
+                }
+                .tint(BrandColors.primary)
+            }
+        }
+        .sheet(isPresented: $showingSafari) {
+            if let urlString = (fullArticle ?? article).url, let url = URL(string: urlString) {
+                SafariView(url: url)
+                    .ignoresSafeArea()
+            }
+        }
         .task {
+            BookmarkService.shared.markAsRead(article.id)
             await loadFullArticleIfNeeded()
         }
     }
@@ -151,17 +238,48 @@ struct ArticleDetailView: View {
            !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
                 ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
-                    ArticleBodyTextView(text: paragraph, lineSpacing: 6)
+                    ArticleBodyTextView(
+                        text: paragraph,
+                        lineSpacing: 6,
+                        fontSizeMultiplier: fontSizeMultiplier
+                    )
                 }
             }
         }
     }
 
+    private func discussButton(for article: NewsArticle) -> some View {
+        Button {
+            HapticService.impact(.medium)
+            NotificationCenter.default.post(name: .discussArticle, object: article)
+        } label: {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 15, weight: .medium))
+                Text("Discuss with Daily AI")
+                    .font(.system(size: 15, weight: .semibold))
+            }
+            .foregroundColor(BrandColors.primary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                    .fill(BrandColors.primary.opacity(0.1))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                    .stroke(BrandColors.primary.opacity(0.25), lineWidth: 1)
+            )
+        }
+        .padding(.top, AppSpacing.md)
+    }
+
     @ViewBuilder
-    private func externalLink(for article: NewsArticle) -> some View {
-        if let urlString = article.url,
-           let url = URL(string: urlString) {
-            Link(destination: url) {
+    private func externalLinkButton(for article: NewsArticle) -> some View {
+        if article.url != nil {
+            Button {
+                showingSafari = true
+            } label: {
                 HStack(spacing: AppSpacing.xs) {
                     Text("Read full article at \(article.displaySource)")
                         .font(.system(size: 15, weight: .medium))

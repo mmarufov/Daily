@@ -53,8 +53,7 @@ struct PersonalizationSettingsView: View {
                     
                     // Continue with AI button
                     Button(action: {
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                        impactFeedback.impactOccurred()
+                        HapticService.impact(.light)
                         showAIChat = true
                     }) {
                         HStack(spacing: AppSpacing.sm) {

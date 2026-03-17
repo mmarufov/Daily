@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct NewsView: View {
     @StateObject private var viewModel = NewsViewModel()
     @ObservedObject private var auth = AuthService.shared
+    @ObservedObject private var bookmarks = BookmarkService.shared
     @State private var showingProfile = false
 
     var body: some View {
@@ -22,13 +22,26 @@ struct NewsView: View {
                         .padding(.top, AppSpacing.md)
                         .padding(.bottom, AppSpacing.lg)
 
-                    if viewModel.articles.isEmpty && !viewModel.isLoading {
-                        emptyState
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.top, AppSpacing.xxl)
+                    if !viewModel.availableCategories.isEmpty {
+                        CategoryFilterBar(
+                            categories: viewModel.availableCategories,
+                            selectedCategory: $viewModel.selectedCategory
+                        )
+                        .padding(.bottom, AppSpacing.lg)
+                    }
+
+                    if viewModel.filteredArticles.isEmpty && !viewModel.isLoading {
+                        EmptyStateView(
+                            icon: "newspaper",
+                            title: "No articles yet",
+                            subtitle: viewModel.errorMessage ?? "Pull down to refresh your feed."
+                        )
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.xxl)
                     } else if viewModel.isLoading && viewModel.articles.isEmpty {
-                        loadingState
-                            .padding(.top, AppSpacing.xxl)
+                        skeletonLoading
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.top, AppSpacing.md)
                     } else {
                         if let error = viewModel.errorMessage, !error.isEmpty {
                             errorBanner(error)
@@ -47,6 +60,11 @@ struct NewsView: View {
                 await viewModel.refreshFeed()
             }
             .navigationBarTitleDisplayMode(.inline)
+            .searchable(
+                text: $viewModel.searchText,
+                placement: .navigationBarDrawer(displayMode: .automatic),
+                prompt: "Search articles"
+            )
             .toolbar {
                 toolbarContent
             }
@@ -60,21 +78,61 @@ struct NewsView: View {
 // MARK: - Private builders
 
 private extension NewsView {
+    var greeting: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let firstName = auth.currentUser?.display_name?.components(separatedBy: " ").first
+
+        switch hour {
+        case 5..<12:
+            if let name = firstName { return "Good morning, \(name)" }
+            return "Good morning"
+        case 12..<17:
+            if let name = firstName { return "Good afternoon, \(name)" }
+            return "Good afternoon"
+        case 17..<21:
+            if let name = firstName { return "Good evening, \(name)" }
+            return "Good evening"
+        default:
+            return "Late night reads"
+        }
+    }
+
     var dateHeader: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text(greeting)
+                .font(AppTypography.subheadline)
+                .foregroundColor(BrandColors.textSecondary)
+
             Text("Daily")
                 .font(.system(size: 28, weight: .bold, design: .serif))
                 .foregroundColor(BrandColors.textPrimary)
 
             Text(formattedFullDate)
-                .font(AppTypography.subheadline)
-                .foregroundColor(BrandColors.textSecondary)
+                .font(AppTypography.caption1)
+                .foregroundColor(BrandColors.textTertiary)
 
             if let subtitle = updatedSubtitle {
                 Text(subtitle)
-                    .font(AppTypography.caption1)
-                    .foregroundColor(BrandColors.textTertiary)
+                    .font(AppTypography.caption2)
+                    .foregroundColor(BrandColors.textQuaternary)
                     .padding(.top, 2)
+            }
+        }
+    }
+
+    // MARK: - Skeleton Loading
+
+    var skeletonLoading: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SkeletonFeaturedCard()
+
+            HairlineDivider()
+                .padding(.vertical, AppSpacing.lg)
+
+            ForEach(0..<3, id: \.self) { _ in
+                SkeletonCompactRow()
+                HairlineDivider()
+                    .padding(.leading, AppSpacing.lg)
             }
         }
     }
@@ -82,22 +140,27 @@ private extension NewsView {
     // MARK: - Feed content
 
     var feedContent: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        let articles = viewModel.filteredArticles
+
+        return VStack(alignment: .leading, spacing: 0) {
             // Top Story
-            if let featured = viewModel.articles.first {
+            if let featured = articles.first {
                 sectionLabel("Top Story")
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.md)
 
                 NavigationLink(destination: ArticleDetailView(article: featured)) {
-                    FeaturedArticleCard(article: featured)
+                    FeaturedArticleCard(article: featured, isRead: bookmarks.isRead(featured.id))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableButtonStyle())
                 .padding(.horizontal, AppSpacing.lg)
+                .contextMenu {
+                    articleContextMenu(for: featured)
+                }
             }
 
             // For You
-            if viewModel.articles.count > 1 {
+            if articles.count > 1 {
                 HairlineDivider()
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.lg)
@@ -107,13 +170,16 @@ private extension NewsView {
                     .padding(.bottom, AppSpacing.sm)
 
                 VStack(spacing: 0) {
-                    ForEach(Array(viewModel.articles.dropFirst().enumerated()), id: \.element.id) { index, article in
+                    ForEach(Array(articles.dropFirst().enumerated()), id: \.element.id) { index, article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
-                            CompactArticleRow(article: article)
+                            CompactArticleRow(article: article, isRead: bookmarks.isRead(article.id))
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressableButtonStyle())
+                        .contextMenu {
+                            articleContextMenu(for: article)
+                        }
 
-                        if index < viewModel.articles.count - 2 {
+                        if index < articles.count - 2 {
                             HairlineDivider()
                                 .padding(.leading, AppSpacing.lg)
                         }
@@ -124,43 +190,37 @@ private extension NewsView {
         }
     }
 
+    @ViewBuilder
+    func articleContextMenu(for article: NewsArticle) -> some View {
+        Button {
+            HapticService.impact(.medium)
+            bookmarks.toggleBookmark(article)
+        } label: {
+            Label(
+                bookmarks.isBookmarked(article.id) ? "Remove Bookmark" : "Bookmark",
+                systemImage: bookmarks.isBookmarked(article.id) ? "bookmark.slash" : "bookmark"
+            )
+        }
+
+        if let urlString = article.url, let url = URL(string: urlString) {
+            ShareLink(item: url) {
+                Label("Share", systemImage: "square.and.arrow.up")
+            }
+        }
+
+        Button {
+            HapticService.impact(.medium)
+            NotificationCenter.default.post(name: .discussArticle, object: article)
+        } label: {
+            Label("Discuss with AI", systemImage: "sparkles")
+        }
+    }
+
     func sectionLabel(_ title: String) -> some View {
         Text(title.uppercased())
             .font(AppTypography.sectionTitle)
             .foregroundColor(BrandColors.primary)
             .tracking(0.8)
-    }
-
-    var emptyState: some View {
-        VStack(spacing: AppSpacing.md) {
-            Image(systemName: "newspaper")
-                .font(.system(size: 36, weight: .ultraLight))
-                .foregroundColor(BrandColors.textTertiary)
-
-            VStack(spacing: AppSpacing.xs) {
-                Text("No articles yet")
-                    .font(AppTypography.headline)
-                    .foregroundColor(BrandColors.textPrimary)
-
-                Text(viewModel.errorMessage ?? "Pull down to refresh your feed.")
-                    .font(AppTypography.subheadline)
-                    .foregroundColor(viewModel.errorMessage == nil ? BrandColors.textSecondary : BrandColors.error)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    var loadingState: some View {
-        VStack(spacing: AppSpacing.md) {
-            ProgressView()
-                .scaleEffect(1.1)
-
-            Text("Loading your feed...")
-                .font(AppTypography.subheadline)
-                .foregroundColor(BrandColors.textSecondary)
-        }
-        .frame(maxWidth: .infinity)
     }
 
     func errorBanner(_ message: String) -> some View {
@@ -177,8 +237,7 @@ private extension NewsView {
             Spacer()
 
             Button {
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
+                HapticService.impact(.light)
                 withAnimation { viewModel.errorMessage = nil }
             } label: {
                 Image(systemName: "xmark")
@@ -236,6 +295,7 @@ private extension NewsView {
 
 struct FeaturedArticleCard: View {
     let article: NewsArticle
+    var isRead: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm + 2) {
@@ -255,8 +315,14 @@ struct FeaturedArticleCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
 
-            // Source + time
+            // Source + time + reading time + badge
             HStack(spacing: AppSpacing.xs) {
+                if !isRead {
+                    Circle()
+                        .fill(BrandColors.primary)
+                        .frame(width: 6, height: 6)
+                }
+
                 Text(article.displaySource.uppercased())
                     .font(AppTypography.sourceLabel)
                     .foregroundColor(BrandColors.primary)
@@ -269,12 +335,24 @@ struct FeaturedArticleCard: View {
                         .font(AppTypography.dateLabel)
                         .foregroundColor(BrandColors.textTertiary)
                 }
+
+                Circle()
+                    .fill(BrandColors.textQuaternary)
+                    .frame(width: 3, height: 3)
+                Text("\(article.estimatedReadingTime) min")
+                    .font(AppTypography.dateLabel)
+                    .foregroundColor(BrandColors.textTertiary)
+
+                Spacer()
+
+                ArticleBadge(publishedAt: article.publishedAt)
             }
 
             // Headline
             Text(article.title)
                 .font(AppTypography.feedHeroTitle)
                 .foregroundColor(BrandColors.textPrimary)
+                .opacity(isRead ? 0.6 : 1)
                 .lineLimit(3)
                 .lineSpacing(2)
                 .fixedSize(horizontal: false, vertical: true)
@@ -295,12 +373,19 @@ struct FeaturedArticleCard: View {
 
 struct CompactArticleRow: View {
     let article: NewsArticle
+    var isRead: Bool = false
 
     var body: some View {
         HStack(alignment: .top, spacing: AppSpacing.md) {
             // Text content
             VStack(alignment: .leading, spacing: AppSpacing.xs + 2) {
                 HStack(spacing: AppSpacing.xs) {
+                    if !isRead {
+                        Circle()
+                            .fill(BrandColors.primary)
+                            .frame(width: 6, height: 6)
+                    }
+
                     Text(article.displaySource.uppercased())
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(BrandColors.primary)
@@ -313,11 +398,19 @@ struct CompactArticleRow: View {
                             .font(.system(size: 11))
                             .foregroundColor(BrandColors.textTertiary)
                     }
+
+                    Circle()
+                        .fill(BrandColors.textQuaternary)
+                        .frame(width: 2.5, height: 2.5)
+                    Text("\(article.estimatedReadingTime) min")
+                        .font(.system(size: 11))
+                        .foregroundColor(BrandColors.textTertiary)
                 }
 
                 Text(article.title)
                     .font(AppTypography.feedCardTitle)
                     .foregroundColor(BrandColors.textPrimary)
+                    .opacity(isRead ? 0.6 : 1)
                     .lineLimit(3)
                     .lineSpacing(1)
                     .multilineTextAlignment(.leading)
