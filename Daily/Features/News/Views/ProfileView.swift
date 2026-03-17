@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct ProfileView: View {
     @ObservedObject private var auth = AuthService.shared
@@ -90,8 +89,7 @@ struct ProfileView: View {
 
     private var settingsSection: some View {
         Button(action: {
-            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback.impactOccurred()
+            HapticService.impact(.light)
             showPersonalizationSettings = true
         }) {
             HStack(spacing: AppSpacing.md) {
@@ -122,8 +120,7 @@ struct ProfileView: View {
 
     private var signOutButton: some View {
         Button(action: {
-            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-            impactFeedback.impactOccurred()
+            HapticService.impact(.medium)
             auth.signOut()
             dismiss()
         }) {

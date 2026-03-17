@@ -6,17 +6,24 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct ChatView: View {
-    @StateObject private var viewModel = ChatViewModel()
+    @ObservedObject var viewModel: ChatViewModel
     @FocusState private var isInputFocused: Bool
-    private let quickPrompts = [
-        "Summarize today’s top headlines",
+
+    private let generalPrompts = [
+        "Summarize today's top headlines",
         "Why does this story matter?",
         "Give me a positive news highlight"
     ]
-    
+
+    private let articlePrompts = [
+        "Break this down for me",
+        "Why does this matter?",
+        "What's the other side?",
+        "What should I watch next?"
+    ]
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -27,19 +34,27 @@ struct ChatView: View {
                         ScrollView(.vertical, showsIndicators: false) {
                             LazyVStack(spacing: AppSpacing.md) {
                                 if viewModel.messages.isEmpty {
-                                    introCard
+                                    if viewModel.hasArticleContext {
+                                        articleContextCard
+                                    } else {
+                                        introCard
+                                    }
                                     suggestionChips
                                 } else {
+                                    if viewModel.hasArticleContext {
+                                        articleContextCard
+                                    }
+
                                     ForEach(viewModel.messages) { message in
                                         ChatBubbleView(message: message)
                                             .padding(.horizontal, AppSpacing.md)
                                     }
-                                    
+
                                     if viewModel.isLoading {
                                         HStack(spacing: AppSpacing.sm) {
                                             ProgressView()
                                                 .tint(BrandColors.primary)
-                                            Text("Thinking…")
+                                            Text("Thinking...")
                                                 .font(AppTypography.bodySmall)
                                                 .foregroundColor(BrandColors.textSecondary)
                                             Spacer()
@@ -60,7 +75,7 @@ struct ChatView: View {
                             }
                         }
                     }
-                    
+
                     if let errorMessage = viewModel.errorMessage {
                         HStack(spacing: AppSpacing.sm) {
                             Image(systemName: "exclamationmark.triangle.fill")
@@ -76,18 +91,17 @@ struct ChatView: View {
                         .padding(.horizontal, AppSpacing.md)
                         .padding(.bottom, AppSpacing.sm)
                     }
-                    
+
                     inputArea
                 }
             }
-            .navigationTitle("AI Briefing")
+            .navigationTitle(viewModel.hasArticleContext ? "Discuss Article" : "AI Briefing")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if !viewModel.messages.isEmpty {
+                    if !viewModel.messages.isEmpty || viewModel.hasArticleContext {
                         Button(action: {
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                            impactFeedback.impactOccurred()
+                            HapticService.impact(.medium)
                             viewModel.clearChat()
                         }) {
                             HStack(spacing: AppSpacing.xs) {
@@ -137,14 +151,56 @@ private extension ChatView {
         .padding(AppSpacing.xl)
         .padding(.horizontal, AppSpacing.lg)
     }
-    
+
+    var articleContextCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    if let source = viewModel.articleContext?.displaySource {
+                        Text(source.uppercased())
+                            .font(.system(size: 11, weight: .semibold))
+                            .tracking(0.6)
+                            .foregroundColor(BrandColors.primary)
+                    }
+                    Text(viewModel.articleContext?.title ?? "")
+                        .font(.system(size: 16, weight: .semibold, design: .serif))
+                        .foregroundColor(BrandColors.textPrimary)
+                        .lineLimit(2)
+                }
+
+                Spacer(minLength: AppSpacing.sm)
+
+                Button {
+                    HapticService.impact(.light)
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        viewModel.articleContext = nil
+                    }
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(BrandColors.textTertiary)
+                }
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppCornerRadius.medium)
+                .stroke(BrandColors.primary.opacity(0.15), lineWidth: 1)
+        )
+        .padding(.horizontal, AppSpacing.md)
+    }
+
     var suggestionChips: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let prompts = viewModel.hasArticleContext ? articlePrompts : generalPrompts
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppSpacing.sm) {
-                ForEach(quickPrompts, id: \.self) { prompt in
+                ForEach(prompts, id: \.self) { prompt in
                     Button(action: {
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                        impactFeedback.impactOccurred()
+                        HapticService.impact(.light)
                         sendPrompt(prompt)
                     }) {
                         Text(prompt)
@@ -168,11 +224,11 @@ private extension ChatView {
             .padding(.horizontal, AppSpacing.lg)
         }
     }
-    
+
     var inputArea: some View {
         VStack(spacing: AppSpacing.sm) {
             HStack(spacing: AppSpacing.sm) {
-                TextField("Type a message…", text: $viewModel.inputText, axis: .vertical)
+                TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
                     .font(AppTypography.body)
                     .padding(.horizontal, AppSpacing.md)
                     .padding(.vertical, AppSpacing.sm + 2)
@@ -183,9 +239,9 @@ private extension ChatView {
                     .overlay(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large)
                             .stroke(
-                                isInputFocused 
-                                ? BrandColors.primary.opacity(0.4) 
-                                : Color.black.opacity(0.08), 
+                                isInputFocused
+                                ? BrandColors.primary.opacity(0.4)
+                                : Color.black.opacity(0.08),
                                 lineWidth: isInputFocused ? 1.5 : 1
                             )
                     )
@@ -195,10 +251,9 @@ private extension ChatView {
                         submitMessage()
                     }
                     .animation(.easeInOut(duration: 0.2), value: isInputFocused)
-                
+
                 Button(action: {
-                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                    impactFeedback.impactOccurred()
+                    HapticService.impact(.light)
                     submitMessage()
                 }) {
                     ZStack {
@@ -227,7 +282,7 @@ private extension ChatView {
                                 x: 0,
                                 y: 4
                             )
-                        
+
                         if viewModel.isLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -253,28 +308,29 @@ private extension ChatView {
             alignment: .top
         )
     }
-    
+
     func submitMessage() {
         guard !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         Task {
             await viewModel.sendMessage()
         }
     }
-    
+
     func sendPrompt(_ prompt: String) {
         viewModel.inputText = prompt
         submitMessage()
     }
 }
+
 struct ChatBubbleView: View {
     let message: ChatMessage
-    
+
     var body: some View {
         HStack(alignment: .bottom, spacing: AppSpacing.sm) {
             if message.isUser {
                 Spacer(minLength: 50)
             }
-            
+
             VStack(alignment: message.isUser ? .trailing : .leading, spacing: 4) {
                 Text(message.content)
                     .font(AppTypography.body)
@@ -286,9 +342,9 @@ struct ChatBubbleView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large)
                             .stroke(
-                                message.isUser 
-                                ? Color.white.opacity(0.25) 
-                                : Color.black.opacity(0.06), 
+                                message.isUser
+                                ? Color.white.opacity(0.25)
+                                : Color.black.opacity(0.06),
                                 lineWidth: 0.5
                             )
                     )
@@ -308,19 +364,19 @@ struct ChatBubbleView: View {
                         x: 0,
                         y: 2
                     )
-                
+
                 Text(message.timestamp, style: .time)
                     .font(AppTypography.caption2)
                     .foregroundColor(BrandColors.textTertiary)
                     .padding(.horizontal, AppSpacing.xs)
             }
-            
+
             if !message.isUser {
                 Spacer(minLength: 50)
             }
         }
     }
-    
+
     private var bubbleBackground: some View {
         Group {
             if message.isUser {
@@ -337,6 +393,5 @@ struct ChatBubbleView: View {
 }
 
 #Preview {
-    ChatView()
+    ChatView(viewModel: ChatViewModel())
 }
-

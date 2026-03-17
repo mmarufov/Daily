@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct OnboardingChatView: View {
     @StateObject private var viewModel = OnboardingChatViewModel()
@@ -94,8 +93,7 @@ struct OnboardingChatView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                        impactFeedback.impactOccurred()
+                        HapticService.impact(.medium)
                         
                         Task {
                             do {
@@ -159,8 +157,7 @@ private extension OnboardingChatView {
                 }
             
             Button(action: {
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
+                HapticService.impact(.light)
                 submit()
             }) {
                 ZStack {

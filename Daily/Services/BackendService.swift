@@ -113,7 +113,12 @@ final class BackendService {
 
     // MARK: - Chat Endpoints
 
-    func sendChatMessage(message: String, accessToken: String) async throws -> String {
+    func sendChatMessage(
+        message: String,
+        accessToken: String,
+        history: [[String: String]]? = nil,
+        articleContext: [String: String]? = nil
+    ) async throws -> String {
         let endpoint = baseURL.appendingPathComponent("/chat")
 
         var request = URLRequest(url: endpoint)
@@ -121,7 +126,13 @@ final class BackendService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: Any] = ["message": message]
+        var body: [String: Any] = ["message": message]
+        if let history, !history.isEmpty {
+            body["history"] = history
+        }
+        if let articleContext, !articleContext.isEmpty {
+            body["article_context"] = articleContext
+        }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await urlSession.data(for: request)
