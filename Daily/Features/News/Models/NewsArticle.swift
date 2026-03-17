@@ -44,5 +44,14 @@ struct NewsArticle: Identifiable, Codable, Equatable {
     var displaySource: String {
         source ?? author ?? "Daily"
     }
+
+    var estimatedReadingTime: Int {
+        let wordCount = [title, summary, content]
+            .compactMap { $0 }
+            .joined(separator: " ")
+            .split(separator: " ")
+            .count
+        return max(1, wordCount / 238)
+    }
 }
 

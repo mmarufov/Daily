@@ -122,8 +122,7 @@ private extension AuthView {
             }
 
             Button(action: {
-                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                impactFeedback.impactOccurred()
+                HapticService.impact(.light)
                 Task { await signInWithGoogle() }
             }) {
                 HStack(spacing: AppSpacing.sm) {
