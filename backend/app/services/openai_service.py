@@ -20,14 +20,10 @@ class OpenAIService:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable is not set")
-        
-        # Support OpenAI project tracking (optional)
-        project_id = os.getenv("OPENAI_PROJECT")
-        client_kwargs = {"api_key": api_key}
-        if project_id:
-            client_kwargs["default_headers"] = {"OpenAI-Project": project_id}
-        
-        self.client = OpenAI(**client_kwargs)
+
+        # Project-scoped keys (sk-proj-*) already encode the project —
+        # sending an extra OpenAI-Project header causes mismatched_project errors.
+        self.client = OpenAI(api_key=api_key)
         
         # Use model from env or default to cost-effective option
         # Note: "gpt-5" doesn't exist - using gpt-4o-mini as default
