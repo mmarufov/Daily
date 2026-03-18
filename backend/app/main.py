@@ -564,7 +564,7 @@ async def chat(payload: dict, Authorization: str | None = Header(default=None)):
         import traceback
 
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error chatting with AI: {str(e)}")
+        raise HTTPException(status_code=500, detail="Something went wrong — please try again.")
 
 
 @app.get("/user/preferences")
@@ -877,7 +877,7 @@ IMPORTANT:
 
         traceback.print_exc()
         raise HTTPException(
-            status_code=500, detail=f"Error chatting about interests: {str(e)}"
+            status_code=500, detail="Something went wrong — please try again."
         )
 
 
