@@ -6,35 +6,38 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct MainTabView: View {
-    @State private var selectedTab = 0
+    @State private var selectedTab: AppTab = .news
     @State private var showOnboarding = false
     @StateObject private var chatViewModel = ChatViewModel()
+    @StateObject private var newsViewModel = NewsViewModel()
+
+    enum AppTab: Hashable {
+        case news, search, saved, chat
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            NewsView()
-                .tabItem {
-                    Label("News", systemImage: selectedTab == 0 ? "newspaper.fill" : "newspaper")
-                }
-                .tag(0)
+            Tab("News", systemImage: "newspaper", value: .news) {
+                NewsView(viewModel: newsViewModel)
+            }
 
-            BookmarksView()
-                .tabItem {
-                    Label("Saved", systemImage: selectedTab == 1 ? "bookmark.fill" : "bookmark")
-                }
-                .tag(1)
+            Tab("Search", systemImage: "magnifyingglass", value: .search) {
+                SearchView(newsViewModel: newsViewModel)
+            }
 
-            ChatView(viewModel: chatViewModel)
-                .tabItem {
-                    Label("Chat", systemImage: selectedTab == 2 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right")
-                }
-                .tag(2)
+            Tab("Saved", systemImage: "bookmark", value: .saved) {
+                BookmarksView()
+            }
+
+            Tab("Chat", systemImage: "bubble.left.and.bubble.right", value: .chat) {
+                ChatView(viewModel: chatViewModel, selectedTab: $selectedTab)
+            }
         }
         .tint(BrandColors.primary)
-        .onChange(of: selectedTab) { _ in
+        .tabBarMinimizeBehavior(.onScrollDown)
+        .onChange(of: selectedTab) { _, _ in
             HapticService.selection()
         }
         .task {
@@ -49,34 +52,9 @@ struct MainTabView: View {
             if let article = notification.object as? NewsArticle {
                 chatViewModel.startArticleDiscussion(article)
                 withAnimation {
-                    selectedTab = 2
+                    selectedTab = .chat
                 }
             }
-        }
-        .onAppear {
-            let appearance = UITabBarAppearance()
-            appearance.configureWithDefaultBackground()
-            appearance.backgroundEffect = UIBlurEffect(style: .systemChromeMaterial)
-            appearance.backgroundColor = UIColor.clear
-            appearance.shadowImage = UIImage()
-            appearance.shadowColor = UIColor.clear
-
-            appearance.stackedLayoutAppearance.selected.iconColor = UIColor(BrandColors.primary)
-            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-                .foregroundColor: UIColor(BrandColors.primary),
-                .font: UIFont.systemFont(ofSize: 11, weight: .semibold)
-            ]
-
-            appearance.stackedLayoutAppearance.normal.iconColor = UIColor(BrandColors.textSecondary)
-            appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-                .foregroundColor: UIColor(BrandColors.textSecondary),
-                .font: UIFont.systemFont(ofSize: 11, weight: .regular)
-            ]
-
-            UITabBar.appearance().standardAppearance = appearance
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-            UITabBar.appearance().isTranslucent = true
-            UITabBar.appearance().backgroundColor = UIColor.clear
         }
     }
 

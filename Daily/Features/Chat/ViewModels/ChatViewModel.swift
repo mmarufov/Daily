@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
 
 @MainActor
@@ -52,7 +53,27 @@ final class ChatViewModel: ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
             isLoading = false
+
+            let failedMessage = error.localizedDescription
+            Task {
+                try? await Task.sleep(for: .seconds(5))
+                if self.errorMessage == failedMessage {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        self.errorMessage = nil
+                    }
+                }
+            }
         }
+    }
+
+    func retryLastMessage() async {
+        guard let lastUserMessage = messages.last(where: { $0.isUser }) else { return }
+        errorMessage = nil
+        if messages.last?.isUser == true {
+            messages.removeLast()
+        }
+        inputText = lastUserMessage.content
+        await sendMessage()
     }
 
     func startArticleDiscussion(_ article: NewsArticle) {
