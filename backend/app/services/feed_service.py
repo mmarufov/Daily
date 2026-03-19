@@ -16,6 +16,8 @@ async def get_personalized_feed(
     conn,
     limit: int = 20,
     force_refresh: bool = False,
+    category: str | None = None,
+    section: str | None = None,
 ) -> list[dict]:
     """
     Return a personalized news feed for the given user.
@@ -25,6 +27,11 @@ async def get_personalized_feed(
     3. Query articles table for last 24h, limit 50
     4. Batch-score with AI in a single call
     5. Cache and return top `limit` articles
+
+    Optional filters:
+    - section="general": return only high-scored articles (score >= 0.6)
+    - section="all": return full scored feed (default behavior)
+    - category: filter articles by category (case-insensitive)
     """
     user_uuid = _uuid.UUID(user_id)
 
@@ -32,7 +39,8 @@ async def get_personalized_feed(
     if not force_refresh:
         cached = _load_cached_feed(conn, user_uuid)
         if cached is not None:
-            return cached[:limit]
+            filtered = _apply_filters(cached, category=category, section=section)
+            return filtered[:limit]
 
     # 2. Load user preferences
     ai_profile = None
@@ -83,6 +91,18 @@ async def get_personalized_feed(
             "category": row.get("category"),
         })
 
+    # 3b. Filter out low-quality articles (no image or too short)
+    candidates = [
+        c for c in candidates
+        if c.get("image_url")
+        and len(
+            (c.get("title", "") + (c.get("summary") or "") + (c.get("content") or ""))
+        ) >= 200
+    ]
+
+    if not candidates:
+        return []
+
     # 4. AI scoring
     if ai_profile:
         openai_service = get_openai_service()
@@ -98,17 +118,41 @@ async def get_personalized_feed(
     # Sort by score descending
     candidates.sort(key=lambda x: x.get("_score", 0), reverse=True)
 
-    # Take top `limit`
-    feed = candidates[:limit]
+    # 5. Cache results (cache ALL scored articles, not just the filtered subset)
+    _save_feed_cache(conn, user_uuid, candidates)
 
-    # 5. Cache results
-    _save_feed_cache(conn, user_uuid, feed)
+    # Move _score to relevance_score for the response
+    for article in candidates:
+        article["relevance_score"] = article.pop("_score", 0.5)
 
-    # Remove internal fields before returning
-    for article in feed:
-        article.pop("_score", None)
+    # Apply section/category filters
+    filtered = _apply_filters(candidates, category=category, section=section)
 
-    return feed
+    return filtered[:limit]
+
+
+def _apply_filters(
+    articles: list[dict],
+    category: str | None = None,
+    section: str | None = None,
+) -> list[dict]:
+    """Apply section and category filters to a list of scored articles."""
+    result = articles
+
+    # Filter by category (case-insensitive)
+    if category:
+        result = [
+            a for a in result
+            if a.get("category", "").lower() == category.lower()
+        ]
+
+    # Filter by section
+    if section == "general":
+        # General: only high-relevance articles
+        result = [a for a in result if a.get("relevance_score", 0.5) >= 0.6]
+    # "all" or None: no additional filtering
+
+    return result
 
 
 def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
@@ -152,6 +196,7 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
             "url": row.get("url"),
             "published_at": published_at_str,
             "category": row.get("category"),
+            "relevance_score": row.get("relevance_score"),
         })
 
     return articles

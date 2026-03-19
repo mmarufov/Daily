@@ -19,6 +19,16 @@ final class OnboardingChatViewModel: ObservableObject {
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
     
+    /// Prepend an AI greeting so the conversation starts warmly.
+    func startConversation() {
+        guard messages.isEmpty else { return }
+        let greeting = ChatMessage(
+            content: "Hey! I'm here to help personalize your Daily news feed. Tell me about yourself — what topics, people, or industries are you most interested in?",
+            isUser: false
+        )
+        messages.append(greeting)
+    }
+
     func sendMessage() async {
         let messageText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !messageText.isEmpty else { return }
@@ -87,7 +97,7 @@ final class OnboardingChatViewModel: ObservableObject {
         }
         
         do {
-            _ = try await backendService.completeUserPreferences(
+            try await backendService.completeUserPreferences(
                 accessToken: token,
                 history: historyPayload
             )

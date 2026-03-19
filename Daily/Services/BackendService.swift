@@ -13,6 +13,23 @@ final class BackendService {
     private let baseURL: URL
     private let urlSession: URLSession
 
+    /// ISO8601 date decoder that handles fractional seconds (from PostgreSQL's `now()`).
+    private static let iso8601Decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        let withFractional = ISO8601DateFormatter()
+        withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let withoutFractional = ISO8601DateFormatter()
+        withoutFractional.formatOptions = [.withInternetDateTime]
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let string = try container.decode(String.self)
+            if let date = withFractional.date(from: string) { return date }
+            if let date = withoutFractional.date(from: string) { return date }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date: \(string)")
+        }
+        return decoder
+    }()
+
     private init(baseURL: URL = URL(string: "https://daily-backend.fly.dev")!, urlSession: URLSession = .shared) {
         self.baseURL = baseURL
         self.urlSession = urlSession
@@ -21,12 +38,18 @@ final class BackendService {
     // MARK: - Feed Endpoints (new architecture)
 
     /// Fetch personalized feed from the shared article pool.
-    func fetchFeed(accessToken: String, limit: Int = 20) async throws -> [NewsArticle] {
+    func fetchFeed(
+        accessToken: String,
+        limit: Int = 20,
+        category: String? = nil,
+        section: String? = nil
+    ) async throws -> [NewsArticle] {
         let endpoint = baseURL.appendingPathComponent("/feed")
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
-        components?.queryItems = [
-            URLQueryItem(name: "limit", value: "\(limit)")
-        ]
+        var queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
+        if let category { queryItems.append(URLQueryItem(name: "category", value: category)) }
+        if let section { queryItems.append(URLQueryItem(name: "section", value: section)) }
+        components?.queryItems = queryItems
 
         guard let url = components?.url else {
             throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
@@ -48,9 +71,7 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode([NewsArticle].self, from: data)
+        return try Self.iso8601Decoder.decode([NewsArticle].self, from: data)
     }
 
     /// Fetch a single article with full content (extracts on-demand if needed).
@@ -73,18 +94,22 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(NewsArticle.self, from: data)
+        return try Self.iso8601Decoder.decode(NewsArticle.self, from: data)
     }
 
     /// Force re-score articles (ignores cache).
-    func refreshFeed(accessToken: String, limit: Int = 20) async throws -> [NewsArticle] {
+    func refreshFeed(
+        accessToken: String,
+        limit: Int = 20,
+        category: String? = nil,
+        section: String? = nil
+    ) async throws -> [NewsArticle] {
         let endpoint = baseURL.appendingPathComponent("/feed/refresh")
+        var queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
+        if let category { queryItems.append(URLQueryItem(name: "category", value: category)) }
+        if let section { queryItems.append(URLQueryItem(name: "section", value: section)) }
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
-        components?.queryItems = [
-            URLQueryItem(name: "limit", value: "\(limit)")
-        ]
+        components?.queryItems = queryItems
 
         guard let url = components?.url else {
             throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
@@ -106,9 +131,7 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode([NewsArticle].self, from: data)
+        return try Self.iso8601Decoder.decode([NewsArticle].self, from: data)
     }
 
     // MARK: - Chat Endpoints
@@ -258,9 +281,7 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(UserPreferencesResponse.self, from: data)
+        return try Self.iso8601Decoder.decode(UserPreferencesResponse.self, from: data)
     }
 
     func saveUserPreferences(
@@ -294,16 +315,15 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(UserPreferencesResponse.self, from: data)
+        return try Self.iso8601Decoder.decode(UserPreferencesResponse.self, from: data)
     }
 
     /// Let the backend/AI summarize full chat history and store a compact profile.
+    /// Returns nothing — we only care that the server accepted it.
     func completeUserPreferences(
         accessToken: String,
         history: [[String: String]]
-    ) async throws -> UserPreferencesResponse {
+    ) async throws {
         let endpoint = baseURL.appendingPathComponent("/user/preferences/complete")
 
         var request = URLRequest(url: endpoint)
@@ -326,11 +346,9 @@ final class BackendService {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(UserPreferencesResponse.self, from: data)
     }
+
+    // MARK: - Interest Onboarding Chat
 
     func sendInterestChatMessage(
         message: String,
@@ -367,5 +385,17 @@ final class BackendService {
         } else {
             throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
         }
+    }
+}
+
+// MARK: - UserPreferencesResponse Helpers
+
+extension BackendService.UserPreferencesResponse {
+    /// Extract the user's interest topics as a simple string array.
+    var topicsList: [String] {
+        guard let interests = interests,
+              let topicsValue = interests["topics"],
+              let topics = topicsValue.value as? [Any] else { return [] }
+        return topics.compactMap { $0 as? String }
     }
 }
