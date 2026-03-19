@@ -20,11 +20,16 @@ final class BackendService {
         withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let withoutFractional = ISO8601DateFormatter()
         withoutFractional.formatOptions = [.withInternetDateTime]
+        // Fallback for microsecond-precision dates from Python's datetime.isoformat()
+        let microFmt = DateFormatter()
+        microFmt.locale = Locale(identifier: "en_US_POSIX")
+        microFmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX"
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let string = try container.decode(String.self)
             if let date = withFractional.date(from: string) { return date }
             if let date = withoutFractional.date(from: string) { return date }
+            if let date = microFmt.date(from: string) { return date }
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date: \(string)")
         }
         return decoder

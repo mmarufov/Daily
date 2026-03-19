@@ -424,6 +424,23 @@ async def auth_apple(payload: dict, conn=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+def _format_datetime_iso(dt) -> str | None:
+    """Format datetime to ISO8601 with millisecond precision and explicit timezone.
+
+    Python's datetime.isoformat() can produce microsecond precision (6 digits)
+    and may omit timezone for naive datetimes — both break Apple's
+    ISO8601DateFormatter.  This helper normalises to 3-digit fractional seconds
+    with an explicit UTC offset.
+    """
+    if dt is None:
+        return None
+    from datetime import timezone
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat(timespec="milliseconds")
+
+
 def _parse_interests(raw) -> dict | None:
     """Parse interests from DB text column (JSON string) into a dict."""
     import json
@@ -616,9 +633,7 @@ async def get_user_preferences(
         "interests": _parse_interests(row.get("interests")),
         "ai_profile": row.get("ai_profile"),
         "completed": row.get("completed", False),
-        "completed_at": row.get("completed_at").isoformat()
-        if row.get("completed_at")
-        else None,
+        "completed_at": _format_datetime_iso(row.get("completed_at")),
     }
 
 
@@ -677,9 +692,7 @@ async def save_user_preferences(
         "interests": _parse_interests(row.get("interests")),
         "ai_profile": row.get("ai_profile"),
         "completed": row.get("completed", False),
-        "completed_at": row.get("completed_at").isoformat()
-        if row.get("completed_at")
-        else None,
+        "completed_at": _format_datetime_iso(row.get("completed_at")),
     }
 
 
@@ -809,9 +822,7 @@ Do not include any other top-level keys. Do not wrap in backticks. Do not explai
             "interests": _parse_interests(row.get("interests")),
             "ai_profile": row.get("ai_profile"),
             "completed": row.get("completed", False),
-            "completed_at": row.get("completed_at").isoformat()
-            if row.get("completed_at")
-            else None,
+            "completed_at": _format_datetime_iso(row.get("completed_at")),
         }
     except HTTPException:
         raise
