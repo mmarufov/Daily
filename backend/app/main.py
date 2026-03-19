@@ -424,6 +424,19 @@ async def auth_apple(payload: dict, conn=Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
+def _parse_interests(raw) -> dict | None:
+    """Parse interests from DB text column (JSON string) into a dict."""
+    import json
+    if raw and isinstance(raw, str):
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            return None
+    if isinstance(raw, dict):
+        return raw
+    return None
+
+
 def _require_auth(authorization: str | None) -> str:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
@@ -600,7 +613,7 @@ async def get_user_preferences(
     return {
         "id": str(row["id"]),
         "user_id": str(row["user_id"]),
-        "interests": row.get("interests"),
+        "interests": _parse_interests(row.get("interests")),
         "ai_profile": row.get("ai_profile"),
         "completed": row.get("completed", False),
         "completed_at": row.get("completed_at").isoformat()
@@ -661,7 +674,7 @@ async def save_user_preferences(
     return {
         "id": str(row["id"]),
         "user_id": str(row["user_id"]),
-        "interests": row.get("interests"),
+        "interests": _parse_interests(row.get("interests")),
         "ai_profile": row.get("ai_profile"),
         "completed": row.get("completed", False),
         "completed_at": row.get("completed_at").isoformat()
@@ -793,7 +806,7 @@ Do not include any other top-level keys. Do not wrap in backticks. Do not explai
         return {
             "id": str(row["id"]),
             "user_id": str(row["user_id"]),
-            "interests": row.get("interests"),
+            "interests": _parse_interests(row.get("interests")),
             "ai_profile": row.get("ai_profile"),
             "completed": row.get("completed", False),
             "completed_at": row.get("completed_at").isoformat()
@@ -889,9 +902,16 @@ IMPORTANT:
 async def get_feed(
     Authorization: str | None = Header(default=None),
     limit: int = 20,
+    category: str | None = None,
+    section: str | None = None,
     conn=Depends(get_db),
 ):
-    """Return a personalized news feed from the shared article pool."""
+    """Return a personalized news feed from the shared article pool.
+
+    Optional query params:
+    - section: "general" (high-relevance only) or "all" (full feed)
+    - category: filter by article category (case-insensitive)
+    """
     token = _require_auth(Authorization)
     user_id = _get_user_id_from_token(conn, token)
 
@@ -899,7 +919,9 @@ async def get_feed(
         from app.services.feed_service import get_personalized_feed
 
         _ensure_tables(conn)
-        articles = await get_personalized_feed(user_id, conn, limit=limit)
+        articles = await get_personalized_feed(
+            user_id, conn, limit=limit, category=category, section=section
+        )
         return articles
     except HTTPException:
         raise
@@ -937,6 +959,8 @@ async def get_feed_article(
 async def refresh_feed(
     Authorization: str | None = Header(default=None),
     limit: int = 20,
+    category: str | None = None,
+    section: str | None = None,
     conn=Depends(get_db),
 ):
     """Force re-score articles for this user (ignores cache)."""
@@ -947,7 +971,10 @@ async def refresh_feed(
         from app.services.feed_service import get_personalized_feed
 
         _ensure_tables(conn)
-        articles = await get_personalized_feed(user_id, conn, limit=limit, force_refresh=True)
+        articles = await get_personalized_feed(
+            user_id, conn, limit=limit, force_refresh=True,
+            category=category, section=section,
+        )
         return articles
     except HTTPException:
         raise

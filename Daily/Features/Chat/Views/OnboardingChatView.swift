@@ -11,14 +11,21 @@ struct OnboardingChatView: View {
     @StateObject private var viewModel = OnboardingChatViewModel()
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isInputFocused: Bool
-    
+
     /// Called after preferences are successfully saved.
     var onCompleted: (() -> Void)?
-    
+
     init(onCompleted: (() -> Void)? = nil) {
         self.onCompleted = onCompleted
     }
-    
+
+    private let suggestionChips: [(icon: String, text: String)] = [
+        ("cpu", "Tech & AI"),
+        ("chart.line.uptrend.xyaxis", "Business & Finance"),
+        ("globe", "World News"),
+        ("sportscourt", "Sports"),
+    ]
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -28,32 +35,36 @@ struct OnboardingChatView: View {
                     ScrollViewReader { proxy in
                         ScrollView(.vertical, showsIndicators: false) {
                             LazyVStack(spacing: AppSpacing.md) {
-                                if viewModel.messages.isEmpty {
-                                    introCard
-                                } else {
+                                introCard
+
+                                if !viewModel.messages.isEmpty {
                                     ForEach(viewModel.messages) { message in
                                         ChatBubbleView(message: message)
                                             .padding(.horizontal, AppSpacing.md)
                                     }
-                                    
-                                    if viewModel.isLoading {
-                                        HStack(spacing: AppSpacing.sm) {
-                                            ProgressView()
-                                                .tint(BrandColors.primary)
-                                            Text("Thinking about your feed…")
-                                                .font(AppTypography.bodySmall)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                            Spacer()
-                                        }
-                                        .padding(.horizontal, AppSpacing.md)
-                                        .padding(.vertical, AppSpacing.sm)
+                                }
+
+                                if viewModel.messages.count <= 1 {
+                                    chipSuggestions
+                                }
+
+                                if viewModel.isLoading {
+                                    HStack(spacing: AppSpacing.sm) {
+                                        ProgressView()
+                                            .tint(BrandColors.primary)
+                                        Text("Thinking about your feed...")
+                                            .font(AppTypography.bodySmall)
+                                            .foregroundColor(BrandColors.textSecondary)
+                                        Spacer()
                                     }
+                                    .padding(.horizontal, AppSpacing.md)
+                                    .padding(.vertical, AppSpacing.sm)
                                 }
                             }
                             .padding(.top, AppSpacing.lg)
                             .padding(.bottom, AppSpacing.xl)
                         }
-                        .onChange(of: viewModel.messages.count) { _ in
+                        .onChange(of: viewModel.messages.count) { _, _ in
                             if let lastMessage = viewModel.messages.last {
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     proxy.scrollTo(lastMessage.id, anchor: .bottom)
@@ -61,7 +72,7 @@ struct OnboardingChatView: View {
                             }
                         }
                     }
-                    
+
                     if let errorMessage = viewModel.errorMessage {
                         HStack(spacing: AppSpacing.sm) {
                             Image(systemName: "exclamationmark.triangle.fill")
@@ -77,11 +88,16 @@ struct OnboardingChatView: View {
                         .padding(.horizontal, AppSpacing.md)
                         .padding(.bottom, AppSpacing.sm)
                     }
-                    
+
+                    // Show save CTA after enough conversation
+                    if viewModel.messages.count >= 4 && !viewModel.isSaving {
+                        saveCTA
+                    }
+
                     inputArea
                 }
             }
-            .navigationTitle("Your Daily preferences")
+            .navigationTitle("Welcome to Daily")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -90,24 +106,9 @@ struct OnboardingChatView: View {
                     }
                     .font(AppTypography.body)
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        HapticService.impact(.medium)
-                        
-                        Task {
-                            do {
-                                try await viewModel.saveOnboardingPreferences()
-                                NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
-                                onCompleted?()
-                                dismiss()
-                            } catch {
-                                // surfaced via error message
-                            }
-                        }
-                    }
-                    .disabled(viewModel.messages.isEmpty || viewModel.isSaving)
-                }
+            }
+            .task {
+                viewModel.startConversation()
             }
         }
     }
@@ -116,18 +117,18 @@ struct OnboardingChatView: View {
 private extension OnboardingChatView {
     var introCard: some View {
         VStack(spacing: AppSpacing.sm) {
-            Image(systemName: "slider.horizontal.3")
+            Image(systemName: "sparkles")
                 .font(.system(size: 40, weight: .light))
                 .foregroundColor(BrandColors.primary)
                 .padding()
                 .background(BrandColors.primary.opacity(0.08))
                 .clipShape(Circle())
 
-            Text("Personalize your Daily")
+            Text("Personalize your feed")
                 .font(AppTypography.title3)
                 .foregroundColor(BrandColors.textPrimary)
 
-            Text("Tell us what topics you love, the tone you prefer, and what you’d rather skip.")
+            Text("Tell me what you're interested in and I'll curate news that actually matters to you.")
                 .font(AppTypography.subheadline)
                 .foregroundColor(BrandColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -137,10 +138,68 @@ private extension OnboardingChatView {
         .padding(AppSpacing.xl)
         .padding(.horizontal, AppSpacing.lg)
     }
-    
+
+    var chipSuggestions: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: AppSpacing.sm) {
+                ForEach(suggestionChips, id: \.text) { chip in
+                    Button {
+                        HapticService.impact(.light)
+                        viewModel.inputText = "I'm interested in \(chip.text.lowercased())"
+                        submit()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: chip.icon)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(BrandColors.primary)
+                            Text(chip.text)
+                                .font(AppTypography.caption1)
+                                .fontWeight(.medium)
+                                .foregroundColor(BrandColors.textPrimary)
+                        }
+                        .padding(.horizontal, AppSpacing.md)
+                        .padding(.vertical, AppSpacing.sm + 2)
+                        .background(
+                            Capsule()
+                                .fill(Color(.secondarySystemGroupedBackground))
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
+                        )
+                    }
+                }
+            }
+            .padding(.horizontal, AppSpacing.lg)
+        }
+    }
+
+    var saveCTA: some View {
+        Button {
+            HapticService.impact(.medium)
+            Task { await saveAndComplete() }
+        } label: {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 16, weight: .semibold))
+                Text("That's all, show me my feed")
+                    .font(AppTypography.labelLarge)
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, AppSpacing.md)
+            .background(BrandColors.primary)
+            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.button, style: .continuous))
+        }
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.bottom, AppSpacing.xs)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .animation(.easeInOut(duration: 0.3), value: viewModel.messages.count)
+    }
+
     var inputArea: some View {
         HStack(spacing: AppSpacing.sm) {
-            TextField("Type your interests…", text: $viewModel.inputText, axis: .vertical)
+            TextField("Type your interests...", text: $viewModel.inputText, axis: .vertical)
                 .font(AppTypography.body)
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.sm)
@@ -155,7 +214,7 @@ private extension OnboardingChatView {
                 .onSubmit {
                     submit()
                 }
-            
+
             Button(action: {
                 HapticService.impact(.light)
                 submit()
@@ -168,7 +227,7 @@ private extension OnboardingChatView {
                             : BrandColors.primary
                         )
                         .frame(width: 42, height: 42)
-                    
+
                     if viewModel.isLoading {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -191,11 +250,22 @@ private extension OnboardingChatView {
             alignment: .top
         )
     }
-    
+
     func submit() {
         guard !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         Task {
             await viewModel.sendMessage()
+        }
+    }
+
+    func saveAndComplete() async {
+        do {
+            try await viewModel.saveOnboardingPreferences()
+            NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
+            onCompleted?()
+            dismiss()
+        } catch {
+            // Error surfaced via viewModel.errorMessage
         }
     }
 }
@@ -205,6 +275,3 @@ private extension OnboardingChatView {
 extension Notification.Name {
     static let onboardingCompleted = Notification.Name("OnboardingCompleted")
 }
-
-
-

@@ -218,24 +218,36 @@ struct AppleBackgroundView: View {
 
 struct GlassCardModifier: ViewModifier {
     var cornerRadius: CGFloat = AppCornerRadius.xlarge
-    var shadowOpacity: Double = 0.15
 
     func body(content: Content) -> some View {
         content
-            .background(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
-            )
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 }
 
 extension View {
-    func glassCard(cornerRadius: CGFloat = AppCornerRadius.xlarge, shadowOpacity: Double = 0.12) -> some View {
-        modifier(GlassCardModifier(cornerRadius: cornerRadius, shadowOpacity: shadowOpacity))
+    func glassCard(cornerRadius: CGFloat = AppCornerRadius.xlarge) -> some View {
+        modifier(GlassCardModifier(cornerRadius: cornerRadius))
+    }
+}
+
+// MARK: - Chat Background
+
+struct ChatBackgroundView: View {
+    var body: some View {
+        ZStack {
+            Color(.systemBackground).ignoresSafeArea()
+            LinearGradient(
+                colors: [
+                    BrandColors.primary.opacity(0.03),
+                    Color(.systemBackground),
+                    BrandColors.primary.opacity(0.02)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        }
     }
 }
 

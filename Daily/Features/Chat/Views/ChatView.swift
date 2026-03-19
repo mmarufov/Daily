@@ -9,25 +9,26 @@ import SwiftUI
 
 struct ChatView: View {
     @ObservedObject var viewModel: ChatViewModel
+    @Binding var selectedTab: MainTabView.AppTab
     @FocusState private var isInputFocused: Bool
 
-    private let generalPrompts = [
-        "Summarize today's top headlines",
-        "Why does this story matter?",
-        "Give me a positive news highlight"
+    private let generalPrompts: [(icon: String, text: String)] = [
+        ("list.bullet.clipboard", "Summarize today's top headlines"),
+        ("lightbulb", "Why does this story matter?"),
+        ("sun.max", "Give me a positive news highlight")
     ]
 
-    private let articlePrompts = [
-        "Break this down for me",
-        "Why does this matter?",
-        "What's the other side?",
-        "What should I watch next?"
+    private let articlePrompts: [(icon: String, text: String)] = [
+        ("rectangle.3.group", "Break this down for me"),
+        ("lightbulb", "Why does this matter?"),
+        ("arrow.left.arrow.right", "What's the other side?"),
+        ("eye", "What should I watch next?")
     ]
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemBackground).ignoresSafeArea()
+                ChatBackgroundView()
 
                 VStack(spacing: 0) {
                     ScrollViewReader { proxy in
@@ -48,56 +49,63 @@ struct ChatView: View {
                                     ForEach(viewModel.messages) { message in
                                         ChatBubbleView(message: message)
                                             .padding(.horizontal, AppSpacing.md)
+                                            .transition(.asymmetric(
+                                                insertion: .move(edge: .bottom).combined(with: .opacity),
+                                                removal: .opacity
+                                            ))
                                     }
+                                    .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.messages.count)
 
                                     if viewModel.isLoading {
-                                        HStack(spacing: AppSpacing.sm) {
-                                            ProgressView()
-                                                .tint(BrandColors.primary)
-                                            Text("Thinking...")
-                                                .font(AppTypography.bodySmall)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                            Spacer()
-                                        }
-                                        .padding(.horizontal, AppSpacing.md)
-                                        .padding(.vertical, AppSpacing.sm)
+                                        TypingIndicatorView()
+                                            .transition(.asymmetric(
+                                                insertion: .scale(scale: 0.8).combined(with: .opacity),
+                                                removal: .opacity
+                                            ))
                                     }
                                 }
                             }
                             .padding(.top, AppSpacing.lg)
                             .padding(.bottom, AppSpacing.xl)
                         }
-                        .onChange(of: viewModel.messages.count) { _ in
-                            if let lastMessage = viewModel.messages.last {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                                }
+                        .scrollDismissesKeyboard(.interactively)
+                        .onChange(of: viewModel.messages.count) { _, _ in
+                            scrollToBottom(proxy: proxy)
+                        }
+                        .onChange(of: viewModel.isLoading) { _, isLoading in
+                            if isLoading {
+                                scrollToBottom(proxy: proxy)
                             }
                         }
                     }
 
                     if let errorMessage = viewModel.errorMessage {
-                        HStack(spacing: AppSpacing.sm) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(BrandColors.error)
-                            Text(errorMessage)
-                                .font(AppTypography.bodySmall)
-                                .foregroundColor(BrandColors.error)
-                            Spacer()
-                        }
-                        .padding(AppSpacing.md)
-                        .background(BrandColors.error.opacity(0.12))
-                        .cornerRadius(AppCornerRadius.medium)
-                        .padding(.horizontal, AppSpacing.md)
-                        .padding(.bottom, AppSpacing.sm)
+                        errorBanner(message: errorMessage)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
 
                     inputArea
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.errorMessage != nil)
             }
             .navigationTitle(viewModel.hasArticleContext ? "Discuss Article" : "AI Briefing")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        HapticService.impact(.light)
+                        withAnimation { selectedTab = .news }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("News")
+                                .font(AppTypography.bodyMedium)
+                        }
+                        .foregroundColor(BrandColors.primary)
+                    }
+                }
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if !viewModel.messages.isEmpty || viewModel.hasArticleContext {
                         Button(action: {
@@ -114,6 +122,14 @@ struct ChatView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private func scrollToBottom(proxy: ScrollViewProxy) {
+        if let lastMessage = viewModel.messages.last {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                proxy.scrollTo(lastMessage.id, anchor: .bottom)
             }
         }
     }
@@ -149,6 +165,7 @@ private extension ChatView {
         }
         .frame(maxWidth: .infinity)
         .padding(AppSpacing.xl)
+        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: AppCornerRadius.xlarge, style: .continuous))
         .padding(.horizontal, AppSpacing.lg)
     }
 
@@ -183,13 +200,20 @@ private extension ChatView {
             }
         }
         .padding(AppSpacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: AppCornerRadius.medium)
-                .fill(Color(.secondarySystemGroupedBackground))
+        .glassEffect(
+            .regular.tint(BrandColors.primary),
+            in: RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: AppCornerRadius.medium)
-                .stroke(BrandColors.primary.opacity(0.15), lineWidth: 1)
+            HStack {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(BrandColors.primary)
+                    .frame(width: 3)
+                    .padding(.vertical, AppSpacing.sm)
+                Spacer()
+            }
+            .padding(.leading, 2),
+            alignment: .leading
         )
         .padding(.horizontal, AppSpacing.md)
     }
@@ -198,31 +222,64 @@ private extension ChatView {
         let prompts = viewModel.hasArticleContext ? articlePrompts : generalPrompts
         return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppSpacing.sm) {
-                ForEach(prompts, id: \.self) { prompt in
+                ForEach(prompts, id: \.text) { prompt in
                     Button(action: {
                         HapticService.impact(.light)
-                        sendPrompt(prompt)
+                        sendPrompt(prompt.text)
                     }) {
-                        Text(prompt)
-                            .font(AppTypography.caption1)
-                            .fontWeight(.medium)
-                            .foregroundColor(BrandColors.textPrimary)
-                            .padding(.horizontal, AppSpacing.md)
-                            .padding(.vertical, AppSpacing.sm + 2)
-                            .background(
-                                Capsule()
-                                    .fill(Color(.secondarySystemGroupedBackground))
-                            )
-                            .overlay(
-                                Capsule()
-                                    .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
-                            )
-                            .clipShape(Capsule())
+                        HStack(spacing: 6) {
+                            Image(systemName: prompt.icon)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(BrandColors.primary)
+                            Text(prompt.text)
+                                .font(AppTypography.caption1)
+                                .fontWeight(.medium)
+                                .foregroundColor(BrandColors.textPrimary)
+                        }
+                        .padding(.horizontal, AppSpacing.md)
+                        .padding(.vertical, AppSpacing.sm + 2)
+                        .glassEffect(.regular.interactive(), in: .capsule)
                     }
                 }
             }
             .padding(.horizontal, AppSpacing.lg)
         }
+    }
+
+    func errorBanner(message: String) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(BrandColors.error)
+            Text(message)
+                .font(AppTypography.bodySmall)
+                .foregroundColor(BrandColors.error)
+                .lineLimit(2)
+            Spacer()
+
+            Button {
+                HapticService.impact(.light)
+                Task { await viewModel.retryLastMessage() }
+            } label: {
+                Text("Retry")
+                    .font(AppTypography.labelSmall)
+                    .foregroundColor(BrandColors.primary)
+            }
+
+            Button {
+                withAnimation { viewModel.errorMessage = nil }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(BrandColors.textTertiary)
+            }
+        }
+        .padding(AppSpacing.md)
+        .glassEffect(
+            .regular.tint(BrandColors.error),
+            in: RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous)
+        )
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.bottom, AppSpacing.sm)
     }
 
     var inputArea: some View {
@@ -233,11 +290,11 @@ private extension ChatView {
                     .padding(.horizontal, AppSpacing.md)
                     .padding(.vertical, AppSpacing.sm + 2)
                     .background(
-                        RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                        RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous)
                             .fill(Color(.secondarySystemGroupedBackground))
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: AppCornerRadius.large)
+                        RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous)
                             .stroke(
                                 isInputFocused
                                 ? BrandColors.primary.opacity(0.4)
@@ -252,50 +309,7 @@ private extension ChatView {
                     }
                     .animation(.easeInOut(duration: 0.2), value: isInputFocused)
 
-                Button(action: {
-                    HapticService.impact(.light)
-                    submitMessage()
-                }) {
-                    ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
-                                    ? [
-                                        BrandColors.textTertiary,
-                                        BrandColors.textTertiary.opacity(0.8)
-                                    ]
-                                    : [
-                                        BrandColors.primary,
-                                        BrandColors.primaryDark
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 44, height: 44)
-                            .shadow(
-                                color: viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading
-                                ? Color.clear
-                                : BrandColors.primary.opacity(0.3),
-                                radius: 10,
-                                x: 0,
-                                y: 4
-                            )
-
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        } else {
-                            Image(systemName: "arrow.up")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
-                .disabled(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading)
-                .scaleEffect(viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.isLoading ? 0.95 : 1.0)
-                .animation(.easeInOut(duration: 0.2), value: viewModel.inputText.isEmpty)
+                sendButton
             }
         }
         .padding(.horizontal, AppSpacing.md)
@@ -307,6 +321,47 @@ private extension ChatView {
                 .foregroundColor(BrandColors.textQuaternary.opacity(0.2)),
             alignment: .top
         )
+    }
+
+    @ViewBuilder
+    var sendButton: some View {
+        let canSend = !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
+
+        Button(action: {
+            HapticService.impact(.light)
+            submitMessage()
+        }) {
+            ZStack {
+                if canSend {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [BrandColors.primary, BrandColors.primaryDark],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 44, height: 44)
+                        .shadow(color: BrandColors.primary.opacity(0.3), radius: 10, x: 0, y: 4)
+                } else {
+                    Circle()
+                        .fill(BrandColors.textTertiary.opacity(0.6))
+                        .frame(width: 44, height: 44)
+                }
+
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Image(systemName: "arrow.up")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+            }
+        }
+        .disabled(!canSend)
+        .scaleEffect(canSend ? 1.0 : 0.95)
+        .animation(.easeInOut(duration: 0.2), value: canSend)
     }
 
     func submitMessage() {
@@ -322,6 +377,41 @@ private extension ChatView {
     }
 }
 
+// MARK: - Typing Indicator
+
+struct TypingIndicatorView: View {
+    @State private var animating = false
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: AppSpacing.sm) {
+            HStack(spacing: 5) {
+                ForEach(0..<3, id: \.self) { index in
+                    Circle()
+                        .fill(BrandColors.primary)
+                        .frame(width: 8, height: 8)
+                        .scaleEffect(animating ? 1.0 : 0.5)
+                        .opacity(animating ? 1.0 : 0.3)
+                        .animation(
+                            .easeInOut(duration: 0.5)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(index) * 0.15),
+                            value: animating
+                        )
+                }
+            }
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.vertical, AppSpacing.sm + 4)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+
+            Spacer(minLength: 50)
+        }
+        .padding(.horizontal, AppSpacing.md)
+        .onAppear { animating = true }
+    }
+}
+
+// MARK: - Chat Bubble
+
 struct ChatBubbleView: View {
     let message: ChatMessage
 
@@ -332,38 +422,11 @@ struct ChatBubbleView: View {
             }
 
             VStack(alignment: message.isUser ? .trailing : .leading, spacing: 4) {
-                Text(message.content)
-                    .font(AppTypography.body)
-                    .padding(.horizontal, AppSpacing.md)
-                    .padding(.vertical, AppSpacing.sm + 2)
-                    .background(bubbleBackground)
-                    .foregroundColor(message.isUser ? .white : BrandColors.textPrimary)
-                    .cornerRadius(AppCornerRadius.large)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                            .stroke(
-                                message.isUser
-                                ? Color.white.opacity(0.25)
-                                : Color.black.opacity(0.06),
-                                lineWidth: 0.5
-                            )
-                    )
-                    .shadow(
-                        color: message.isUser
-                            ? BrandColors.primary.opacity(0.2)
-                            : Color.black.opacity(0.06),
-                        radius: 10,
-                        x: 0,
-                        y: 4
-                    )
-                    .shadow(
-                        color: message.isUser
-                            ? Color.clear
-                            : Color.black.opacity(0.02),
-                        radius: 4,
-                        x: 0,
-                        y: 2
-                    )
+                if message.isUser {
+                    userBubble
+                } else {
+                    aiBubble
+                }
 
                 Text(message.timestamp, style: .time)
                     .font(AppTypography.caption2)
@@ -377,21 +440,34 @@ struct ChatBubbleView: View {
         }
     }
 
-    private var bubbleBackground: some View {
-        Group {
-            if message.isUser {
+    private var userBubble: some View {
+        Text(message.content)
+            .font(AppTypography.body)
+            .foregroundColor(.white)
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.vertical, AppSpacing.sm + 2)
+            .background(
                 LinearGradient(
                     colors: [BrandColors.primaryLight, BrandColors.primaryDark],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-            } else {
-                Color(.secondarySystemGroupedBackground)
-            }
-        }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+            .shadow(color: BrandColors.primary.opacity(0.2), radius: 10, x: 0, y: 4)
+    }
+
+    private var aiBubble: some View {
+        Text(message.content)
+            .font(AppTypography.body)
+            .foregroundColor(BrandColors.textPrimary)
+            .textSelection(.enabled)
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.vertical, AppSpacing.sm + 2)
+            .glassEffect(.clear, in: RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
     }
 }
 
 #Preview {
-    ChatView(viewModel: ChatViewModel())
+    ChatView(viewModel: ChatViewModel(), selectedTab: .constant(.chat))
 }
