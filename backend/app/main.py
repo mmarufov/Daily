@@ -50,7 +50,7 @@ async def _ingestion_loop():
                         SELECT id, url FROM public.articles
                         WHERE content_extracted = false AND url IS NOT NULL
                         ORDER BY ingested_at DESC
-                        LIMIT 10
+                        LIMIT 25
                         """
                     )
                     pending = cur.fetchall()
