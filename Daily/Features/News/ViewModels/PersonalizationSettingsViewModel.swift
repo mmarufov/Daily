@@ -52,11 +52,11 @@ final class NewsPersonalizationViewModel: ObservableObject {
         errorMessage = nil
         
         do {
-            // We only care about updating the ai_profile here.
-            // Pass an empty interests object – backend will keep the new prompt.
+            let existingPreferences = try await backendService.fetchUserPreferences(accessToken: token)
+
             _ = try await backendService.saveUserPreferences(
                 accessToken: token,
-                interests: [:],
+                interests: existingPreferences.interestsDictionary,
                 aiProfile: promptText,
                 completed: true
             )
@@ -69,5 +69,4 @@ final class NewsPersonalizationViewModel: ObservableObject {
         }
     }
 }
-
 

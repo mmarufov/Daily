@@ -396,11 +396,33 @@ final class BackendService {
 // MARK: - UserPreferencesResponse Helpers
 
 extension BackendService.UserPreferencesResponse {
-    /// Extract the user's interest topics as a simple string array.
+    /// Preserve the raw interests payload when updating only the AI profile.
+    var interestsDictionary: [String: Any] {
+        interests?.reduce(into: [:]) { partialResult, element in
+            partialResult[element.key] = element.value.value
+        } ?? [:]
+    }
+
+    /// Build topic tabs from the structured interests the onboarding flow captures.
     var topicsList: [String] {
-        guard let interests = interests,
-              let topicsValue = interests["topics"],
-              let topics = topicsValue.value as? [Any] else { return [] }
-        return topics.compactMap { $0 as? String }
+        let keys = ["topics", "industries", "people", "locations"]
+        var seen = Set<String>()
+        var result: [String] = []
+
+        for key in keys {
+            guard let values = interests?[key]?.value as? [Any] else { continue }
+
+            for value in values {
+                guard let stringValue = value as? String else { continue }
+                let trimmed = stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else { continue }
+
+                let normalized = trimmed.lowercased()
+                guard seen.insert(normalized).inserted else { continue }
+                result.append(trimmed)
+            }
+        }
+
+        return result
     }
 }
