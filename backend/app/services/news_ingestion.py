@@ -35,6 +35,12 @@ RSS_FEEDS = [
     "https://techcrunch.com/feed/",
     "https://www.wired.com/feed/rss",
     "https://9to5mac.com/feed/",
+    # AI / Machine Learning
+    "https://openai.com/blog/rss/",
+    "https://blog.google/technology/ai/rss/",
+    "https://www.artificialintelligence-news.com/feed/",
+    "https://venturebeat.com/category/ai/feed/",
+    "https://spectrum.ieee.org/feeds/topic/artificial-intelligence",
     # Business
     "https://www.cnbc.com/id/100003114/device/rss/rss.html",
     "https://fortune.com/feed/",
@@ -50,6 +56,7 @@ RSS_FEEDS = [
 
 # Map feed URL patterns to categories
 FEED_CATEGORIES = {
+    "ai": ["openai", "artificialintelligence", "artificial-intelligence", "deepmind", "/ai/"],
     "technology": ["technology", "tech", "arstechnica", "theverge", "techcrunch", "wired"],
     "world": ["world", "worldnews", "aljazeera"],
     "business": ["business", "markets", "cnbc", "bloomberg"],
@@ -174,6 +181,48 @@ async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[d
     return articles
 
 
+async def _fetch_og_image(client: httpx.AsyncClient, article: dict) -> None:
+    """Fetch og:image from an article's URL and update the article dict in place."""
+    try:
+        response = await client.get(
+            article["url"],
+            headers={"User-Agent": "Mozilla/5.0 (compatible; DailyNewsBot/1.0)"},
+        )
+        if response.status_code != 200:
+            return
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(response.text[:50000], "html.parser")
+        og_image = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
+        if og_image and og_image.get("content"):
+            article["image_url"] = og_image["content"].strip()
+    except Exception:
+        pass
+
+
+async def _fetch_og_images(articles: list[dict]) -> int:
+    """Fetch og:image for articles missing image_url. Returns count of images found."""
+    missing = [a for a in articles if not a.get("image_url")]
+    if not missing:
+        return 0
+
+    found = 0
+    semaphore = asyncio.Semaphore(10)
+
+    async def _fetch_with_limit(client, article):
+        async with semaphore:
+            await _fetch_og_image(client, article)
+
+    async with httpx.AsyncClient(timeout=5.0, follow_redirects=True) as client:
+        tasks = [_fetch_with_limit(client, a) for a in missing]
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+    for a in missing:
+        if a.get("image_url"):
+            found += 1
+
+    return found
+
+
 async def fetch_rss_feeds(conn) -> int:
     """
     Fetch all RSS feeds in parallel and insert new articles into the articles table.
@@ -203,6 +252,11 @@ async def fetch_rss_feeds(conn) -> int:
         if article["url"] not in seen_urls:
             seen_urls.add(article["url"])
             unique_articles.append(article)
+
+    # Fetch og:image for articles missing images from RSS metadata
+    og_count = await _fetch_og_images(unique_articles)
+    if og_count:
+        print(f"RSS: Fetched og:image for {og_count} articles missing RSS images")
 
     # Insert into database, skipping duplicates
     with conn.cursor() as cur:

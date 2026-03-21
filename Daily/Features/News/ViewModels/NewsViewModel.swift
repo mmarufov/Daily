@@ -248,6 +248,16 @@ final class NewsViewModel: ObservableObject {
         }
     }
 
+    private static let topicExpansions: [String: [String]] = [
+        "ai": ["artificial intelligence", "machine learning", "deep learning", "neural network", "llm", "chatgpt", "openai", "gpt", "gemini", "claude"],
+        "ml": ["machine learning", "deep learning", "neural network"],
+        "tech": ["technology", "software", "startup"],
+        "crypto": ["cryptocurrency", "bitcoin", "blockchain", "ethereum"],
+        "ev": ["electric vehicle", "tesla"],
+        "vr": ["virtual reality", "metaverse"],
+        "ar": ["augmented reality"],
+    ]
+
     private func articleMatchesTopic(_ article: NewsArticle, topic: String) -> Bool {
         let normalizedTopic = normalizedSearchText(topic)
         guard !normalizedTopic.isEmpty else { return false }
@@ -265,16 +275,36 @@ final class NewsViewModel: ObservableObject {
 
         guard !searchableText.isEmpty else { return false }
 
+        // Direct substring match (works for longer topics)
         if searchableText.contains(normalizedTopic) {
             return true
         }
 
+        // Word-boundary matching for short tokens (e.g., "ai" shouldn't match "said")
         let topicTokens = normalizedTopic
             .split(separator: " ")
             .map(String.init)
-            .filter { $0.count > 2 }
 
-        return topicTokens.count > 1 && topicTokens.allSatisfy(searchableText.contains)
+        for token in topicTokens where token.count <= 3 {
+            let pattern = "\\b\(NSRegularExpression.escapedPattern(for: token))\\b"
+            if let regex = try? NSRegularExpression(pattern: pattern),
+               regex.firstMatch(in: searchableText, range: NSRange(searchableText.startIndex..., in: searchableText)) != nil {
+                return true
+            }
+        }
+
+        // Check expanded synonyms
+        if let expansions = Self.topicExpansions[normalizedTopic] {
+            for expansion in expansions {
+                if searchableText.contains(expansion) {
+                    return true
+                }
+            }
+        }
+
+        // Multi-token: all significant tokens must appear
+        let significantTokens = topicTokens.filter { $0.count > 2 }
+        return significantTokens.count > 1 && significantTokens.allSatisfy(searchableText.contains)
     }
 
     private func normalizedSearchText(_ text: String) -> String {
@@ -313,11 +343,11 @@ final class NewsViewModel: ObservableObject {
     private func sectionParams(for section: FeedSection) -> SectionParams {
         switch section {
         case .general:
-            return SectionParams(limit: 10, category: nil, section: "general")
+            return SectionParams(limit: 15, category: nil, section: "general")
         case .all:
-            return SectionParams(limit: 30, category: nil, section: "all")
+            return SectionParams(limit: 50, category: nil, section: "all")
         case .category(let topic):
-            return SectionParams(limit: 20, category: topic, section: nil)
+            return SectionParams(limit: 30, category: topic, section: nil)
         }
     }
 }
