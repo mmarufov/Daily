@@ -62,7 +62,7 @@ async def get_personalized_feed(
             FROM public.articles
             WHERE ingested_at > now() - interval '24 hours'
             ORDER BY published_at DESC NULLS LAST
-            LIMIT 50
+            LIMIT 200
             """,
         )
         rows = cur.fetchall()
@@ -97,7 +97,7 @@ async def get_personalized_feed(
         if c.get("image_url")
         and len(
             (c.get("title", "") + (c.get("summary") or "") + (c.get("content") or ""))
-        ) >= 200
+        ) >= 100
     ]
 
     if not candidates:
@@ -149,7 +149,7 @@ def _apply_filters(
     # Filter by section
     if section == "general":
         # General: only high-relevance articles
-        result = [a for a in result if a.get("relevance_score", 0.5) >= 0.6]
+        result = [a for a in result if a.get("relevance_score", 0.5) >= 0.4]
     # "all" or None: no additional filtering
 
     return result
