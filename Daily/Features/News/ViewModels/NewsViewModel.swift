@@ -67,15 +67,13 @@ final class NewsViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 Task { [weak self] in
-                    await self?.loadUserTopics()
-                    await self?.loadSection(.general, forceRefresh: true)
+                    await self?.reloadPersonalizedSections(forceRefresh: true)
                 }
             }
             .store(in: &cancellables)
 
         Task {
-            await loadUserTopics()
-            await loadSection(.general)
+            await reloadPersonalizedSections()
         }
     }
 
@@ -86,7 +84,9 @@ final class NewsViewModel: ObservableObject {
 
         do {
             let prefs = try await backendService.fetchUserPreferences(accessToken: token)
-            userTopics = prefs.topicsList
+            userTopics = sanitizedTopics(from: prefs.topicsList)
+            validateSelectedSection()
+            refreshTopicArticleCache()
         } catch {
             // Silent failure — tabs just won't show
         }
@@ -110,6 +110,11 @@ final class NewsViewModel: ObservableObject {
     }
 
     func loadSection(_ section: FeedSection, forceRefresh: Bool = false) async {
+        if case .category(let topic) = section {
+            await loadTopicSection(topic, forceRefresh: forceRefresh)
+            return
+        }
+
         guard !loadingSections.contains(section) else { return }
 
         guard let token = authService.getAccessToken() else { return }
@@ -144,7 +149,9 @@ final class NewsViewModel: ObservableObject {
 
             switch section {
             case .general: generalArticles = normalized
-            case .all: allArticles = normalized
+            case .all:
+                allArticles = normalized
+                refreshTopicArticleCache()
             case .category(let topic): categoryArticles[topic] = normalized
             }
 
@@ -171,8 +178,12 @@ final class NewsViewModel: ObservableObject {
         isRefreshing = true
         errorMessage = nil
 
-        // Clear cache for current section and reload
-        await loadSection(selectedSection, forceRefresh: true)
+        await loadUserTopics()
+        await loadSection(.general, forceRefresh: true)
+        await loadSection(.all, forceRefresh: true)
+        if case .category(let topic) = selectedSection {
+            categoryArticles[topic] = filteredArticles(for: topic, in: allArticles)
+        }
 
         if errorMessage == nil {
             HapticService.notification(.success)
@@ -188,6 +199,115 @@ final class NewsViewModel: ObservableObject {
         let limit: Int
         let category: String?
         let section: String?
+    }
+
+    private func reloadPersonalizedSections(forceRefresh: Bool = false) async {
+        await loadUserTopics()
+        await loadSection(.general, forceRefresh: forceRefresh)
+        await loadSection(.all, forceRefresh: forceRefresh)
+    }
+
+    private func loadTopicSection(_ topic: String, forceRefresh: Bool) async {
+        let section = FeedSection.category(topic)
+        guard !loadingSections.contains(section) else { return }
+
+        loadingSections.insert(section)
+        if section == selectedSection {
+            isLoading = (categoryArticles[topic] ?? []).isEmpty
+        }
+        errorMessage = nil
+
+        if forceRefresh || allArticles.isEmpty {
+            await loadSection(.all, forceRefresh: forceRefresh)
+        }
+
+        categoryArticles[topic] = filteredArticles(for: topic, in: allArticles)
+        loadingSections.remove(section)
+
+        if section == selectedSection {
+            isLoading = false
+        }
+    }
+
+    private func refreshTopicArticleCache() {
+        guard !allArticles.isEmpty else {
+            categoryArticles = [:]
+            return
+        }
+
+        var updated: [String: [NewsArticle]] = [:]
+        for topic in userTopics {
+            updated[topic] = filteredArticles(for: topic, in: allArticles)
+        }
+        categoryArticles = updated
+    }
+
+    private func filteredArticles(for topic: String, in articles: [NewsArticle]) -> [NewsArticle] {
+        articles.filter { article in
+            articleMatchesTopic(article, topic: topic)
+        }
+    }
+
+    private func articleMatchesTopic(_ article: NewsArticle, topic: String) -> Bool {
+        let normalizedTopic = normalizedSearchText(topic)
+        guard !normalizedTopic.isEmpty else { return false }
+
+        let searchableText = normalizedSearchText([
+            article.title,
+            article.summary,
+            article.content,
+            article.author,
+            article.source,
+            article.category
+        ]
+        .compactMap { $0 }
+        .joined(separator: " "))
+
+        guard !searchableText.isEmpty else { return false }
+
+        if searchableText.contains(normalizedTopic) {
+            return true
+        }
+
+        let topicTokens = normalizedTopic
+            .split(separator: " ")
+            .map(String.init)
+            .filter { $0.count > 2 }
+
+        return topicTokens.count > 1 && topicTokens.allSatisfy(searchableText.contains)
+    }
+
+    private func normalizedSearchText(_ text: String) -> String {
+        text
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .lowercased()
+            .replacingOccurrences(of: "[^a-z0-9]+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func sanitizedTopics(from topics: [String]) -> [String] {
+        var seen = Set<String>()
+
+        return topics.compactMap { rawTopic in
+            let trimmed = rawTopic.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return nil }
+
+            let normalized = normalizedSearchText(trimmed)
+            guard !normalized.isEmpty, seen.insert(normalized).inserted else { return nil }
+            return trimmed
+        }
+    }
+
+    private func validateSelectedSection() {
+        guard case .category(let topic) = selectedSection else { return }
+
+        let hasTopic = userTopics.contains { existingTopic in
+            normalizedSearchText(existingTopic) == normalizedSearchText(topic)
+        }
+
+        if !hasTopic {
+            selectedSection = .general
+        }
     }
 
     private func sectionParams(for section: FeedSection) -> SectionParams {
