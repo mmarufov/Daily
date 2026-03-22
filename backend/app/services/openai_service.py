@@ -4,7 +4,10 @@ OpenAI Service for analyzing news articles
 import os
 import asyncio
 import json
+import logging
 from typing import Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 import httpx
 from bs4 import BeautifulSoup
@@ -29,6 +32,7 @@ class OpenAIService:
         # Note: "gpt-5" doesn't exist - using gpt-4o-mini as default
         # Valid models: gpt-4o, gpt-4o-mini, gpt-4-turbo, etc.
         self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        self.scoring_model = os.getenv("OPENAI_SCORING_MODEL", self.model)
     
     async def analyze_article(
         self,
@@ -156,10 +160,11 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         self,
         articles: List[Dict],
         user_profile: str,
+        interests: dict | None = None,
     ) -> List[float]:
         """
         Score up to 50 articles for relevance to a user profile in a SINGLE API call.
-        Uses gpt-4.1-nano (cheapest model, sufficient for classification).
+        Uses a lightweight chat completion with an explicit rubric.
 
         Returns a list of float scores (0.0-1.0), one per article.
         """
@@ -175,17 +180,27 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             article_lines.append(f"{i}. [{source}] {title}\n   {summary}")
 
         articles_text = "\n\n".join(article_lines)
+        profile_text = self._build_scoring_profile(user_profile, interests)
 
         system_prompt = (
-            "You are a news relevance scorer. Given a user profile and a list of articles, "
-            "score each article from 0.0 (not relevant) to 1.0 (highly relevant).\n\n"
-            "Return ONLY a JSON object with a single key \"scores\" containing an array of numbers, "
-            "one per article in the same order. Example: {\"scores\": [0.9, 0.3, 0.7, ...]}\n\n"
-            "Be strict: only give high scores to articles that clearly match the user's interests."
+            "You are a strict news relevance scorer.\n\n"
+            "Score each article from 0.0 to 1.0 against the user's stated interests.\n"
+            "Use this rubric exactly:\n"
+            "- 0.0: excluded topic or completely unrelated.\n"
+            "- 0.1-0.2: vaguely related, but not a real match.\n"
+            "- 0.3-0.4: minor overlap, primarily about something else.\n"
+            "- 0.5-0.6: moderately relevant, touches the user's interests.\n"
+            "- 0.7-0.8: clearly matches the user's stated interests.\n"
+            "- 0.9-1.0: perfect match, directly about core interests.\n\n"
+            "Important constraints:\n"
+            "- Excluded topics are hard negatives and should score 0.0 whenever they are central.\n"
+            "- Most articles in a general news feed will NOT match. Expect many 0.0-0.2 scores and only a few 0.7+ scores.\n"
+            "- Do not inflate scores for broad business, politics, or world news unless the article is directly about the user's interests.\n\n"
+            "Return ONLY a JSON object with a single key \"scores\" containing an array of numbers in the same order as the articles."
         )
 
         user_prompt = (
-            f"User Profile:\n{user_profile}\n\n"
+            f"User Profile:\n{profile_text}\n\n"
             f"Articles to score:\n{articles_text}\n\n"
             f"Return JSON with \"scores\" array ({len(articles)} scores, one per article)."
         )
@@ -193,7 +208,7 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         try:
             response = await asyncio.to_thread(
                 self.client.chat.completions.create,
-                model="gpt-4.1-nano",
+                model=self.scoring_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
@@ -205,16 +220,60 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             result = json.loads(response.choices[0].message.content)
             scores = result.get("scores", [])
 
-            # Ensure we have the right number of scores
-            if len(scores) < len(articles):
-                scores.extend([0.5] * (len(articles) - len(scores)))
+            if len(scores) != len(articles):
+                logger.warning(
+                    "Batch scoring returned %d scores for %d articles; normalizing response length",
+                    len(scores),
+                    len(articles),
+                )
 
-            return [float(s) for s in scores[:len(articles)]]
+            normalized_scores = [max(0.0, min(1.0, float(score))) for score in scores[:len(articles)]]
+            if len(normalized_scores) < len(articles):
+                normalized_scores.extend([0.5] * (len(articles) - len(normalized_scores)))
 
-        except Exception as e:
-            print(f"Error in batch scoring: {e}")
+            return normalized_scores
+
+        except Exception:
+            logger.exception("Error in batch scoring")
             # Fallback: return neutral scores
             return [0.5] * len(articles)
+
+    def _build_scoring_profile(self, user_profile: str, interests: dict | None = None) -> str:
+        """Combine free-form profile text with structured interests for stricter scoring."""
+        sections: List[str] = []
+
+        cleaned_profile = (user_profile or "").strip()
+        if cleaned_profile:
+            sections.append(f"Free-form profile:\n{cleaned_profile}")
+
+        if interests:
+            labels = {
+                "topics": "Topics",
+                "people": "People",
+                "locations": "Locations",
+                "industries": "Industries",
+                "excluded_topics": "Excluded topics",
+            }
+
+            structured_lines: List[str] = []
+            for key, label in labels.items():
+                values = interests.get(key)
+                if isinstance(values, list):
+                    cleaned_values = [str(value).strip() for value in values if str(value).strip()]
+                    if cleaned_values:
+                        structured_lines.append(f"- {label}: {', '.join(cleaned_values)}")
+
+            notes = interests.get("notes")
+            if isinstance(notes, str) and notes.strip():
+                structured_lines.append(f"- Notes: {notes.strip()}")
+
+            if structured_lines:
+                sections.append("Structured interests:\n" + "\n".join(structured_lines))
+
+        if not sections:
+            sections.append("No user preferences are available. Use neutral 0.5 scores.")
+
+        return "\n\n".join(sections)
 
     async def extract_article_with_tools(self, article_url: str) -> Dict:
         """
@@ -561,4 +620,3 @@ def get_openai_service() -> OpenAIService:
     if _openai_service is None:
         _openai_service = OpenAIService()
     return _openai_service
-

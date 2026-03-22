@@ -1,11 +1,15 @@
 """
 Feed service: pre-filter articles from shared pool, batch-score with AI, cache results.
 """
+import json
+import logging
 import uuid as _uuid
 from datetime import datetime, timezone, timedelta
 
 from app.services.openai_service import get_openai_service
 from app.services.content_extractor import extract_article_content
+
+logger = logging.getLogger(__name__)
 
 
 FEED_CACHE_TTL_MINUTES = 15
@@ -14,6 +18,7 @@ CANDIDATE_LOOKBACK_HOURS = 72
 CANDIDATE_QUERY_LIMIT = 150
 MAX_CANDIDATES_TO_SCORE = 80
 BACKFILL_EXTRACTION_LIMIT = 15
+GENERAL_SECTION_THRESHOLD = 0.6
 
 
 async def get_personalized_feed(
@@ -28,13 +33,13 @@ async def get_personalized_feed(
     Return a personalized news feed for the given user.
 
     1. Check cache (user_feed_cache) — return if fresh and not force_refresh
-    2. Load user's ai_profile from user_preferences
+    2. Load user's ai_profile + structured interests from user_preferences
     3. Load a large recent article pool, hydrating it on-demand if needed
     4. Batch-score the best candidates with AI in a single call
     5. Cache and return top `limit` articles
 
     Optional filters:
-    - section="general": return only high-scored articles (score >= 0.4)
+    - section="general": return only high-scored articles (score >= 0.6)
     - section="all": return full scored feed (default behavior)
     - category: filter articles by category (case-insensitive)
     """
@@ -49,14 +54,23 @@ async def get_personalized_feed(
 
     # 2. Load user preferences
     ai_profile = None
+    interests = None
     with conn.cursor() as cur:
         cur.execute(
-            "SELECT ai_profile FROM public.user_preferences WHERE user_id = %s AND completed = true",
+            "SELECT ai_profile, interests FROM public.user_preferences WHERE user_id = %s AND completed = true",
             (user_uuid,),
         )
         row = cur.fetchone()
         if row:
             ai_profile = row.get("ai_profile")
+            interests = _parse_interests(row.get("interests"))
+
+    logger.info(
+        "Feed scoring prefs loaded for user %s: ai_profile=%s interests=%s",
+        user_id,
+        bool(ai_profile),
+        bool(interests),
+    )
 
     # 3. Query a large recent candidate pool. If the pool is too thin,
     # hydrate it on-demand before asking the LLM to score anything.
@@ -69,16 +83,25 @@ async def get_personalized_feed(
         candidates = candidates[:MAX_CANDIDATES_TO_SCORE]
 
     # 4. AI scoring
-    if ai_profile:
+    if ai_profile or interests:
         openai_service = get_openai_service()
-        scores = await openai_service.score_articles_batch(candidates, ai_profile)
+        scores = await openai_service.score_articles_batch(
+            candidates,
+            ai_profile or "",
+            interests=interests,
+        )
         # Attach scores
         for i, candidate in enumerate(candidates):
             candidate["_score"] = scores[i] if i < len(scores) else 0.5
+        _log_score_distribution(scores, threshold=GENERAL_SECTION_THRESHOLD, context=f"user_id={user_id}")
     else:
         # No profile yet — just use recency (all articles get equal score)
         for candidate in candidates:
             candidate["_score"] = 0.5
+        logger.info(
+            "Feed scoring skipped for user %s: no profile or interests, using neutral scores",
+            user_id,
+        )
 
     # Sort by score descending
     candidates.sort(key=lambda x: x.get("_score", 0), reverse=True)
@@ -114,7 +137,10 @@ def _apply_filters(
     # Filter by section
     if section == "general":
         # General: only high-relevance articles
-        result = [a for a in result if a.get("relevance_score", 0.5) >= 0.4]
+        result = [
+            a for a in result
+            if a.get("relevance_score", 0.5) >= GENERAL_SECTION_THRESHOLD
+        ]
     # "all" or None: no additional filtering
 
     return result
@@ -227,8 +253,48 @@ async def _backfill_candidate_content(conn, limit: int) -> None:
                         row["id"],
                     ),
                 )
-        except Exception as exc:
-            print(f"Feed backfill: Error extracting {row['url'][:60]}: {exc}")
+        except Exception:
+            logger.exception("Feed backfill error extracting %s", row["url"])
+
+
+def _parse_interests(raw) -> dict | None:
+    """Parse interests from DB text column (JSON string) into a dict."""
+    if raw and isinstance(raw, str):
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            logger.warning("Invalid interests JSON encountered while loading preferences")
+            return None
+    if isinstance(raw, dict):
+        return raw
+    return None
+
+
+def _log_score_distribution(scores: list[float], threshold: float, context: str) -> None:
+    """Emit compact score distribution logs for debugging personalization quality."""
+    if not scores:
+        logger.info("Feed scoring produced no scores (%s)", context)
+        return
+
+    numeric_scores = [float(score) for score in scores]
+    count = len(numeric_scores)
+    above_threshold = sum(score >= threshold for score in numeric_scores)
+    low_relevance = sum(score <= 0.2 for score in numeric_scores)
+    mean_score = sum(numeric_scores) / count
+
+    logger.info(
+        "Feed score distribution (%s): count=%d min=%.2f max=%.2f mean=%.2f <=0.2=%d >=%.1f=%d <%.1f=%d",
+        context,
+        count,
+        min(numeric_scores),
+        max(numeric_scores),
+        mean_score,
+        low_relevance,
+        threshold,
+        above_threshold,
+        threshold,
+        count - above_threshold,
+    )
 
 
 def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
@@ -298,8 +364,8 @@ def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
                     """,
                     (user_uuid, _uuid.UUID(article_id), score),
                 )
-            except Exception as e:
-                print(f"Feed cache: Error caching article {article_id}: {e}")
+            except Exception:
+                logger.exception("Feed cache error caching article %s", article_id)
 
 
 async def get_article_by_id(article_id: str, conn) -> dict | None:
