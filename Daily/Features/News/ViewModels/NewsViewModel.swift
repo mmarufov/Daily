@@ -29,6 +29,8 @@ enum FeedSection: Hashable {
 
 @MainActor
 final class NewsViewModel: ObservableObject {
+    private static let generalDisplayLimit = 15
+
     @Published var selectedSection: FeedSection = .general
     @Published var userTopics: [String] = []
     @Published var isLoading: Bool = false
@@ -110,66 +112,14 @@ final class NewsViewModel: ObservableObject {
     }
 
     func loadSection(_ section: FeedSection, forceRefresh: Bool = false) async {
-        if case .category(let topic) = section {
-            await loadTopicSection(topic, forceRefresh: forceRefresh)
+        if section == .general || section == .all {
+            await loadPrimaryFeed(forceRefresh: forceRefresh)
             return
         }
 
-        guard !loadingSections.contains(section) else { return }
-
-        guard let token = authService.getAccessToken() else { return }
-
-        loadingSections.insert(section)
-        if section == selectedSection {
-            isLoading = currentArticles.isEmpty
-        }
-        errorMessage = nil
-
-        do {
-            let params = sectionParams(for: section)
-            let fetched: [NewsArticle]
-
-            if forceRefresh {
-                fetched = try await backendService.refreshFeed(
-                    accessToken: token,
-                    limit: params.limit,
-                    category: params.category,
-                    section: params.section
-                )
-            } else {
-                fetched = try await backendService.fetchFeed(
-                    accessToken: token,
-                    limit: params.limit,
-                    category: params.category,
-                    section: params.section
-                )
-            }
-
-            let normalized = fetched.map { $0.normalizedForDisplay() }
-
-            switch section {
-            case .general: generalArticles = normalized
-            case .all:
-                allArticles = normalized
-                refreshTopicArticleCache()
-            case .category(let topic): categoryArticles[topic] = normalized
-            }
-
-            lastFetchDate = Date()
-
-            if !normalized.isEmpty {
-                ImageCacheService.shared.preloadImages(for: normalized)
-            }
-        } catch {
-            let errorMsg = error.localizedDescription.lowercased()
-            if !errorMsg.contains("not found") && !errorMsg.contains("404") {
-                errorMessage = error.localizedDescription
-            }
-        }
-
-        loadingSections.remove(section)
-        if section == selectedSection {
-            isLoading = false
+        if case .category(let topic) = section {
+            await loadTopicSection(topic, forceRefresh: forceRefresh)
+            return
         }
     }
 
@@ -179,8 +129,7 @@ final class NewsViewModel: ObservableObject {
         errorMessage = nil
 
         await loadUserTopics()
-        await loadSection(.general, forceRefresh: true)
-        await loadSection(.all, forceRefresh: true)
+        await loadPrimaryFeed(forceRefresh: true)
         if case .category(let topic) = selectedSection {
             categoryArticles[topic] = filteredArticles(for: topic, in: allArticles)
         }
@@ -203,8 +152,51 @@ final class NewsViewModel: ObservableObject {
 
     private func reloadPersonalizedSections(forceRefresh: Bool = false) async {
         await loadUserTopics()
-        await loadSection(.general, forceRefresh: forceRefresh)
-        await loadSection(.all, forceRefresh: forceRefresh)
+        await loadPrimaryFeed(forceRefresh: forceRefresh)
+    }
+
+    private func loadPrimaryFeed(forceRefresh: Bool) async {
+        guard !loadingSections.contains(.all) && !loadingSections.contains(.general) else { return }
+        guard let token = authService.getAccessToken() else { return }
+
+        loadingSections.formUnion([.general, .all])
+        if selectedSection == .general || selectedSection == .all {
+            isLoading = currentArticles.isEmpty
+        }
+        errorMessage = nil
+
+        do {
+            let params = sectionParams(for: .all)
+            let fetched: [NewsArticle]
+
+            if forceRefresh {
+                fetched = try await backendService.refreshFeed(
+                    accessToken: token,
+                    limit: params.limit,
+                    category: params.category,
+                    section: params.section
+                )
+            } else {
+                fetched = try await backendService.fetchFeed(
+                    accessToken: token,
+                    limit: params.limit,
+                    category: params.category,
+                    section: params.section
+                )
+            }
+
+            applyPrimaryFeed(fetched.map { $0.normalizedForDisplay() })
+        } catch {
+            let errorMsg = error.localizedDescription.lowercased()
+            if !errorMsg.contains("not found") && !errorMsg.contains("404") {
+                errorMessage = error.localizedDescription
+            }
+        }
+
+        loadingSections.subtract([.general, .all])
+        if selectedSection == .general || selectedSection == .all {
+            isLoading = false
+        }
     }
 
     private func loadTopicSection(_ topic: String, forceRefresh: Bool) async {
@@ -218,7 +210,7 @@ final class NewsViewModel: ObservableObject {
         errorMessage = nil
 
         if forceRefresh || allArticles.isEmpty {
-            await loadSection(.all, forceRefresh: forceRefresh)
+            await loadPrimaryFeed(forceRefresh: forceRefresh)
         }
 
         categoryArticles[topic] = filteredArticles(for: topic, in: allArticles)
@@ -231,6 +223,7 @@ final class NewsViewModel: ObservableObject {
 
     private func refreshTopicArticleCache() {
         guard !allArticles.isEmpty else {
+            generalArticles = []
             categoryArticles = [:]
             return
         }
@@ -240,6 +233,17 @@ final class NewsViewModel: ObservableObject {
             updated[topic] = filteredArticles(for: topic, in: allArticles)
         }
         categoryArticles = updated
+    }
+
+    private func applyPrimaryFeed(_ articles: [NewsArticle]) {
+        allArticles = articles
+        generalArticles = Array(articles.prefix(Self.generalDisplayLimit))
+        refreshTopicArticleCache()
+        lastFetchDate = Date()
+
+        if !articles.isEmpty {
+            ImageCacheService.shared.preloadImages(for: articles)
+        }
     }
 
     private func filteredArticles(for topic: String, in articles: [NewsArticle]) -> [NewsArticle] {
@@ -343,9 +347,9 @@ final class NewsViewModel: ObservableObject {
     private func sectionParams(for section: FeedSection) -> SectionParams {
         switch section {
         case .general:
-            return SectionParams(limit: 15, category: nil, section: "general")
+            return SectionParams(limit: Self.generalDisplayLimit, category: nil, section: "general")
         case .all:
-            return SectionParams(limit: 50, category: nil, section: "all")
+            return SectionParams(limit: 120, category: nil, section: "all")
         case .category(let topic):
             return SectionParams(limit: 30, category: topic, section: nil)
         }
