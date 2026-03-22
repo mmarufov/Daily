@@ -183,19 +183,19 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         profile_text = self._build_scoring_profile(user_profile, interests)
 
         system_prompt = (
-            "You are a strict news relevance scorer.\n\n"
+            "You are a news relevance scorer.\n\n"
             "Score each article from 0.0 to 1.0 against the user's stated interests.\n"
-            "Use this rubric exactly:\n"
+            "Use this rubric:\n"
             "- 0.0: excluded topic or completely unrelated.\n"
-            "- 0.1-0.2: vaguely related, but not a real match.\n"
-            "- 0.3-0.4: minor overlap, primarily about something else.\n"
-            "- 0.5-0.6: moderately relevant, touches the user's interests.\n"
+            "- 0.1-0.2: no meaningful connection to interests.\n"
+            "- 0.3-0.4: tangentially related or adjacent topic.\n"
+            "- 0.5-0.6: relevant topic area, likely interesting to the user.\n"
             "- 0.7-0.8: clearly matches the user's stated interests.\n"
-            "- 0.9-1.0: perfect match, directly about core interests.\n\n"
+            "- 0.9-1.0: perfect match, directly about a core interest.\n\n"
             "Important constraints:\n"
             "- Excluded topics are hard negatives and should score 0.0 whenever they are central.\n"
-            "- Most articles in a general news feed will NOT match. Expect many 0.0-0.2 scores and only a few 0.7+ scores.\n"
-            "- Do not inflate scores for broad business, politics, or world news unless the article is directly about the user's interests.\n\n"
+            "- Aim for a natural distribution: roughly 20-30% of articles should score 0.5 or above.\n"
+            "- Score generously for tangentially related content — the user prefers seeing too many results over too few.\n\n"
             "Return ONLY a JSON object with a single key \"scores\" containing an array of numbers in the same order as the articles."
         )
 
