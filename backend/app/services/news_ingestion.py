@@ -206,7 +206,7 @@ async def _fetch_og_images(articles: list[dict]) -> int:
         return 0
 
     found = 0
-    semaphore = asyncio.Semaphore(10)
+    semaphore = asyncio.Semaphore(3)
 
     async def _fetch_with_limit(client, article):
         async with semaphore:
@@ -230,8 +230,14 @@ async def fetch_rss_feeds(conn) -> int:
     """
     new_count = 0
 
+    semaphore = asyncio.Semaphore(5)
+
+    async def _fetch_with_limit(client, url):
+        async with semaphore:
+            return await _fetch_single_feed(client, url)
+
     async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-        tasks = [_fetch_single_feed(client, url) for url in RSS_FEEDS]
+        tasks = [_fetch_with_limit(client, url) for url in RSS_FEEDS]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
     all_articles = []
