@@ -9,6 +9,11 @@ from app.services.content_extractor import extract_article_content
 
 
 FEED_CACHE_TTL_MINUTES = 15
+MIN_READY_CANDIDATES = 30
+CANDIDATE_LOOKBACK_HOURS = 72
+CANDIDATE_QUERY_LIMIT = 150
+MAX_CANDIDATES_TO_SCORE = 80
+BACKFILL_EXTRACTION_LIMIT = 15
 
 
 async def get_personalized_feed(
@@ -24,12 +29,12 @@ async def get_personalized_feed(
 
     1. Check cache (user_feed_cache) — return if fresh and not force_refresh
     2. Load user's ai_profile from user_preferences
-    3. Query articles table for last 24h, limit 50
-    4. Batch-score with AI in a single call
+    3. Load a large recent article pool, hydrating it on-demand if needed
+    4. Batch-score the best candidates with AI in a single call
     5. Cache and return top `limit` articles
 
     Optional filters:
-    - section="general": return only high-scored articles (score >= 0.6)
+    - section="general": return only high-scored articles (score >= 0.4)
     - section="all": return full scored feed (default behavior)
     - category: filter articles by category (case-insensitive)
     """
@@ -53,55 +58,15 @@ async def get_personalized_feed(
         if row:
             ai_profile = row.get("ai_profile")
 
-    # 3. Query candidate articles from the shared pool
-    with conn.cursor() as cur:
-        cur.execute(
-            """
-            SELECT id, url, title, summary, content, author, source_name, image_url,
-                   published_at, ingested_at, category
-            FROM public.articles
-            WHERE ingested_at > now() - interval '24 hours'
-            ORDER BY published_at DESC NULLS LAST
-            LIMIT 200
-            """,
-        )
-        rows = cur.fetchall()
-
-    if not rows:
-        return []
-
-    candidates = []
-    for row in rows:
-        published_at = row.get("published_at")
-        if isinstance(published_at, datetime):
-            published_at_str = published_at.replace(tzinfo=timezone.utc).isoformat()
-        else:
-            published_at_str = None
-
-        candidates.append({
-            "id": str(row["id"]),
-            "title": row.get("title", ""),
-            "summary": row.get("summary"),
-            "content": row.get("content"),
-            "author": row.get("author"),
-            "source": row.get("source_name"),
-            "image_url": row.get("image_url"),
-            "url": row.get("url"),
-            "published_at": published_at_str,
-            "category": row.get("category"),
-        })
-
-    # 3b. Filter out low-quality articles (no image or too short)
-    candidates = [
-        c for c in candidates
-        if c.get("image_url")
-        and len(
-            (c.get("title", "") + (c.get("summary") or "") + (c.get("content") or ""))
-        ) >= 100
-    ]
+    # 3. Query a large recent candidate pool. If the pool is too thin,
+    # hydrate it on-demand before asking the LLM to score anything.
+    candidates = await _load_ready_candidates(conn)
 
     if not candidates:
         return []
+
+    if len(candidates) > MAX_CANDIDATES_TO_SCORE:
+        candidates = candidates[:MAX_CANDIDATES_TO_SCORE]
 
     # 4. AI scoring
     if ai_profile:
@@ -155,6 +120,117 @@ def _apply_filters(
     return result
 
 
+async def _load_ready_candidates(conn) -> list[dict]:
+    """Load recent candidates, topping up ingestion/content when the pool is too small."""
+    rows = _query_candidate_rows(conn)
+    candidates = _rows_to_candidates(rows)
+
+    if len(candidates) >= MIN_READY_CANDIDATES:
+        return candidates
+
+    from app.services.news_ingestion import fetch_rss_feeds
+
+    new_count = await fetch_rss_feeds(conn)
+    if new_count:
+        rows = _query_candidate_rows(conn)
+        candidates = _rows_to_candidates(rows)
+
+    if len(candidates) >= MIN_READY_CANDIDATES:
+        return candidates
+
+    await _backfill_candidate_content(conn, limit=BACKFILL_EXTRACTION_LIMIT)
+    rows = _query_candidate_rows(conn)
+    return _rows_to_candidates(rows)
+
+
+def _query_candidate_rows(conn) -> list[dict]:
+    with conn.cursor() as cur:
+        cur.execute(
+            f"""
+            SELECT id, url, title, summary, author, source_name, image_url,
+                   published_at, ingested_at, category
+            FROM public.articles
+            WHERE COALESCE(published_at, ingested_at) > now() - interval '{CANDIDATE_LOOKBACK_HOURS} hours'
+            ORDER BY COALESCE(published_at, ingested_at) DESC
+            LIMIT {CANDIDATE_QUERY_LIMIT}
+            """,
+        )
+        return cur.fetchall()
+
+
+def _rows_to_candidates(rows: list[dict]) -> list[dict]:
+    candidates = []
+
+    for row in rows:
+        published_at = row.get("published_at")
+        if isinstance(published_at, datetime):
+            published_at_str = published_at.replace(tzinfo=timezone.utc).isoformat()
+        else:
+            published_at_str = None
+
+        text_blob = (
+            row.get("title", "")
+            + (row.get("summary") or "")
+        )
+
+        if not row.get("image_url") or len(text_blob) < 100:
+            continue
+
+        candidates.append({
+            "id": str(row["id"]),
+            "title": row.get("title", ""),
+            "summary": row.get("summary"),
+            "author": row.get("author"),
+            "source": row.get("source_name"),
+            "image_url": row.get("image_url"),
+            "url": row.get("url"),
+            "published_at": published_at_str,
+            "category": row.get("category"),
+        })
+
+    return candidates
+
+
+async def _backfill_candidate_content(conn, limit: int) -> None:
+    """Extract content/images for the newest incomplete articles before scoring."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, url
+            FROM public.articles
+            WHERE url IS NOT NULL
+              AND (content_extracted = false OR image_url IS NULL OR content IS NULL)
+            ORDER BY ingested_at DESC
+            LIMIT %s
+            """,
+            (limit,),
+        )
+        pending = cur.fetchall()
+
+    for row in pending:
+        try:
+            extracted = await extract_article_content(row["url"])
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE public.articles
+                    SET content = COALESCE(%s, content),
+                        summary = COALESCE(summary, %s),
+                        image_url = COALESCE(image_url, %s),
+                        content_extracted = true
+                    WHERE id = %s
+                    """,
+                    (
+                        extracted.get("content") or None,
+                        extracted.get("summary") or None,
+                        extracted.get("image_url") or None,
+                        row["id"],
+                    ),
+                )
+        except Exception as exc:
+            print(f"Feed backfill: Error extracting {row['url'][:60]}: {exc}")
+
+
 def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
     """Load cached feed if it's still fresh (< TTL minutes old)."""
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=FEED_CACHE_TTL_MINUTES)
@@ -163,7 +239,7 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
         cur.execute(
             """
             SELECT ufc.relevance_score, ufc.created_at,
-                   a.id, a.url, a.title, a.summary, a.content, a.author,
+                   a.id, a.url, a.title, a.summary, a.author,
                    a.source_name, a.image_url, a.published_at, a.category
             FROM public.user_feed_cache ufc
             JOIN public.articles a ON a.id = ufc.article_id
@@ -189,7 +265,6 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
             "id": str(row["id"]),
             "title": row.get("title", ""),
             "summary": row.get("summary"),
-            "content": row.get("content"),
             "author": row.get("author"),
             "source": row.get("source_name"),
             "image_url": row.get("image_url"),
