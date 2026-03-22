@@ -1,6 +1,7 @@
 """
 Feed service: pre-filter articles from shared pool, batch-score with AI, cache results.
 """
+import asyncio
 import json
 import logging
 import uuid as _uuid
@@ -18,7 +19,10 @@ CANDIDATE_LOOKBACK_HOURS = 72
 CANDIDATE_QUERY_LIMIT = 150
 MAX_CANDIDATES_TO_SCORE = 80
 BACKFILL_EXTRACTION_LIMIT = 15
+BACKFILL_CONCURRENCY = 4
 GENERAL_SECTION_THRESHOLD = 0.6
+MIN_IMMEDIATE_CANDIDATES = 10
+MIN_CANDIDATE_TEXT_LENGTH = 40
 
 
 async def get_personalized_feed(
@@ -154,6 +158,14 @@ async def _load_ready_candidates(conn) -> list[dict]:
     if len(candidates) >= MIN_READY_CANDIDATES:
         return candidates
 
+    if len(candidates) >= MIN_IMMEDIATE_CANDIDATES:
+        logger.info(
+            "Returning %d ready candidates immediately; below target pool size of %d",
+            len(candidates),
+            MIN_READY_CANDIDATES,
+        )
+        return candidates
+
     from app.services.news_ingestion import fetch_rss_feeds
 
     new_count = await fetch_rss_feeds(conn)
@@ -161,19 +173,31 @@ async def _load_ready_candidates(conn) -> list[dict]:
         rows = _query_candidate_rows(conn)
         candidates = _rows_to_candidates(rows)
 
-    if len(candidates) >= MIN_READY_CANDIDATES:
+    if candidates:
+        logger.info(
+            "Returning %d candidates after RSS ingest (new_count=%d)",
+            len(candidates),
+            new_count,
+        )
         return candidates
 
     await _backfill_candidate_content(conn, limit=BACKFILL_EXTRACTION_LIMIT)
     rows = _query_candidate_rows(conn)
-    return _rows_to_candidates(rows)
+    candidates = _rows_to_candidates(rows)
+
+    if candidates:
+        logger.info("Returning %d candidates after content backfill", len(candidates))
+    else:
+        logger.warning("No feed candidates available after ingest and backfill")
+
+    return candidates
 
 
 def _query_candidate_rows(conn) -> list[dict]:
     with conn.cursor() as cur:
         cur.execute(
             f"""
-            SELECT id, url, title, summary, author, source_name, image_url,
+            SELECT id, url, title, summary, content, author, source_name, image_url,
                    published_at, ingested_at, category
             FROM public.articles
             WHERE COALESCE(published_at, ingested_at) > now() - interval '{CANDIDATE_LOOKBACK_HOURS} hours'
@@ -194,18 +218,16 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
         else:
             published_at_str = None
 
-        text_blob = (
-            row.get("title", "")
-            + (row.get("summary") or "")
-        )
+        summary = row.get("summary") or _derive_summary(row.get("content"))
+        text_blob = f"{row.get('title', '')} {summary or ''}".strip()
 
-        if not row.get("image_url") or len(text_blob) < 100:
+        if len(text_blob) < MIN_CANDIDATE_TEXT_LENGTH:
             continue
 
         candidates.append({
             "id": str(row["id"]),
             "title": row.get("title", ""),
-            "summary": row.get("summary"),
+            "summary": summary,
             "author": row.get("author"),
             "source": row.get("source_name"),
             "image_url": row.get("image_url"),
@@ -233,9 +255,31 @@ async def _backfill_candidate_content(conn, limit: int) -> None:
         )
         pending = cur.fetchall()
 
-    for row in pending:
+    semaphore = asyncio.Semaphore(BACKFILL_CONCURRENCY)
+
+    async def _extract(row: dict) -> tuple[_uuid.UUID, dict] | None:
+        async with semaphore:
+            try:
+                return row["id"], await extract_article_content(row["url"])
+            except Exception:
+                logger.exception("Feed backfill error extracting %s", row["url"])
+                return None
+
+    results = await asyncio.gather(
+        *[_extract(row) for row in pending],
+        return_exceptions=False,
+    )
+
+    for result in results:
+        if not result:
+            continue
+
+        article_id, extracted = result
+        extracted_anything = bool(
+            extracted.get("content") or extracted.get("summary") or extracted.get("image_url")
+        )
+
         try:
-            extracted = await extract_article_content(row["url"])
             with conn.cursor() as cur:
                 cur.execute(
                     """
@@ -243,18 +287,31 @@ async def _backfill_candidate_content(conn, limit: int) -> None:
                     SET content = COALESCE(%s, content),
                         summary = COALESCE(summary, %s),
                         image_url = COALESCE(image_url, %s),
-                        content_extracted = true
+                        content_extracted = content_extracted OR %s
                     WHERE id = %s
                     """,
                     (
                         extracted.get("content") or None,
                         extracted.get("summary") or None,
                         extracted.get("image_url") or None,
-                        row["id"],
+                        extracted_anything,
+                        article_id,
                     ),
                 )
         except Exception:
-            logger.exception("Feed backfill error extracting %s", row["url"])
+            logger.exception("Feed backfill DB update failed for article %s", article_id)
+
+
+def _derive_summary(content: str | None) -> str | None:
+    """Build a compact fallback summary from extracted content when RSS summary is missing."""
+    if not content:
+        return None
+
+    collapsed = " ".join(content.split())
+    if len(collapsed) < MIN_CANDIDATE_TEXT_LENGTH:
+        return None
+
+    return collapsed[:280]
 
 
 def _parse_interests(raw) -> dict | None:
