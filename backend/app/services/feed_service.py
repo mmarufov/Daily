@@ -20,7 +20,7 @@ CANDIDATE_QUERY_LIMIT = 150
 MAX_CANDIDATES_TO_SCORE = 80
 BACKFILL_EXTRACTION_LIMIT = 15
 BACKFILL_CONCURRENCY = 4
-GENERAL_SECTION_THRESHOLD = 0.6
+GENERAL_SECTION_THRESHOLD = 0.4
 MIN_IMMEDIATE_CANDIDATES = 10
 MIN_CANDIDATE_TEXT_LENGTH = 40
 
@@ -228,6 +228,7 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
             "id": str(row["id"]),
             "title": row.get("title", ""),
             "summary": summary,
+            "content": (row.get("content") or "")[:500],
             "author": row.get("author"),
             "source": row.get("source_name"),
             "image_url": row.get("image_url"),
@@ -362,7 +363,7 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
         cur.execute(
             """
             SELECT ufc.relevance_score, ufc.created_at,
-                   a.id, a.url, a.title, a.summary, a.author,
+                   a.id, a.url, a.title, a.summary, a.content, a.author,
                    a.source_name, a.image_url, a.published_at, a.category
             FROM public.user_feed_cache ufc
             JOIN public.articles a ON a.id = ufc.article_id
@@ -388,6 +389,7 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
             "id": str(row["id"]),
             "title": row.get("title", ""),
             "summary": row.get("summary"),
+            "content": (row.get("content") or "")[:500],
             "author": row.get("author"),
             "source": row.get("source_name"),
             "image_url": row.get("image_url"),

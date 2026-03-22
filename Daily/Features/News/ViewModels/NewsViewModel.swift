@@ -29,8 +29,8 @@ enum FeedSection: Hashable {
 
 @MainActor
 final class NewsViewModel: ObservableObject {
-    private static let generalDisplayLimit = 15
-    private static let generalRelevanceThreshold = 0.6
+    private static let generalDisplayLimit = 25
+    private static let generalRelevanceThreshold = 0.4
 
     @Published var selectedSection: FeedSection = .general
     @Published var userTopics: [String] = []
@@ -251,22 +251,48 @@ final class NewsViewModel: ObservableObject {
     }
 
     private func filteredArticles(for topic: String, in articles: [NewsArticle]) -> [NewsArticle] {
-        articles.filter { article in
-            articleMatchesTopic(article, topic: topic)
+        let matched = articles.filter { articleMatchesTopic($0, topic: topic) }
+        if !matched.isEmpty { return matched }
+
+        // Fallback: match on article category field
+        let normalizedTopic = normalizedSearchText(topic)
+        let categoryMatched = articles.filter {
+            guard let cat = $0.category else { return false }
+            return normalizedSearchText(cat).contains(normalizedTopic)
+                || normalizedTopic.contains(normalizedSearchText(cat))
         }
+        if !categoryMatched.isEmpty { return categoryMatched }
+
+        // Final fallback: show top-scored articles so the tab is never empty
+        return Array(
+            articles
+                .sorted { ($0.relevanceScore ?? 0) > ($1.relevanceScore ?? 0) }
+                .prefix(10)
+        )
     }
+
+    private static let stopWords: Set<String> = [
+        "and", "or", "the", "for", "in", "of", "to", "a", "an", "with", "about"
+    ]
 
     private static let topicExpansions: [String: [String]] = [
         "ai": ["artificial intelligence", "machine learning", "deep learning", "neural network", "llm", "chatgpt", "openai", "gpt", "gemini", "claude"],
+        "artificial intelligence": ["ai", "machine learning", "deep learning", "neural network", "llm", "chatgpt", "openai", "gpt", "gemini", "claude"],
         "ml": ["machine learning", "deep learning", "neural network"],
-        "tech": ["technology", "software", "startup"],
+        "tech": ["technology", "software", "startup", "app", "digital"],
+        "technology": ["tech", "software", "startup", "app", "digital"],
         "crypto": ["cryptocurrency", "bitcoin", "blockchain", "ethereum"],
         "ev": ["electric vehicle", "tesla"],
         "vr": ["virtual reality", "metaverse"],
         "ar": ["augmented reality"],
+        "science": ["research", "study", "scientific", "discovery"],
+        "business": ["startup", "enterprise", "corporate", "economy", "market"],
+        "finance": ["stock", "market", "investment", "banking", "economy"],
+        "health": ["medical", "healthcare", "wellness", "disease", "treatment"],
+        "sports": ["football", "basketball", "soccer", "tennis", "athlete"],
     ]
 
-    private func articleMatchesTopic(_ article: NewsArticle, topic: String) -> Bool {
+    private func articleMatchesTopic(_ article: NewsArticle, topic: String, isSubTopic: Bool = false) -> Bool {
         let normalizedTopic = normalizedSearchText(topic)
         guard !normalizedTopic.isEmpty else { return false }
 
@@ -288,11 +314,12 @@ final class NewsViewModel: ObservableObject {
             return true
         }
 
-        // Word-boundary matching for short tokens (e.g., "ai" shouldn't match "said")
         let topicTokens = normalizedTopic
             .split(separator: " ")
             .map(String.init)
+            .filter { !Self.stopWords.contains($0) }
 
+        // Word-boundary matching for short tokens (e.g., "ai" shouldn't match "said")
         for token in topicTokens where token.count <= 3 {
             let pattern = "\\b\(NSRegularExpression.escapedPattern(for: token))\\b"
             if let regex = try? NSRegularExpression(pattern: pattern),
@@ -301,10 +328,22 @@ final class NewsViewModel: ObservableObject {
             }
         }
 
-        // Check expanded synonyms
-        if let expansions = Self.topicExpansions[normalizedTopic] {
-            for expansion in expansions {
-                if searchableText.contains(expansion) {
+        // Check expanded synonyms for full topic and each token
+        let keysToCheck = [normalizedTopic] + topicTokens
+        for key in keysToCheck {
+            if let expansions = Self.topicExpansions[key] {
+                for expansion in expansions {
+                    if searchableText.contains(expansion) {
+                        return true
+                    }
+                }
+            }
+        }
+
+        // Split compound topics ("AI and tech" → ["ai", "tech"]) and match sub-topics
+        if !isSubTopic && topicTokens.count > 1 {
+            for token in topicTokens where token.count > 1 {
+                if articleMatchesTopic(article, topic: token, isSubTopic: true) {
                     return true
                 }
             }
