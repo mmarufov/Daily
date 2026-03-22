@@ -30,6 +30,7 @@ enum FeedSection: Hashable {
 @MainActor
 final class NewsViewModel: ObservableObject {
     private static let generalDisplayLimit = 15
+    private static let generalRelevanceThreshold = 0.6
 
     @Published var selectedSection: FeedSection = .general
     @Published var userTopics: [String] = []
@@ -237,7 +238,10 @@ final class NewsViewModel: ObservableObject {
 
     private func applyPrimaryFeed(_ articles: [NewsArticle]) {
         allArticles = articles
-        generalArticles = Array(articles.prefix(Self.generalDisplayLimit))
+        let scored = articles.filter { ($0.relevanceScore ?? 0.0) >= Self.generalRelevanceThreshold }
+        generalArticles = scored.isEmpty
+            ? Array(articles.prefix(Self.generalDisplayLimit))
+            : Array(scored.prefix(Self.generalDisplayLimit))
         refreshTopicArticleCache()
         lastFetchDate = Date()
 

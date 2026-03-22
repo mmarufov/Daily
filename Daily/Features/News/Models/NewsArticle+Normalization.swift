@@ -12,7 +12,7 @@ import Foundation
 extension NewsArticle {
     /// Returns a copy of the article with normalized text fields for deterministic rendering.
     func normalizedForDisplay() -> NewsArticle {
-        NewsArticle(
+        var article = NewsArticle(
             id: id,
             title: ArticleTextNormalizer.normalizeInline(title),
             summary: summary.map { ArticleTextNormalizer.normalizeInline($0) },
@@ -24,6 +24,8 @@ extension NewsArticle {
             category: category?.trimmingCharacters(in: .whitespacesAndNewlines),
             url: url
         )
+        article.relevanceScore = relevanceScore
+        return article
     }
 }
 
