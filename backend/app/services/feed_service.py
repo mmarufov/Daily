@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 """
 Feed service: score articles from shared pool with AI, cache results, return personalized feed.
 """
 import asyncio
 import json
 import logging
+import re
 import uuid as _uuid
+from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+from typing import Any
 
 from app.services.content_extractor import extract_article_content
 from app.services.openai_service import get_openai_service
@@ -18,6 +23,47 @@ CANDIDATE_LOOKBACK_HOURS = 72
 CANDIDATE_QUERY_LIMIT = 150
 SCORING_BATCH_SIZE = 50
 MIN_CANDIDATE_TEXT_LENGTH = 40
+MAX_LLM_CANDIDATES = 60
+DETERMINISTIC_MATCH_THRESHOLD = 1.5
+DETERMINISTIC_STRONG_MATCH = 3.0
+DETERMINISTIC_SCORE_NORMALIZER = 8.0
+_FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
+_STOPWORDS = {
+    "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
+    "focus", "for", "from", "general", "give", "i", "in", "include", "me", "my",
+    "news", "of", "on", "or", "show", "stories", "story", "the", "to", "want", "with",
+}
+_CATEGORY_HINTS = {
+    "ai": {"ai", "artificial intelligence", "llm", "machine learning", "openai", "anthropic", "chatgpt"},
+    "technology": {"technology", "tech", "software", "hardware", "developer", "programming", "apple", "google", "microsoft"},
+    "business": {"business", "finance", "economy", "markets", "company", "companies", "startup", "startups", "venture capital"},
+    "science": {"science", "research", "medical", "medicine", "health", "biotech", "space"},
+    "sports": {"sports", "nba", "nfl", "mlb", "soccer", "football", "tennis"},
+    "world": {"world", "international", "global", "geopolitics", "europe", "asia", "middle east"},
+    "politics": {"politics", "policy", "election", "congress", "government", "white house"},
+}
+_POSITIVE_PROMPT_PATTERNS = [
+    re.compile(r"(?:interested in|care about|focus on|follow|prefer|show me|cover|about|around)\s+([^.;\n]+)", re.IGNORECASE),
+]
+_NEGATIVE_PROMPT_PATTERNS = [
+    re.compile(r"(?:avoid|exclude|skip|without|not interested in|don't want|do not want|don't show|do not show|no)\s+([^.;\n]+)", re.IGNORECASE),
+]
+
+
+@dataclass
+class PreferenceProfile:
+    positive_phrases: list[str] = field(default_factory=list)
+    negative_phrases: list[str] = field(default_factory=list)
+    keyword_terms: set[str] = field(default_factory=set)
+    preferred_categories: set[str] = field(default_factory=set)
+
+    @property
+    def has_preferences(self) -> bool:
+        return bool(self.positive_phrases or self.negative_phrases or self.keyword_terms or self.preferred_categories)
+
+    @property
+    def has_positive_signals(self) -> bool:
+        return bool(self.positive_phrases or self.keyword_terms or self.preferred_categories)
 
 
 async def get_personalized_feed(
@@ -26,42 +72,9 @@ async def get_personalized_feed(
     limit: int = 50,
     force_refresh: bool = False,
 ) -> list[dict]:
-    """
-    Return a personalized news feed for the given user.
-
-    1. Check cache (user_feed_cache) — return if fresh and not force_refresh
-    2. Load user's ai_profile + structured interests from user_preferences
-    3. Load all recent candidate articles
-    4. Batch-score ALL candidates with AI (the LLM decides relevant yes/no)
-    5. Cache and return only relevant articles, sorted by score
-    """
+    """Return a personalized news feed for the given user."""
     user_uuid = _uuid.UUID(user_id)
-
-    # 1. Check cache
-    if not force_refresh:
-        cached = _load_cached_feed(conn, user_uuid)
-        if cached is not None:
-            relevant = [a for a in cached if a.get("relevant", True)]
-            if relevant:
-                return relevant[:limit]
-            # Properly scored data has reasons — trust the cache even if nothing is relevant
-            if any(a.get("relevance_reason") for a in cached):
-                return []
-            # Pre-migration data with no reasons — treat as stale and re-score
-            logger.info("Cache for user %s has no relevant articles and no scores; treating as stale", user_id)
-
-    # 2. Load user preferences
-    ai_profile = None
-    interests = None
-    with conn.cursor() as cur:
-        cur.execute(
-            "SELECT ai_profile, interests FROM public.user_preferences WHERE user_id = %s AND completed = true",
-            (user_uuid,),
-        )
-        row = cur.fetchone()
-        if row:
-            ai_profile = row.get("ai_profile")
-            interests = _parse_interests(row.get("interests"))
+    ai_profile, interests, preferences_updated_at = _load_user_preferences(conn, user_uuid)
 
     logger.info(
         "Feed scoring prefs loaded for user %s: ai_profile=%s interests=%s",
@@ -70,73 +83,59 @@ async def get_personalized_feed(
         bool(interests),
     )
 
-    # 3. Load all recent candidates
-    candidates = await _load_ready_candidates(conn)
+    if not force_refresh:
+        cached = _load_cached_feed(conn, user_uuid, preferences_updated_at)
+        if cached is not None:
+            relevant = [a for a in cached if a.get("relevant", False)]
+            if relevant:
+                return relevant[:limit]
+            if any(a.get("relevance_reason") for a in cached):
+                return []
+            logger.info("Cache for user %s exists but lacks reasons; treating as stale", user_id)
 
+    candidates = await _load_ready_candidates(conn)
     if not candidates:
         return []
 
-    # 4. AI scoring — score ALL candidates in concurrent batches
-    if ai_profile or interests:
-        openai_service = get_openai_service()
+    profile = _build_preference_profile(ai_profile or "", interests)
 
-        batches = [
-            candidates[i:i + SCORING_BATCH_SIZE]
-            for i in range(0, len(candidates), SCORING_BATCH_SIZE)
-        ]
-
-        batch_tasks = [
-            openai_service.score_articles_batch(
-                batch,
-                ai_profile or "",
-                interests=interests,
-            )
-            for batch in batches
-        ]
-
-        batch_results_list = await asyncio.gather(*batch_tasks)
-        all_results = []
-        for batch_results in batch_results_list:
-            all_results.extend(batch_results)
-
-        # Attach scores and relevance
-        for i, candidate in enumerate(candidates):
-            if i < len(all_results):
-                candidate["_score"] = all_results[i]["score"]
-                candidate["_relevant"] = all_results[i]["relevant"]
-                candidate["_reason"] = all_results[i]["reason"]
-            else:
-                candidate["_score"] = 0.5
-                candidate["_relevant"] = True
-                candidate["_reason"] = "scoring incomplete"
-
-        _log_score_distribution(all_results, context=f"user_id={user_id}")
-    else:
-        # No profile yet — show all articles with neutral scores
+    if not profile.has_preferences:
         for candidate in candidates:
             candidate["_score"] = 0.5
             candidate["_relevant"] = True
             candidate["_reason"] = "no profile available"
-        logger.info(
-            "Feed scoring skipped for user %s: no profile or interests",
-            user_id,
-        )
+        candidates.sort(key=lambda article: article.get("published_at") or "", reverse=True)
+        _save_feed_cache(conn, user_uuid, candidates)
+        finalized = _finalize_articles(candidates)
+        return finalized[:limit]
 
-    # Sort by score descending
-    candidates.sort(key=lambda x: x.get("_score", 0), reverse=True)
+    shortlisted = _prefilter_candidates(candidates, profile)
+    if not shortlisted:
+        _save_feed_cache(conn, user_uuid, [])
+        return []
 
-    # 5. Cache ALL scored articles
-    _save_feed_cache(conn, user_uuid, candidates)
+    openai_service = get_openai_service()
+    batches = [
+        shortlisted[i:i + SCORING_BATCH_SIZE]
+        for i in range(0, len(shortlisted), SCORING_BATCH_SIZE)
+    ]
+    batch_tasks = [
+        openai_service.score_articles_batch(batch, ai_profile or "", interests=interests)
+        for batch in batches
+    ]
+    batch_results = await asyncio.gather(*batch_tasks)
+    flattened_results: list[dict] = []
+    for result_batch in batch_results:
+        flattened_results.extend(result_batch)
 
-    # Convert internal fields to response fields
-    for article in candidates:
-        article["relevance_score"] = article.pop("_score", 0.5)
-        article["relevant"] = article.pop("_relevant", True)
-        article["relevance_reason"] = article.pop("_reason", "")
-
-    # Only return articles the AI marked as relevant
-    relevant = [a for a in candidates if a.get("relevant", False)]
-
+    _apply_model_scores(shortlisted, flattened_results, profile)
+    shortlisted.sort(
+        key=lambda article: (article.get("_score", 0.0), article.get("published_at") or ""),
+        reverse=True,
+    )
+    _save_feed_cache(conn, user_uuid, shortlisted)
+    finalized = _finalize_articles(shortlisted)
+    relevant = [article for article in finalized if article.get("relevant", False)]
     return relevant[:limit]
 
 
@@ -161,6 +160,24 @@ def _log_score_distribution(results: list[dict], context: str) -> None:
         max(scores),
         mean_score,
     )
+
+
+def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, datetime | None]:
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT ai_profile, interests, updated_at
+            FROM public.user_preferences
+            WHERE user_id = %s AND completed = true
+            """,
+            (user_uuid,),
+        )
+        row = cur.fetchone()
+
+    if not row:
+        return None, None, None
+
+    return row.get("ai_profile"), _parse_interests(row.get("interests")), row.get("updated_at")
 
 
 async def _load_ready_candidates(conn) -> list[dict]:
@@ -244,7 +261,246 @@ def _parse_interests(raw) -> dict | None:
     return None
 
 
-def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
+def _normalize_text(value: str | None) -> str:
+    if not value:
+        return ""
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9+.#-]+", " ", value.lower())).strip()
+
+
+def _dedupe_terms(values: list[str]) -> list[str]:
+    seen = set()
+    deduped: list[str] = []
+    for value in values:
+        normalized = _normalize_text(value)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        deduped.append(value.strip())
+    return deduped
+
+
+def _split_profile_clause(text: str) -> list[str]:
+    return [
+        piece.strip(" ,.;:()[]{}")
+        for piece in re.split(r",|/|\band\b|\bor\b", text, flags=re.IGNORECASE)
+        if piece.strip(" ,.;:()[]{}")
+    ]
+
+
+def _extract_prompt_terms(ai_profile: str) -> tuple[list[str], list[str]]:
+    positive: list[str] = []
+    negative: list[str] = []
+
+    for pattern in _POSITIVE_PROMPT_PATTERNS:
+        for match in pattern.finditer(ai_profile):
+            positive.extend(_split_profile_clause(match.group(1)))
+
+    for pattern in _NEGATIVE_PROMPT_PATTERNS:
+        for match in pattern.finditer(ai_profile):
+            negative.extend(_split_profile_clause(match.group(1)))
+
+    return _dedupe_terms(positive), _dedupe_terms(negative)
+
+
+def _interest_values(interests: dict | None, key: str) -> list[str]:
+    if not isinstance(interests, dict):
+        return []
+    values = interests.get(key)
+    if not isinstance(values, list):
+        return []
+    return [str(value).strip() for value in values if str(value).strip()]
+
+
+def _categories_for_terms(terms: list[str]) -> set[str]:
+    categories: set[str] = set()
+    for term in terms:
+        normalized = _normalize_text(term)
+        for category, hints in _CATEGORY_HINTS.items():
+            if normalized == category or normalized in hints or any(hint in normalized for hint in hints):
+                categories.add(category)
+    return categories
+
+
+def _keyword_terms(phrases: list[str]) -> set[str]:
+    keywords: set[str] = set()
+    for phrase in phrases:
+        for token in re.findall(r"[A-Za-z0-9+.#-]{2,}", phrase.lower()):
+            if token in _STOPWORDS:
+                continue
+            keywords.add(token)
+            if len(token) > 3 and token.endswith("s"):
+                keywords.add(token[:-1])
+    return keywords
+
+
+def _build_preference_profile(ai_profile: str, interests: dict | None) -> PreferenceProfile:
+    prompt_positive, prompt_negative = _extract_prompt_terms(ai_profile)
+    positive_terms = prompt_positive + _interest_values(interests, "topics")
+    positive_terms += _interest_values(interests, "people")
+    positive_terms += _interest_values(interests, "locations")
+    positive_terms += _interest_values(interests, "industries")
+    negative_terms = prompt_negative + _interest_values(interests, "excluded_topics")
+
+    positive_phrases = _dedupe_terms(positive_terms)
+    negative_phrases = _dedupe_terms(negative_terms)
+    categories = _categories_for_terms(positive_phrases)
+    keywords = _keyword_terms(positive_phrases)
+
+    return PreferenceProfile(
+        positive_phrases=positive_phrases,
+        negative_phrases=negative_phrases,
+        keyword_terms=keywords,
+        preferred_categories=categories,
+    )
+
+
+def _candidate_search_fields(candidate: dict[str, Any]) -> dict[str, str]:
+    return {
+        "title": _normalize_text(candidate.get("title")),
+        "summary": _normalize_text(candidate.get("summary")),
+        "content": _normalize_text(candidate.get("content")),
+        "source": _normalize_text(candidate.get("source")),
+        "category": _normalize_text(candidate.get("category")),
+    }
+
+
+def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> tuple[float, str, bool]:
+    fields = _candidate_search_fields(candidate)
+    searchable = " ".join(value for value in fields.values() if value)
+
+    for phrase in profile.negative_phrases:
+        normalized = _normalize_text(phrase)
+        if normalized and normalized in searchable:
+            return 0.0, f"Excluded topic match: {phrase}", True
+
+    if not profile.has_positive_signals:
+        return 1.0, "Matches general preference constraints", False
+
+    score = 0.0
+    matched_terms: list[str] = []
+
+    for phrase in profile.positive_phrases:
+        normalized = _normalize_text(phrase)
+        if not normalized:
+            continue
+
+        if normalized in fields["title"]:
+            score += 4.0
+            matched_terms.append(phrase)
+        elif normalized in fields["category"] or normalized in fields["source"]:
+            score += 3.0
+            matched_terms.append(phrase)
+        elif normalized in fields["summary"]:
+            score += 2.0
+            matched_terms.append(phrase)
+        elif normalized in searchable:
+            score += 1.0
+            matched_terms.append(phrase)
+
+        phrase_tokens = [
+            token for token in re.findall(r"[A-Za-z0-9+.#-]{2,}", normalized)
+            if token not in _STOPWORDS
+        ]
+        if len(phrase_tokens) >= 2:
+            matched_token_count = 0
+            for token in phrase_tokens:
+                token_variants = {token}
+                if len(token) > 3 and token.endswith("s"):
+                    token_variants.add(token[:-1])
+                if any(variant and variant in searchable for variant in token_variants):
+                    matched_token_count += 1
+            if matched_token_count >= 2:
+                score += 2.0
+                matched_terms.append(phrase)
+
+    if fields["category"] in profile.preferred_categories:
+        score += 2.5
+        matched_terms.append(candidate.get("category") or fields["category"])
+
+    keyword_hits = 0
+    for keyword in profile.keyword_terms:
+        if keyword in fields["title"]:
+            keyword_hits += 2
+        elif keyword in fields["summary"] or keyword in fields["category"] or keyword in fields["source"]:
+            keyword_hits += 1
+
+    score += min(keyword_hits * 0.4, 2.4)
+
+    if score <= 0:
+        return 0.0, "No clear preference match", False
+
+    unique_matches = _dedupe_terms(matched_terms)
+    reason = "Matched: " + ", ".join(unique_matches[:3]) if unique_matches else "Matched your profile"
+    return score, reason, False
+
+
+def _prefilter_candidates(candidates: list[dict], profile: PreferenceProfile) -> list[dict]:
+    scored_candidates: list[dict] = []
+
+    for candidate in candidates:
+        score, reason, excluded = _score_candidate(candidate, profile)
+        candidate["_prefilter_score"] = score
+        candidate["_prefilter_reason"] = reason
+        candidate["_prefilter_excluded"] = excluded
+
+        if excluded:
+            continue
+        if profile.has_positive_signals and score < DETERMINISTIC_MATCH_THRESHOLD:
+            continue
+        scored_candidates.append(candidate)
+
+    scored_candidates.sort(
+        key=lambda article: (article.get("_prefilter_score", 0.0), article.get("published_at") or ""),
+        reverse=True,
+    )
+    return scored_candidates[:MAX_LLM_CANDIDATES]
+
+
+def _apply_model_scores(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
+    normalized_results = []
+    for index, candidate in enumerate(candidates):
+        if index < len(results):
+            normalized_results.append(results[index])
+        else:
+            normalized_results.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
+
+    _log_score_distribution(normalized_results, context="shortlisted")
+
+    for candidate, result in zip(candidates, normalized_results):
+        prefilter_score = float(candidate.get("_prefilter_score", 0.0))
+        deterministic_score = min(prefilter_score / DETERMINISTIC_SCORE_NORMALIZER, 1.0)
+        reason = str(result.get("reason", "")).strip()
+
+        if reason in _FALLBACK_REASONS:
+            candidate["_score"] = deterministic_score
+            candidate["_relevant"] = prefilter_score >= DETERMINISTIC_STRONG_MATCH or not profile.has_positive_signals
+            candidate["_reason"] = candidate.get("_prefilter_reason", "") or reason
+            continue
+
+        model_score = max(0.0, min(1.0, float(result.get("score", 0.0))))
+        combined_score = (model_score * 0.7) + (deterministic_score * 0.3)
+        candidate["_score"] = combined_score
+        candidate["_relevant"] = bool(result.get("relevant", False)) and (
+            prefilter_score >= DETERMINISTIC_MATCH_THRESHOLD or not profile.has_positive_signals
+        )
+        candidate["_reason"] = reason or candidate.get("_prefilter_reason", "")
+
+
+def _finalize_articles(articles: list[dict]) -> list[dict]:
+    finalized: list[dict] = []
+    for article in articles:
+        row = dict(article)
+        row["relevance_score"] = row.pop("_score", row.get("relevance_score", 0.0))
+        row["relevant"] = row.pop("_relevant", row.get("relevant", False))
+        row["relevance_reason"] = row.pop("_reason", row.get("relevance_reason", ""))
+        row.pop("_prefilter_score", None)
+        row.pop("_prefilter_reason", None)
+        row.pop("_prefilter_excluded", None)
+        finalized.append(row)
+    return finalized
+
+
+def _load_cached_feed(conn, user_uuid, preferences_updated_at: datetime | None = None) -> list[dict] | None:
     """Load cached feed if it's still fresh (< TTL minutes old)."""
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=FEED_CACHE_TTL_MINUTES)
 
@@ -264,6 +520,11 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
         rows = cur.fetchall()
 
     if not rows:
+        return None
+
+    newest_cache_entry = max((row.get("created_at") for row in rows if row.get("created_at")), default=None)
+    if preferences_updated_at and newest_cache_entry and preferences_updated_at > newest_cache_entry:
+        logger.info("Cached feed is older than preferences update; treating cache as stale")
         return None
 
     articles = []
