@@ -230,7 +230,7 @@ async def fetch_rss_feeds(conn) -> int:
     """
     new_count = 0
 
-    semaphore = asyncio.Semaphore(5)
+    semaphore = asyncio.Semaphore(10)
 
     async def _fetch_with_limit(client, url):
         async with semaphore:

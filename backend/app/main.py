@@ -43,7 +43,7 @@ async def _ingestion_loop():
                 new_count = await fetch_rss_feeds(conn)
                 print(f"Ingestion: {new_count} new articles from RSS")
 
-                # 2. Extract content for articles that don't have it yet (batch of 10)
+                # 2. Extract content for articles that don't have it yet (batch of 10, 4 concurrent)
                 with conn.cursor() as cur:
                     cur.execute(
                         """
@@ -55,36 +55,41 @@ async def _ingestion_loop():
                     )
                     pending = cur.fetchall()
 
-                for row in pending:
-                    try:
-                        extracted = await extract_article_content(row["url"])
-                        if extracted.get("content"):
-                            with conn.cursor() as cur:
-                                cur.execute(
-                                    """
-                                    UPDATE public.articles
-                                    SET content = %s,
-                                        summary = COALESCE(summary, %s),
-                                        image_url = COALESCE(image_url, %s),
-                                        content_extracted = true
-                                    WHERE id = %s
-                                    """,
-                                    (
-                                        extracted["content"],
-                                        extracted.get("summary"),
-                                        extracted.get("image_url"),
-                                        row["id"],
-                                    ),
-                                )
-                        else:
-                            # Mark as extracted even if empty to avoid retrying
-                            with conn.cursor() as cur:
-                                cur.execute(
-                                    "UPDATE public.articles SET content_extracted = true WHERE id = %s",
-                                    (row["id"],),
-                                )
-                    except Exception as e:
-                        print(f"Ingestion: Error extracting content for {row['url'][:60]}: {e}")
+                extraction_semaphore = asyncio.Semaphore(4)
+
+                async def _extract_one(row):
+                    async with extraction_semaphore:
+                        try:
+                            extracted = await extract_article_content(row["url"])
+                            if extracted.get("content"):
+                                with conn.cursor() as cur:
+                                    cur.execute(
+                                        """
+                                        UPDATE public.articles
+                                        SET content = %s,
+                                            summary = COALESCE(summary, %s),
+                                            image_url = COALESCE(image_url, %s),
+                                            content_extracted = true
+                                        WHERE id = %s
+                                        """,
+                                        (
+                                            extracted["content"],
+                                            extracted.get("summary"),
+                                            extracted.get("image_url"),
+                                            row["id"],
+                                        ),
+                                    )
+                            else:
+                                with conn.cursor() as cur:
+                                    cur.execute(
+                                        "UPDATE public.articles SET content_extracted = true WHERE id = %s",
+                                        (row["id"],),
+                                    )
+                        except Exception as e:
+                            print(f"Ingestion: Error extracting content for {row['url'][:60]}: {e}")
+
+                if pending:
+                    await asyncio.gather(*[_extract_one(row) for row in pending], return_exceptions=True)
 
                 # 3. Clean up articles older than 7 days
                 with conn.cursor() as cur:
@@ -99,8 +104,8 @@ async def _ingestion_loop():
             import traceback
             traceback.print_exc()
 
-        # Wait 5 minutes before next cycle
-        await asyncio.sleep(300)
+        # Wait 3 minutes before next cycle
+        await asyncio.sleep(180)
 
 
 @asynccontextmanager
