@@ -47,10 +47,10 @@ class _FakeConn:
 
 
 class _FakeOpenAIService:
-    async def score_articles_batch(self, batch, user_profile, interests=None):
+    async def analyze_articles_for_user(self, articles, user_profile, interests=None, batch_size=12):
         return [
-            {"relevant": False, "score": 0.0, "reason": "scoring unavailable"}
-            for _ in batch
+            {"relevant": False, "score": 0.0, "reason": "Error during analysis: timeout"}
+            for _ in articles
         ]
 
 
@@ -192,6 +192,63 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertIsNone(cached)
+
+    async def test_get_personalized_feed_uses_individual_ai_matches(self):
+        user_id = str(uuid.uuid4())
+        matching_article = {
+            "id": str(uuid.uuid4()),
+            "title": "OpenAI launches enterprise agents",
+            "summary": "A major AI product launch aimed at software teams.",
+            "content": "",
+            "source": "OpenAI",
+            "image_url": None,
+            "url": "https://example.com/openai-agents",
+            "published_at": "2026-03-23T10:00:00+00:00",
+            "category": "ai",
+        }
+        off_topic_article = {
+            "id": str(uuid.uuid4()),
+            "title": "Spring recipes for home cooks",
+            "summary": "A food roundup for the weekend.",
+            "content": "",
+            "source": "Bon Appetit",
+            "image_url": None,
+            "url": "https://example.com/food",
+            "published_at": "2026-03-23T09:00:00+00:00",
+            "category": "general",
+        }
+
+        fake_service = AsyncMock()
+        fake_service.analyze_articles_for_user.return_value = [
+            {"relevant": True, "score": 0.92, "reason": "Strong match for AI and OpenAI interests."},
+            {"relevant": False, "score": 0.03, "reason": "Not related to the user's interests."},
+        ]
+
+        with patch.object(
+            feed_service,
+            "_load_user_preferences",
+            return_value=("Show me OpenAI and AI product news.", {"topics": ["OpenAI", "AI"]}, None),
+        ), patch.object(
+            feed_service,
+            "_load_cached_feed",
+            return_value=None,
+        ), patch.object(
+            feed_service,
+            "_load_ready_candidates",
+            new=AsyncMock(return_value=[matching_article, off_topic_article]),
+        ), patch.object(
+            feed_service,
+            "_save_feed_cache",
+        ), patch.object(
+            feed_service,
+            "get_openai_service",
+            return_value=fake_service,
+        ):
+            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
+
+        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles[0]["title"], matching_article["title"])
+        self.assertEqual(articles[0]["relevance_reason"], "Strong match for AI and OpenAI interests.")
 
 
 if __name__ == "__main__":

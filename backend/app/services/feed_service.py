@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 FEED_CACHE_TTL_MINUTES = 60
-CANDIDATE_LOOKBACK_HOURS = 72
-CANDIDATE_QUERY_LIMIT = 150
-SCORING_BATCH_SIZE = 50
+CANDIDATE_LOOKBACK_HOURS = 24 * 7
+CANDIDATE_QUERY_LIMIT = 250
+SCORING_BATCH_SIZE = 12
 MIN_CANDIDATE_TEXT_LENGTH = 40
 MAX_LLM_CANDIDATES = 60
 DETERMINISTIC_MATCH_THRESHOLD = 1.5
@@ -109,32 +109,21 @@ async def get_personalized_feed(
         finalized = _finalize_articles(candidates)
         return finalized[:limit]
 
-    shortlisted = _prefilter_candidates(candidates, profile)
-    if not shortlisted:
-        _save_feed_cache(conn, user_uuid, [])
-        return []
-
     openai_service = get_openai_service()
-    batches = [
-        shortlisted[i:i + SCORING_BATCH_SIZE]
-        for i in range(0, len(shortlisted), SCORING_BATCH_SIZE)
-    ]
-    batch_tasks = [
-        openai_service.score_articles_batch(batch, ai_profile or "", interests=interests)
-        for batch in batches
-    ]
-    batch_results = await asyncio.gather(*batch_tasks)
-    flattened_results: list[dict] = []
-    for result_batch in batch_results:
-        flattened_results.extend(result_batch)
+    analysis_results = await openai_service.analyze_articles_for_user(
+        candidates,
+        ai_profile or "",
+        interests=interests,
+        batch_size=SCORING_BATCH_SIZE,
+    )
 
-    _apply_model_scores(shortlisted, flattened_results, profile)
-    shortlisted.sort(
+    _apply_individual_analysis_results(candidates, analysis_results, profile)
+    candidates.sort(
         key=lambda article: (article.get("_score", 0.0), article.get("published_at") or ""),
         reverse=True,
     )
-    _save_feed_cache(conn, user_uuid, shortlisted)
-    finalized = _finalize_articles(shortlisted)
+    _save_feed_cache(conn, user_uuid, candidates)
+    finalized = _finalize_articles(candidates)
     relevant = [article for article in finalized if article.get("relevant", False)]
     return relevant[:limit]
 
@@ -223,7 +212,8 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
             "id": str(row["id"]),
             "title": row.get("title", ""),
             "summary": summary,
-            "content": (row.get("content") or "")[:500],
+            "description": summary,
+            "content": (row.get("content") or "")[:2000],
             "author": row.get("author"),
             "source": row.get("source_name"),
             "image_url": row.get("image_url"),
@@ -456,7 +446,7 @@ def _prefilter_candidates(candidates: list[dict], profile: PreferenceProfile) ->
     return scored_candidates[:MAX_LLM_CANDIDATES]
 
 
-def _apply_model_scores(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
+def _apply_individual_analysis_results(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
     normalized_results = []
     for index, candidate in enumerate(candidates):
         if index < len(results):
@@ -464,26 +454,30 @@ def _apply_model_scores(candidates: list[dict], results: list[dict], profile: Pr
         else:
             normalized_results.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
 
-    _log_score_distribution(normalized_results, context="shortlisted")
+    _log_score_distribution(normalized_results, context="individual-analysis")
 
     for candidate, result in zip(candidates, normalized_results):
-        prefilter_score = float(candidate.get("_prefilter_score", 0.0))
+        prefilter_score, prefilter_reason, excluded = _score_candidate(candidate, profile)
         deterministic_score = min(prefilter_score / DETERMINISTIC_SCORE_NORMALIZER, 1.0)
         reason = str(result.get("reason", "")).strip()
+        model_score = max(0.0, min(1.0, float(result.get("score", 0.0))))
+        model_relevant = bool(result.get("relevant", False))
 
-        if reason in _FALLBACK_REASONS:
-            candidate["_score"] = deterministic_score
-            candidate["_relevant"] = prefilter_score >= DETERMINISTIC_STRONG_MATCH or not profile.has_positive_signals
-            candidate["_reason"] = candidate.get("_prefilter_reason", "") or reason
+        if excluded:
+            candidate["_score"] = 0.0
+            candidate["_relevant"] = False
+            candidate["_reason"] = prefilter_reason
             continue
 
-        model_score = max(0.0, min(1.0, float(result.get("score", 0.0))))
-        combined_score = (model_score * 0.7) + (deterministic_score * 0.3)
-        candidate["_score"] = combined_score
-        candidate["_relevant"] = bool(result.get("relevant", False)) and (
-            prefilter_score >= DETERMINISTIC_MATCH_THRESHOLD or not profile.has_positive_signals
-        )
-        candidate["_reason"] = reason or candidate.get("_prefilter_reason", "")
+        if reason in _FALLBACK_REASONS or reason.startswith("Error during analysis:"):
+            candidate["_score"] = deterministic_score
+            candidate["_relevant"] = prefilter_score >= DETERMINISTIC_STRONG_MATCH
+            candidate["_reason"] = prefilter_reason or reason
+            continue
+
+        candidate["_score"] = model_score
+        candidate["_relevant"] = model_relevant
+        candidate["_reason"] = reason or prefilter_reason
 
 
 def _finalize_articles(articles: list[dict]) -> list[dict]:

@@ -38,7 +38,9 @@ final class BackendService {
     /// Session with extended timeout for AI-scored feed requests.
     private let feedSession: URLSession = {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 120
+        config.timeoutIntervalForRequest = 300
+        config.timeoutIntervalForResource = 300
+        config.waitsForConnectivity = true
         return URLSession(configuration: config)
     }()
 
