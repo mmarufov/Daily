@@ -7,21 +7,17 @@ import logging
 import uuid as _uuid
 from datetime import datetime, timezone, timedelta
 
-from app.services.openai_service import get_openai_service
 from app.services.content_extractor import extract_article_content
+from app.services.openai_service import get_openai_service
 
 logger = logging.getLogger(__name__)
 
 
-FEED_CACHE_TTL_MINUTES = 15
-MIN_READY_CANDIDATES = 30
+FEED_CACHE_TTL_MINUTES = 60
 CANDIDATE_LOOKBACK_HOURS = 72
 CANDIDATE_QUERY_LIMIT = 150
-MAX_CANDIDATES_TO_SCORE = 80
-BACKFILL_EXTRACTION_LIMIT = 15
-BACKFILL_CONCURRENCY = 4
+MAX_CANDIDATES_TO_SCORE = 40
 GENERAL_SECTION_THRESHOLD = 0.4
-MIN_IMMEDIATE_CANDIDATES = 10
 MIN_CANDIDATE_TEXT_LENGTH = 40
 
 
@@ -151,45 +147,14 @@ def _apply_filters(
 
 
 async def _load_ready_candidates(conn) -> list[dict]:
-    """Load recent candidates, topping up ingestion/content when the pool is too small."""
+    """Load recent candidates from the pre-populated article pool.
+
+    The background ingestion loop keeps the pool warm — we never block
+    the request to fetch RSS or extract content on-demand.
+    """
     rows = _query_candidate_rows(conn)
     candidates = _rows_to_candidates(rows)
-
-    if len(candidates) >= MIN_READY_CANDIDATES:
-        return candidates
-
-    if len(candidates) >= MIN_IMMEDIATE_CANDIDATES:
-        logger.info(
-            "Returning %d ready candidates immediately; below target pool size of %d",
-            len(candidates),
-            MIN_READY_CANDIDATES,
-        )
-        return candidates
-
-    from app.services.news_ingestion import fetch_rss_feeds
-
-    new_count = await fetch_rss_feeds(conn)
-    if new_count:
-        rows = _query_candidate_rows(conn)
-        candidates = _rows_to_candidates(rows)
-
-    if candidates:
-        logger.info(
-            "Returning %d candidates after RSS ingest (new_count=%d)",
-            len(candidates),
-            new_count,
-        )
-        return candidates
-
-    await _backfill_candidate_content(conn, limit=BACKFILL_EXTRACTION_LIMIT)
-    rows = _query_candidate_rows(conn)
-    candidates = _rows_to_candidates(rows)
-
-    if candidates:
-        logger.info("Returning %d candidates after content backfill", len(candidates))
-    else:
-        logger.warning("No feed candidates available after ingest and backfill")
-
+    logger.info("Loaded %d ready candidates from article pool", len(candidates))
     return candidates
 
 
@@ -239,68 +204,6 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
 
     return candidates
 
-
-async def _backfill_candidate_content(conn, limit: int) -> None:
-    """Extract content/images for the newest incomplete articles before scoring."""
-    with conn.cursor() as cur:
-        cur.execute(
-            """
-            SELECT id, url
-            FROM public.articles
-            WHERE url IS NOT NULL
-              AND (content_extracted = false OR image_url IS NULL OR content IS NULL)
-            ORDER BY ingested_at DESC
-            LIMIT %s
-            """,
-            (limit,),
-        )
-        pending = cur.fetchall()
-
-    semaphore = asyncio.Semaphore(BACKFILL_CONCURRENCY)
-
-    async def _extract(row: dict) -> tuple[_uuid.UUID, dict] | None:
-        async with semaphore:
-            try:
-                return row["id"], await extract_article_content(row["url"])
-            except Exception:
-                logger.exception("Feed backfill error extracting %s", row["url"])
-                return None
-
-    results = await asyncio.gather(
-        *[_extract(row) for row in pending],
-        return_exceptions=False,
-    )
-
-    for result in results:
-        if not result:
-            continue
-
-        article_id, extracted = result
-        extracted_anything = bool(
-            extracted.get("content") or extracted.get("summary") or extracted.get("image_url")
-        )
-
-        try:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE public.articles
-                    SET content = COALESCE(%s, content),
-                        summary = COALESCE(summary, %s),
-                        image_url = COALESCE(image_url, %s),
-                        content_extracted = content_extracted OR %s
-                    WHERE id = %s
-                    """,
-                    (
-                        extracted.get("content") or None,
-                        extracted.get("summary") or None,
-                        extracted.get("image_url") or None,
-                        extracted_anything,
-                        article_id,
-                    ),
-                )
-        except Exception:
-            logger.exception("Feed backfill DB update failed for article %s", article_id)
 
 
 def _derive_summary(content: str | None) -> str | None:
