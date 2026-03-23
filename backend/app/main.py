@@ -464,6 +464,24 @@ def _parse_interests(raw) -> dict | None:
     return None
 
 
+def _has_interest_values(interests: dict | None) -> bool:
+    if not isinstance(interests, dict):
+        return False
+
+    for key in ("topics", "people", "locations", "industries", "excluded_topics"):
+        values = interests.get(key)
+        if isinstance(values, list) and any(str(value).strip() for value in values):
+            return True
+
+    notes = interests.get("notes")
+    return isinstance(notes, str) and bool(notes.strip())
+
+
+def _clear_user_feed_cache(conn, user_id: str) -> None:
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM public.user_feed_cache WHERE user_id = %s", (user_id,))
+
+
 def _require_auth(authorization: str | None) -> str:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
@@ -673,9 +691,19 @@ async def save_user_preferences(
     if not ai_profile:
         raise HTTPException(status_code=400, detail="ai_profile is required")
 
+    normalized_interests = interests if isinstance(interests, dict) else None
+    try:
+        openai_service = get_openai_service()
+        extracted_interests = await openai_service.extract_interests_from_profile(ai_profile)
+        if _has_interest_values(extracted_interests):
+            normalized_interests = extracted_interests
+    except Exception:
+        if normalized_interests is None:
+            normalized_interests = None
+
     # Prepare JSON for interests (can be None)
     import json
-    interests_json = json.dumps(interests) if interests is not None else None
+    interests_json = json.dumps(normalized_interests) if normalized_interests is not None else None
 
     with conn.cursor() as cur:
         # Upsert row for this user
@@ -695,6 +723,8 @@ async def save_user_preferences(
             (user_id, interests_json, ai_profile, completed, completed),
         )
         row = cur.fetchone()
+
+    _clear_user_feed_cache(conn, user_id)
 
     return {
         "id": str(row["id"]),
@@ -825,6 +855,8 @@ Do not include any other top-level keys. Do not wrap in backticks. Do not explai
                 (user_id, interests_json, ai_profile,),
             )
             row = cur.fetchone()
+
+        _clear_user_feed_cache(conn, user_id)
 
         return {
             "id": str(row["id"]),
@@ -998,4 +1030,3 @@ async def refresh_feed(
 # ---------------------------------------------------------------------------
 # Legacy endpoints removed — the old /news/* endpoints are replaced by /feed
 # ---------------------------------------------------------------------------
-
