@@ -206,15 +206,18 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         )
 
         try:
-            response = await asyncio.to_thread(
-                self.client.chat.completions.create,
-                model=self.scoring_model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.2,
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    self.client.chat.completions.create,
+                    model=self.scoring_model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    response_format={"type": "json_object"},
+                    temperature=0.2,
+                ),
+                timeout=20.0,
             )
 
             result = json.loads(response.choices[0].message.content)
@@ -233,9 +236,11 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
 
             return normalized_scores
 
+        except asyncio.TimeoutError:
+            logger.warning("Batch scoring timed out after 20s; using neutral scores for %d articles", len(articles))
+            return [0.5] * len(articles)
         except Exception:
             logger.exception("Error in batch scoring")
-            # Fallback: return neutral scores
             return [0.5] * len(articles)
 
     def _build_scoring_profile(self, user_profile: str, interests: dict | None = None) -> str:
