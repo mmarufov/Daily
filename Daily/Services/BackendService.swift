@@ -45,15 +45,11 @@ final class BackendService {
     /// Fetch personalized feed from the shared article pool.
     func fetchFeed(
         accessToken: String,
-        limit: Int = 20,
-        category: String? = nil,
-        section: String? = nil
+        limit: Int = 50
     ) async throws -> [NewsArticle] {
         let endpoint = baseURL.appendingPathComponent("/feed")
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
-        var queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
-        if let category { queryItems.append(URLQueryItem(name: "category", value: category)) }
-        if let section { queryItems.append(URLQueryItem(name: "section", value: section)) }
+        let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
         components?.queryItems = queryItems
 
         guard let url = components?.url else {
@@ -105,14 +101,10 @@ final class BackendService {
     /// Force re-score articles (ignores cache).
     func refreshFeed(
         accessToken: String,
-        limit: Int = 20,
-        category: String? = nil,
-        section: String? = nil
+        limit: Int = 50
     ) async throws -> [NewsArticle] {
         let endpoint = baseURL.appendingPathComponent("/feed/refresh")
-        var queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
-        if let category { queryItems.append(URLQueryItem(name: "category", value: category)) }
-        if let section { queryItems.append(URLQueryItem(name: "section", value: section)) }
+        let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
         components?.queryItems = queryItems
 

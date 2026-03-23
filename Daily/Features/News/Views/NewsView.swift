@@ -22,16 +22,7 @@ struct NewsView: View {
                         .padding(.top, AppSpacing.md)
                         .padding(.bottom, AppSpacing.lg)
 
-                    SectionTabBar(
-                        topics: viewModel.userTopics,
-                        selectedSection: Binding(
-                            get: { viewModel.selectedSection },
-                            set: { viewModel.selectSection($0) }
-                        )
-                    )
-                    .padding(.bottom, AppSpacing.lg)
-
-                    if viewModel.currentArticles.isEmpty && !viewModel.isLoading && !viewModel.isCurrentSectionLoading {
+                    if viewModel.articles.isEmpty && !viewModel.isLoading {
                         EmptyStateView(
                             icon: "newspaper",
                             title: "No articles yet",
@@ -39,7 +30,7 @@ struct NewsView: View {
                         )
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.xxl)
-                    } else if viewModel.isLoading || viewModel.isCurrentSectionLoading {
+                    } else if viewModel.isLoading {
                         skeletonLoading
                             .padding(.horizontal, AppSpacing.lg)
                             .padding(.top, AppSpacing.md)
@@ -133,54 +124,12 @@ private extension NewsView {
         }
     }
 
-    // MARK: - Feed content (varies by section)
+    // MARK: - Feed content
 
     var feedContent: some View {
-        let articles = viewModel.currentArticles
+        let articles = viewModel.articles
 
         return VStack(alignment: .leading, spacing: 0) {
-            switch viewModel.selectedSection {
-            case .general:
-                generalFeedContent(articles: articles)
-            case .all:
-                allFeedContent(articles: articles)
-            case .category:
-                categoryFeedContent(articles: articles)
-            }
-        }
-    }
-
-    // MARK: General — all hero cards
-
-    func generalFeedContent(articles: [NewsArticle]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            sectionLabel("Must Read")
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.bottom, AppSpacing.md)
-
-            ForEach(Array(articles.enumerated()), id: \.element.id) { index, article in
-                NavigationLink(destination: ArticleDetailView(article: article)) {
-                    FeaturedArticleCard(article: article, isRead: bookmarks.isRead(article.id), style: .hero)
-                }
-                .buttonStyle(PressableButtonStyle())
-                .padding(.horizontal, AppSpacing.lg)
-                .contextMenu {
-                    articleContextMenu(for: article)
-                }
-
-                if index < articles.count - 1 {
-                    HairlineDivider()
-                        .padding(.horizontal, AppSpacing.lg)
-                        .padding(.vertical, AppSpacing.lg)
-                }
-            }
-        }
-    }
-
-    // MARK: All — featured first, compact rest
-
-    func allFeedContent(articles: [NewsArticle]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
             // Top Story
             if let featured = articles.first {
                 sectionLabel("Top Story")
@@ -188,7 +137,7 @@ private extension NewsView {
                     .padding(.bottom, AppSpacing.md)
 
                 NavigationLink(destination: ArticleDetailView(article: featured)) {
-                    FeaturedArticleCard(article: featured, isRead: bookmarks.isRead(featured.id))
+                    FeaturedArticleCard(article: featured, isRead: bookmarks.isRead(featured.id), style: .hero)
                 }
                 .buttonStyle(PressableButtonStyle())
                 .padding(.horizontal, AppSpacing.lg)
@@ -225,34 +174,6 @@ private extension NewsView {
                 }
                 .padding(.horizontal, AppSpacing.lg)
             }
-        }
-    }
-
-    // MARK: Category — all compact
-
-    func categoryFeedContent(articles: [NewsArticle]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            sectionLabel(viewModel.selectedSection.displayName)
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.bottom, AppSpacing.sm)
-
-            VStack(spacing: 0) {
-                ForEach(Array(articles.enumerated()), id: \.element.id) { index, article in
-                    NavigationLink(destination: ArticleDetailView(article: article)) {
-                        CompactArticleRow(article: article, isRead: bookmarks.isRead(article.id))
-                    }
-                    .buttonStyle(PressableButtonStyle())
-                    .contextMenu {
-                        articleContextMenu(for: article)
-                    }
-
-                    if index < articles.count - 1 {
-                        HairlineDivider()
-                            .padding(.leading, AppSpacing.lg)
-                    }
-                }
-            }
-            .padding(.horizontal, AppSpacing.lg)
         }
     }
 
@@ -366,7 +287,7 @@ struct FeaturedArticleCard: View {
 
     enum CardStyle {
         case standard  // 200px image, feedHeroTitle font
-        case hero      // 260px image, articleTitle font (28pt) — for General section
+        case hero      // 260px image, articleTitle font (28pt)
     }
 
     private var imageHeight: CGFloat {

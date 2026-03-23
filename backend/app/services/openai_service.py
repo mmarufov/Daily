@@ -161,48 +161,54 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         articles: List[Dict],
         user_profile: str,
         interests: dict | None = None,
-    ) -> List[float]:
+    ) -> List[Dict]:
         """
-        Score up to 50 articles for relevance to a user profile in a SINGLE API call.
-        Uses a lightweight chat completion with an explicit rubric.
+        Score articles for relevance to a user profile in a SINGLE API call.
+        The LLM acts as sole gatekeeper — it decides relevant yes/no, score, and reason.
 
-        Returns a list of float scores (0.0-1.0), one per article.
+        Returns a list of dicts: {"relevant": bool, "score": float, "reason": str}
         """
         if not articles:
             return []
 
-        # Build numbered article list (title + summary only to save tokens)
+        # Build numbered article list with enough context for accurate decisions
         article_lines = []
         for i, article in enumerate(articles):
             title = article.get("title", "Untitled")
-            summary = (article.get("summary") or article.get("description") or "")[:200]
+            summary = (article.get("summary") or article.get("description") or "")[:500]
+            content_snippet = (article.get("content") or "")[:300]
             source = article.get("source") or article.get("source_name") or ""
-            article_lines.append(f"{i}. [{source}] {title}\n   {summary}")
+            parts = [f"{i}. [{source}] {title}", f"   {summary}"]
+            if content_snippet:
+                parts.append(f"   Content: {content_snippet}")
+            article_lines.append("\n".join(parts))
 
         articles_text = "\n\n".join(article_lines)
         profile_text = self._build_scoring_profile(user_profile, interests)
 
         system_prompt = (
-            "You are a news relevance scorer.\n\n"
-            "Score each article from 0.0 to 1.0 against the user's stated interests.\n"
-            "Use this rubric:\n"
-            "- 0.0: excluded topic or completely unrelated.\n"
-            "- 0.1-0.2: no meaningful connection to interests.\n"
-            "- 0.3-0.4: tangentially related or adjacent topic.\n"
-            "- 0.5-0.6: relevant topic area, likely interesting to the user.\n"
-            "- 0.7-0.8: clearly matches the user's stated interests.\n"
-            "- 0.9-1.0: perfect match, directly about a core interest.\n\n"
-            "Important constraints:\n"
-            "- Excluded topics are hard negatives and should score 0.0 whenever they are central.\n"
-            "- Aim for a natural distribution: roughly 20-30% of articles should score 0.5 or above.\n"
-            "- Score generously for tangentially related content — the user prefers seeing too many results over too few.\n\n"
-            "Return ONLY a JSON object with a single key \"scores\" containing an array of numbers in the same order as the articles."
+            "You are a personal news curator. Your job is to decide which articles "
+            "this specific user would genuinely want to read.\n\n"
+            "For each article, decide:\n"
+            '1. "relevant": true/false — Would this user actually want to read this? '
+            "Be strict. Only say true if the article's main subject matches their interests. "
+            "A passing mention of a keyword is NOT enough.\n"
+            '2. "score": 0.0 to 1.0 — How interesting is this to the user specifically.\n'
+            '3. "reason": one sentence — Why this article is or isn\'t relevant.\n\n'
+            "Rules:\n"
+            "- Excluded topics MUST score 0.0 and relevant=false.\n"
+            "- An article must be PRIMARILY about one of the user's interests to be relevant.\n"
+            '- If an article is about military/war but mentions "AI drones" once, it is NOT an AI article.\n'
+            "- Prefer fewer, highly relevant articles over many loosely related ones.\n"
+            '- The user should think "wow, this is exactly what I care about" for every relevant article.\n\n'
+            'Return ONLY a JSON object: {"results": [{"relevant": bool, "score": float, "reason": "..."}, ...]}\n'
+            "One entry per article, same order."
         )
 
         user_prompt = (
             f"User Profile:\n{profile_text}\n\n"
             f"Articles to score:\n{articles_text}\n\n"
-            f"Return JSON with \"scores\" array ({len(articles)} scores, one per article)."
+            f"Return JSON with \"results\" array ({len(articles)} entries, one per article)."
         )
 
         try:
@@ -217,31 +223,45 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
                     response_format={"type": "json_object"},
                     temperature=0.2,
                 ),
-                timeout=20.0,
+                timeout=45.0,
             )
 
             result = json.loads(response.choices[0].message.content)
-            scores = result.get("scores", [])
+            results_list = result.get("results", [])
 
-            if len(scores) != len(articles):
+            # Backward compat: if LLM returns old {"scores": [...]} format
+            if not results_list and "scores" in result:
+                results_list = [
+                    {"relevant": float(s) >= 0.5, "score": float(s), "reason": ""}
+                    for s in result["scores"]
+                ]
+
+            if len(results_list) != len(articles):
                 logger.warning(
-                    "Batch scoring returned %d scores for %d articles; normalizing response length",
-                    len(scores),
+                    "Batch scoring returned %d results for %d articles; normalizing",
+                    len(results_list),
                     len(articles),
                 )
 
-            normalized_scores = [max(0.0, min(1.0, float(score))) for score in scores[:len(articles)]]
-            if len(normalized_scores) < len(articles):
-                normalized_scores.extend([0.5] * (len(articles) - len(normalized_scores)))
+            normalized = []
+            for i in range(len(articles)):
+                if i < len(results_list):
+                    entry = results_list[i]
+                    score = max(0.0, min(1.0, float(entry.get("score", 0.5))))
+                    relevant = bool(entry.get("relevant", score >= 0.5))
+                    reason = str(entry.get("reason", ""))
+                    normalized.append({"relevant": relevant, "score": score, "reason": reason})
+                else:
+                    normalized.append({"relevant": True, "score": 0.5, "reason": "scoring incomplete"})
 
-            return normalized_scores
+            return normalized
 
         except asyncio.TimeoutError:
-            logger.warning("Batch scoring timed out after 20s; using neutral scores for %d articles", len(articles))
-            return [0.5] * len(articles)
+            logger.warning("Batch scoring timed out after 45s; returning fallback for %d articles", len(articles))
+            return [{"relevant": True, "score": 0.5, "reason": "scoring unavailable"} for _ in articles]
         except Exception:
             logger.exception("Error in batch scoring")
-            return [0.5] * len(articles)
+            return [{"relevant": True, "score": 0.5, "reason": "scoring error"} for _ in articles]
 
     def _build_scoring_profile(self, user_profile: str, interests: dict | None = None) -> str:
         """Combine free-form profile text with structured interests for stricter scoring."""
