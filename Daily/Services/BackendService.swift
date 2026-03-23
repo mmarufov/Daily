@@ -35,6 +35,13 @@ final class BackendService {
         return decoder
     }()
 
+    /// Session with extended timeout for AI-scored feed requests.
+    private let feedSession: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 120
+        return URLSession(configuration: config)
+    }()
+
     private init(baseURL: URL = URL(string: "https://daily-backend.fly.dev")!, urlSession: URLSession = .shared) {
         self.baseURL = baseURL
         self.urlSession = urlSession
@@ -61,7 +68,7 @@ final class BackendService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let (data, response) = try await urlSession.data(for: request)
+        let (data, response) = try await feedSession.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
             throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
@@ -117,7 +124,7 @@ final class BackendService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let (data, response) = try await urlSession.data(for: request)
+        let (data, response) = try await feedSession.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
             throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
