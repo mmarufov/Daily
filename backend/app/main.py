@@ -205,10 +205,15 @@ def _ensure_tables(conn) -> None:
                 user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
                 article_id uuid NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
                 relevance_score float NOT NULL,
+                relevant boolean DEFAULT false,
+                relevance_reason text,
                 created_at timestamptz NOT NULL DEFAULT now(),
                 PRIMARY KEY (user_id, article_id)
             );
         """)
+        # Migration: add columns for existing databases
+        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevant boolean DEFAULT false;")
+        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevance_reason text;")
 
 
 
@@ -917,17 +922,10 @@ IMPORTANT:
 @app.get("/feed")
 async def get_feed(
     Authorization: str | None = Header(default=None),
-    limit: int = 20,
-    category: str | None = None,
-    section: str | None = None,
+    limit: int = 50,
     conn=Depends(get_db),
 ):
-    """Return a personalized news feed from the shared article pool.
-
-    Optional query params:
-    - section: "general" (high-relevance only) or "all" (full feed)
-    - category: filter by article category (case-insensitive)
-    """
+    """Return a personalized news feed — AI decides what's relevant for this user."""
     token = _require_auth(Authorization)
     user_id = _get_user_id_from_token(conn, token)
 
@@ -936,7 +934,7 @@ async def get_feed(
 
         _ensure_tables(conn)
         articles = await get_personalized_feed(
-            user_id, conn, limit=limit, category=category, section=section
+            user_id, conn, limit=limit,
         )
         return articles
     except HTTPException:
@@ -974,9 +972,7 @@ async def get_feed_article(
 @app.post("/feed/refresh")
 async def refresh_feed(
     Authorization: str | None = Header(default=None),
-    limit: int = 20,
-    category: str | None = None,
-    section: str | None = None,
+    limit: int = 50,
     conn=Depends(get_db),
 ):
     """Force re-score articles for this user (ignores cache)."""
@@ -989,7 +985,6 @@ async def refresh_feed(
         _ensure_tables(conn)
         articles = await get_personalized_feed(
             user_id, conn, limit=limit, force_refresh=True,
-            category=category, section=section,
         )
         return articles
     except HTTPException:

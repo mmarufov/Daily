@@ -25,6 +25,8 @@ extension NewsArticle {
             url: url
         )
         article.relevanceScore = relevanceScore
+        article.relevant = relevant
+        article.relevanceReason = relevanceReason
         return article
     }
 }

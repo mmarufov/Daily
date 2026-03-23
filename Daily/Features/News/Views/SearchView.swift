@@ -16,22 +16,7 @@ struct SearchView: View {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else { return [] }
 
-        // Deduplicate across all loaded sections
-        var seen = Set<String>()
-        var articles: [NewsArticle] = []
-
-        for article in newsViewModel.generalArticles + newsViewModel.allArticles {
-            if seen.insert(article.id).inserted {
-                articles.append(article)
-            }
-        }
-        for (_, catArticles) in newsViewModel.categoryArticles {
-            for article in catArticles {
-                if seen.insert(article.id).inserted {
-                    articles.append(article)
-                }
-            }
-        }
+        let articles = newsViewModel.articles
 
         return articles.filter { article in
             article.title.localizedCaseInsensitiveContains(query)
