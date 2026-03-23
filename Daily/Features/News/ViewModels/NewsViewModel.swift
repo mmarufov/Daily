@@ -22,6 +22,8 @@ final class NewsViewModel: ObservableObject {
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
     private var cancellables = Set<AnyCancellable>()
+    private var isRequestInFlight = false
+    private var queuedForceRefresh = false
 
     // MARK: - Init
 
@@ -46,8 +48,16 @@ final class NewsViewModel: ObservableObject {
     func loadFeed(forceRefresh: Bool = false) async {
         guard let token = authService.getAccessToken() else { return }
 
-        if !forceRefresh {
-            isLoading = articles.isEmpty
+        if isRequestInFlight {
+            queuedForceRefresh = queuedForceRefresh || forceRefresh
+            return
+        }
+
+        isRequestInFlight = true
+        if forceRefresh {
+            isRefreshing = true
+        } else if articles.isEmpty {
+            isLoading = true
         }
         errorMessage = nil
 
@@ -72,19 +82,30 @@ final class NewsViewModel: ObservableObject {
             if !articles.isEmpty {
                 ImageCacheService.shared.preloadImages(for: articles)
             }
+        } catch is CancellationError {
+            // Ignore task cancellation so the UI keeps the last successful feed.
         } catch {
             let errorMsg = error.localizedDescription.lowercased()
-            if !errorMsg.contains("not found") && !errorMsg.contains("404") {
+            if errorMsg.contains("cancelled") || errorMsg.contains("canceled") {
+                // Ignore transient cancellation errors from overlapping refreshes.
+            } else if !errorMsg.contains("not found") && !errorMsg.contains("404") {
                 errorMessage = error.localizedDescription
             }
         }
 
+        let shouldRunQueuedRefresh = queuedForceRefresh
+        queuedForceRefresh = false
+        isRequestInFlight = false
         isLoading = false
+
+        if shouldRunQueuedRefresh {
+            await loadFeed(forceRefresh: true)
+        } else {
+            isRefreshing = false
+        }
     }
 
     func refreshFeed() async {
-        guard !isRefreshing else { return }
-        isRefreshing = true
         errorMessage = nil
 
         await loadFeed(forceRefresh: true)
