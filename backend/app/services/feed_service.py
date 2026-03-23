@@ -42,7 +42,13 @@ async def get_personalized_feed(
         cached = _load_cached_feed(conn, user_uuid)
         if cached is not None:
             relevant = [a for a in cached if a.get("relevant", True)]
-            return relevant[:limit]
+            if relevant:
+                return relevant[:limit]
+            # Properly scored data has reasons — trust the cache even if nothing is relevant
+            if any(a.get("relevance_reason") for a in cached):
+                return []
+            # Pre-migration data with no reasons — treat as stale and re-score
+            logger.info("Cache for user %s has no relevant articles and no scores; treating as stale", user_id)
 
     # 2. Load user preferences
     ai_profile = None
@@ -70,18 +76,27 @@ async def get_personalized_feed(
     if not candidates:
         return []
 
-    # 4. AI scoring — score ALL candidates in batches
+    # 4. AI scoring — score ALL candidates in concurrent batches
     if ai_profile or interests:
         openai_service = get_openai_service()
-        all_results = []
 
-        for batch_start in range(0, len(candidates), SCORING_BATCH_SIZE):
-            batch = candidates[batch_start:batch_start + SCORING_BATCH_SIZE]
-            batch_results = await openai_service.score_articles_batch(
+        batches = [
+            candidates[i:i + SCORING_BATCH_SIZE]
+            for i in range(0, len(candidates), SCORING_BATCH_SIZE)
+        ]
+
+        batch_tasks = [
+            openai_service.score_articles_batch(
                 batch,
                 ai_profile or "",
                 interests=interests,
             )
+            for batch in batches
+        ]
+
+        batch_results_list = await asyncio.gather(*batch_tasks)
+        all_results = []
+        for batch_results in batch_results_list:
             all_results.extend(batch_results)
 
         # Attach scores and relevance
