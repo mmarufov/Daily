@@ -19,6 +19,8 @@ struct NewsArticle: Identifiable, Codable, Equatable {
     let category: String?
     let url: String?
     var relevanceScore: Double? = nil
+    var relevant: Bool? = nil
+    var relevanceReason: String? = nil
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -32,6 +34,8 @@ struct NewsArticle: Identifiable, Codable, Equatable {
         case category
         case url
         case relevanceScore = "relevance_score"
+        case relevant
+        case relevanceReason = "relevance_reason"
     }
     
     // Computed property for formatted date

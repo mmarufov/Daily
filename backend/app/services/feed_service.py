@@ -1,5 +1,5 @@
 """
-Feed service: pre-filter articles from shared pool, batch-score with AI, cache results.
+Feed service: score articles from shared pool with AI, cache results, return personalized feed.
 """
 import asyncio
 import json
@@ -16,32 +16,24 @@ logger = logging.getLogger(__name__)
 FEED_CACHE_TTL_MINUTES = 60
 CANDIDATE_LOOKBACK_HOURS = 72
 CANDIDATE_QUERY_LIMIT = 150
-MAX_CANDIDATES_TO_SCORE = 40
-GENERAL_SECTION_THRESHOLD = 0.4
+SCORING_BATCH_SIZE = 50
 MIN_CANDIDATE_TEXT_LENGTH = 40
 
 
 async def get_personalized_feed(
     user_id: str,
     conn,
-    limit: int = 20,
+    limit: int = 50,
     force_refresh: bool = False,
-    category: str | None = None,
-    section: str | None = None,
 ) -> list[dict]:
     """
     Return a personalized news feed for the given user.
 
     1. Check cache (user_feed_cache) — return if fresh and not force_refresh
     2. Load user's ai_profile + structured interests from user_preferences
-    3. Load a large recent article pool, hydrating it on-demand if needed
-    4. Batch-score the best candidates with AI in a single call
-    5. Cache and return top `limit` articles
-
-    Optional filters:
-    - section="general": return only high-scored articles (score >= 0.6)
-    - section="all": return full scored feed (default behavior)
-    - category: filter articles by category (case-insensitive)
+    3. Load all recent candidate articles
+    4. Batch-score ALL candidates with AI (the LLM decides relevant yes/no)
+    5. Cache and return only relevant articles, sorted by score
     """
     user_uuid = _uuid.UUID(user_id)
 
@@ -49,8 +41,8 @@ async def get_personalized_feed(
     if not force_refresh:
         cached = _load_cached_feed(conn, user_uuid)
         if cached is not None:
-            filtered = _apply_filters(cached, category=category, section=section)
-            return filtered[:limit]
+            relevant = [a for a in cached if a.get("relevant", True)]
+            return relevant[:limit]
 
     # 2. Load user preferences
     ai_profile = None
@@ -72,86 +64,92 @@ async def get_personalized_feed(
         bool(interests),
     )
 
-    # 3. Query a large recent candidate pool. If the pool is too thin,
-    # hydrate it on-demand before asking the LLM to score anything.
+    # 3. Load all recent candidates
     candidates = await _load_ready_candidates(conn)
 
     if not candidates:
         return []
 
-    if len(candidates) > MAX_CANDIDATES_TO_SCORE:
-        candidates = candidates[:MAX_CANDIDATES_TO_SCORE]
-
-    # 4. AI scoring
+    # 4. AI scoring — score ALL candidates in batches
     if ai_profile or interests:
         openai_service = get_openai_service()
-        scores = await openai_service.score_articles_batch(
-            candidates,
-            ai_profile or "",
-            interests=interests,
-        )
-        # Attach scores
+        all_results = []
+
+        for batch_start in range(0, len(candidates), SCORING_BATCH_SIZE):
+            batch = candidates[batch_start:batch_start + SCORING_BATCH_SIZE]
+            batch_results = await openai_service.score_articles_batch(
+                batch,
+                ai_profile or "",
+                interests=interests,
+            )
+            all_results.extend(batch_results)
+
+        # Attach scores and relevance
         for i, candidate in enumerate(candidates):
-            candidate["_score"] = scores[i] if i < len(scores) else 0.5
-        _log_score_distribution(scores, threshold=GENERAL_SECTION_THRESHOLD, context=f"user_id={user_id}")
+            if i < len(all_results):
+                candidate["_score"] = all_results[i]["score"]
+                candidate["_relevant"] = all_results[i]["relevant"]
+                candidate["_reason"] = all_results[i]["reason"]
+            else:
+                candidate["_score"] = 0.5
+                candidate["_relevant"] = True
+                candidate["_reason"] = "scoring incomplete"
+
+        _log_score_distribution(all_results, context=f"user_id={user_id}")
     else:
-        # No profile yet — just use recency (all articles get equal score)
+        # No profile yet — show all articles with neutral scores
         for candidate in candidates:
             candidate["_score"] = 0.5
+            candidate["_relevant"] = True
+            candidate["_reason"] = "no profile available"
         logger.info(
-            "Feed scoring skipped for user %s: no profile or interests, using neutral scores",
+            "Feed scoring skipped for user %s: no profile or interests",
             user_id,
         )
 
     # Sort by score descending
     candidates.sort(key=lambda x: x.get("_score", 0), reverse=True)
 
-    # 5. Cache results (cache ALL scored articles, not just the filtered subset)
+    # 5. Cache ALL scored articles
     _save_feed_cache(conn, user_uuid, candidates)
 
-    # Move _score to relevance_score for the response
+    # Convert internal fields to response fields
     for article in candidates:
         article["relevance_score"] = article.pop("_score", 0.5)
+        article["relevant"] = article.pop("_relevant", True)
+        article["relevance_reason"] = article.pop("_reason", "")
 
-    # Apply section/category filters
-    filtered = _apply_filters(candidates, category=category, section=section)
+    # Only return articles the AI marked as relevant
+    relevant = [a for a in candidates if a.get("relevant", False)]
 
-    return filtered[:limit]
+    return relevant[:limit]
 
 
-def _apply_filters(
-    articles: list[dict],
-    category: str | None = None,
-    section: str | None = None,
-) -> list[dict]:
-    """Apply section and category filters to a list of scored articles."""
-    result = articles
+def _log_score_distribution(results: list[dict], context: str) -> None:
+    """Emit compact score distribution logs for debugging personalization quality."""
+    if not results:
+        logger.info("Feed scoring produced no results (%s)", context)
+        return
 
-    # Filter by category (case-insensitive)
-    if category:
-        result = [
-            a for a in result
-            if a.get("category", "").lower() == category.lower()
-        ]
+    scores = [float(r.get("score", 0.5)) for r in results]
+    relevant_count = sum(1 for r in results if r.get("relevant", False))
+    count = len(scores)
+    mean_score = sum(scores) / count
 
-    # Filter by section
-    if section == "general":
-        # General: only high-relevance articles
-        result = [
-            a for a in result
-            if a.get("relevance_score", 0.5) >= GENERAL_SECTION_THRESHOLD
-        ]
-    # "all" or None: no additional filtering
-
-    return result
+    logger.info(
+        "Feed score distribution (%s): total=%d relevant=%d rejected=%d min=%.2f max=%.2f mean=%.2f",
+        context,
+        count,
+        relevant_count,
+        count - relevant_count,
+        min(scores),
+        max(scores),
+        mean_score,
+    )
 
 
 async def _load_ready_candidates(conn) -> list[dict]:
-    """Load recent candidates from the pre-populated article pool.
-
-    The background ingestion loop keeps the pool warm — we never block
-    the request to fetch RSS or extract content on-demand.
-    """
+    """Load recent candidates from the pre-populated article pool."""
     rows = _query_candidate_rows(conn)
     candidates = _rows_to_candidates(rows)
     logger.info("Loaded %d ready candidates from article pool", len(candidates))
@@ -231,33 +229,6 @@ def _parse_interests(raw) -> dict | None:
     return None
 
 
-def _log_score_distribution(scores: list[float], threshold: float, context: str) -> None:
-    """Emit compact score distribution logs for debugging personalization quality."""
-    if not scores:
-        logger.info("Feed scoring produced no scores (%s)", context)
-        return
-
-    numeric_scores = [float(score) for score in scores]
-    count = len(numeric_scores)
-    above_threshold = sum(score >= threshold for score in numeric_scores)
-    low_relevance = sum(score <= 0.2 for score in numeric_scores)
-    mean_score = sum(numeric_scores) / count
-
-    logger.info(
-        "Feed score distribution (%s): count=%d min=%.2f max=%.2f mean=%.2f <=0.2=%d >=%.1f=%d <%.1f=%d",
-        context,
-        count,
-        min(numeric_scores),
-        max(numeric_scores),
-        mean_score,
-        low_relevance,
-        threshold,
-        above_threshold,
-        threshold,
-        count - above_threshold,
-    )
-
-
 def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
     """Load cached feed if it's still fresh (< TTL minutes old)."""
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=FEED_CACHE_TTL_MINUTES)
@@ -265,7 +236,7 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT ufc.relevance_score, ufc.created_at,
+            SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
                    a.id, a.url, a.title, a.summary, a.content, a.author,
                    a.source_name, a.image_url, a.published_at, a.category
             FROM public.user_feed_cache ufc
@@ -300,6 +271,8 @@ def _load_cached_feed(conn, user_uuid) -> list[dict] | None:
             "published_at": published_at_str,
             "category": row.get("category"),
             "relevance_score": row.get("relevance_score"),
+            "relevant": row.get("relevant", True),
+            "relevance_reason": row.get("relevance_reason", ""),
         })
 
     return articles
@@ -314,17 +287,23 @@ def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
             (user_uuid,),
         )
 
-        for i, article in enumerate(articles):
+        for article in articles:
             article_id = article.get("id")
             score = article.get("_score", 0.5)
+            relevant = article.get("_relevant", True)
+            reason = article.get("_reason", "")
             try:
                 cur.execute(
                     """
-                    INSERT INTO public.user_feed_cache (user_id, article_id, relevance_score)
-                    VALUES (%s, %s, %s)
-                    ON CONFLICT (user_id, article_id) DO UPDATE SET relevance_score = EXCLUDED.relevance_score, created_at = now()
+                    INSERT INTO public.user_feed_cache (user_id, article_id, relevance_score, relevant, relevance_reason)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (user_id, article_id) DO UPDATE SET
+                        relevance_score = EXCLUDED.relevance_score,
+                        relevant = EXCLUDED.relevant,
+                        relevance_reason = EXCLUDED.relevance_reason,
+                        created_at = now()
                     """,
-                    (user_uuid, _uuid.UUID(article_id), score),
+                    (user_uuid, _uuid.UUID(article_id), score, relevant, reason),
                 )
             except Exception:
                 logger.exception("Feed cache error caching article %s", article_id)
