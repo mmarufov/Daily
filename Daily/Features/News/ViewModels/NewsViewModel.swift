@@ -32,6 +32,10 @@ final class NewsViewModel: ObservableObject {
         NotificationCenter.default.publisher(for: .onboardingCompleted)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
+                guard let self else { return }
+                self.articles = []
+                self.isLoading = true
+                self.errorMessage = nil
                 Task { [weak self] in
                     await self?.loadFeed(forceRefresh: true)
                 }

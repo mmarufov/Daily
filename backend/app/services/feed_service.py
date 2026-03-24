@@ -26,9 +26,9 @@ CANDIDATE_EXPANSION_STEPS = (
 )
 BATCH_SCORING_SIZE = 40
 MIN_CANDIDATE_TEXT_LENGTH = 40
-MAX_LLM_CANDIDATES = 160
+MAX_LLM_CANDIDATES = 200
 MIN_SHORTLIST_SIZE = 24
-MIN_FEED_SIZE = 15
+MIN_FEED_SIZE = 10
 DETERMINISTIC_MATCH_THRESHOLD = 1.5
 STRICT_MATCH_THRESHOLD = 2.5
 DETERMINISTIC_STRONG_MATCH = 3.0
@@ -149,13 +149,16 @@ async def get_personalized_feed(
         return finalized[:limit]
 
     openai_service = get_openai_service()
-    analysis_results = []
-    for i in range(0, len(candidates), BATCH_SCORING_SIZE):
-        batch = candidates[i:i + BATCH_SCORING_SIZE]
-        batch_results = await openai_service.score_articles_batch(
-            batch, ai_profile or "", interests=interests,
-        )
-        analysis_results.extend(batch_results)
+    batches = [
+        candidates[i:i + BATCH_SCORING_SIZE]
+        for i in range(0, len(candidates), BATCH_SCORING_SIZE)
+    ]
+    batch_coros = [
+        openai_service.score_articles_batch(b, ai_profile or "", interests=interests)
+        for b in batches
+    ]
+    batch_results_list = await asyncio.gather(*batch_coros)
+    analysis_results = [r for results in batch_results_list for r in results]
 
     _apply_individual_analysis_results(candidates, analysis_results, profile)
     candidates.sort(
@@ -169,7 +172,7 @@ async def get_personalized_feed(
         backfill = [
             a for a in finalized
             if not a.get("relevant", False)
-            and a.get("relevance_score", 0) >= 0.4
+            and a.get("relevance_score", 0) >= 0.55
             and "excluded" not in (a.get("relevance_reason") or "").lower()
         ]
         relevant.extend(backfill[:MIN_FEED_SIZE - len(relevant)])
