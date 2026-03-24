@@ -223,6 +223,7 @@ def _ensure_tables(conn) -> None:
         # Migration: add columns for existing databases
         cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevant boolean DEFAULT false;")
         cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevance_reason text;")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_user_feed_cache_user_created ON public.user_feed_cache (user_id, created_at DESC);")
 
         # Migration: add enrichment tracking column
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
