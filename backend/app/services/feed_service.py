@@ -19,24 +19,31 @@ logger = logging.getLogger(__name__)
 
 
 FEED_CACHE_TTL_MINUTES = 60
-CANDIDATE_LOOKBACK_HOURS = 24 * 7
-CANDIDATE_QUERY_LIMIT = 250
+CANDIDATE_EXPANSION_STEPS = (
+    (24 * 2, 250),
+    (24 * 7, 500),
+    (24 * 30, 1000),
+)
 SCORING_BATCH_SIZE = 12
 MIN_CANDIDATE_TEXT_LENGTH = 40
-MAX_LLM_CANDIDATES = 60
+MAX_LLM_CANDIDATES = 160
+MIN_SHORTLIST_SIZE = 24
 DETERMINISTIC_MATCH_THRESHOLD = 1.5
+STRICT_MATCH_THRESHOLD = 2.5
 DETERMINISTIC_STRONG_MATCH = 3.0
 DETERMINISTIC_SCORE_NORMALIZER = 8.0
 _FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
 _STOPWORDS = {
     "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
-    "focus", "for", "from", "general", "give", "i", "in", "include", "me", "my",
+    "focus", "for", "from", "general", "give", "i", "in", "include", "just", "me", "my",
     "news", "of", "on", "or", "show", "stories", "story", "the", "to", "want", "with",
+    "only",
 }
 _CATEGORY_HINTS = {
     "ai": {"ai", "artificial intelligence", "llm", "machine learning", "openai", "anthropic", "chatgpt"},
     "technology": {"technology", "tech", "software", "hardware", "developer", "programming", "apple", "google", "microsoft"},
     "business": {"business", "finance", "economy", "markets", "company", "companies", "startup", "startups", "venture capital"},
+    "gaming": {"gaming", "video game", "video games", "game", "games", "nintendo", "playstation", "xbox", "steam", "esports", "dlc"},
     "science": {"science", "research", "medical", "medicine", "health", "biotech", "space"},
     "sports": {"sports", "nba", "nfl", "mlb", "soccer", "football", "tennis"},
     "world": {"world", "international", "global", "geopolitics", "europe", "asia", "middle east"},
@@ -48,6 +55,34 @@ _POSITIVE_PROMPT_PATTERNS = [
 _NEGATIVE_PROMPT_PATTERNS = [
     re.compile(r"(?:avoid|exclude|skip|without|not interested in|don't want|do not want|don't show|do not show|no)\s+([^.;\n]+)", re.IGNORECASE),
 ]
+_STRICT_PROMPT_PATTERNS = [
+    re.compile(r"\bonly\b", re.IGNORECASE),
+    re.compile(r"\bjust\b", re.IGNORECASE),
+    re.compile(r"\bexclusively\b", re.IGNORECASE),
+    re.compile(r"\bnothing else\b", re.IGNORECASE),
+]
+_GAMING_SOURCE_HINTS = {
+    "polygon", "pc gamer", "eurogamer", "rock paper shotgun",
+    "game informer", "gamesindustry", "destructoid", "gamesradar",
+}
+_GAMING_CORE_HINTS = {
+    "gaming", "video game", "video games", "game", "games", "nintendo", "playstation", "xbox",
+    "steam", "epic games", "esports", "dlc", "patch", "update", "trailer", "launch",
+    "release date", "studio", "publisher", "developer",
+}
+_GAMING_DEAL_HINTS = {"best price", "deal", "discount", "sale", "lowest price", "price drop"}
+_GAMING_HARDWARE_HINTS = {
+    "controller", "headset", "keyboard", "mouse", "monitor", "gpu", "graphics card",
+    "accessory", "peripheral", "console bundle",
+}
+_GAMING_NEWS_EVENT_HINTS = {
+    "announce", "announced", "announcement", "launch", "launched", "release", "released",
+    "reveal", "revealed", "trailer", "patch", "update", "expansion", "dlc", "tournament",
+}
+_GAMING_HARDWARE_PROMPT_HINTS = {
+    "hardware", "console", "consoles", "controller", "controllers", "accessory",
+    "accessories", "peripheral", "peripherals", "gpu", "graphics card", "handheld",
+}
 
 
 @dataclass
@@ -56,6 +91,9 @@ class PreferenceProfile:
     negative_phrases: list[str] = field(default_factory=list)
     keyword_terms: set[str] = field(default_factory=set)
     preferred_categories: set[str] = field(default_factory=set)
+    strict_mode: bool = False
+    required_topic_groups: set[str] = field(default_factory=set)
+    allows_gaming_hardware: bool = False
 
     @property
     def has_preferences(self) -> bool:
@@ -93,11 +131,11 @@ async def get_personalized_feed(
                 return []
             logger.info("Cache for user %s exists but lacks reasons; treating as stale", user_id)
 
-    candidates = await _load_ready_candidates(conn)
+    profile = _build_preference_profile(ai_profile or "", interests)
+
+    candidates = await _load_candidates_for_profile(conn, profile, limit)
     if not candidates:
         return []
-
-    profile = _build_preference_profile(ai_profile or "", interests)
 
     if not profile.has_preferences:
         for candidate in candidates:
@@ -169,24 +207,67 @@ def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, da
     return row.get("ai_profile"), _parse_interests(row.get("interests")), row.get("updated_at")
 
 
-async def _load_ready_candidates(conn) -> list[dict]:
-    """Load recent candidates from the pre-populated article pool."""
-    rows = _query_candidate_rows(conn)
-    candidates = _rows_to_candidates(rows)
-    logger.info("Loaded %d ready candidates from article pool", len(candidates))
-    return candidates
+async def _load_candidates_for_profile(conn, profile: PreferenceProfile, limit: int) -> list[dict]:
+    """Load and widen candidate windows until we have enough strong matches."""
+    seen_ids: set[str] = set()
+    gathered: list[dict] = []
+    desired_shortlist = min(max(max(limit, 10) * 2, MIN_SHORTLIST_SIZE), MAX_LLM_CANDIDATES)
+
+    for lookback_hours, row_limit in CANDIDATE_EXPANSION_STEPS:
+        rows = _query_candidate_rows(conn, lookback_hours=lookback_hours, row_limit=row_limit)
+        window_candidates = []
+        for candidate in _rows_to_candidates(rows):
+            candidate_id = candidate["id"]
+            if candidate_id in seen_ids:
+                continue
+            seen_ids.add(candidate_id)
+            window_candidates.append(candidate)
+
+        gathered.extend(window_candidates)
+        logger.info(
+            "Loaded %d candidates for %dh/%d window (total=%d)",
+            len(window_candidates),
+            lookback_hours,
+            row_limit,
+            len(gathered),
+        )
+
+        if not profile.has_preferences:
+            continue
+
+        shortlisted = _prefilter_candidates(gathered, profile, max_candidates=desired_shortlist)
+        logger.info(
+            "Shortlisted %d candidates after %dh expansion for strict=%s categories=%s",
+            len(shortlisted),
+            lookback_hours,
+            profile.strict_mode,
+            sorted(profile.preferred_categories),
+        )
+        if len(shortlisted) >= desired_shortlist:
+            return shortlisted
+
+    if not gathered:
+        return []
+
+    if not profile.has_preferences:
+        gathered.sort(key=lambda article: article.get("published_at") or "", reverse=True)
+        return gathered[:max(limit, MAX_LLM_CANDIDATES)]
+
+    shortlisted = _prefilter_candidates(gathered, profile, max_candidates=desired_shortlist)
+    logger.info("Returning %d shortlisted candidates after exhausting expansion windows", len(shortlisted))
+    return shortlisted
 
 
-def _query_candidate_rows(conn) -> list[dict]:
+def _query_candidate_rows(conn, lookback_hours: int, row_limit: int) -> list[dict]:
     with conn.cursor() as cur:
         cur.execute(
             f"""
             SELECT id, url, title, summary, content, author, source_name, image_url,
                    published_at, ingested_at, category
             FROM public.articles
-            WHERE COALESCE(published_at, ingested_at) > now() - interval '{CANDIDATE_LOOKBACK_HOURS} hours'
+            WHERE COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
             ORDER BY COALESCE(published_at, ingested_at) DESC
-            LIMIT {CANDIDATE_QUERY_LIMIT}
+            LIMIT {row_limit}
             """,
         )
         return cur.fetchall()
@@ -323,6 +404,58 @@ def _keyword_terms(phrases: list[str]) -> set[str]:
     return keywords
 
 
+def _contains_any(text: str, terms: set[str]) -> bool:
+    for term in terms:
+        if len(term) <= 3 and term.isalnum():
+            if re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", text):
+                return True
+        elif term in text:
+            return True
+    return False
+
+
+def _is_strict_profile(ai_profile: str) -> bool:
+    return any(pattern.search(ai_profile or "") for pattern in _STRICT_PROMPT_PATTERNS)
+
+
+def _allows_gaming_hardware(ai_profile: str, positive_phrases: list[str]) -> bool:
+    searchable = " ".join(_normalize_text(value) for value in [ai_profile, *positive_phrases] if value)
+    return _contains_any(searchable, _GAMING_HARDWARE_PROMPT_HINTS)
+
+
+def _candidate_matches_gaming_topic(fields: dict[str, str], searchable: str, profile: PreferenceProfile) -> bool:
+    source_or_category = fields["category"] == "gaming" or _contains_any(fields["source"], _GAMING_SOURCE_HINTS)
+    core_match = _contains_any(searchable, _GAMING_CORE_HINTS)
+
+    if not (source_or_category or core_match):
+        return False
+
+    if _contains_any(searchable, _GAMING_DEAL_HINTS):
+        return profile.allows_gaming_hardware
+
+    if _contains_any(searchable, _GAMING_HARDWARE_HINTS) and not profile.allows_gaming_hardware:
+        return _contains_any(searchable, _GAMING_NEWS_EVENT_HINTS)
+
+    return True
+
+
+def _candidate_matches_topic_group(
+    fields: dict[str, str],
+    searchable: str,
+    topic_group: str,
+    profile: PreferenceProfile,
+) -> bool:
+    if topic_group == "gaming":
+        return _candidate_matches_gaming_topic(fields, searchable, profile)
+
+    hints = _CATEGORY_HINTS.get(topic_group, set())
+    if fields["category"] == topic_group:
+        return True
+    if hints and _contains_any(fields["source"], hints):
+        return True
+    return bool(hints and _contains_any(searchable, hints))
+
+
 def _build_preference_profile(ai_profile: str, interests: dict | None) -> PreferenceProfile:
     prompt_positive, prompt_negative = _extract_prompt_terms(ai_profile)
     positive_terms = prompt_positive + _interest_values(interests, "topics")
@@ -335,12 +468,16 @@ def _build_preference_profile(ai_profile: str, interests: dict | None) -> Prefer
     negative_phrases = _dedupe_terms(negative_terms)
     categories = _categories_for_terms(positive_phrases)
     keywords = _keyword_terms(positive_phrases)
+    strict_mode = _is_strict_profile(ai_profile)
 
     return PreferenceProfile(
         positive_phrases=positive_phrases,
         negative_phrases=negative_phrases,
         keyword_terms=keywords,
         preferred_categories=categories,
+        strict_mode=strict_mode,
+        required_topic_groups=set(categories) if strict_mode else set(),
+        allows_gaming_hardware=_allows_gaming_hardware(ai_profile, positive_phrases),
     )
 
 
@@ -368,6 +505,18 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
 
     score = 0.0
     matched_terms: list[str] = []
+    matched_topic_groups = [
+        topic_group
+        for topic_group in profile.required_topic_groups
+        if _candidate_matches_topic_group(fields, searchable, topic_group, profile)
+    ]
+
+    if profile.required_topic_groups and not matched_topic_groups:
+        return 0.0, "No strict topic match", False
+
+    if matched_topic_groups:
+        score += 2.5 * len(matched_topic_groups)
+        matched_terms.extend(matched_topic_groups)
 
     for phrase in profile.positive_phrases:
         normalized = _normalize_text(phrase)
@@ -424,8 +573,13 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
     return score, reason, False
 
 
-def _prefilter_candidates(candidates: list[dict], profile: PreferenceProfile) -> list[dict]:
+def _prefilter_candidates(
+    candidates: list[dict],
+    profile: PreferenceProfile,
+    max_candidates: int = MAX_LLM_CANDIDATES,
+) -> list[dict]:
     scored_candidates: list[dict] = []
+    threshold = STRICT_MATCH_THRESHOLD if profile.strict_mode else DETERMINISTIC_MATCH_THRESHOLD
 
     for candidate in candidates:
         score, reason, excluded = _score_candidate(candidate, profile)
@@ -435,7 +589,7 @@ def _prefilter_candidates(candidates: list[dict], profile: PreferenceProfile) ->
 
         if excluded:
             continue
-        if profile.has_positive_signals and score < DETERMINISTIC_MATCH_THRESHOLD:
+        if profile.has_positive_signals and score < threshold:
             continue
         scored_candidates.append(candidate)
 
@@ -443,7 +597,7 @@ def _prefilter_candidates(candidates: list[dict], profile: PreferenceProfile) ->
         key=lambda article: (article.get("_prefilter_score", 0.0), article.get("published_at") or ""),
         reverse=True,
     )
-    return scored_candidates[:MAX_LLM_CANDIDATES]
+    return scored_candidates[:max_candidates]
 
 
 def _apply_individual_analysis_results(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
@@ -462,6 +616,7 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
         reason = str(result.get("reason", "")).strip()
         model_score = max(0.0, min(1.0, float(result.get("score", 0.0))))
         model_relevant = bool(result.get("relevant", False))
+        accept_threshold = STRICT_MATCH_THRESHOLD if profile.strict_mode else DETERMINISTIC_MATCH_THRESHOLD
 
         if excluded:
             candidate["_score"] = 0.0
@@ -476,7 +631,7 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             continue
 
         candidate["_score"] = model_score
-        candidate["_relevant"] = model_relevant
+        candidate["_relevant"] = model_relevant and prefilter_score >= accept_threshold
         candidate["_reason"] = reason or prefilter_reason
 
 

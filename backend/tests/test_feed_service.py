@@ -30,7 +30,7 @@ class _FakeCursor:
     def __exit__(self, exc_type, exc, tb):
         return False
 
-    def execute(self, query, params):
+    def execute(self, query, params=None):
         self.query = query
         self.params = params
 
@@ -112,6 +112,48 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(excluded)
         self.assertIn("Matched", reason)
 
+    def test_strict_video_game_profile_rejects_gaming_adjacent_deals(self):
+        profile = feed_service._build_preference_profile(
+            "Show me only video game news.",
+            {"topics": ["video games"]},
+        )
+
+        matched, reason, excluded = feed_service._score_candidate(
+            {
+                "title": "PDP's wireless guitar controller has returned to its best price to date",
+                "summary": "A deal on a gaming accessory for Fortnite Festival and Rock Band players.",
+                "content": "",
+                "source": "The Verge",
+                "category": "technology",
+            },
+            profile,
+        )
+
+        self.assertEqual(matched, 0.0)
+        self.assertFalse(excluded)
+        self.assertIn("strict topic", reason.lower())
+
+    def test_strict_video_game_profile_keeps_actual_game_news(self):
+        profile = feed_service._build_preference_profile(
+            "Show me only video game news.",
+            {"topics": ["video games"]},
+        )
+
+        matched, reason, excluded = feed_service._score_candidate(
+            {
+                "title": "Nintendo announces a new Zelda release date",
+                "summary": "Polygon reports on the game's launch timing and trailer reveal.",
+                "content": "",
+                "source": "Polygon",
+                "category": "gaming",
+            },
+            profile,
+        )
+
+        self.assertGreaterEqual(matched, feed_service.STRICT_MATCH_THRESHOLD)
+        self.assertFalse(excluded)
+        self.assertIn("gaming", reason.lower())
+
     async def test_get_personalized_feed_falls_back_to_deterministic_matching(self):
         user_id = str(uuid.uuid4())
         matching_article = {
@@ -147,7 +189,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
             return_value=None,
         ), patch.object(
             feed_service,
-            "_load_ready_candidates",
+            "_load_candidates_for_profile",
             new=AsyncMock(return_value=[matching_article, off_topic_article]),
         ), patch.object(
             feed_service,
@@ -234,7 +276,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
             return_value=None,
         ), patch.object(
             feed_service,
-            "_load_ready_candidates",
+            "_load_candidates_for_profile",
             new=AsyncMock(return_value=[matching_article, off_topic_article]),
         ), patch.object(
             feed_service,
@@ -249,6 +291,53 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(articles), 1)
         self.assertEqual(articles[0]["title"], matching_article["title"])
         self.assertEqual(articles[0]["relevance_reason"], "Strong match for AI and OpenAI interests.")
+
+    async def test_load_candidates_for_profile_expands_windows_for_strict_topics(self):
+        profile = feed_service._build_preference_profile(
+            "Show me only video game news.",
+            {"topics": ["video games"]},
+        )
+        first_window = [
+            {
+                "id": uuid.uuid4(),
+                "url": "https://example.com/politics",
+                "title": "Election roundup",
+                "summary": "A politics story.",
+                "content": "",
+                "author": None,
+                "source_name": "Example News",
+                "image_url": None,
+                "published_at": datetime.now(timezone.utc),
+                "ingested_at": datetime.now(timezone.utc),
+                "category": "politics",
+            }
+        ]
+        second_window = [
+            {
+                "id": uuid.uuid4(),
+                "url": "https://example.com/gaming",
+                "title": "Nintendo reveals the next Mario Kart trailer",
+                "summary": "A new gameplay trailer and launch window were announced.",
+                "content": "",
+                "author": None,
+                "source_name": "Polygon",
+                "image_url": None,
+                "published_at": datetime.now(timezone.utc),
+                "ingested_at": datetime.now(timezone.utc),
+                "category": "gaming",
+            }
+        ]
+
+        with patch.object(
+            feed_service,
+            "_query_candidate_rows",
+            side_effect=[first_window, second_window, []],
+        ) as query_rows:
+            candidates = await feed_service._load_candidates_for_profile(conn=None, profile=profile, limit=10)
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0]["source"], "Polygon")
+        self.assertGreaterEqual(query_rows.call_count, 2)
 
 
 if __name__ == "__main__":
