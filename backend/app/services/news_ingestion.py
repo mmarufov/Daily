@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 import httpx
 import feedparser
 
-# ~30 RSS feeds from major news outlets
+# Broad news feeds plus a small set of niche feeds for strict topic matching.
 RSS_FEEDS = [
     # Wire services / breaking news
     "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
@@ -35,6 +35,15 @@ RSS_FEEDS = [
     "https://techcrunch.com/feed/",
     "https://www.wired.com/feed/rss",
     "https://9to5mac.com/feed/",
+    # Gaming
+    "https://www.polygon.com/rss/index.xml",
+    "https://www.pcgamer.com/rss/",
+    "https://www.eurogamer.net/feed",
+    "https://www.rockpapershotgun.com/feed",
+    "https://www.gameinformer.com/rss.xml",
+    "https://www.gamesindustry.biz/feed",
+    "https://www.destructoid.com/feed/",
+    "https://www.gamesradar.com/rss/",
     # AI / Machine Learning
     "https://openai.com/blog/rss/",
     "https://blog.google/technology/ai/rss/",
@@ -58,6 +67,20 @@ RSS_FEEDS = [
 FEED_CATEGORIES = {
     "ai": ["openai", "artificialintelligence", "artificial-intelligence", "deepmind", "/ai/"],
     "technology": ["technology", "tech", "arstechnica", "theverge", "techcrunch", "wired"],
+    "gaming": [
+        "polygon",
+        "pcgamer",
+        "eurogamer",
+        "rockpapershotgun",
+        "gameinformer",
+        "gamesindustry",
+        "destructoid",
+        "gamesradar",
+        "gaming",
+        "videogame",
+        "video-game",
+        "esports",
+    ],
     "world": ["world", "worldnews", "aljazeera"],
     "business": ["business", "markets", "cnbc", "bloomberg"],
     "science": ["science", "sciencedaily"],
