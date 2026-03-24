@@ -47,9 +47,9 @@ class _FakeConn:
 
 
 class _FakeOpenAIService:
-    async def analyze_articles_for_user(self, articles, user_profile, interests=None, batch_size=12):
+    async def score_articles_batch(self, articles, user_profile, interests=None):
         return [
-            {"relevant": False, "score": 0.0, "reason": "Error during analysis: timeout"}
+            {"relevant": False, "score": 0.0, "reason": "scoring error"}
             for _ in articles
         ]
 
@@ -129,9 +129,9 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
             profile,
         )
 
-        self.assertEqual(matched, 0.0)
+        self.assertAlmostEqual(matched, 0.2)
         self.assertFalse(excluded)
-        self.assertIn("strict topic", reason.lower())
+        self.assertIn("outside primary topics", reason.lower())
 
     def test_strict_video_game_profile_keeps_actual_game_news(self):
         profile = feed_service._build_preference_profile(
@@ -261,7 +261,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         }
 
         fake_service = AsyncMock()
-        fake_service.analyze_articles_for_user.return_value = [
+        fake_service.score_articles_batch.return_value = [
             {"relevant": True, "score": 0.92, "reason": "Strong match for AI and OpenAI interests."},
             {"relevant": False, "score": 0.03, "reason": "Not related to the user's interests."},
         ]

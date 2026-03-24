@@ -4,7 +4,7 @@ Replaces the old NewsAPI-based approach with free RSS feeds.
 """
 import asyncio
 import hashlib
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -186,6 +186,10 @@ async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[d
             source_name = feed.feed.get("title", urlparse(feed_url).netloc)
             image_url = _extract_image_url(entry)
             published_at = _parse_date(entry)
+
+            # Skip articles older than 7 days
+            if published_at and published_at < datetime.now(timezone.utc) - timedelta(days=7):
+                continue
 
             articles.append({
                 "url": link,
