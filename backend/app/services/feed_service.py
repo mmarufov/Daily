@@ -22,12 +22,13 @@ FEED_CACHE_TTL_MINUTES = 60
 CANDIDATE_EXPANSION_STEPS = (
     (24 * 2, 250),
     (24 * 7, 500),
-    (24 * 30, 1000),
+    (24 * 14, 1000),
 )
-SCORING_BATCH_SIZE = 12
+BATCH_SCORING_SIZE = 40
 MIN_CANDIDATE_TEXT_LENGTH = 40
 MAX_LLM_CANDIDATES = 160
 MIN_SHORTLIST_SIZE = 24
+MIN_FEED_SIZE = 15
 DETERMINISTIC_MATCH_THRESHOLD = 1.5
 STRICT_MATCH_THRESHOLD = 2.5
 DETERMINISTIC_STRONG_MATCH = 3.0
@@ -148,12 +149,13 @@ async def get_personalized_feed(
         return finalized[:limit]
 
     openai_service = get_openai_service()
-    analysis_results = await openai_service.analyze_articles_for_user(
-        candidates,
-        ai_profile or "",
-        interests=interests,
-        batch_size=SCORING_BATCH_SIZE,
-    )
+    analysis_results = []
+    for i in range(0, len(candidates), BATCH_SCORING_SIZE):
+        batch = candidates[i:i + BATCH_SCORING_SIZE]
+        batch_results = await openai_service.score_articles_batch(
+            batch, ai_profile or "", interests=interests,
+        )
+        analysis_results.extend(batch_results)
 
     _apply_individual_analysis_results(candidates, analysis_results, profile)
     candidates.sort(
@@ -163,6 +165,15 @@ async def get_personalized_feed(
     _save_feed_cache(conn, user_uuid, candidates)
     finalized = _finalize_articles(candidates)
     relevant = [article for article in finalized if article.get("relevant", False)]
+    if len(relevant) < MIN_FEED_SIZE:
+        backfill = [
+            a for a in finalized
+            if not a.get("relevant", False)
+            and a.get("relevance_score", 0) >= 0.4
+            and "excluded" not in (a.get("relevance_reason") or "").lower()
+        ]
+        relevant.extend(backfill[:MIN_FEED_SIZE - len(relevant)])
+    relevant = _enforce_diversity(relevant)
     return relevant[:limit]
 
 
@@ -512,7 +523,7 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
     ]
 
     if profile.required_topic_groups and not matched_topic_groups:
-        return 0.0, "No strict topic match", False
+        return 0.2, "Outside primary topics", False
 
     if matched_topic_groups:
         score += 2.5 * len(matched_topic_groups)
@@ -589,8 +600,6 @@ def _prefilter_candidates(
 
         if excluded:
             continue
-        if profile.has_positive_signals and score < threshold:
-            continue
         scored_candidates.append(candidate)
 
     scored_candidates.sort(
@@ -631,8 +640,28 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             continue
 
         candidate["_score"] = model_score
-        candidate["_relevant"] = model_relevant and prefilter_score >= accept_threshold
+        candidate["_relevant"] = model_relevant
         candidate["_reason"] = reason or prefilter_reason
+
+
+def _enforce_diversity(articles: list[dict], max_per_category_pct: float = 0.4) -> list[dict]:
+    """Ensure no single category dominates the feed."""
+    if len(articles) <= 5:
+        return articles
+    max_per_cat = max(3, int(len(articles) * max_per_category_pct))
+    by_category: dict[str, list[dict]] = {}
+    for article in articles:
+        cat = article.get("category") or "general"
+        by_category.setdefault(cat, []).append(article)
+    result: list[dict] = []
+    overflow: list[dict] = []
+    for group in by_category.values():
+        result.extend(group[:max_per_cat])
+        overflow.extend(group[max_per_cat:])
+    overflow.sort(key=lambda a: a.get("relevance_score", 0), reverse=True)
+    result.extend(overflow)
+    result.sort(key=lambda a: a.get("relevance_score", 0), reverse=True)
+    return result
 
 
 def _finalize_articles(articles: list[dict]) -> list[dict]:
