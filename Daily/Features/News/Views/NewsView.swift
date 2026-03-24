@@ -31,9 +31,16 @@ struct NewsView: View {
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.xxl)
                     } else if viewModel.isLoading {
-                        skeletonLoading
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.top, AppSpacing.md)
+                        VStack(alignment: .leading, spacing: AppSpacing.md) {
+                            Text("Loading your personalized feed...")
+                                .font(AppTypography.subheadline)
+                                .foregroundColor(BrandColors.textSecondary)
+                                .padding(.horizontal, AppSpacing.lg)
+
+                            skeletonLoading
+                                .padding(.horizontal, AppSpacing.lg)
+                        }
+                        .padding(.top, AppSpacing.md)
                     } else {
                         if let error = viewModel.errorMessage, !error.isEmpty {
                             errorBanner(error)
