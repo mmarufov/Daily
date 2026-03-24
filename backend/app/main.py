@@ -30,6 +30,7 @@ async def _ingestion_loop():
     """Background task: fetch RSS feeds, extract content, clean up old articles."""
     from app.services.news_ingestion import fetch_rss_feeds
     from app.services.content_extractor import extract_article_content
+    from app.services.article_enrichment import enrich_articles
 
     # Wait a few seconds for the app to fully start
     await asyncio.sleep(5)
@@ -91,7 +92,15 @@ async def _ingestion_loop():
                 if pending:
                     await asyncio.gather(*[_extract_one(row) for row in pending], return_exceptions=True)
 
-                # 3. Clean up articles older than 7 days
+                # 3. Enrich articles (expand thin content, find missing images)
+                enrichment_stats = await enrich_articles(conn)
+                if enrichment_stats["content_enriched"] or enrichment_stats["images_found"]:
+                    print(
+                        f"Ingestion: Enriched {enrichment_stats['content_enriched']} thin articles, "
+                        f"found {enrichment_stats['images_found']} images"
+                    )
+
+                # 4. Clean up articles older than 7 days
                 with conn.cursor() as cur:
                     cur.execute(
                         "DELETE FROM public.articles WHERE ingested_at < now() - interval '7 days'"
@@ -214,6 +223,9 @@ def _ensure_tables(conn) -> None:
         # Migration: add columns for existing databases
         cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevant boolean DEFAULT false;")
         cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevance_reason text;")
+
+        # Migration: add enrichment tracking column
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
 
 
 
