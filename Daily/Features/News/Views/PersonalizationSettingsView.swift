@@ -58,7 +58,7 @@ struct PersonalizationSettingsView: View {
                     }) {
                         HStack(spacing: AppSpacing.sm) {
                             Image(systemName: "bubble.left.and.bubble.right.fill")
-                                .font(.system(size: 15, weight: .medium))
+                                .font(AppTypography.actionIcon)
                             Text("Refine with AI conversation")
                                 .font(AppTypography.labelLarge)
                         }

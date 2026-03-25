@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ShimmerModifier: ViewModifier {
     @State private var phase: CGFloat = -1
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         content
@@ -16,7 +17,7 @@ struct ShimmerModifier: ViewModifier {
                 LinearGradient(
                     colors: [
                         Color.clear,
-                        Color.white.opacity(0.3),
+                        Color(UIColor.label).opacity(0.15),
                         Color.clear
                     ],
                     startPoint: .leading,
@@ -26,6 +27,7 @@ struct ShimmerModifier: ViewModifier {
             )
             .clipped()
             .onAppear {
+                guard !reduceMotion else { return }
                 withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
                     phase = 1
                 }
@@ -58,8 +60,8 @@ private struct SkeletonRect: View {
 
 struct SkeletonFeaturedCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm + 2) {
-            SkeletonRect(height: 200, cornerRadius: 10)
+        VStack(alignment: .leading, spacing: AppSpacing.smPlus) {
+            SkeletonRect(height: 200, cornerRadius: AppCornerRadius.image)
 
             HStack(spacing: AppSpacing.xs) {
                 SkeletonRect(width: 60, height: 10)
@@ -79,7 +81,7 @@ struct SkeletonFeaturedCard: View {
 struct SkeletonCompactRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: AppSpacing.md) {
-            VStack(alignment: .leading, spacing: AppSpacing.xs + 2) {
+            VStack(alignment: .leading, spacing: AppSpacing.smLg / 2) {
                 HStack(spacing: AppSpacing.xs) {
                     SkeletonRect(width: 50, height: 10)
                     SkeletonRect(width: 30, height: 10)

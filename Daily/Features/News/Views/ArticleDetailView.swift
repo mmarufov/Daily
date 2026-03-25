@@ -40,7 +40,7 @@ struct ArticleDetailView: View {
             } else if let error = loadErrorMessage, fullArticle == nil {
                 VStack(spacing: AppSpacing.md) {
                     Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 28, weight: .light))
+                        .font(AppTypography.iconMedium)
                         .foregroundColor(BrandColors.textTertiary)
                     Text(error)
                         .font(AppTypography.subheadline)
@@ -68,7 +68,7 @@ struct ArticleDetailView: View {
                                             .fill(BrandColors.textQuaternary)
                                             .frame(width: 3, height: 3)
                                         Text(category.uppercased())
-                                            .font(.system(size: 11, weight: .medium))
+                                            .font(AppTypography.chipIcon)
                                             .tracking(0.6)
                                             .foregroundColor(BrandColors.textTertiary)
                                     }
@@ -85,7 +85,7 @@ struct ArticleDetailView: View {
                                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                                     if let author = full.author, !author.isEmpty {
                                         Text("By \(author)")
-                                            .font(.system(size: 14, weight: .medium))
+                                            .font(AppTypography.articleAuthor)
                                             .foregroundColor(BrandColors.textSecondary)
                                     }
                                     HStack(spacing: AppSpacing.xs) {
@@ -110,7 +110,7 @@ struct ArticleDetailView: View {
                                 if let summary = full.summary,
                                    !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                     Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
-                                        .font(.system(size: 17, weight: .medium, design: .serif))
+                                        .font(AppTypography.articleLeadIn)
                                         .foregroundColor(BrandColors.textPrimary)
                                         .lineSpacing(4)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -147,9 +147,10 @@ struct ArticleDetailView: View {
                     }
                 } label: {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(AppTypography.toolbarIcon)
                 }
                 .tint(BrandColors.primary)
+                .accessibilityLabel("Discuss with AI")
 
                 // Bookmark
                 Button {
@@ -159,17 +160,19 @@ struct ArticleDetailView: View {
                     }
                 } label: {
                     Image(systemName: bookmarks.isBookmarked(article.id) ? "bookmark.fill" : "bookmark")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(AppTypography.toolbarIcon)
                 }
                 .tint(BrandColors.primary)
+                .accessibilityLabel(bookmarks.isBookmarked(article.id) ? "Remove bookmark" : "Add bookmark")
 
                 // Share
                 if let urlString = (fullArticle ?? article).url, let url = URL(string: urlString) {
                     ShareLink(item: url) {
                         Image(systemName: "square.and.arrow.up")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(AppTypography.toolbarIcon)
                     }
                     .tint(BrandColors.primary)
+                    .accessibilityLabel("Share article")
                 }
 
                 // Text size
@@ -189,9 +192,10 @@ struct ArticleDetailView: View {
                     }
                 } label: {
                     Image(systemName: "textformat.size")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(AppTypography.toolbarIcon)
                 }
                 .tint(BrandColors.primary)
+                .accessibilityLabel("Change text size")
             }
         }
         .sheet(isPresented: $showingSafari) {
@@ -255,9 +259,9 @@ struct ArticleDetailView: View {
         } label: {
             HStack(spacing: AppSpacing.sm) {
                 Image(systemName: "sparkles")
-                    .font(.system(size: 15, weight: .medium))
+                    .font(AppTypography.actionIcon)
                 Text("Discuss with Daily AI")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(AppTypography.actionLabel)
             }
             .foregroundColor(BrandColors.primary)
             .frame(maxWidth: .infinity)
@@ -282,9 +286,9 @@ struct ArticleDetailView: View {
             } label: {
                 HStack(spacing: AppSpacing.xs) {
                     Text("Read full article at \(article.displaySource)")
-                        .font(.system(size: 15, weight: .medium))
+                        .font(AppTypography.actionIcon)
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(AppTypography.sourceLabel)
                 }
                 .foregroundColor(BrandColors.primary)
             }
