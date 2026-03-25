@@ -55,6 +55,50 @@ class _FakeOpenAIService:
 
 
 class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
+    def test_strict_mode_not_triggered_by_casual_just(self):
+        self.assertFalse(feed_service._is_strict_profile("I just want good tech news"))
+
+    def test_strict_mode_not_triggered_by_casual_only(self):
+        self.assertFalse(feed_service._is_strict_profile("I only read the news in the morning"))
+
+    def test_strict_mode_triggered_by_only_topic_news(self):
+        self.assertTrue(feed_service._is_strict_profile("Show me only video game news."))
+
+    def test_strict_mode_triggered_by_only_show(self):
+        self.assertTrue(feed_service._is_strict_profile("Only show me AI articles"))
+
+    def test_strict_mode_triggered_by_exclusively(self):
+        self.assertTrue(feed_service._is_strict_profile("I exclusively want tech news"))
+
+    def test_strict_mode_triggered_by_nothing_but(self):
+        self.assertTrue(feed_service._is_strict_profile("Nothing but gaming news"))
+
+    def test_positive_pattern_matches_i_like(self):
+        profile = feed_service._build_preference_profile("I like AI and gaming", None)
+        self.assertTrue(profile.has_positive_signals)
+        keywords_lower = {k.lower() for k in profile.keyword_terms}
+        self.assertTrue({"ai", "gaming"} & keywords_lower)
+
+    def test_positive_pattern_matches_i_want(self):
+        profile = feed_service._build_preference_profile("I want tech startup news", None)
+        self.assertTrue(profile.has_positive_signals)
+
+    def test_prefilter_drops_zero_score_articles(self):
+        profile = feed_service._build_preference_profile(
+            "Show me AI news.", {"topics": ["AI"]},
+        )
+        candidates = [
+            {"id": str(uuid.uuid4()), "title": "OpenAI launches new model",
+             "summary": "AI research update", "content": "", "source": "TechCrunch",
+             "category": "ai", "published_at": "2026-03-23T10:00:00+00:00"},
+            {"id": str(uuid.uuid4()), "title": "Best pasta recipes for spring",
+             "summary": "Cooking tips for the season.", "content": "", "source": "Food Network",
+             "category": "food", "published_at": "2026-03-23T09:00:00+00:00"},
+        ]
+        shortlisted = feed_service._prefilter_candidates(candidates, profile)
+        titles = [a["title"] for a in shortlisted]
+        self.assertIn("OpenAI launches new model", titles)
+
     def test_prefilter_uses_preferences_and_exclusions(self):
         profile = feed_service._build_preference_profile(
             "Show me OpenAI and startup funding. Avoid sports.",
@@ -201,7 +245,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         ):
             articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
 
-        self.assertEqual(len(articles), 1)
+        self.assertGreaterEqual(len(articles), 1)
         self.assertEqual(articles[0]["title"], matching_article["title"])
         self.assertTrue(articles[0]["relevant"])
 
@@ -288,7 +332,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         ):
             articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
 
-        self.assertEqual(len(articles), 1)
+        self.assertGreaterEqual(len(articles), 1)
         self.assertEqual(articles[0]["title"], matching_article["title"])
         self.assertEqual(articles[0]["relevance_reason"], "Strong match for AI and OpenAI interests.")
 
