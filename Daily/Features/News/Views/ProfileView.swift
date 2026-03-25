@@ -94,7 +94,7 @@ struct ProfileView: View {
         }) {
             HStack(spacing: AppSpacing.md) {
                 Image(systemName: "person.text.rectangle")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(AppTypography.iconButton)
                     .foregroundColor(BrandColors.primary)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -109,7 +109,7 @@ struct ProfileView: View {
                 Spacer()
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(AppTypography.navIcon)
                     .foregroundColor(BrandColors.textTertiary)
             }
             .padding(AppSpacing.md)
