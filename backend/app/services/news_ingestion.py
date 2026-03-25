@@ -4,12 +4,16 @@ Replaces the old NewsAPI-based approach with free RSS feeds.
 """
 import asyncio
 import hashlib
+import json
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import httpx
 import feedparser
+
+logger = logging.getLogger(__name__)
 
 # Broad news feeds plus a small set of niche feeds for strict topic matching.
 RSS_FEEDS = [
@@ -319,4 +323,98 @@ async def fetch_rss_feeds(conn) -> int:
                 print(f"RSS: Error inserting article '{article['title'][:50]}': {e}")
 
     print(f"RSS: Inserted {new_count} new articles (skipped {len(unique_articles) - new_count} duplicates)")
+    return new_count
+
+
+def _extract_user_topics(conn) -> set[str]:
+    """Collect unique topic terms from all users' structured interests."""
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT interests FROM public.user_preferences WHERE completed = true AND interests IS NOT NULL"
+        )
+        rows = cur.fetchall()
+
+    topics: set[str] = set()
+    for row in rows:
+        raw = row.get("interests")
+        if isinstance(raw, str):
+            try:
+                raw = json.loads(raw)
+            except (json.JSONDecodeError, TypeError):
+                continue
+        if not isinstance(raw, dict):
+            continue
+        # Handle both {"topics": [...]} and {"interests": {"topics": [...]}}
+        inner = raw.get("interests", raw) if isinstance(raw.get("interests"), dict) else raw
+        for key in ("topics", "people", "industries"):
+            for term in inner.get(key) or []:
+                cleaned = str(term).strip()
+                if len(cleaned) >= 2:
+                    topics.add(cleaned)
+    return topics
+
+
+async def fetch_topic_feeds(conn) -> int:
+    """Fetch Google News RSS for each unique user topic to cover niche interests."""
+    topics = _extract_user_topics(conn)
+    if not topics:
+        return 0
+
+    topic_urls = [
+        f"https://news.google.com/rss/search?q={quote(topic)}&hl=en-US&gl=US&ceid=US:en"
+        for topic in topics
+    ]
+
+    semaphore = asyncio.Semaphore(5)
+
+    async def _fetch_with_limit(client, url):
+        async with semaphore:
+            return await _fetch_single_feed(client, url)
+
+    async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
+        tasks = [_fetch_with_limit(client, url) for url in topic_urls]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    all_articles: list[dict] = []
+    for result in results:
+        if isinstance(result, list):
+            all_articles.extend(result)
+
+    if not all_articles:
+        return 0
+
+    seen_urls: set[str] = set()
+    unique: list[dict] = []
+    for a in all_articles:
+        if a["url"] not in seen_urls:
+            seen_urls.add(a["url"])
+            unique.append(a)
+
+    new_count = 0
+    with conn.cursor() as cur:
+        for article in unique:
+            try:
+                cur.execute(
+                    """
+                    INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (url) DO NOTHING
+                    """,
+                    (
+                        article["url"],
+                        article["title"],
+                        article["summary"],
+                        article["author"],
+                        article["source_name"],
+                        article["image_url"],
+                        article["published_at"],
+                        article["category"],
+                    ),
+                )
+                if cur.rowcount == 1:
+                    new_count += 1
+            except Exception as e:
+                logger.warning("Topic RSS: Error inserting '%s': %s", article["title"][:50], e)
+
+    logger.info("Topic RSS: Fetched %d entries for %d topics, inserted %d new", len(unique), len(topics), new_count)
     return new_count
