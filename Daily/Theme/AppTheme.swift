@@ -26,7 +26,7 @@ struct BrandColors {
     // Background colors - System backgrounds
     static let background = Color(.systemBackground)
     static let secondaryBackground = Color(.secondarySystemGroupedBackground)
-    static let cardBackground = Color(.systemBackground)
+    static let cardBackground = Color(.secondarySystemGroupedBackground)
     static let tertiaryBackground = Color(.tertiarySystemBackground)
 
     // Text colors - System labels
