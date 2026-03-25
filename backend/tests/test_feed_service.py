@@ -55,6 +55,133 @@ class _FakeOpenAIService:
 
 
 class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
+    def test_canonicalize_url_drops_tracking_params(self):
+        canonical = feed_service._canonicalize_url(
+            "https://Example.com/story?utm_source=rss&gclid=123&keep=1#section"
+        )
+        self.assertEqual(canonical, "https://example.com/story?keep=1")
+
+    def test_collapse_duplicate_coverage_merges_canonical_url_matches(self):
+        articles = [
+            {
+                "id": str(uuid.uuid4()),
+                "title": "OpenAI launches new developer tools",
+                "summary": "Short summary.",
+                "content": "Tiny content.",
+                "image_url": None,
+                "url": "https://example.com/story?utm_source=rss",
+                "published_at": "2026-03-24T10:00:00+00:00",
+                "relevance_score": 0.7,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "OpenAI launches new developer tools",
+                "summary": "Longer summary for the same article.",
+                "content": "This version has more content and an image.",
+                "image_url": "https://images.example.com/story.jpg",
+                "url": "https://example.com/story",
+                "published_at": "2026-03-24T10:30:00+00:00",
+                "relevance_score": 0.8,
+            },
+        ]
+
+        deduped = feed_service._collapse_duplicate_coverage(articles)
+
+        self.assertEqual(len(deduped), 1)
+        self.assertEqual(deduped[0]["image_url"], "https://images.example.com/story.jpg")
+
+    def test_articles_are_near_duplicates_for_same_event_titles(self):
+        article_a = {
+            "title": "Judge says government's Anthropic ban looks like punishment - Reuters",
+            "url": "https://reuters.com/a",
+            "published_at": "2026-03-24T10:00:00+00:00",
+        }
+        article_b = {
+            "title": "Judge says government Anthropic ban looks like punishment | CNN",
+            "url": "https://cnn.com/b",
+            "published_at": "2026-03-24T14:00:00+00:00",
+        }
+
+        self.assertTrue(feed_service._articles_are_near_duplicates(article_a, article_b))
+
+    def test_select_best_duplicate_representative_prefers_image(self):
+        cluster = [
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Duplicate A",
+                "summary": "Longer summary",
+                "content": "Much longer content body",
+                "image_url": None,
+                "published_at": "2026-03-24T10:00:00+00:00",
+                "relevance_score": 0.95,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Duplicate B",
+                "summary": "Short",
+                "content": "Short",
+                "image_url": "https://images.example.com/a.jpg",
+                "published_at": "2026-03-24T09:00:00+00:00",
+                "relevance_score": 0.60,
+            },
+        ]
+
+        selected = feed_service._select_best_duplicate_representative(cluster)
+
+        self.assertEqual(selected["image_url"], "https://images.example.com/a.jpg")
+
+    def test_select_best_duplicate_representative_prefers_richer_content_when_both_have_images(self):
+        cluster = [
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Duplicate A",
+                "summary": "Short summary",
+                "content": "Short content",
+                "image_url": "https://images.example.com/a.jpg",
+                "published_at": "2026-03-24T10:00:00+00:00",
+                "relevance_score": 0.80,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Duplicate B",
+                "summary": "Longer summary than the first candidate",
+                "content": "This version has substantially more content than the first candidate.",
+                "image_url": "https://images.example.com/b.jpg",
+                "published_at": "2026-03-24T09:00:00+00:00",
+                "relevance_score": 0.70,
+            },
+        ]
+
+        selected = feed_service._select_best_duplicate_representative(cluster)
+
+        self.assertEqual(selected["id"], cluster[1]["id"])
+
+    def test_distinct_same_topic_articles_are_not_collapsed(self):
+        article_a = {
+            "id": str(uuid.uuid4()),
+            "title": "Anthropic releases a new coding model for enterprise teams",
+            "summary": "Model launch coverage.",
+            "content": "",
+            "image_url": None,
+            "url": "https://example.com/model",
+            "published_at": "2026-03-24T10:00:00+00:00",
+            "relevance_score": 0.9,
+        }
+        article_b = {
+            "id": str(uuid.uuid4()),
+            "title": "Anthropic faces a government lawsuit over procurement rules",
+            "summary": "Policy and legal coverage.",
+            "content": "",
+            "image_url": None,
+            "url": "https://example.com/lawsuit",
+            "published_at": "2026-03-24T11:00:00+00:00",
+            "relevance_score": 0.8,
+        }
+
+        deduped = feed_service._collapse_duplicate_coverage([article_a, article_b])
+
+        self.assertEqual(len(deduped), 2)
+
     def test_strict_mode_not_triggered_by_casual_just(self):
         self.assertFalse(feed_service._is_strict_profile("I just want good tech news"))
 
@@ -358,6 +485,60 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertGreaterEqual(len(articles), 1)
         self.assertEqual(articles[0]["title"], matching_article["title"])
         self.assertEqual(articles[0]["relevance_reason"], "Strong match for AI and OpenAI interests.")
+
+    async def test_get_personalized_feed_dedupes_cached_results(self):
+        user_id = str(uuid.uuid4())
+        cached_articles = [
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Judge says government Anthropic ban looks like punishment - Reuters",
+                "summary": "Version without image.",
+                "content": "Short content.",
+                "author": None,
+                "source": "Reuters",
+                "image_url": None,
+                "url": "https://example.com/anthropic?utm_source=rss",
+                "published_at": "2026-03-24T10:00:00+00:00",
+                "category": "technology",
+                "relevance_score": 0.8,
+                "relevant": True,
+                "relevance_reason": "Matched: Anthropic",
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "title": "Judge says government Anthropic ban looks like punishment | CNN",
+                "summary": "Version with image.",
+                "content": "This version has the richer content body for the same event.",
+                "author": None,
+                "source": "CNN",
+                "image_url": "https://images.example.com/anthropic.jpg",
+                "url": "https://example.com/anthropic",
+                "published_at": "2026-03-24T11:00:00+00:00",
+                "category": "technology",
+                "relevance_score": 0.7,
+                "relevant": True,
+                "relevance_reason": "Matched: Anthropic",
+            },
+        ]
+
+        with patch.object(
+            feed_service,
+            "_load_user_preferences",
+            return_value=(None, None, None),
+        ), patch.object(
+            feed_service,
+            "_load_cached_feed",
+            return_value=cached_articles,
+        ), patch.object(
+            feed_service,
+            "_hydrate_missing_feed_images",
+            new=AsyncMock(),
+        ) as hydrate_mock:
+            articles = await feed_service.get_personalized_feed(user_id, conn=object(), limit=10)
+
+        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles[0]["image_url"], "https://images.example.com/anthropic.jpg")
+        hydrate_mock.assert_awaited_once()
 
     async def test_load_candidates_for_profile_expands_windows_for_strict_topics(self):
         profile = feed_service._build_preference_profile(
