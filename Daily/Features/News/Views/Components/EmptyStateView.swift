@@ -15,7 +15,7 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: AppSpacing.md) {
             Image(systemName: icon)
-                .font(.system(size: 36, weight: .ultraLight))
+                .font(AppTypography.emptyStateIcon)
                 .foregroundColor(BrandColors.textTertiary)
 
             VStack(spacing: AppSpacing.xs) {
@@ -32,10 +32,10 @@ struct EmptyStateView: View {
             if let actionTitle, let action {
                 Button(action: action) {
                     Text(actionTitle)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(AppTypography.actionLabel)
                         .foregroundColor(.white)
                         .padding(.horizontal, AppSpacing.xl)
-                        .padding(.vertical, AppSpacing.sm + 2)
+                        .padding(.vertical, AppSpacing.smPlus)
                         .background(
                             Capsule().fill(BrandColors.primary)
                         )

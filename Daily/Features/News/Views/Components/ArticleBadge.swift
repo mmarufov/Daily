@@ -21,11 +21,12 @@ struct ArticleBadge: View {
 
     private func badgeLabel(_ text: String, color: Color) -> some View {
         Text(text)
-            .font(.system(size: 9, weight: .bold))
+            .font(AppTypography.badgeLabel)
             .tracking(0.5)
             .foregroundColor(.white)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(Capsule().fill(color))
+            .accessibilityLabel(text == "BREAKING" ? "Breaking news" : "New article")
     }
 }

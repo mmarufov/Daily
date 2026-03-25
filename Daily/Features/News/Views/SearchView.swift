@@ -58,7 +58,7 @@ private extension SearchView {
             Spacer()
 
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 48, weight: .light))
+                .font(AppTypography.iconHeroXL)
                 .foregroundColor(BrandColors.textQuaternary)
 
             VStack(spacing: AppSpacing.sm) {

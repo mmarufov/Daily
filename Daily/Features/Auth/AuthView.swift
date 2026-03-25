@@ -88,7 +88,7 @@ private extension AuthView {
     var heroSection: some View {
         VStack(spacing: AppSpacing.md) {
             Text("Daily")
-                .font(.system(size: 42, weight: .bold, design: .serif))
+                .font(AppTypography.brandTitle)
                 .foregroundColor(BrandColors.textPrimary)
 
             Text("Your AI-curated news briefing")
@@ -131,7 +131,7 @@ private extension AuthView {
                             .progressViewStyle(CircularProgressViewStyle(tint: BrandColors.textPrimary))
                     } else {
                         Image(systemName: "globe")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(AppTypography.iconButton)
                     }
                     Text("Continue with Google")
                         .font(AppTypography.labelLarge)
@@ -149,6 +149,7 @@ private extension AuthView {
             }
             .disabled(isGoogleLoading || isAppleLoading)
             .opacity(isGoogleLoading || isAppleLoading ? 0.6 : 1)
+            .accessibilityLabel("Sign in with Google")
 
             if let errorMessage {
                 Text(errorMessage)

@@ -98,7 +98,7 @@ private extension NewsView {
                 .foregroundColor(BrandColors.textSecondary)
 
             Text("Daily")
-                .font(.system(size: 28, weight: .bold, design: .serif))
+                .font(AppTypography.articleTitle)
                 .foregroundColor(BrandColors.textPrimary)
 
             Text(formattedFullDate)
@@ -219,7 +219,7 @@ private extension NewsView {
     func errorBanner(_ message: String) -> some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 14, weight: .semibold))
+                .font(AppTypography.navIcon)
                 .foregroundColor(BrandColors.warning)
 
             Text(message)
@@ -234,7 +234,7 @@ private extension NewsView {
                 withAnimation { viewModel.errorMessage = nil }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppTypography.sourceLabel)
                     .foregroundColor(BrandColors.textTertiary)
             }
         }
@@ -263,10 +263,11 @@ private extension NewsView {
                     .clipShape(Circle())
                 } else {
                     Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 26))
+                        .font(AppTypography.profileIcon)
                         .foregroundColor(BrandColors.textTertiary)
                 }
             }
+            .accessibilityLabel("Open profile")
         }
     }
 
@@ -324,7 +325,7 @@ struct FeaturedArticleCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm + 2) {
+        VStack(alignment: .leading, spacing: AppSpacing.smPlus) {
             // Image
             ZStack {
                 if let imageURL = article.imageURL, let url = URL(string: imageURL) {
@@ -342,7 +343,7 @@ struct FeaturedArticleCard: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: imageHeight)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.image, style: .continuous))
 
             // Source + time + reading time + badge
             HStack(spacing: AppSpacing.xs) {
@@ -408,13 +409,13 @@ struct FeaturedArticleCard: View {
                 endPoint: .bottomTrailing
             )
 
-            VStack(spacing: 8) {
+            VStack(spacing: AppSpacing.sm) {
                 Image(systemName: "newspaper.fill")
-                    .font(.system(size: 36, weight: .light))
+                    .font(AppTypography.iconLarge)
                     .foregroundColor(Color(.systemGray2))
 
                 Text(article.displaySource.uppercased())
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(AppTypography.metaLabel)
                     .foregroundColor(Color(.systemGray2))
                     .lineLimit(1)
             }
@@ -463,7 +464,7 @@ struct CompactArticleRow: View {
                 }
 
                 Text(article.displaySource.uppercased())
-                    .font(.system(size: 11, weight: .bold))
+                    .font(AppTypography.metaLabel)
                     .foregroundColor(BrandColors.primary)
 
                 if !article.formattedDate.isEmpty {
@@ -471,7 +472,7 @@ struct CompactArticleRow: View {
                         .fill(BrandColors.textQuaternary)
                         .frame(width: 2.5, height: 2.5)
                     Text(article.formattedDate)
-                        .font(.system(size: 11))
+                        .font(AppTypography.metaLabelRegular)
                         .foregroundColor(BrandColors.textTertiary)
                 }
 
@@ -479,7 +480,7 @@ struct CompactArticleRow: View {
                     .fill(BrandColors.textQuaternary)
                     .frame(width: 2.5, height: 2.5)
                 Text("\(article.estimatedReadingTime) min")
-                    .font(.system(size: 11))
+                    .font(AppTypography.metaLabelRegular)
                     .foregroundColor(BrandColors.textTertiary)
             }
 
@@ -512,11 +513,11 @@ struct CompactArticleRow: View {
 
             VStack(spacing: 6) {
                 Image(systemName: "newspaper.fill")
-                    .font(.system(size: 28, weight: .light))
+                    .font(AppTypography.iconMedium)
                     .foregroundColor(Color(.systemGray2))
 
                 Text(article.displaySource.uppercased())
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(AppTypography.microLabel)
                     .foregroundColor(Color(.systemGray2))
                     .lineLimit(1)
             }
