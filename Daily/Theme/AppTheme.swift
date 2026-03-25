@@ -83,6 +83,33 @@ struct AppTypography {
     static let articleTitle = Font.system(size: 28, weight: .bold, design: .serif)
     static let articleBody = Font.system(size: 19, weight: .regular, design: .serif)
 
+    // Brand
+    static let brandTitle = Font.system(size: 42, weight: .bold, design: .serif)
+
+    // Icons (placeholders, empty states, errors)
+    static let iconLarge = Font.system(size: 36, weight: .light)
+    static let iconMedium = Font.system(size: 28, weight: .light)
+    static let iconXL = Font.system(size: 40, weight: .light)
+    static let iconHeroXL = Font.system(size: 48, weight: .light)
+    static let emptyStateIcon = Font.system(size: 36, weight: .ultraLight)
+
+    // UI Chrome
+    static let badgeLabel = Font.system(size: 9, weight: .bold)
+    static let chipIcon = Font.system(size: 11, weight: .medium)
+    static let chipLabel = Font.system(size: 13, weight: .semibold)
+    static let metaLabel = Font.system(size: 11, weight: .semibold)
+    static let metaLabelRegular = Font.system(size: 11, weight: .regular)
+    static let microLabel = Font.system(size: 10, weight: .semibold)
+    static let navIcon = Font.system(size: 14, weight: .semibold)
+    static let toolbarIcon = Font.system(size: 14, weight: .medium)
+    static let iconButton = Font.system(size: 18, weight: .medium)
+    static let closeIcon = Font.system(size: 20)
+    static let profileIcon = Font.system(size: 26)
+    static let actionLabel = Font.system(size: 15, weight: .semibold)
+    static let actionIcon = Font.system(size: 15, weight: .medium)
+    static let articleAuthor = Font.system(size: 14, weight: .medium)
+    static let articleLeadIn = Font.system(size: 17, weight: .medium, design: .serif)
+
     // Legacy support
     static let displayLarge = Font.system(size: 34, weight: .bold, design: .default)
     static let displayMedium = Font.system(size: 28, weight: .bold, design: .default)
@@ -95,6 +122,8 @@ struct AppTypography {
 struct AppSpacing {
     static let xs: CGFloat = 4
     static let sm: CGFloat = 8
+    static let smPlus: CGFloat = 10
+    static let smLg: CGFloat = 12
     static let md: CGFloat = 16
     static let lg: CGFloat = 24
     static let xl: CGFloat = 32
@@ -104,6 +133,7 @@ struct AppSpacing {
 // MARK: - Corner Radius
 struct AppCornerRadius {
     static let small: CGFloat = 8
+    static let image: CGFloat = 10
     static let medium: CGFloat = 12
     static let large: CGFloat = 16
     static let xlarge: CGFloat = 20
