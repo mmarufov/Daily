@@ -102,6 +102,7 @@ class PreferenceProfile:
     strict_mode: bool = False
     required_topic_groups: set[str] = field(default_factory=set)
     allows_gaming_hardware: bool = False
+    is_specific: bool = False
 
     @property
     def has_preferences(self) -> bool:
@@ -184,7 +185,10 @@ async def get_personalized_feed(
         ]
         relevant.extend(backfill[:MIN_FEED_SIZE - len(relevant)])
     relevant = _enforce_diversity(relevant)
-    if len(relevant) < MIN_FEED_SIZE:
+    # Only backfill with random recent news for broad profiles.
+    # For specific profiles (e.g. "Claude AI"), a short on-topic feed
+    # is better than padding with unrelated articles.
+    if len(relevant) < MIN_FEED_SIZE and not profile.is_specific:
         seen_ids = {a["id"] for a in relevant}
         recency_fill = [
             a for a in finalized
@@ -489,6 +493,23 @@ def _candidate_matches_topic_group(
     return bool(hints and _contains_any(searchable, hints))
 
 
+def _is_specific_interests(interests: dict | None) -> bool:
+    """Detect narrow/specific interests (e.g. 'Claude AI') vs broad (e.g. 'AI, gaming')."""
+    if not interests:
+        return False
+    all_terms: list[str] = []
+    for key in ("topics", "people"):
+        values = interests.get(key)
+        if isinstance(values, list):
+            all_terms.extend(str(v).strip() for v in values if str(v).strip())
+    if not all_terms or len(all_terms) > 3:
+        return False
+    specific_count = sum(
+        1 for t in all_terms if len(t.split()) >= 2 or (t and t[0].isupper())
+    )
+    return specific_count > 0
+
+
 def _build_preference_profile(ai_profile: str, interests: dict | None) -> PreferenceProfile:
     prompt_positive, prompt_negative = _extract_prompt_terms(ai_profile)
     positive_terms = prompt_positive + _interest_values(interests, "topics")
@@ -511,6 +532,7 @@ def _build_preference_profile(ai_profile: str, interests: dict | None) -> Prefer
         strict_mode=strict_mode,
         required_topic_groups=set(categories) if strict_mode else set(),
         allows_gaming_hardware=_allows_gaming_hardware(ai_profile, positive_phrases),
+        is_specific=_is_specific_interests(interests),
     )
 
 
