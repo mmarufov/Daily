@@ -375,7 +375,7 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         for i, article in enumerate(articles):
             title = article.get("title", "Untitled")
             summary = (article.get("summary") or article.get("description") or "")[:500]
-            content_snippet = (article.get("content") or "")[:300]
+            content_snippet = (article.get("content") or "")[:500]
             source = article.get("source") or article.get("source_name") or ""
             parts = [f"{i}. [{source}] {title}", f"   {summary}"]
             if content_snippet:
@@ -411,57 +411,65 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             f"Return JSON with \"results\" array ({len(articles)} entries, one per article)."
         )
 
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(
-                    self.client.chat.completions.create,
-                    model=self.scoring_model,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.2,
-                ),
-                timeout=45.0,
-            )
+        fallback = [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"} for _ in articles]
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
 
-            result = json.loads(response.choices[0].message.content)
-            results_list = result.get("results", [])
+        for attempt in range(2):
+            try:
+                if attempt > 0:
+                    await asyncio.sleep(2)
+                    logger.info("Retrying batch scoring for %d articles (attempt %d)", len(articles), attempt + 1)
 
-            # Backward compat: if LLM returns old {"scores": [...]} format
-            if not results_list and "scores" in result:
-                results_list = [
-                    {"relevant": float(s) >= 0.5, "score": float(s), "reason": ""}
-                    for s in result["scores"]
-                ]
-
-            if len(results_list) != len(articles):
-                logger.warning(
-                    "Batch scoring returned %d results for %d articles; normalizing",
-                    len(results_list),
-                    len(articles),
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        self.client.chat.completions.create,
+                        model=self.scoring_model,
+                        messages=messages,
+                        response_format={"type": "json_object"},
+                        temperature=0.2,
+                    ),
+                    timeout=45.0,
                 )
 
-            normalized = []
-            for i in range(len(articles)):
-                if i < len(results_list):
-                    entry = results_list[i]
-                    score = max(0.0, min(1.0, float(entry.get("score", 0.5))))
-                    relevant = bool(entry.get("relevant", score >= 0.5))
-                    reason = str(entry.get("reason", ""))
-                    normalized.append({"relevant": relevant, "score": score, "reason": reason})
-                else:
-                    normalized.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
+                result = json.loads(response.choices[0].message.content)
+                results_list = result.get("results", [])
 
-            return normalized
+                # Backward compat: if LLM returns old {"scores": [...]} format
+                if not results_list and "scores" in result:
+                    results_list = [
+                        {"relevant": float(s) >= 0.5, "score": float(s), "reason": ""}
+                        for s in result["scores"]
+                    ]
 
-        except asyncio.TimeoutError:
-            logger.warning("Batch scoring timed out after 45s; returning fallback for %d articles", len(articles))
-            return [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"} for _ in articles]
-        except Exception:
-            logger.exception("Error in batch scoring")
-            return [{"relevant": False, "score": 0.0, "reason": "scoring error"} for _ in articles]
+                if len(results_list) != len(articles):
+                    logger.warning(
+                        "Batch scoring returned %d results for %d articles; normalizing",
+                        len(results_list),
+                        len(articles),
+                    )
+
+                normalized = []
+                for i in range(len(articles)):
+                    if i < len(results_list):
+                        entry = results_list[i]
+                        score = max(0.0, min(1.0, float(entry.get("score", 0.5))))
+                        relevant = bool(entry.get("relevant", score >= 0.5))
+                        reason = str(entry.get("reason", ""))
+                        normalized.append({"relevant": relevant, "score": score, "reason": reason})
+                    else:
+                        normalized.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
+
+                return normalized
+
+            except asyncio.TimeoutError:
+                logger.warning("Batch scoring timed out (attempt %d) for %d articles", attempt + 1, len(articles))
+            except Exception:
+                logger.exception("Error in batch scoring (attempt %d)", attempt + 1)
+
+        return fallback
 
     def _build_scoring_profile(self, user_profile: str, interests: dict | None = None) -> str:
         """Combine free-form profile text with structured interests for stricter scoring."""

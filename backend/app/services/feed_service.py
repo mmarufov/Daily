@@ -33,6 +33,7 @@ DETERMINISTIC_MATCH_THRESHOLD = 1.5
 STRICT_MATCH_THRESHOLD = 2.5
 DETERMINISTIC_STRONG_MATCH = 3.0
 DETERMINISTIC_SCORE_NORMALIZER = 8.0
+FALLBACK_SCORE_NORMALIZER = 5.0
 _FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
 _STOPWORDS = {
     "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
@@ -51,16 +52,22 @@ _CATEGORY_HINTS = {
     "politics": {"politics", "policy", "election", "congress", "government", "white house"},
 }
 _POSITIVE_PROMPT_PATTERNS = [
-    re.compile(r"(?:interested in|care about|focus on|follow|prefer|show me|cover|about|around)\s+([^.;\n]+)", re.IGNORECASE),
+    re.compile(
+        r"(?:interested in|care about|focus on|follow|prefer|show me|cover|about|around"
+        r"|(?:i\s+)?like|(?:i\s+)?love|(?:i\s+)?enjoy|(?:i\s+)?want|give me"
+        r"|keep me updated on|track|looking for|into)\s+([^.;\n]+)",
+        re.IGNORECASE,
+    ),
 ]
 _NEGATIVE_PROMPT_PATTERNS = [
     re.compile(r"(?:avoid|exclude|skip|without|not interested in|don't want|do not want|don't show|do not show|no)\s+([^.;\n]+)", re.IGNORECASE),
 ]
 _STRICT_PROMPT_PATTERNS = [
-    re.compile(r"\bonly\b", re.IGNORECASE),
-    re.compile(r"\bjust\b", re.IGNORECASE),
+    re.compile(r"\bonly\s+(?:about|show|want|interested|care|cover|focus|give)\b", re.IGNORECASE),
+    re.compile(r"\bonly\s+(?!(?:read|get|check|see|browse|watch|hear)\s)\w+(?:\s+\w+){0,2}\s+news\b", re.IGNORECASE),
     re.compile(r"\bexclusively\b", re.IGNORECASE),
     re.compile(r"\bnothing else\b", re.IGNORECASE),
+    re.compile(r"\bnothing but\b", re.IGNORECASE),
 ]
 _GAMING_SOURCE_HINTS = {
     "polygon", "pc gamer", "eurogamer", "rock paper shotgun",
@@ -172,11 +179,23 @@ async def get_personalized_feed(
         backfill = [
             a for a in finalized
             if not a.get("relevant", False)
-            and a.get("relevance_score", 0) >= 0.55
+            and a.get("relevance_score", 0) >= 0.35
             and "excluded" not in (a.get("relevance_reason") or "").lower()
         ]
         relevant.extend(backfill[:MIN_FEED_SIZE - len(relevant)])
     relevant = _enforce_diversity(relevant)
+    if len(relevant) < MIN_FEED_SIZE:
+        seen_ids = {a["id"] for a in relevant}
+        recency_fill = [
+            a for a in finalized
+            if a["id"] not in seen_ids
+            and "excluded" not in (a.get("relevance_reason") or "").lower()
+        ]
+        recency_fill.sort(key=lambda a: a.get("published_at") or "", reverse=True)
+        for a in recency_fill[:MIN_FEED_SIZE - len(relevant)]:
+            a["relevance_reason"] = a.get("relevance_reason") or "Recent news"
+            a["relevant"] = True
+            relevant.append(a)
     return relevant[:limit]
 
 
@@ -609,6 +628,12 @@ def _prefilter_candidates(
         key=lambda article: (article.get("_prefilter_score", 0.0), article.get("published_at") or ""),
         reverse=True,
     )
+
+    # Drop zero-signal articles that waste LLM capacity
+    if len(scored_candidates) > MIN_SHORTLIST_SIZE:
+        above_zero = [a for a in scored_candidates if a["_prefilter_score"] > 0.0]
+        scored_candidates = above_zero if len(above_zero) >= MIN_SHORTLIST_SIZE else scored_candidates[:MIN_SHORTLIST_SIZE]
+
     return scored_candidates[:max_candidates]
 
 
@@ -637,8 +662,8 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             continue
 
         if reason in _FALLBACK_REASONS or reason.startswith("Error during analysis:"):
-            candidate["_score"] = deterministic_score
-            candidate["_relevant"] = prefilter_score >= DETERMINISTIC_STRONG_MATCH
+            candidate["_score"] = min(prefilter_score / FALLBACK_SCORE_NORMALIZER, 1.0)
+            candidate["_relevant"] = prefilter_score >= accept_threshold
             candidate["_reason"] = prefilter_reason or reason
             continue
 
