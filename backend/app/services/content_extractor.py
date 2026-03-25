@@ -8,6 +8,8 @@ from urllib.parse import urlparse
 import httpx
 from bs4 import BeautifulSoup
 
+from app.services.image_extraction import extract_best_image_url
+
 
 async def extract_article_content(url: str) -> dict:
     """
@@ -35,12 +37,6 @@ async def extract_article_content(url: str) -> dict:
         title = og_title["content"].strip()
     elif soup.title and soup.title.string:
         title = soup.title.string.strip()
-
-    # Image: og:image
-    image_url = ""
-    og_image = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
-    if og_image and og_image.get("content"):
-        image_url = og_image["content"].strip()
 
     # Summary: og:description → meta description
     summary = ""
@@ -79,6 +75,8 @@ async def extract_article_content(url: str) -> dict:
         source_name = domain.replace("www.", "")
     except Exception:
         pass
+
+    image_url = extract_best_image_url(soup, url, content_root=main_node)
 
     return {
         "title": title,
