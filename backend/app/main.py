@@ -28,7 +28,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 async def _ingestion_loop():
     """Background task: fetch RSS feeds, extract content, clean up old articles."""
-    from app.services.news_ingestion import fetch_rss_feeds
+    from app.services.news_ingestion import fetch_rss_feeds, fetch_topic_feeds
     from app.services.content_extractor import extract_article_content
     from app.services.article_enrichment import enrich_articles
 
@@ -42,7 +42,8 @@ async def _ingestion_loop():
             with psycopg.connect(DATABASE_URL, row_factory=dict_row, autocommit=True) as conn:
                 _ensure_tables(conn)
                 new_count = await fetch_rss_feeds(conn)
-                print(f"Ingestion: {new_count} new articles from RSS")
+                topic_count = await fetch_topic_feeds(conn)
+                print(f"Ingestion: {new_count} from RSS, {topic_count} from topic feeds")
 
                 # 2. Extract content for articles that don't have it yet (batch of 10, 4 concurrent)
                 with conn.cursor() as cur:

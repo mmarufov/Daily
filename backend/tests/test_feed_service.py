@@ -99,6 +99,29 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         titles = [a["title"] for a in shortlisted]
         self.assertIn("OpenAI launches new model", titles)
 
+    def test_specific_profile_detected_for_narrow_topics(self):
+        profile = feed_service._build_preference_profile(
+            "Show me Claude AI news", {"topics": ["Claude AI"]},
+        )
+        self.assertTrue(profile.is_specific)
+
+    def test_specific_profile_detected_for_proper_noun(self):
+        profile = feed_service._build_preference_profile(
+            "Goldman Sachs news", {"topics": ["Goldman Sachs"], "people": ["Jamie Dimon"]},
+        )
+        self.assertTrue(profile.is_specific)
+
+    def test_broad_profile_not_specific(self):
+        profile = feed_service._build_preference_profile(
+            "AI, gaming, tech, and sports news",
+            {"topics": ["AI", "gaming", "tech", "sports"]},
+        )
+        self.assertFalse(profile.is_specific)
+
+    def test_no_interests_not_specific(self):
+        profile = feed_service._build_preference_profile("Show me news", None)
+        self.assertFalse(profile.is_specific)
+
     def test_prefilter_uses_preferences_and_exclusions(self):
         profile = feed_service._build_preference_profile(
             "Show me OpenAI and startup funding. Avoid sports.",
