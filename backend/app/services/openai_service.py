@@ -384,6 +384,23 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
 
         articles_text = "\n\n".join(article_lines)
         profile_text = self._build_scoring_profile(user_profile, interests)
+        specific = self._is_specific_profile(interests)
+
+        if specific:
+            adjacency_rule = (
+                "- The user has SPECIFIC interests. Only mark articles relevant if they are "
+                "DIRECTLY about the user's stated topics, people, or companies. Adjacent or "
+                "tangentially related topics should score low (0.1-0.3) and relevant=false. "
+                "For example, if the user wants 'Claude AI' news, general AI articles about "
+                "OpenAI or Amazon are NOT relevant unless they specifically discuss Claude or Anthropic.\n"
+                "- It is OK for the feed to be small. Only include genuinely on-topic articles.\n"
+            )
+        else:
+            adjacency_rule = (
+                "- Related and adjacent topics to the user's interests ARE relevant. "
+                "For example, if someone likes AI, articles about tech companies building AI products count.\n"
+                "- Aim for roughly 40-70% of articles to be marked relevant for a typical profile.\n"
+            )
 
         system_prompt = (
             "You are a personal news curator. Your job is to decide which articles "
@@ -392,15 +409,14 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             "For each article, decide:\n"
             '1. "relevant": true/false — Would this user find this interesting or useful? '
             "The article should be meaningfully related to their interests. A passing mention "
-            "of a keyword is not enough, but adjacent and related topics DO count.\n"
+            "of a keyword is not enough.\n"
             '2. "score": 0.0 to 1.0 — How interesting is this to the user specifically.\n'
             '3. "reason": one sentence — Why this article is or isn\'t relevant.\n\n'
             "Rules:\n"
             "- Excluded topics MUST score 0.0 and relevant=false.\n"
             "- When in doubt, lean toward including the article. A fuller feed is better than a sparse one.\n"
-            "- Related and adjacent topics to the user's interests ARE relevant. "
-            "For example, if someone likes AI, articles about tech companies building AI products count.\n"
-            "- Aim for roughly 40-70% of articles to be marked relevant for a typical profile.\n\n"
+            + adjacency_rule +
+            "\n"
             'Return ONLY a JSON object: {"results": [{"relevant": bool, "score": float, "reason": "..."}, ...]}\n'
             "One entry per article, same order."
         )
@@ -507,6 +523,23 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             sections.append("No user preferences are available. Use neutral 0.5 scores.")
 
         return "\n\n".join(sections)
+
+    @staticmethod
+    def _is_specific_profile(interests: dict | None) -> bool:
+        """Detect narrow/specific interests (e.g. 'Claude AI') vs broad (e.g. 'AI, gaming')."""
+        if not interests:
+            return False
+        all_terms: List[str] = []
+        for key in ("topics", "people"):
+            values = interests.get(key)
+            if isinstance(values, list):
+                all_terms.extend(str(v).strip() for v in values if str(v).strip())
+        if not all_terms or len(all_terms) > 3:
+            return False
+        specific_count = sum(
+            1 for t in all_terms if len(t.split()) >= 2 or (t and t[0].isupper())
+        )
+        return specific_count > 0
 
     async def extract_article_with_tools(self, article_url: str) -> Dict:
         """
