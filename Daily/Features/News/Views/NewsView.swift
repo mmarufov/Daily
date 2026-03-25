@@ -163,19 +163,14 @@ private extension NewsView {
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.sm)
 
-                VStack(spacing: 0) {
-                    ForEach(Array(articles.dropFirst().enumerated()), id: \.element.id) { index, article in
+                VStack(spacing: AppSpacing.sm) {
+                    ForEach(articles.dropFirst()) { article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
                             CompactArticleRow(article: article, isRead: bookmarks.isRead(article.id))
                         }
                         .buttonStyle(PressableButtonStyle())
                         .contextMenu {
                             articleContextMenu(for: article)
-                        }
-
-                        if index < articles.count - 2 {
-                            HairlineDivider()
-                                .padding(.leading, AppSpacing.lg)
                         }
                     }
                 }
@@ -308,20 +303,23 @@ struct FeaturedArticleCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm + 2) {
             // Image
-            if let imageURL = article.imageURL, let url = URL(string: imageURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle()
-                            .fill(Color(.tertiarySystemFill))
+            ZStack {
+                if let imageURL = article.imageURL, let url = URL(string: imageURL) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        default:
+                            featuredPlaceholder
+                        }
                     }
+                } else {
+                    featuredPlaceholder
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: imageHeight)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: imageHeight)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
             // Source + time + reading time + badge
             HStack(spacing: AppSpacing.xs) {
@@ -375,6 +373,31 @@ struct FeaturedArticleCard: View {
             }
         }
     }
+
+    private var featuredPlaceholder: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(.systemGray4),
+                    Color(.systemGray5)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 8) {
+                Image(systemName: "newspaper.fill")
+                    .font(.system(size: 36, weight: .light))
+                    .foregroundColor(Color(.systemGray2))
+
+                Text(article.displaySource.uppercased())
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(Color(.systemGray2))
+                    .lineLimit(1)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
 }
 
 // MARK: - Compact Article Row
@@ -383,23 +406,30 @@ struct CompactArticleRow: View {
     let article: NewsArticle
     var isRead: Bool = false
 
+    private var hasImage: Bool {
+        article.imageURL != nil && !article.imageURL!.isEmpty
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            // Full-width image
-            if let imageURL = article.imageURL, let url = URL(string: imageURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle()
-                            .fill(Color(.tertiarySystemFill))
+            // Image or placeholder
+            ZStack(alignment: .bottomLeading) {
+                if let imageURL = article.imageURL, let url = URL(string: imageURL) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        default:
+                            imagePlaceholder
+                        }
                     }
+                } else {
+                    imagePlaceholder
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 160)
-                .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 160)
+            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
 
             // Source + time + reading time
             HStack(spacing: AppSpacing.xs) {
@@ -443,8 +473,32 @@ struct CompactArticleRow: View {
         .padding(AppSpacing.sm)
         .background(BrandColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.card, style: .continuous))
-        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
         .padding(.vertical, AppSpacing.xs)
+    }
+
+    private var imagePlaceholder: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(.systemGray4),
+                    Color(.systemGray5)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 6) {
+                Image(systemName: "newspaper.fill")
+                    .font(.system(size: 28, weight: .light))
+                    .foregroundColor(Color(.systemGray2))
+
+                Text(article.displaySource.uppercased())
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(Color(.systemGray2))
+                    .lineLimit(1)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
