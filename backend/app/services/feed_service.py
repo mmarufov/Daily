@@ -10,9 +10,12 @@ import re
 import uuid as _uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
+from difflib import SequenceMatcher
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from app.services.content_extractor import extract_article_content
+from app.services.image_extraction import fetch_best_source_image
 from app.services.openai_service import get_openai_service
 
 logger = logging.getLogger(__name__)
@@ -35,12 +38,14 @@ DETERMINISTIC_STRONG_MATCH = 3.0
 DETERMINISTIC_SCORE_NORMALIZER = 8.0
 FALLBACK_SCORE_NORMALIZER = 5.0
 _FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
-_STOPWORDS = {
+_DEDUPE_TRACKING_PARAMS = {"fbclid", "gclid", "ocid", "cmpid", "taid"}
+_DEDUPE_STOPWORDS = {
     "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
     "focus", "for", "from", "general", "give", "i", "in", "include", "just", "me", "my",
     "news", "of", "on", "or", "show", "stories", "story", "the", "to", "want", "with",
     "only",
 }
+_STOPWORDS = set(_DEDUPE_STOPWORDS)
 _CATEGORY_HINTS = {
     "ai": {"ai", "artificial intelligence", "llm", "machine learning", "openai", "anthropic", "chatgpt"},
     "technology": {"technology", "tech", "software", "hardware", "developer", "programming", "apple", "google", "microsoft"},
@@ -133,9 +138,12 @@ async def get_personalized_feed(
     if not force_refresh:
         cached = _load_cached_feed(conn, user_uuid, preferences_updated_at)
         if cached is not None:
+            cached = _collapse_duplicate_coverage(cached)
             relevant = [a for a in cached if a.get("relevant", False)]
             if relevant:
-                return relevant[:limit]
+                relevant = relevant[:limit]
+                await _hydrate_missing_feed_images(conn, relevant)
+                return relevant
             if any(a.get("relevance_reason") for a in cached):
                 return []
             logger.info("Cache for user %s exists but lacks reasons; treating as stale", user_id)
@@ -153,8 +161,10 @@ async def get_personalized_feed(
             candidate["_reason"] = "no profile available"
         candidates.sort(key=lambda article: article.get("published_at") or "", reverse=True)
         _save_feed_cache(conn, user_uuid, candidates)
-        finalized = _finalize_articles(candidates)
-        return finalized[:limit]
+        finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
+        finalized = finalized[:limit]
+        await _hydrate_missing_feed_images(conn, finalized)
+        return finalized
 
     openai_service = get_openai_service()
     batches = [
@@ -174,7 +184,7 @@ async def get_personalized_feed(
         reverse=True,
     )
     _save_feed_cache(conn, user_uuid, candidates)
-    finalized = _finalize_articles(candidates)
+    finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
     relevant = [article for article in finalized if article.get("relevant", False)]
     if len(relevant) < MIN_FEED_SIZE:
         backfill = [
@@ -200,7 +210,9 @@ async def get_personalized_feed(
             a["relevance_reason"] = a.get("relevance_reason") or "Recent news"
             a["relevant"] = True
             relevant.append(a)
-    return relevant[:limit]
+    relevant = relevant[:limit]
+    await _hydrate_missing_feed_images(conn, relevant)
+    return relevant
 
 
 def _log_score_distribution(results: list[dict], context: str) -> None:
@@ -354,6 +366,187 @@ def _derive_summary(content: str | None) -> str | None:
         return None
 
     return collapsed[:280]
+
+
+def _parse_article_datetime(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    if not isinstance(value, str) or not value:
+        return None
+
+    normalized = value.replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _canonicalize_url(url: str | None) -> str:
+    if not url:
+        return ""
+
+    parts = urlsplit(url.strip())
+    if not parts.scheme or not parts.netloc:
+        return ""
+
+    filtered_query = [
+        (key, value)
+        for key, value in parse_qsl(parts.query, keep_blank_values=True)
+        if not key.lower().startswith("utm_") and key.lower() not in _DEDUPE_TRACKING_PARAMS
+    ]
+    return urlunsplit((
+        parts.scheme.lower(),
+        parts.netloc.lower(),
+        parts.path or "/",
+        urlencode(filtered_query, doseq=True),
+        "",
+    ))
+
+
+def _normalize_title_for_dedupe(title: str | None) -> str:
+    if not title:
+        return ""
+
+    normalized = title.strip()
+    normalized = re.sub(r"\s+[|-]\s+[A-Za-z0-9&.' ]{2,30}$", "", normalized)
+    normalized = re.sub(r"[^a-z0-9\s]", " ", normalized.lower())
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return normalized
+
+
+def _title_token_set(title: str | None) -> set[str]:
+    normalized = _normalize_title_for_dedupe(title)
+    tokens = {
+        token
+        for token in normalized.split()
+        if token and token not in _DEDUPE_STOPWORDS and len(token) > 2
+    }
+    return tokens
+
+
+def _articles_are_near_duplicates(a: dict, b: dict) -> bool:
+    date_a = _parse_article_datetime(a.get("published_at"))
+    date_b = _parse_article_datetime(b.get("published_at"))
+    if date_a and date_b and abs(date_a - date_b) > timedelta(hours=36):
+        return False
+
+    url_a = _canonicalize_url(a.get("url"))
+    url_b = _canonicalize_url(b.get("url"))
+    if url_a and url_b and url_a == url_b:
+        return True
+
+    title_a = _normalize_title_for_dedupe(a.get("title"))
+    title_b = _normalize_title_for_dedupe(b.get("title"))
+    if not title_a or not title_b:
+        return False
+
+    similarity = SequenceMatcher(None, title_a, title_b).ratio()
+    if similarity >= 0.88:
+        return True
+
+    tokens_a = _title_token_set(a.get("title"))
+    tokens_b = _title_token_set(b.get("title"))
+    if not tokens_a or not tokens_b:
+        return False
+
+    union = tokens_a | tokens_b
+    if not union:
+        return False
+    overlap = len(tokens_a & tokens_b) / len(union)
+    return overlap >= 0.75
+
+
+def _article_rank_score(article: dict) -> float:
+    score = article.get("relevance_score")
+    if score is None:
+        score = article.get("_score", 0.0)
+    try:
+        return float(score)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _select_best_duplicate_representative(cluster: list[dict]) -> dict:
+    def sort_key(article: dict) -> tuple[int, int, int, float, float]:
+        published = _parse_article_datetime(article.get("published_at"))
+        return (
+            1 if article.get("image_url") else 0,
+            len(article.get("content") or ""),
+            len(article.get("summary") or ""),
+            _article_rank_score(article),
+            published.timestamp() if published else 0.0,
+        )
+
+    return max(cluster, key=sort_key)
+
+
+def _collapse_duplicate_coverage(articles: list[dict]) -> list[dict]:
+    if len(articles) < 2:
+        return articles
+
+    consumed: set[int] = set()
+    deduped: list[dict] = []
+
+    for index, article in enumerate(articles):
+        if index in consumed:
+            continue
+
+        cluster = [article]
+        consumed.add(index)
+
+        for candidate_index in range(index + 1, len(articles)):
+            if candidate_index in consumed:
+                continue
+            candidate = articles[candidate_index]
+            if any(_articles_are_near_duplicates(existing, candidate) for existing in cluster):
+                cluster.append(candidate)
+                consumed.add(candidate_index)
+
+        deduped.append(_select_best_duplicate_representative(cluster))
+
+    return deduped
+
+
+async def _hydrate_missing_feed_images(conn, articles: list[dict], max_articles: int = 8) -> None:
+    if not conn:
+        return
+
+    missing = [article for article in articles if not article.get("image_url") and article.get("url")][:max_articles]
+    if not missing:
+        return
+
+    semaphore = asyncio.Semaphore(3)
+
+    async def _fetch(article: dict) -> tuple[dict, str]:
+        async with semaphore:
+            image_url = await fetch_best_source_image(article["url"], timeout=4.0)
+            return article, image_url
+
+    results = await asyncio.gather(*[_fetch(article) for article in missing], return_exceptions=True)
+
+    for result in results:
+        if isinstance(result, Exception):
+            logger.debug("Feed image hydration failed", exc_info=result)
+            continue
+
+        article, image_url = result
+        if not image_url:
+            continue
+
+        article["image_url"] = image_url
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE public.articles
+                    SET image_url = COALESCE(image_url, %s)
+                    WHERE id = %s
+                    """,
+                    (image_url, _uuid.UUID(article["id"])),
+                )
+        except Exception:
+            logger.exception("Failed to persist hydrated image for article %s", article.get("id"))
 
 
 def _parse_interests(raw) -> dict | None:

@@ -13,6 +13,8 @@ from urllib.parse import quote, urlparse
 import httpx
 import feedparser
 
+from app.services.image_extraction import fetch_best_source_image
+
 logger = logging.getLogger(__name__)
 
 # Broad news feeds plus a small set of niche feeds for strict topic matching.
@@ -212,26 +214,18 @@ async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[d
     return articles
 
 
-async def _fetch_og_image(client: httpx.AsyncClient, article: dict) -> None:
-    """Fetch og:image from an article's URL and update the article dict in place."""
+async def _fetch_source_image(article: dict) -> None:
+    """Fetch the best source-authentic image from an article page."""
     try:
-        response = await client.get(
-            article["url"],
-            headers={"User-Agent": "Mozilla/5.0 (compatible; DailyNewsBot/1.0)"},
-        )
-        if response.status_code != 200:
-            return
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(response.text[:50000], "html.parser")
-        og_image = soup.find("meta", property="og:image") or soup.find("meta", attrs={"name": "og:image"})
-        if og_image and og_image.get("content"):
-            article["image_url"] = og_image["content"].strip()
+        image_url = await fetch_best_source_image(article["url"], timeout=5.0)
+        if image_url:
+            article["image_url"] = image_url
     except Exception:
         pass
 
 
-async def _fetch_og_images(articles: list[dict]) -> int:
-    """Fetch og:image for articles missing image_url. Returns count of images found."""
+async def _fetch_source_images(articles: list[dict]) -> int:
+    """Fetch source-authentic images for articles missing image_url. Returns count of images found."""
     missing = [a for a in articles if not a.get("image_url")]
     if not missing:
         return 0
@@ -239,13 +233,12 @@ async def _fetch_og_images(articles: list[dict]) -> int:
     found = 0
     semaphore = asyncio.Semaphore(3)
 
-    async def _fetch_with_limit(client, article):
+    async def _fetch_with_limit(article):
         async with semaphore:
-            await _fetch_og_image(client, article)
+            await _fetch_source_image(article)
 
-    async with httpx.AsyncClient(timeout=5.0, follow_redirects=True) as client:
-        tasks = [_fetch_with_limit(client, a) for a in missing]
-        await asyncio.gather(*tasks, return_exceptions=True)
+    tasks = [_fetch_with_limit(a) for a in missing]
+    await asyncio.gather(*tasks, return_exceptions=True)
 
     for a in missing:
         if a.get("image_url"):
@@ -290,10 +283,10 @@ async def fetch_rss_feeds(conn) -> int:
             seen_urls.add(article["url"])
             unique_articles.append(article)
 
-    # Fetch og:image for articles missing images from RSS metadata
-    og_count = await _fetch_og_images(unique_articles)
-    if og_count:
-        print(f"RSS: Fetched og:image for {og_count} articles missing RSS images")
+    # Fetch article-page images for entries missing RSS metadata
+    source_image_count = await _fetch_source_images(unique_articles)
+    if source_image_count:
+        print(f"RSS: Fetched source images for {source_image_count} articles missing RSS images")
 
     # Insert into database, skipping duplicates
     with conn.cursor() as cur:

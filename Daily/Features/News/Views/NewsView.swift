@@ -163,10 +163,14 @@ private extension NewsView {
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.sm)
 
-                VStack(spacing: AppSpacing.sm) {
+                VStack(spacing: AppSpacing.lg) {
                     ForEach(articles.dropFirst()) { article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
-                            CompactArticleRow(article: article, isRead: bookmarks.isRead(article.id))
+                            FeaturedArticleCard(
+                                article: article,
+                                isRead: bookmarks.isRead(article.id),
+                                style: .feed
+                            )
                         }
                         .buttonStyle(PressableButtonStyle())
                         .contextMenu {
@@ -289,15 +293,34 @@ struct FeaturedArticleCard: View {
 
     enum CardStyle {
         case standard  // 200px image, feedHeroTitle font
+        case feed      // 180px image, feedHeroTitle font, 2-line summary
         case hero      // 260px image, articleTitle font (28pt)
     }
 
     private var imageHeight: CGFloat {
-        style == .hero ? 260 : 200
+        switch style {
+        case .hero:
+            return 260
+        case .feed:
+            return 180
+        case .standard:
+            return 200
+        }
     }
 
     private var titleFont: Font {
         style == .hero ? AppTypography.articleTitle : AppTypography.feedHeroTitle
+    }
+
+    private var summaryLineLimit: Int {
+        switch style {
+        case .hero:
+            return 3
+        case .feed:
+            return 2
+        case .standard:
+            return 2
+        }
     }
 
     var body: some View {
@@ -368,7 +391,7 @@ struct FeaturedArticleCard: View {
                 Text(summary)
                     .font(AppTypography.subheadline)
                     .foregroundColor(BrandColors.textSecondary)
-                    .lineLimit(style == .hero ? 3 : 2)
+                    .lineLimit(summaryLineLimit)
                     .lineSpacing(1)
             }
         }

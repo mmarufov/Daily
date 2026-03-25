@@ -2,10 +2,12 @@
 Article enrichment service.
 Runs after content extraction to:
 1. Expand thin article content using OpenAI
-2. Find images for articles without images using Unsplash
+2. Recover source-authentic images for articles without images
 """
 import asyncio
 import logging
+
+from app.services.image_extraction import fetch_best_source_image
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +22,7 @@ ENRICHMENT_CONCURRENCY = 3
 async def enrich_articles(conn) -> dict:
     """
     Find articles that have been content-extracted but not yet enriched,
-    and enrich them (expand thin content, find missing images).
+    and enrich them (expand thin content, recover missing source images).
 
     Returns dict with counts: {"content_enriched": int, "images_found": int}
     """
@@ -65,21 +67,10 @@ async def enrich_articles(conn) -> dict:
 
             # 2. Image enrichment: if no image_url
             if not row.get("image_url"):
-                search_query = row.get("title", "")[:80]
-                candidates = await openai_service.search_unsplash_images(
-                    query=search_query, per_page=5
-                )
-                if candidates:
-                    best = await openai_service.select_best_image(
-                        article={
-                            "title": row.get("title"),
-                            "summary": row.get("summary"),
-                        },
-                        image_candidates=candidates,
-                    )
-                    if best and best.get("url"):
-                        updates["image_url"] = best["url"]
-                        stats["images_found"] += 1
+                image_url = await fetch_best_source_image(row.get("url", ""), timeout=5.0)
+                if image_url:
+                    updates["image_url"] = image_url
+                    stats["images_found"] += 1
 
             # 3. Mark enrichment as completed (even if nothing was enriched)
             _apply_enrichment(conn, row["id"], updates)
