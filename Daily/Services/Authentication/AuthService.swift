@@ -31,11 +31,6 @@ final class AuthService: ObservableObject {
         try await authenticate(providerEndpoint: endpoint, payload: ["id_token": idToken])
     }
 
-    func authenticateWithApple(identityToken: String) async throws {
-        let endpoint = baseURL.appendingPathComponent("/auth/apple")
-        try await authenticate(providerEndpoint: endpoint, payload: ["identity_token": identityToken])
-    }
-
     func signOut() {
         keychain.delete(key: tokenKey)
         self.currentUser = nil
@@ -153,5 +148,4 @@ final class KeychainHelper {
         SecItemDelete(query as CFDictionary)
     }
 }
-
 

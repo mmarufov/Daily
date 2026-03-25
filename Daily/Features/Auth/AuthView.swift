@@ -7,11 +7,9 @@
 
 import SwiftUI
 import UIKit
-import AuthenticationServices
 
 struct AuthView: View {
     @ObservedObject private var auth = AuthService.shared
-    @State private var isAppleLoading: Bool = false
     @State private var isGoogleLoading: Bool = false
     @State private var errorMessage: String?
 
@@ -29,42 +27,6 @@ struct AuthView: View {
         .padding(.bottom, AppSpacing.xl)
         .padding(.top, AppSpacing.xl)
         .background(Color(.systemBackground))
-    }
-
-    private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) async {
-        errorMessage = nil
-        isAppleLoading = true
-        defer { isAppleLoading = false }
-
-        switch result {
-        case .success(let authorization):
-            guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-                  let identityToken = appleIDCredential.identityToken else {
-                errorMessage = "Failed to get Apple token"
-                return
-            }
-
-            guard let tokenString = String(data: identityToken, encoding: .utf8) else {
-                errorMessage = "Failed to convert Apple token to string"
-                return
-            }
-
-            do {
-                try await auth.authenticateWithApple(identityToken: tokenString)
-            } catch {
-                print("Apple sign-in error: \(error)")
-                if let nsError = error as NSError? {
-                    print("Error domain: \(nsError.domain), code: \(nsError.code)")
-                    print("Error userInfo: \(nsError.userInfo)")
-                }
-                errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
-            }
-
-        case .failure(let error):
-            if let authError = error as? ASAuthorizationError, authError.code != .canceled {
-                errorMessage = "Apple sign-in failed: \(error.localizedDescription)"
-            }
-        }
     }
 
     private func signInWithGoogle() async {
@@ -100,27 +62,6 @@ private extension AuthView {
 
     var signInSection: some View {
         VStack(spacing: AppSpacing.md) {
-            SignInWithAppleButton(
-                onRequest: { request in
-                    request.requestedScopes = [.fullName, .email]
-                },
-                onCompletion: { result in
-                    Task {
-                        await handleAppleSignIn(result)
-                    }
-                }
-            )
-            .signInWithAppleButtonStyle(.black)
-            .frame(height: 52)
-            .cornerRadius(AppCornerRadius.button)
-            .disabled(isAppleLoading || isGoogleLoading)
-            .overlay {
-                if isAppleLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                }
-            }
-
             Button(action: {
                 HapticService.impact(.light)
                 Task { await signInWithGoogle() }
@@ -147,8 +88,8 @@ private extension AuthView {
                         .stroke(Color(.separator), lineWidth: 1)
                 )
             }
-            .disabled(isGoogleLoading || isAppleLoading)
-            .opacity(isGoogleLoading || isAppleLoading ? 0.6 : 1)
+            .disabled(isGoogleLoading)
+            .opacity(isGoogleLoading ? 0.6 : 1)
             .accessibilityLabel("Sign in with Google")
 
             if let errorMessage {
