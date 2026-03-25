@@ -98,7 +98,7 @@ struct ChatView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(AppTypography.navIcon)
                             Text("News")
                                 .font(AppTypography.bodyMedium)
                         }
@@ -114,7 +114,7 @@ struct ChatView: View {
                         }) {
                             HStack(spacing: AppSpacing.xs) {
                                 Image(systemName: "trash")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(AppTypography.labelSmall)
                                 Text("Clear")
                                     .font(AppTypography.labelSmall)
                             }
@@ -146,7 +146,7 @@ private extension ChatView {
                     .frame(width: 80, height: 80)
 
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(.system(size: 36, weight: .light))
+                    .font(AppTypography.iconLarge)
                     .foregroundColor(BrandColors.primary)
             }
 
@@ -175,12 +175,12 @@ private extension ChatView {
                 VStack(alignment: .leading, spacing: 4) {
                     if let source = viewModel.articleContext?.displaySource {
                         Text(source.uppercased())
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(AppTypography.metaLabel)
                             .tracking(0.6)
                             .foregroundColor(BrandColors.primary)
                     }
                     Text(viewModel.articleContext?.title ?? "")
-                        .font(.system(size: 16, weight: .semibold, design: .serif))
+                        .font(AppTypography.feedCardTitle)
                         .foregroundColor(BrandColors.textPrimary)
                         .lineLimit(2)
                 }
@@ -194,7 +194,7 @@ private extension ChatView {
                     }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 20))
+                        .font(AppTypography.closeIcon)
                         .foregroundColor(BrandColors.textTertiary)
                 }
             }
@@ -229,7 +229,7 @@ private extension ChatView {
                     }) {
                         HStack(spacing: 6) {
                             Image(systemName: prompt.icon)
-                                .font(.system(size: 11, weight: .medium))
+                                .font(AppTypography.chipIcon)
                                 .foregroundColor(BrandColors.primary)
                             Text(prompt.text)
                                 .font(AppTypography.caption1)
@@ -237,7 +237,7 @@ private extension ChatView {
                                 .foregroundColor(BrandColors.textPrimary)
                         }
                         .padding(.horizontal, AppSpacing.md)
-                        .padding(.vertical, AppSpacing.sm + 2)
+                        .padding(.vertical, AppSpacing.smPlus)
                         .glassEffect(.regular.interactive(), in: .capsule)
                     }
                 }
@@ -269,7 +269,7 @@ private extension ChatView {
                 withAnimation { viewModel.errorMessage = nil }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(AppTypography.metaLabel)
                     .foregroundColor(BrandColors.textTertiary)
             }
         }
@@ -288,7 +288,7 @@ private extension ChatView {
                 TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
                     .font(AppTypography.body)
                     .padding(.horizontal, AppSpacing.md)
-                    .padding(.vertical, AppSpacing.sm + 2)
+                    .padding(.vertical, AppSpacing.smPlus)
                     .background(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous)
                             .fill(Color(.secondarySystemGroupedBackground))
@@ -298,7 +298,7 @@ private extension ChatView {
                             .stroke(
                                 isInputFocused
                                 ? BrandColors.primary.opacity(0.4)
-                                : Color.black.opacity(0.08),
+                                : Color(.separator),
                                 lineWidth: isInputFocused ? 1.5 : 1
                             )
                     )
@@ -354,7 +354,7 @@ private extension ChatView {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                 } else {
                     Image(systemName: "arrow.up")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(AppTypography.actionLabel)
                         .foregroundColor(.white)
                 }
             }
@@ -381,6 +381,7 @@ private extension ChatView {
 
 struct TypingIndicatorView: View {
     @State private var animating = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(alignment: .bottom, spacing: AppSpacing.sm) {
@@ -389,9 +390,10 @@ struct TypingIndicatorView: View {
                     Circle()
                         .fill(BrandColors.primary)
                         .frame(width: 8, height: 8)
-                        .scaleEffect(animating ? 1.0 : 0.5)
-                        .opacity(animating ? 1.0 : 0.3)
+                        .scaleEffect(reduceMotion ? 1.0 : (animating ? 1.0 : 0.5))
+                        .opacity(reduceMotion ? 0.6 : (animating ? 1.0 : 0.3))
                         .animation(
+                            reduceMotion ? nil :
                             .easeInOut(duration: 0.5)
                             .repeatForever(autoreverses: true)
                             .delay(Double(index) * 0.15),
@@ -400,13 +402,16 @@ struct TypingIndicatorView: View {
                 }
             }
             .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.sm + 4)
+            .padding(.vertical, AppSpacing.smLg)
             .glassEffect(.regular, in: RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
 
             Spacer(minLength: 50)
         }
         .padding(.horizontal, AppSpacing.md)
-        .onAppear { animating = true }
+        .onAppear {
+            guard !reduceMotion else { return }
+            animating = true
+        }
     }
 }
 
@@ -445,7 +450,7 @@ struct ChatBubbleView: View {
             .font(AppTypography.body)
             .foregroundColor(.white)
             .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.sm + 2)
+            .padding(.vertical, AppSpacing.smPlus)
             .background(
                 LinearGradient(
                     colors: [BrandColors.primaryLight, BrandColors.primaryDark],
@@ -463,7 +468,7 @@ struct ChatBubbleView: View {
             .foregroundColor(BrandColors.textPrimary)
             .textSelection(.enabled)
             .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.sm + 2)
+            .padding(.vertical, AppSpacing.smPlus)
             .glassEffect(.clear, in: RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
     }
 }

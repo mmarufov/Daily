@@ -35,7 +35,7 @@ struct CategoryFilterBar: View {
     private func chip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(AppTypography.chipLabel)
                 .foregroundColor(isSelected ? .white : BrandColors.textPrimary)
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.sm)

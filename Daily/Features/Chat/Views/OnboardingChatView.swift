@@ -118,7 +118,7 @@ private extension OnboardingChatView {
     var introCard: some View {
         VStack(spacing: AppSpacing.sm) {
             Image(systemName: "sparkles")
-                .font(.system(size: 40, weight: .light))
+                .font(AppTypography.iconXL)
                 .foregroundColor(BrandColors.primary)
                 .padding()
                 .background(BrandColors.primary.opacity(0.08))
@@ -150,7 +150,7 @@ private extension OnboardingChatView {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: chip.icon)
-                                .font(.system(size: 11, weight: .medium))
+                                .font(AppTypography.chipIcon)
                                 .foregroundColor(BrandColors.primary)
                             Text(chip.text)
                                 .font(AppTypography.caption1)
@@ -158,7 +158,7 @@ private extension OnboardingChatView {
                                 .foregroundColor(BrandColors.textPrimary)
                         }
                         .padding(.horizontal, AppSpacing.md)
-                        .padding(.vertical, AppSpacing.sm + 2)
+                        .padding(.vertical, AppSpacing.smPlus)
                         .background(
                             Capsule()
                                 .fill(Color(.secondarySystemGroupedBackground))
@@ -181,7 +181,7 @@ private extension OnboardingChatView {
         } label: {
             HStack(spacing: AppSpacing.sm) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(AppTypography.headlineMedium)
                 Text("That's all, show me my feed")
                     .font(AppTypography.labelLarge)
             }
@@ -233,7 +233,7 @@ private extension OnboardingChatView {
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     } else {
                         Image(systemName: "arrow.up")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(AppTypography.actionLabel)
                             .foregroundColor(.white)
                     }
                 }
