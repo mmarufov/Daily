@@ -137,5 +137,44 @@ class ImageExtractionTests(unittest.TestCase):
         self.assertEqual(image_url, "https://example.com/images/story-photo.jpg")
 
 
+    def test_og_image_with_thumbnail_in_url_is_allowed(self):
+        """og:image URLs containing 'thumbnail' should NOT be blocked (CDN naming)."""
+        html = """
+        <html><head>
+        <meta property="og:image" content="https://cdn.example.com/thumbnail/lead-photo.jpg" />
+        </head><body></body></html>
+        """
+
+        image_url = image_extraction.extract_best_image_from_html(html, "https://example.com/story")
+
+        self.assertEqual(image_url, "https://cdn.example.com/thumbnail/lead-photo.jpg")
+
+    def test_inline_img_with_thumbnail_is_blocked(self):
+        """Inline <img> with 'thumbnail' in class/URL should be blocked."""
+        html = """
+        <html><head></head>
+        <body><article>
+          <img src="/images/thumbnail-small.jpg" width="1200" height="800" alt="Photo" />
+        </article></body></html>
+        """
+
+        image_url = image_extraction.extract_best_image_from_html(html, "https://example.com/story")
+
+        # Should NOT extract the thumbnail image
+        self.assertEqual(image_url, "")
+
+    def test_meta_logo_still_blocked_after_split(self):
+        """og:image with 'logo' should still be blocked even with the narrower meta blocklist."""
+        html = """
+        <html><head>
+        <meta property="og:image" content="https://example.com/assets/logo.png" />
+        </head><body></body></html>
+        """
+
+        image_url = image_extraction.extract_best_image_from_html(html, "https://example.com/story")
+
+        self.assertEqual(image_url, "")
+
+
 if __name__ == "__main__":
     unittest.main()

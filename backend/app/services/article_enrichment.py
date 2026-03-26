@@ -3,6 +3,9 @@ Article enrichment service.
 Runs after content extraction to:
 1. Expand thin article content using OpenAI
 2. Recover source-authentic images for articles without images
+
+Supports retry: articles without images are retried up to MAX_ENRICHMENT_ATTEMPTS
+times. Content expansion is skipped on retry if content is already adequate.
 """
 import asyncio
 import logging
@@ -15,8 +18,11 @@ logger = logging.getLogger(__name__)
 MIN_CONTENT_LENGTH = 200
 
 # Max articles to enrich per cycle
-ENRICHMENT_BATCH_SIZE = 10
-ENRICHMENT_CONCURRENCY = 3
+ENRICHMENT_BATCH_SIZE = 25
+ENRICHMENT_CONCURRENCY = 6
+
+# Max retry attempts for image enrichment
+MAX_ENRICHMENT_ATTEMPTS = 3
 
 
 async def enrich_articles(conn) -> dict:
@@ -31,14 +37,15 @@ async def enrich_articles(conn) -> dict:
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, url, title, summary, content, image_url
+            SELECT id, url, title, summary, content, image_url, enrichment_attempts
             FROM public.articles
             WHERE content_extracted = true
               AND enrichment_completed = false
+              AND enrichment_attempts < %s
             ORDER BY ingested_at DESC
             LIMIT %s
             """,
-            (ENRICHMENT_BATCH_SIZE,),
+            (MAX_ENRICHMENT_ATTEMPTS, ENRICHMENT_BATCH_SIZE),
         )
         pending = cur.fetchall()
 
@@ -53,7 +60,7 @@ async def enrich_articles(conn) -> dict:
         async with semaphore:
             updates = {}
 
-            # 1. Content enrichment: if content is thin
+            # 1. Content enrichment: only if content is thin AND not already expanded
             content = row.get("content") or ""
             if len(content.strip()) < MIN_CONTENT_LENGTH:
                 expanded = await openai_service.generate_expanded_summary(
@@ -72,8 +79,12 @@ async def enrich_articles(conn) -> dict:
                     updates["image_url"] = image_url
                     stats["images_found"] += 1
 
-            # 3. Mark enrichment as completed (even if nothing was enriched)
-            _apply_enrichment(conn, row["id"], updates)
+            # 3. Determine completion: completed if image found/present or attempts exhausted
+            attempts = (row.get("enrichment_attempts") or 0) + 1
+            has_image = bool(row.get("image_url") or updates.get("image_url"))
+            completed = has_image or attempts >= MAX_ENRICHMENT_ATTEMPTS
+
+            _apply_enrichment(conn, row["id"], updates, completed, attempts)
 
     await asyncio.gather(
         *[_enrich_one(row) for row in pending],
@@ -83,41 +94,28 @@ async def enrich_articles(conn) -> dict:
     return stats
 
 
-def _apply_enrichment(conn, article_id, updates: dict):
-    """Apply enrichment updates and mark the article as enrichment_completed."""
+def _apply_enrichment(conn, article_id, updates: dict, completed: bool, attempts: int):
+    """Apply enrichment updates, increment attempts, and optionally mark completed."""
     try:
         with conn.cursor() as cur:
-            if updates.get("content") and updates.get("image_url"):
-                cur.execute(
-                    """
-                    UPDATE public.articles
-                    SET content = %s, image_url = %s, enrichment_completed = true
-                    WHERE id = %s
-                    """,
-                    (updates["content"], updates["image_url"], article_id),
-                )
-            elif updates.get("content"):
-                cur.execute(
-                    """
-                    UPDATE public.articles
-                    SET content = %s, enrichment_completed = true
-                    WHERE id = %s
-                    """,
-                    (updates["content"], article_id),
-                )
-            elif updates.get("image_url"):
-                cur.execute(
-                    """
-                    UPDATE public.articles
-                    SET image_url = %s, enrichment_completed = true
-                    WHERE id = %s
-                    """,
-                    (updates["image_url"], article_id),
-                )
-            else:
-                cur.execute(
-                    "UPDATE public.articles SET enrichment_completed = true WHERE id = %s",
-                    (article_id,),
-                )
+            set_clauses = ["enrichment_attempts = %s"]
+            params = [attempts]
+
+            if completed:
+                set_clauses.append("enrichment_completed = true")
+
+            if updates.get("content"):
+                set_clauses.append("content = %s")
+                params.append(updates["content"])
+
+            if updates.get("image_url"):
+                set_clauses.append("image_url = %s")
+                params.append(updates["image_url"])
+
+            params.append(article_id)
+            cur.execute(
+                f"UPDATE public.articles SET {', '.join(set_clauses)} WHERE id = %s",
+                params,
+            )
     except Exception:
         logger.exception("Error applying enrichment for article %s", article_id)

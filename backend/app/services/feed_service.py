@@ -31,7 +31,7 @@ BATCH_SCORING_SIZE = 40
 MIN_CANDIDATE_TEXT_LENGTH = 40
 MAX_LLM_CANDIDATES = 200
 MIN_SHORTLIST_SIZE = 24
-MIN_FEED_SIZE = 10
+MIN_FEED_SIZE = 6
 DETERMINISTIC_MATCH_THRESHOLD = 1.5
 STRICT_MATCH_THRESHOLD = 2.5
 DETERMINISTIC_STRONG_MATCH = 3.0
@@ -190,7 +190,7 @@ async def get_personalized_feed(
         backfill = [
             a for a in finalized
             if not a.get("relevant", False)
-            and a.get("relevance_score", 0) >= 0.35
+            and a.get("relevance_score", 0) >= 0.50
             and "excluded" not in (a.get("relevance_reason") or "").lower()
         ]
         relevant.extend(backfill[:MIN_FEED_SIZE - len(relevant)])
@@ -206,7 +206,8 @@ async def get_personalized_feed(
             and "excluded" not in (a.get("relevance_reason") or "").lower()
         ]
         recency_fill.sort(key=lambda a: a.get("published_at") or "", reverse=True)
-        for a in recency_fill[:MIN_FEED_SIZE - len(relevant)]:
+        max_recency = min(3, MIN_FEED_SIZE - len(relevant))
+        for a in recency_fill[:max_recency]:
             a["relevance_reason"] = a.get("relevance_reason") or "Recent news"
             a["relevant"] = True
             relevant.append(a)
@@ -508,7 +509,7 @@ def _collapse_duplicate_coverage(articles: list[dict]) -> list[dict]:
     return deduped
 
 
-async def _hydrate_missing_feed_images(conn, articles: list[dict], max_articles: int = 8) -> None:
+async def _hydrate_missing_feed_images(conn, articles: list[dict], max_articles: int = 15) -> None:
     if not conn:
         return
 
@@ -516,11 +517,11 @@ async def _hydrate_missing_feed_images(conn, articles: list[dict], max_articles:
     if not missing:
         return
 
-    semaphore = asyncio.Semaphore(3)
+    semaphore = asyncio.Semaphore(8)
 
     async def _fetch(article: dict) -> tuple[dict, str]:
         async with semaphore:
-            image_url = await fetch_best_source_image(article["url"], timeout=4.0)
+            image_url = await fetch_best_source_image(article["url"], timeout=3.0)
             return article, image_url
 
     results = await asyncio.gather(*[_fetch(article) for article in missing], return_exceptions=True)
@@ -882,8 +883,9 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             candidate["_reason"] = prefilter_reason or reason
             continue
 
-        candidate["_score"] = model_score
-        candidate["_relevant"] = model_relevant
+        blended_score = 0.65 * model_score + 0.35 * deterministic_score
+        candidate["_score"] = blended_score
+        candidate["_relevant"] = model_relevant and blended_score >= 0.35
         candidate["_reason"] = reason or prefilter_reason
 
 
