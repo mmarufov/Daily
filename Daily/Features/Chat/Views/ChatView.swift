@@ -10,7 +10,9 @@ import SwiftUI
 struct ChatView: View {
     @ObservedObject var viewModel: ChatViewModel
     @Binding var selectedTab: MainTabView.AppTab
+    @Environment(\.dismiss) private var dismiss
     @FocusState private var isInputFocused: Bool
+    var presentedAsSheet: Bool = false
 
     private let generalPrompts: [(icon: String, text: String)] = [
         ("list.bullet.clipboard", "Summarize today's top headlines"),
@@ -28,7 +30,7 @@ struct ChatView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                ChatBackgroundView()
+                Color(.systemBackground).ignoresSafeArea()
 
                 VStack(spacing: 0) {
                     ScrollViewReader { proxy in
@@ -92,17 +94,24 @@ struct ChatView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        HapticService.impact(.light)
-                        withAnimation { selectedTab = .news }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .font(AppTypography.navIcon)
-                            Text("News")
-                                .font(AppTypography.bodyMedium)
+                    if presentedAsSheet {
+                        Button("Done") {
+                            dismiss()
                         }
-                        .foregroundColor(BrandColors.primary)
+                        .font(AppTypography.bodyMedium)
+                    } else {
+                        Button {
+                            HapticService.impact(.light)
+                            withAnimation { selectedTab = .news }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(AppTypography.navIcon)
+                                Text("News")
+                                    .font(AppTypography.bodyMedium)
+                            }
+                            .foregroundColor(BrandColors.primary)
+                        }
                     }
                 }
 
@@ -139,33 +148,20 @@ struct ChatView: View {
 
 private extension ChatView {
     var introCard: some View {
-        VStack(spacing: AppSpacing.lg) {
-            ZStack {
-                Circle()
-                    .fill(BrandColors.primary.opacity(0.08))
-                    .frame(width: 80, height: 80)
+        VStack(spacing: AppSpacing.md) {
+            Text("Ask anything about the news")
+                .font(AppTypography.title3)
+                .foregroundColor(BrandColors.textPrimary)
 
-                Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(AppTypography.iconLarge)
-                    .foregroundColor(BrandColors.primary)
-            }
-
-            VStack(spacing: AppSpacing.sm) {
-                Text("Start a conversation")
-                    .font(AppTypography.title3)
-                    .foregroundColor(BrandColors.textPrimary)
-
-                Text("Ask anything about the news, get concise explanations, or let Daily craft a briefing for you.")
-                    .font(AppTypography.subheadline)
-                    .foregroundColor(BrandColors.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(2)
-                    .padding(.horizontal, AppSpacing.lg)
-            }
+            Text("Get concise explanations, summaries, or let Daily craft a briefing for you.")
+                .font(AppTypography.subheadline)
+                .foregroundColor(BrandColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(2)
+                .padding(.horizontal, AppSpacing.lg)
         }
         .frame(maxWidth: .infinity)
-        .padding(AppSpacing.xl)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: AppCornerRadius.xlarge, style: .continuous))
+        .padding(.vertical, AppSpacing.xxl)
         .padding(.horizontal, AppSpacing.lg)
     }
 
@@ -177,7 +173,7 @@ private extension ChatView {
                         Text(source.uppercased())
                             .font(AppTypography.metaLabel)
                             .tracking(0.6)
-                            .foregroundColor(BrandColors.primary)
+                            .foregroundColor(BrandColors.sourceText)
                     }
                     Text(viewModel.articleContext?.title ?? "")
                         .font(AppTypography.feedCardTitle)
@@ -200,21 +196,8 @@ private extension ChatView {
             }
         }
         .padding(AppSpacing.md)
-        .glassEffect(
-            .regular.tint(BrandColors.primary),
-            in: RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous)
-        )
-        .overlay(
-            HStack {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(BrandColors.primary)
-                    .frame(width: 3)
-                    .padding(.vertical, AppSpacing.sm)
-                Spacer()
-            }
-            .padding(.leading, 2),
-            alignment: .leading
-        )
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
         .padding(.horizontal, AppSpacing.md)
     }
 
@@ -334,15 +317,8 @@ private extension ChatView {
             ZStack {
                 if canSend {
                     Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [BrandColors.primary, BrandColors.primaryDark],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .fill(BrandColors.primary)
                         .frame(width: 44, height: 44)
-                        .shadow(color: BrandColors.primary.opacity(0.3), radius: 10, x: 0, y: 4)
                 } else {
                     Circle()
                         .fill(BrandColors.textTertiary.opacity(0.6))
@@ -403,7 +379,8 @@ struct TypingIndicatorView: View {
             }
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.smLg)
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
 
             Spacer(minLength: 50)
         }
@@ -451,15 +428,8 @@ struct ChatBubbleView: View {
             .foregroundColor(.white)
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.smPlus)
-            .background(
-                LinearGradient(
-                    colors: [BrandColors.primaryLight, BrandColors.primaryDark],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
+            .background(BrandColors.primary)
             .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
-            .shadow(color: BrandColors.primary.opacity(0.2), radius: 10, x: 0, y: 4)
     }
 
     private var aiBubble: some View {
@@ -469,7 +439,8 @@ struct ChatBubbleView: View {
             .textSelection(.enabled)
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.smPlus)
-            .glassEffect(.clear, in: RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
     }
 }
 

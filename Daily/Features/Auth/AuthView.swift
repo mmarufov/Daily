@@ -15,9 +15,11 @@ struct AuthView: View {
 
     var body: some View {
         VStack(spacing: AppSpacing.xl) {
-            Spacer(minLength: 20)
+            Spacer(minLength: 40)
 
             heroSection
+
+            Spacer(minLength: 20)
 
             signInSection
 
@@ -26,7 +28,18 @@ struct AuthView: View {
         .padding(.horizontal, AppSpacing.lg)
         .padding(.bottom, AppSpacing.xl)
         .padding(.top, AppSpacing.xl)
-        .background(Color(.systemBackground))
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(.systemBackground),
+                    Color(.secondarySystemBackground).opacity(0.5),
+                    Color(.systemBackground)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        )
     }
 
     private func signInWithGoogle() async {
@@ -39,7 +52,7 @@ struct AuthView: View {
             try await auth.authenticateWithGoogle(idToken: idToken)
         } catch {
             print("Google sign-in error: \(error)")
-            errorMessage = "Google sign-in failed: \(error.localizedDescription)"
+            errorMessage = "Sign-in failed. Please try again."
         }
     }
 }
@@ -48,13 +61,17 @@ struct AuthView: View {
 
 private extension AuthView {
     var heroSection: some View {
-        VStack(spacing: AppSpacing.md) {
+        VStack(spacing: AppSpacing.lg) {
             Text("Daily")
                 .font(AppTypography.brandTitle)
                 .foregroundColor(BrandColors.textPrimary)
+                .tracking(-0.5)
 
-            Text("Your AI-curated news briefing")
-                .font(AppTypography.subheadline)
+            HairlineDivider()
+                .frame(width: 40)
+
+            Text("News that knows you")
+                .font(AppTypography.headline)
                 .foregroundColor(BrandColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -81,12 +98,8 @@ private extension AuthView {
                 .foregroundColor(BrandColors.textPrimary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
-                .background(Color(.systemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .cornerRadius(AppCornerRadius.button)
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppCornerRadius.button)
-                        .stroke(Color(.separator), lineWidth: 1)
-                )
             }
             .disabled(isGoogleLoading)
             .opacity(isGoogleLoading ? 0.6 : 1)
