@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Brand Colors (Editorial palette)
 struct BrandColors {
-    // Primary brand color - Editorial red/vermilion for source labels and accents
+    // Primary brand color - Editorial red/vermilion
     static let primary = Color(red: 0.85, green: 0.18, blue: 0.15)
     static let primaryDark = Color(red: 0.72, green: 0.14, blue: 0.12)
     static let primaryLight = Color(red: 0.92, green: 0.30, blue: 0.25)
@@ -34,88 +34,95 @@ struct BrandColors {
     static let textSecondary = Color(.secondaryLabel)
     static let textTertiary = Color(.tertiaryLabel)
     static let textQuaternary = Color(.quaternaryLabel)
+
+    // Semantic accent roles — red discipline
+    // Primary actions + urgent states only (send button, BREAKING badge, CTAs)
+    static let actionPrimary = primary
+    // Editorial metadata — neutral tones (source labels, section headers)
+    static let sourceText = Color(.secondaryLabel)
+    static let sectionHeader = Color(.secondaryLabel)
 }
 
-// MARK: - Typography (Editorial style)
+// MARK: - Typography (Dynamic Type — all sizes scale with accessibility settings)
 struct AppTypography {
-    // Large Title
-    static let largeTitle = Font.system(size: 34, weight: .bold, design: .default)
-    static let title1 = Font.system(size: 28, weight: .bold, design: .default)
-    static let title2 = Font.system(size: 22, weight: .bold, design: .default)
-    static let title3 = Font.system(size: 20, weight: .semibold, design: .default)
+    // Titles — map to system text styles for automatic scaling
+    static let largeTitle = Font.system(.largeTitle, design: .default, weight: .bold)
+    static let title1 = Font.system(.title, design: .default, weight: .bold)
+    static let title2 = Font.system(.title2, design: .default, weight: .bold)
+    static let title3 = Font.system(.title3, design: .default, weight: .semibold)
 
     // Headline fonts
-    static let headline = Font.system(size: 17, weight: .semibold, design: .default)
-    static let headlineMedium = Font.system(size: 16, weight: .semibold, design: .default)
-    static let headlineSmall = Font.system(size: 15, weight: .semibold, design: .default)
+    static let headline = Font.system(.headline, design: .default, weight: .semibold)
+    static let headlineMedium = Font.system(.subheadline, design: .default, weight: .semibold)
+    static let headlineSmall = Font.system(.subheadline, design: .default, weight: .semibold)
 
     // Body fonts
-    static let body = Font.system(size: 17, weight: .regular, design: .default)
-    static let bodyMedium = Font.system(size: 15, weight: .regular, design: .default)
-    static let bodySmall = Font.system(size: 13, weight: .regular, design: .default)
+    static let body = Font.system(.body, design: .default, weight: .regular)
+    static let bodyMedium = Font.system(.callout, design: .default, weight: .regular)
+    static let bodySmall = Font.system(.footnote, design: .default, weight: .regular)
 
     // Callout
-    static let callout = Font.system(size: 16, weight: .regular, design: .default)
+    static let callout = Font.system(.callout, design: .default, weight: .regular)
 
     // Subheadline
-    static let subheadline = Font.system(size: 15, weight: .regular, design: .default)
+    static let subheadline = Font.system(.subheadline, design: .default, weight: .regular)
 
     // Footnote
-    static let footnote = Font.system(size: 13, weight: .regular, design: .default)
+    static let footnote = Font.system(.footnote, design: .default, weight: .regular)
 
     // Caption
-    static let caption1 = Font.system(size: 12, weight: .regular, design: .default)
-    static let caption2 = Font.system(size: 11, weight: .regular, design: .default)
+    static let caption1 = Font.system(.caption, design: .default, weight: .regular)
+    static let caption2 = Font.system(.caption2, design: .default, weight: .regular)
 
     // Label fonts
-    static let labelLarge = Font.system(size: 17, weight: .medium, design: .default)
-    static let labelMedium = Font.system(size: 15, weight: .medium, design: .default)
-    static let labelSmall = Font.system(size: 13, weight: .medium, design: .default)
+    static let labelLarge = Font.system(.body, design: .default, weight: .medium)
+    static let labelMedium = Font.system(.callout, design: .default, weight: .medium)
+    static let labelSmall = Font.system(.footnote, design: .default, weight: .medium)
 
     // Editorial typography — serif for headlines and reading
-    static let feedHeroTitle = Font.system(size: 24, weight: .bold, design: .serif)
-    static let feedCardTitle = Font.system(size: 16, weight: .semibold, design: .serif)
-    static let sectionTitle = Font.system(size: 13, weight: .bold, design: .default)
-    static let sourceLabel = Font.system(size: 12, weight: .bold, design: .default)
-    static let dateLabel = Font.system(size: 12, weight: .regular, design: .default)
+    static let feedHeroTitle = Font.system(.title2, design: .serif, weight: .bold)
+    static let feedCardTitle = Font.system(.subheadline, design: .serif, weight: .semibold)
+    static let sectionTitle = Font.system(.caption, design: .default, weight: .bold)
+    static let sourceLabel = Font.system(.caption, design: .default, weight: .bold)
+    static let dateLabel = Font.system(.caption, design: .default, weight: .regular)
 
     // Article-specific typography (New York-style serif for long-form reading)
-    static let articleTitle = Font.system(size: 28, weight: .bold, design: .serif)
-    static let articleBody = Font.system(size: 19, weight: .regular, design: .serif)
+    static let articleTitle = Font.system(.title, design: .serif, weight: .bold)
+    static let articleBody = Font.system(.body, design: .serif, weight: .regular)
 
     // Brand
-    static let brandTitle = Font.system(size: 42, weight: .bold, design: .serif)
+    static let brandTitle = Font.system(.largeTitle, design: .serif, weight: .bold)
 
-    // Icons (placeholders, empty states, errors)
+    // Icons — use fixed sizes (icons don't scale with Dynamic Type)
     static let iconLarge = Font.system(size: 36, weight: .light)
     static let iconMedium = Font.system(size: 28, weight: .light)
     static let iconXL = Font.system(size: 40, weight: .light)
     static let iconHeroXL = Font.system(size: 48, weight: .light)
     static let emptyStateIcon = Font.system(size: 36, weight: .ultraLight)
 
-    // UI Chrome
-    static let badgeLabel = Font.system(size: 9, weight: .bold)
-    static let chipIcon = Font.system(size: 11, weight: .medium)
-    static let chipLabel = Font.system(size: 13, weight: .semibold)
-    static let metaLabel = Font.system(size: 11, weight: .semibold)
-    static let metaLabelRegular = Font.system(size: 11, weight: .regular)
-    static let microLabel = Font.system(size: 10, weight: .semibold)
-    static let navIcon = Font.system(size: 14, weight: .semibold)
-    static let toolbarIcon = Font.system(size: 14, weight: .medium)
-    static let iconButton = Font.system(size: 18, weight: .medium)
-    static let closeIcon = Font.system(size: 20)
-    static let profileIcon = Font.system(size: 26)
-    static let actionLabel = Font.system(size: 15, weight: .semibold)
-    static let actionIcon = Font.system(size: 15, weight: .medium)
-    static let articleAuthor = Font.system(size: 14, weight: .medium)
-    static let articleLeadIn = Font.system(size: 17, weight: .medium, design: .serif)
+    // UI Chrome — small fixed-size elements that scale via ScaledMetric where used
+    static let badgeLabel = Font.system(.caption2, design: .default, weight: .bold)
+    static let chipIcon = Font.system(.caption2, design: .default, weight: .medium)
+    static let chipLabel = Font.system(.footnote, design: .default, weight: .semibold)
+    static let metaLabel = Font.system(.caption2, design: .default, weight: .semibold)
+    static let metaLabelRegular = Font.system(.caption2, design: .default, weight: .regular)
+    static let microLabel = Font.system(.caption2, design: .default, weight: .semibold)
+    static let navIcon = Font.system(.footnote, design: .default, weight: .semibold)
+    static let toolbarIcon = Font.system(.footnote, design: .default, weight: .medium)
+    static let iconButton = Font.system(.callout, design: .default, weight: .medium)
+    static let closeIcon = Font.system(.title3, design: .default, weight: .regular)
+    static let profileIcon = Font.system(.title2, design: .default, weight: .regular)
+    static let actionLabel = Font.system(.subheadline, design: .default, weight: .semibold)
+    static let actionIcon = Font.system(.subheadline, design: .default, weight: .medium)
+    static let articleAuthor = Font.system(.footnote, design: .default, weight: .medium)
+    static let articleLeadIn = Font.system(.body, design: .serif, weight: .medium)
 
-    // Legacy support
-    static let displayLarge = Font.system(size: 34, weight: .bold, design: .default)
-    static let displayMedium = Font.system(size: 28, weight: .bold, design: .default)
-    static let displaySmall = Font.system(size: 22, weight: .bold, design: .default)
-    static let headlineLarge = Font.system(size: 20, weight: .semibold, design: .default)
-    static let bodyLarge = Font.system(size: 17, weight: .regular, design: .default)
+    // Legacy support — mapped to Dynamic Type equivalents
+    static let displayLarge = Font.system(.largeTitle, design: .default, weight: .bold)
+    static let displayMedium = Font.system(.title, design: .default, weight: .bold)
+    static let displaySmall = Font.system(.title2, design: .default, weight: .bold)
+    static let headlineLarge = Font.system(.title3, design: .default, weight: .semibold)
+    static let bodyLarge = Font.system(.body, design: .default, weight: .regular)
 }
 
 // MARK: - Spacing
