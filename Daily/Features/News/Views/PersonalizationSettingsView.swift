@@ -22,7 +22,7 @@ struct PersonalizationSettingsView: View {
     private let expertiseLabels = ["Casual", "Intermediate", "Expert"]
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: AppSpacing.xl) {
                     // Your Interests

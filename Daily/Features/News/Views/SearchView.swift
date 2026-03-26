@@ -98,13 +98,13 @@ private extension SearchView {
             LazyVStack(spacing: 0) {
                 ForEach(Array(searchResults.enumerated()), id: \.element.id) { index, article in
                     NavigationLink(destination: ArticleDetailView(article: article)) {
-                        EditorialRow(article: article, isRead: bookmarks.isRead(article.id))
+                        FeaturedArticleCard(article: article, isRead: bookmarks.isRead(article.id), style: .feed)
                     }
                     .buttonStyle(PressableButtonStyle())
 
                     if index < searchResults.count - 1 {
                         HairlineDivider()
-                            .padding(.leading, AppSpacing.lg)
+                            .padding(.vertical, AppSpacing.md)
                     }
                 }
             }
