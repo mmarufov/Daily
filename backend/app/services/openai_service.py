@@ -397,9 +397,11 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             )
         else:
             adjacency_rule = (
-                "- Related and adjacent topics to the user's interests ARE relevant. "
-                "For example, if someone likes AI, articles about tech companies building AI products count.\n"
-                "- Aim for roughly 40-70% of articles to be marked relevant for a typical profile.\n"
+                "- An article is relevant only if its PRIMARY SUBJECT overlaps with the "
+                "user's interests. A tangential keyword mention does not count.\n"
+                "- For broad profiles, related topics count when the article would "
+                "genuinely interest this specific user. A corporate earnings report "
+                "mentioning AI once is NOT relevant to an AI enthusiast.\n"
             )
 
         system_prompt = (
@@ -414,7 +416,7 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
             '3. "reason": one sentence — Why this article is or isn\'t relevant.\n\n'
             "Rules:\n"
             "- Excluded topics MUST score 0.0 and relevant=false.\n"
-            "- When in doubt, lean toward including the article. A fuller feed is better than a sparse one.\n"
+            "- When in doubt, lean toward EXCLUDING. A focused feed beats a noisy one.\n"
             + adjacency_rule +
             "\n"
             'Return ONLY a JSON object: {"results": [{"relevant": bool, "score": float, "reason": "..."}, ...]}\n'
@@ -527,19 +529,8 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
     @staticmethod
     def _is_specific_profile(interests: dict | None) -> bool:
         """Detect narrow/specific interests (e.g. 'Claude AI') vs broad (e.g. 'AI, gaming')."""
-        if not interests:
-            return False
-        all_terms: List[str] = []
-        for key in ("topics", "people"):
-            values = interests.get(key)
-            if isinstance(values, list):
-                all_terms.extend(str(v).strip() for v in values if str(v).strip())
-        if not all_terms or len(all_terms) > 3:
-            return False
-        specific_count = sum(
-            1 for t in all_terms if len(t.split()) >= 2 or (t and t[0].isupper())
-        )
-        return specific_count > 0
+        from app.services.feed_service import _is_specific_interests
+        return _is_specific_interests(interests)
 
     async def extract_article_with_tools(self, article_url: str) -> Dict:
         """
