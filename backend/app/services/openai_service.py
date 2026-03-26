@@ -152,7 +152,21 @@ class OpenAIService:
         # Valid models: gpt-4o, gpt-4o-mini, gpt-4-turbo, etc.
         self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
         self.scoring_model = os.getenv("OPENAI_SCORING_MODEL", self.model)
-    
+
+    async def generate_embedding(self, text: str) -> list[float] | None:
+        """Generate a 1536-dim embedding using text-embedding-3-small."""
+        try:
+            text = text[:8000]  # Model context limit
+            response = await asyncio.to_thread(
+                self.client.embeddings.create,
+                model="text-embedding-3-small",
+                input=text,
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            logger.warning("Embedding generation failed: %s", e)
+            return None
+
     async def analyze_article(
         self,
         article: Dict,
