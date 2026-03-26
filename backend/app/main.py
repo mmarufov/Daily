@@ -93,6 +93,33 @@ async def _ingestion_loop():
                 if pending:
                     await asyncio.gather(*[_extract_one(row) for row in pending], return_exceptions=True)
 
+                # 2b. Generate embeddings for articles with content but no embedding
+                openai_svc = get_openai_service()
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        SELECT id, title, summary, content FROM public.articles
+                        WHERE content IS NOT NULL AND embedding IS NULL
+                        LIMIT 50
+                    """)
+                    embed_pending = cur.fetchall()
+
+                if embed_pending:
+                    embed_sem = asyncio.Semaphore(6)
+
+                    async def _embed_one(row):
+                        async with embed_sem:
+                            text = f"{row['title']}. {row.get('summary') or ''}. {(row.get('content') or '')[:2000]}"
+                            embedding = await openai_svc.generate_embedding(text)
+                            if embedding:
+                                with conn.cursor() as cur:
+                                    cur.execute(
+                                        "UPDATE public.articles SET embedding = %s::vector WHERE id = %s",
+                                        (str(embedding), row["id"]),
+                                    )
+
+                    await asyncio.gather(*[_embed_one(r) for r in embed_pending], return_exceptions=True)
+                    print(f"Ingestion: Generated embeddings for {len(embed_pending)} articles")
+
                 # 3. Enrich articles (expand thin content, find missing images)
                 enrichment_stats = await enrich_articles(conn)
                 if enrichment_stats["content_enriched"] or enrichment_stats["images_found"]:
@@ -229,6 +256,14 @@ def _ensure_tables(conn) -> None:
         # Migration: add enrichment tracking columns
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_attempts integer DEFAULT 0;")
+
+        # Migration: pgvector for semantic search
+        cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS embedding vector(1536);")
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_articles_embedding
+            ON public.articles USING hnsw (embedding vector_cosine_ops);
+        """)
 
 
 
@@ -607,6 +642,22 @@ async def chat(payload: dict, Authorization: str | None = Header(default=None)):
                 f"Full text:\n{ctx_content}"
             )
             messages.append({"role": "system", "content": article_msg})
+
+        # If multiple articles provided (e.g., from semantic search for chip prompts)
+        articles_context = payload.get("articles_context")
+        if articles_context and isinstance(articles_context, list):
+            summaries = []
+            for i, art in enumerate(articles_context[:10], 1):
+                summaries.append(
+                    f"{i}. [{art.get('source', 'Unknown')}] {art.get('title', '')}\n"
+                    f"   {(art.get('summary') or '')[:200]}"
+                )
+            articles_msg = (
+                "The user wants to discuss these articles from their news feed:\n\n"
+                + "\n\n".join(summaries)
+                + "\n\nReference specific articles by name/source when answering."
+            )
+            messages.append({"role": "system", "content": articles_msg})
 
         # Append conversation history
         for h in history:
@@ -1057,6 +1108,95 @@ async def refresh_feed(
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error refreshing feed: {str(e)}")
+
+
+# ---------------------------------------------------------------------------
+# Semantic search & categories
+# ---------------------------------------------------------------------------
+
+
+@app.post("/search/semantic")
+async def semantic_search(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Search articles by semantic similarity using pgvector embeddings."""
+    _require_auth(Authorization)
+
+    query = (payload.get("query") or "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="query is required")
+
+    limit = min(int(payload.get("limit", 8)), 20)
+
+    try:
+        openai_service = get_openai_service()
+        embedding = await openai_service.generate_embedding(query)
+        if not embedding:
+            raise HTTPException(status_code=500, detail="Failed to generate query embedding")
+
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, url, title, summary, content, source_name, image_url,
+                       published_at, category, author,
+                       1 - (embedding <=> %s::vector) as similarity
+                FROM public.articles
+                WHERE embedding IS NOT NULL
+                  AND published_at > now() - interval '7 days'
+                ORDER BY embedding <=> %s::vector
+                LIMIT %s
+                """,
+                (str(embedding), str(embedding), limit),
+            )
+            rows = cur.fetchall()
+
+        articles = []
+        for row in rows:
+            articles.append({
+                "id": str(row["id"]),
+                "url": row["url"],
+                "title": row["title"],
+                "summary": row.get("summary"),
+                "content": row.get("content"),
+                "source": row.get("source_name"),
+                "image_url": row.get("image_url"),
+                "published_at": row["published_at"].isoformat() if row.get("published_at") else None,
+                "category": row.get("category"),
+                "author": row.get("author"),
+                "similarity": round(row["similarity"], 4) if row.get("similarity") else None,
+            })
+
+        return {"articles": articles}
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Search failed — please try again.")
+
+
+@app.get("/categories")
+async def get_categories(
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Return article categories with counts from the last 24 hours."""
+    _require_auth(Authorization)
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT category, COUNT(*) as count
+            FROM public.articles
+            WHERE published_at > now() - interval '24 hours'
+              AND category IS NOT NULL AND category != 'general'
+            GROUP BY category
+            ORDER BY count DESC
+        """)
+        rows = cur.fetchall()
+
+    return {"categories": [{"name": row["category"], "count": row["count"]} for row in rows]}
 
 
 # ---------------------------------------------------------------------------

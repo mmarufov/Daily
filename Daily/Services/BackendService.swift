@@ -146,7 +146,8 @@ final class BackendService {
         message: String,
         accessToken: String,
         history: [[String: String]]? = nil,
-        articleContext: [String: String]? = nil
+        articleContext: [String: String]? = nil,
+        articlesContext: [[String: String]]? = nil
     ) async throws -> String {
         let endpoint = baseURL.appendingPathComponent("/chat")
 
@@ -161,6 +162,9 @@ final class BackendService {
         }
         if let articleContext, !articleContext.isEmpty {
             body["article_context"] = articleContext
+        }
+        if let articlesContext, !articlesContext.isEmpty {
+            body["articles_context"] = articlesContext
         }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
@@ -185,6 +189,63 @@ final class BackendService {
         } catch {
             throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response: \(error.localizedDescription)"])
         }
+    }
+
+    // MARK: - Semantic Search & Categories
+
+    func semanticSearch(query: String, limit: Int = 8, accessToken: String) async throws -> [NewsArticle] {
+        let endpoint = baseURL.appendingPathComponent("/search/semantic")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = ["query": query, "limit": limit]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await urlSession.data(for: request)
+
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Search failed"
+            throw NSError(domain: "BackendService", code: (response as? HTTPURLResponse)?.statusCode ?? 0,
+                          userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        // Decode the {articles: [...]} wrapper
+        let wrapper = try Self.iso8601Decoder.decode(SemanticSearchResponse.self, from: data)
+        return wrapper.articles
+    }
+
+    struct SemanticSearchResponse: Decodable {
+        let articles: [NewsArticle]
+    }
+
+    struct CategoryCount: Decodable {
+        let name: String
+        let count: Int
+    }
+
+    func fetchCategories(accessToken: String) async throws -> [CategoryCount] {
+        let endpoint = baseURL.appendingPathComponent("/categories")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await urlSession.data(for: request)
+
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            return []
+        }
+
+        let wrapper = try JSONDecoder().decode(CategoriesResponse.self, from: data)
+        return wrapper.categories
+    }
+
+    struct CategoriesResponse: Decodable {
+        let categories: [CategoryCount]
     }
 
     // MARK: - Interest Onboarding & Preferences

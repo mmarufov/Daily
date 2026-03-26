@@ -14,7 +14,7 @@ struct MainTabView: View {
     @StateObject private var newsViewModel = NewsViewModel()
 
     enum AppTab: Hashable {
-        case news, search, saved, chat
+        case news, saved, chat, search
     }
 
     var body: some View {
@@ -23,16 +23,16 @@ struct MainTabView: View {
                 NewsView(viewModel: newsViewModel)
             }
 
-            Tab("Search", systemImage: "magnifyingglass", value: .search) {
-                SearchView(newsViewModel: newsViewModel)
-            }
-
             Tab("Saved", systemImage: "bookmark", value: .saved) {
                 BookmarksView()
             }
 
             Tab("Chat", systemImage: "bubble.left.and.bubble.right", value: .chat) {
                 ChatView(viewModel: chatViewModel, selectedTab: $selectedTab)
+            }
+
+            Tab("Search", systemImage: "magnifyingglass", value: .search) {
+                SearchView(newsViewModel: newsViewModel)
             }
         }
         .tint(BrandColors.primary)
