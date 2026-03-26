@@ -76,25 +76,22 @@ struct SkeletonFeaturedCard: View {
     }
 }
 
-// MARK: - Compact Row Skeleton
+// MARK: - Feed Card Skeleton (matches FeaturedArticleCard .feed style)
 
-struct SkeletonCompactRow: View {
+struct SkeletonFeedCard: View {
     var body: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
-            VStack(alignment: .leading, spacing: AppSpacing.smLg / 2) {
-                HStack(spacing: AppSpacing.xs) {
-                    SkeletonRect(width: 50, height: 10)
-                    SkeletonRect(width: 30, height: 10)
-                }
+        VStack(alignment: .leading, spacing: AppSpacing.smPlus) {
+            SkeletonRect(height: 180, cornerRadius: AppCornerRadius.image)
 
-                SkeletonRect(height: 16)
-                SkeletonRect(width: 180, height: 16)
+            HStack(spacing: AppSpacing.xs) {
+                SkeletonRect(width: 60, height: 10)
+                SkeletonRect(width: 40, height: 10)
             }
 
-            Spacer(minLength: 0)
+            SkeletonRect(height: 18)
+            SkeletonRect(width: 200, height: 18)
 
-            SkeletonRect(width: 75, height: 75, cornerRadius: AppCornerRadius.small)
+            SkeletonRect(height: 14)
         }
-        .padding(.vertical, AppSpacing.md)
     }
 }
