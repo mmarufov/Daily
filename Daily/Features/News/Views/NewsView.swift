@@ -148,9 +148,9 @@ private extension NewsView {
                 .padding(.vertical, AppSpacing.lg)
 
             ForEach(0..<3, id: \.self) { _ in
-                SkeletonCompactRow()
+                SkeletonFeedCard()
                 HairlineDivider()
-                    .padding(.leading, AppSpacing.lg)
+                    .padding(.vertical, AppSpacing.md)
             }
         }
     }
@@ -190,21 +190,23 @@ private extension NewsView {
                 VStack(spacing: 0) {
                     ForEach(articles.dropFirst()) { article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
-                            EditorialRow(
+                            FeaturedArticleCard(
                                 article: article,
-                                isRead: bookmarks.isRead(article.id)
+                                isRead: bookmarks.isRead(article.id),
+                                style: .feed
                             )
                         }
                         .buttonStyle(PressableButtonStyle())
+                        .padding(.horizontal, AppSpacing.lg)
                         .contextMenu {
                             articleContextMenu(for: article)
                         }
 
                         HairlineDivider()
-                            .padding(.leading, AppSpacing.lg)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.vertical, AppSpacing.md)
                     }
                 }
-                .padding(.horizontal, AppSpacing.lg)
             }
         }
     }
@@ -467,176 +469,6 @@ struct FeaturedArticleCard: View {
     }
 }
 
-// MARK: - Editorial Row (dense headline-first layout)
-
-struct EditorialRow: View {
-    let article: NewsArticle
-    var isRead: Bool = false
-
-    var body: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
-            // Text content — headline first
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                Text(article.title)
-                    .font(AppTypography.feedCardTitle)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .opacity(isRead ? 0.6 : 1)
-                    .lineLimit(3)
-                    .lineSpacing(2)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                // Source + date + reading time
-                HStack(spacing: AppSpacing.xs) {
-                    if !isRead {
-                        Circle()
-                            .fill(BrandColors.primary)
-                            .frame(width: 5, height: 5)
-                    }
-
-                    Text(article.displaySource.uppercased())
-                        .font(AppTypography.metaLabel)
-                        .foregroundColor(BrandColors.sourceText)
-
-                    if !article.formattedDate.isEmpty {
-                        Circle()
-                            .fill(BrandColors.textQuaternary)
-                            .frame(width: 2.5, height: 2.5)
-                        Text(article.formattedDate)
-                            .font(AppTypography.metaLabelRegular)
-                            .foregroundColor(BrandColors.textTertiary)
-                    }
-
-                    Circle()
-                        .fill(BrandColors.textQuaternary)
-                        .frame(width: 2.5, height: 2.5)
-                    Text("\(article.estimatedReadingTime) min")
-                        .font(AppTypography.metaLabelRegular)
-                        .foregroundColor(BrandColors.textTertiary)
-                }
-            }
-
-            Spacer(minLength: 0)
-
-            // Small square thumbnail
-            if let imageURL = article.imageURL, let url = URL(string: imageURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    default:
-                        Rectangle()
-                            .fill(Color(.tertiarySystemFill))
-                    }
-                }
-                .frame(width: 64, height: 64)
-                .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.small, style: .continuous))
-            }
-        }
-        .padding(.vertical, AppSpacing.smLg)
-    }
-}
-
-// MARK: - Compact Article Row
-
-struct CompactArticleRow: View {
-    let article: NewsArticle
-    var isRead: Bool = false
-
-    private var hasImage: Bool {
-        article.imageURL != nil && !article.imageURL!.isEmpty
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            // Image or placeholder
-            ZStack(alignment: .bottomLeading) {
-                if let imageURL = article.imageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        default:
-                            imagePlaceholder
-                        }
-                    }
-                } else {
-                    imagePlaceholder
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 160)
-            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
-
-            // Source + time + reading time
-            HStack(spacing: AppSpacing.xs) {
-                if !isRead {
-                    Circle()
-                        .fill(BrandColors.primary)
-                        .frame(width: 6, height: 6)
-                }
-
-                Text(article.displaySource.uppercased())
-                    .font(AppTypography.metaLabel)
-                    .foregroundColor(BrandColors.sourceText)
-
-                if !article.formattedDate.isEmpty {
-                    Circle()
-                        .fill(BrandColors.textQuaternary)
-                        .frame(width: 2.5, height: 2.5)
-                    Text(article.formattedDate)
-                        .font(AppTypography.metaLabelRegular)
-                        .foregroundColor(BrandColors.textTertiary)
-                }
-
-                Circle()
-                    .fill(BrandColors.textQuaternary)
-                    .frame(width: 2.5, height: 2.5)
-                Text("\(article.estimatedReadingTime) min")
-                    .font(AppTypography.metaLabelRegular)
-                    .foregroundColor(BrandColors.textTertiary)
-            }
-
-            // Title
-            Text(article.title)
-                .font(AppTypography.feedCardTitle)
-                .foregroundColor(BrandColors.textPrimary)
-                .opacity(isRead ? 0.6 : 1)
-                .lineLimit(3)
-                .lineSpacing(1)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(AppSpacing.sm)
-        .background(BrandColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.card, style: .continuous))
-        .padding(.vertical, AppSpacing.xs)
-    }
-
-    private var imagePlaceholder: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(.systemGray4),
-                    Color(.systemGray5)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            VStack(spacing: 6) {
-                Image(systemName: "newspaper.fill")
-                    .font(AppTypography.iconMedium)
-                    .foregroundColor(Color(.systemGray2))
-
-                Text(article.displaySource.uppercased())
-                    .font(AppTypography.microLabel)
-                    .foregroundColor(Color(.systemGray2))
-                    .lineLimit(1)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
 
 #Preview {
     NewsView(viewModel: NewsViewModel())
