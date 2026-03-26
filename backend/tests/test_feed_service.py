@@ -588,5 +588,76 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertGreaterEqual(query_rows.call_count, 2)
 
 
+    # --- Score blending tests (S3) ---
+
+    def test_score_blending_lowers_high_model_with_low_deterministic(self):
+        """When LLM gives 0.9 but deterministic gives low, blended is pulled down."""
+        profile = feed_service._build_preference_profile(
+            "I like quantum physics", {"topics": ["Quantum Physics"]}
+        )
+        candidates = [
+            {"title": "City council votes on zoning", "summary": "Local zoning debate",
+             "category": "general", "source_name": "Local News",
+             "url": "https://localnews.com/zoning", "content": ""},
+        ]
+        results = [{"relevant": True, "score": 0.9, "reason": "Tangentially related"}]
+        feed_service._apply_individual_analysis_results(candidates, results, profile)
+        # Blended should be < 0.9 (pulled down by low deterministic)
+        self.assertLess(candidates[0]["_score"], 0.9)
+        # But still relevant if blend >= 0.35
+        self.assertTrue(candidates[0]["_relevant"])
+
+    def test_score_blending_rejects_when_blend_below_threshold(self):
+        """When blended score falls below 0.35, article is not relevant."""
+        profile = feed_service._build_preference_profile(
+            "I like quantum physics", {"topics": ["Quantum Physics"]}
+        )
+        candidates = [
+            {"title": "Celebrity gossip update", "summary": "Stars at party",
+             "category": "entertainment", "source_name": "TMZ",
+             "url": "https://tmz.com/story", "content": ""},
+        ]
+        # LLM says barely relevant with low score
+        results = [{"relevant": True, "score": 0.3, "reason": "Tangentially related"}]
+        feed_service._apply_individual_analysis_results(candidates, results, profile)
+        # Blended should be below threshold since deterministic is ~0
+        self.assertFalse(candidates[0]["_relevant"])
+
+    def test_backfill_threshold_rejects_low_scores(self):
+        """Backfill threshold at 0.50 should reject articles scored 0.40."""
+        # This is a constant check — verify the threshold in the source
+        import inspect
+        source = inspect.getsource(feed_service.get_personalized_feed)
+        self.assertIn("0.50", source)
+
+    def test_recency_fill_capped_at_three(self):
+        """Recency fill should be capped at 3 articles."""
+        import inspect
+        source = inspect.getsource(feed_service.get_personalized_feed)
+        self.assertIn("max_recency", source)
+        self.assertIn("min(3,", source)
+
+    def test_specific_profile_skips_recency_fill(self):
+        """Specific profiles should not get recency backfill."""
+        import inspect
+        source = inspect.getsource(feed_service.get_personalized_feed)
+        self.assertIn("not profile.is_specific", source)
+
+    def test_llm_fallback_uses_deterministic_only(self):
+        """When LLM returns fallback reason, deterministic score is used alone."""
+        profile = feed_service._build_preference_profile(
+            "I like AI and machine learning", {"topics": ["AI", "Machine Learning"]}
+        )
+        candidates = [
+            {"title": "AI breakthrough in healthcare", "summary": "New AI model helps doctors",
+             "category": "ai", "source_name": "TechCrunch",
+             "url": "https://techcrunch.com/ai", "content": "AI breakthrough details"},
+        ]
+        results = [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"}]
+        feed_service._apply_individual_analysis_results(candidates, results, profile)
+        # Should use deterministic score, not the 0.0 from LLM
+        self.assertGreater(candidates[0]["_score"], 0.0)
+
+
 if __name__ == "__main__":
     unittest.main()

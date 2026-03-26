@@ -104,6 +104,36 @@ def _guess_category(feed_url: str) -> Optional[str]:
     return "general"
 
 
+def _category_for_topic(topic: str) -> str:
+    """Map a user interest topic to an article category."""
+    topic_lower = topic.lower()
+    for category, patterns in FEED_CATEGORIES.items():
+        if topic_lower == category or any(p in topic_lower for p in patterns):
+            return category
+    return "general"
+
+
+async def _resolve_redirect_urls(client: httpx.AsyncClient, articles: list[dict]) -> None:
+    """Resolve Google News redirect URLs to actual article URLs for proper dedup."""
+    redirected = [a for a in articles if "news.google.com" in (a.get("url") or "")]
+    if not redirected:
+        return
+
+    semaphore = asyncio.Semaphore(5)
+
+    async def _resolve(article: dict) -> None:
+        async with semaphore:
+            try:
+                resp = await client.head(article["url"], timeout=10.0)
+                resolved = str(resp.url)
+                if resolved != article["url"]:
+                    article["url"] = resolved
+            except Exception:
+                pass  # Keep original URL on failure
+
+    await asyncio.gather(*[_resolve(a) for a in redirected], return_exceptions=True)
+
+
 def _extract_image_url(entry: dict) -> Optional[str]:
     """Extract image URL from RSS entry (media:content, enclosure, or media:thumbnail)."""
     # media:content
@@ -296,7 +326,9 @@ async def fetch_rss_feeds(conn) -> int:
                     """
                     INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (url) DO NOTHING
+                    ON CONFLICT (url) DO UPDATE SET
+                        image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
+                        summary = COALESCE(public.articles.summary, EXCLUDED.summary)
                     """,
                     (
                         article["url"],
@@ -309,7 +341,6 @@ async def fetch_rss_feeds(conn) -> int:
                         article["category"],
                     ),
                 )
-                # rowcount == 1 means the row was actually inserted (not a conflict)
                 if cur.rowcount == 1:
                     new_count += 1
             except Exception as e:
@@ -353,35 +384,50 @@ async def fetch_topic_feeds(conn) -> int:
     if not topics:
         return 0
 
-    topic_urls = [
-        f"https://news.google.com/rss/search?q={quote(topic)}&hl=en-US&gl=US&ceid=US:en"
-        for topic in topics
-    ]
+    # Build (url, topic, category) tuples so we can assign categories from the source topic
+    topic_feeds = []
+    for topic in topics:
+        url = f"https://news.google.com/rss/search?q={quote(topic)}&hl=en-US&gl=US&ceid=US:en"
+        category = _category_for_topic(topic)
+        topic_feeds.append((url, topic, category))
 
     semaphore = asyncio.Semaphore(5)
 
-    async def _fetch_with_limit(client, url):
+    async def _fetch_with_limit(client, url, category):
         async with semaphore:
-            return await _fetch_single_feed(client, url)
+            articles = await _fetch_single_feed(client, url)
+            # Override category from the topic query (Google News URLs don't match _guess_category)
+            for a in articles:
+                a["category"] = category
+            return articles
 
     async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
-        tasks = [_fetch_with_limit(client, url) for url in topic_urls]
+        tasks = [_fetch_with_limit(client, url, cat) for url, _topic, cat in topic_feeds]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    all_articles: list[dict] = []
-    for result in results:
-        if isinstance(result, list):
-            all_articles.extend(result)
+        all_articles: list[dict] = []
+        for result in results:
+            if isinstance(result, list):
+                all_articles.extend(result)
 
-    if not all_articles:
-        return 0
+        if not all_articles:
+            return 0
 
+        # Resolve Google News redirect URLs to actual article URLs for proper dedup
+        await _resolve_redirect_urls(client, all_articles)
+
+    # Deduplicate by URL within this batch
     seen_urls: set[str] = set()
     unique: list[dict] = []
     for a in all_articles:
         if a["url"] not in seen_urls:
             seen_urls.add(a["url"])
             unique.append(a)
+
+    # Fetch article-page images (Google News RSS never has image metadata)
+    source_image_count = await _fetch_source_images(unique)
+    if source_image_count:
+        logger.info("Topic RSS: Fetched source images for %d articles", source_image_count)
 
     new_count = 0
     with conn.cursor() as cur:
@@ -391,7 +437,9 @@ async def fetch_topic_feeds(conn) -> int:
                     """
                     INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (url) DO NOTHING
+                    ON CONFLICT (url) DO UPDATE SET
+                        image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
+                        summary = COALESCE(public.articles.summary, EXCLUDED.summary)
                     """,
                     (
                         article["url"],

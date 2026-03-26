@@ -9,10 +9,16 @@ import httpx
 from bs4 import BeautifulSoup
 
 
-_BLOCKED_IMAGE_HINTS = {
-    "logo", "icon", "sprite", "avatar", "favicon", "thumbnail", "thumb",
-    "placeholder", "banner", "badge", "emoji", "apple-touch",
+# Meta tags (og:image, twitter:image) — narrow blocklist: these are editorial choices,
+# so "thumbnail" and "thumb" in CDN URLs are legitimate (e.g. nytimes thumbnail CDN).
+_BLOCKED_IMAGE_HINTS_META = {
+    "logo", "icon", "sprite", "avatar", "favicon",
+    "placeholder", "badge", "emoji", "apple-touch",
 }
+
+# Inline <img> — wider blocklist: inline images with these hints are usually decorative.
+_BLOCKED_IMAGE_HINTS_INLINE = _BLOCKED_IMAGE_HINTS_META | {"thumbnail", "thumb", "banner"}
+
 _STRONG_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 
 
@@ -139,7 +145,9 @@ def _normalize_image_url(candidate: str | None, page_url: str) -> str:
 def _is_blocked_image_candidate(url: str, context: str = "") -> bool:
     parsed = urlparse(url)
     haystack = " ".join(filter(None, [parsed.path.lower(), parsed.query.lower(), context.lower()]))
-    if any(hint in haystack for hint in _BLOCKED_IMAGE_HINTS):
+    # Use the wider blocklist when context is present (inline <img>), narrower for meta tags
+    hints = _BLOCKED_IMAGE_HINTS_INLINE if context else _BLOCKED_IMAGE_HINTS_META
+    if any(hint in haystack for hint in hints):
         return True
     return bool(re.search(r"/(?:icons?|logos?|sprites?|favicons?)/", parsed.path.lower()))
 
