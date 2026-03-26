@@ -90,7 +90,7 @@ struct OnboardingChatView: View {
                     }
 
                     // Show save CTA after enough conversation
-                    if viewModel.messages.count >= 4 && !viewModel.isSaving {
+                    if viewModel.messages.count >= 2 && !viewModel.isSaving {
                         saveCTA
                     }
 
@@ -116,14 +116,7 @@ struct OnboardingChatView: View {
 
 private extension OnboardingChatView {
     var introCard: some View {
-        VStack(spacing: AppSpacing.sm) {
-            Image(systemName: "sparkles")
-                .font(AppTypography.iconXL)
-                .foregroundColor(BrandColors.primary)
-                .padding()
-                .background(BrandColors.primary.opacity(0.08))
-                .clipShape(Circle())
-
+        VStack(spacing: AppSpacing.md) {
             Text("Personalize your feed")
                 .font(AppTypography.title3)
                 .foregroundColor(BrandColors.textPrimary)
@@ -135,7 +128,7 @@ private extension OnboardingChatView {
                 .padding(.horizontal, AppSpacing.lg)
         }
         .frame(maxWidth: .infinity)
-        .padding(AppSpacing.xl)
+        .padding(.vertical, AppSpacing.xxl)
         .padding(.horizontal, AppSpacing.lg)
     }
 
@@ -159,14 +152,7 @@ private extension OnboardingChatView {
                         }
                         .padding(.horizontal, AppSpacing.md)
                         .padding(.vertical, AppSpacing.smPlus)
-                        .background(
-                            Capsule()
-                                .fill(Color(.secondarySystemGroupedBackground))
-                        )
-                        .overlay(
-                            Capsule()
-                                .stroke(Color(.separator).opacity(0.3), lineWidth: 0.5)
-                        )
+                        .glassEffect(.regular.interactive(), in: .capsule)
                     }
                 }
             }
@@ -265,7 +251,7 @@ private extension OnboardingChatView {
             onCompleted?()
             dismiss()
         } catch {
-            // Error surfaced via viewModel.errorMessage
+            viewModel.errorMessage = "Couldn't save your preferences — please try again."
         }
     }
 }

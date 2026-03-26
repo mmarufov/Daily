@@ -22,7 +22,7 @@ struct BookmarksView: View {
                         LazyVStack(spacing: 0) {
                             ForEach(bookmarks.bookmarkedArticles) { entry in
                                 NavigationLink(destination: ArticleDetailView(article: entry.article)) {
-                                    CompactArticleRow(article: entry.article)
+                                    EditorialRow(article: entry.article)
                                 }
                                 .buttonStyle(PressableButtonStyle())
                                 .swipeActions(edge: .trailing) {

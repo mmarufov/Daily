@@ -11,14 +11,73 @@ struct ProfileView: View {
     @ObservedObject private var auth = AuthService.shared
     @Environment(\.dismiss) private var dismiss
     @State private var showPersonalizationSettings = false
+    @State private var showSignOutConfirmation = false
 
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: AppSpacing.xl) {
                     profileHeader
-                    settingsSection
-                    signOutButton
+
+                    // Settings rows
+                    VStack(spacing: 0) {
+                        settingsRow(
+                            icon: "person.text.rectangle",
+                            title: "Personalization",
+                            subtitle: "Fine-tune your briefing preferences"
+                        ) {
+                            HapticService.impact(.light)
+                            showPersonalizationSettings = true
+                        }
+
+                        HairlineDivider()
+                            .padding(.leading, 56)
+
+                        settingsRow(
+                            icon: "textformat.size",
+                            title: "Text Size",
+                            subtitle: "Adjust article reading size"
+                        ) {
+                            // Handled via ArticleDetailView text size menu
+                        }
+
+                        HairlineDivider()
+                            .padding(.leading, 56)
+
+                        settingsRow(
+                            icon: "bell",
+                            title: "Notifications",
+                            subtitle: "Coming soon"
+                        ) {
+                            // Placeholder
+                        }
+                    }
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
+
+                    // Sign out
+                    Button {
+                        HapticService.impact(.medium)
+                        showSignOutConfirmation = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .font(AppTypography.iconButton)
+                            Text("Sign Out")
+                                .font(AppTypography.body)
+                        }
+                        .foregroundColor(BrandColors.error)
+                        .frame(maxWidth: .infinity)
+                        .padding(AppSpacing.md)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
+                    }
+
+                    // Version
+                    Text("Daily v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
+                        .font(AppTypography.caption2)
+                        .foregroundColor(BrandColors.textQuaternary)
+                        .padding(.top, AppSpacing.md)
                 }
                 .padding(.horizontal, AppSpacing.lg)
                 .padding(.vertical, AppSpacing.xl)
@@ -32,11 +91,19 @@ struct ProfileView: View {
                         dismiss()
                     }
                     .font(AppTypography.body)
-                    .foregroundColor(BrandColors.primary)
                 }
             }
             .sheet(isPresented: $showPersonalizationSettings) {
                 PersonalizationSettingsView()
+            }
+            .alert("Sign Out", isPresented: $showSignOutConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Sign Out", role: .destructive) {
+                    auth.signOut()
+                    dismiss()
+                }
+            } message: {
+                Text("Are you sure you want to sign out?")
             }
         }
     }
@@ -87,21 +154,19 @@ struct ProfileView: View {
         .padding(.vertical, AppSpacing.lg)
     }
 
-    private var settingsSection: some View {
-        Button(action: {
-            HapticService.impact(.light)
-            showPersonalizationSettings = true
-        }) {
+    private func settingsRow(icon: String, title: String, subtitle: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             HStack(spacing: AppSpacing.md) {
-                Image(systemName: "person.text.rectangle")
+                Image(systemName: icon)
                     .font(AppTypography.iconButton)
-                    .foregroundColor(BrandColors.primary)
+                    .foregroundColor(BrandColors.textSecondary)
+                    .frame(width: 24)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Personalization")
+                    Text(title)
                         .font(AppTypography.body)
                         .foregroundColor(BrandColors.textPrimary)
-                    Text("Fine-tune your briefing preferences")
+                    Text(subtitle)
                         .font(AppTypography.footnote)
                         .foregroundColor(BrandColors.textSecondary)
                 }
@@ -113,23 +178,7 @@ struct ProfileView: View {
                     .foregroundColor(BrandColors.textTertiary)
             }
             .padding(AppSpacing.md)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
         }
-    }
-
-    private var signOutButton: some View {
-        Button(action: {
-            HapticService.impact(.medium)
-            auth.signOut()
-            dismiss()
-        }) {
-            Text("Sign Out")
-                .font(AppTypography.body)
-                .foregroundColor(BrandColors.error)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, AppSpacing.md)
     }
 }
 

@@ -12,6 +12,7 @@ struct NewsView: View {
     @ObservedObject private var auth = AuthService.shared
     @ObservedObject private var bookmarks = BookmarkService.shared
     @State private var showingProfile = false
+    @State private var showWelcomeBanner = false
 
     var body: some View {
         NavigationStack {
@@ -21,6 +22,13 @@ struct NewsView: View {
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.md)
                         .padding(.bottom, AppSpacing.lg)
+
+                    if showWelcomeBanner {
+                        welcomeBanner
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.bottom, AppSpacing.md)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                    }
 
                     if viewModel.articles.isEmpty && !viewModel.isLoading {
                         EmptyStateView(
@@ -65,6 +73,17 @@ struct NewsView: View {
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
             }
+            .onReceive(NotificationCenter.default.publisher(for: .onboardingCompleted)) { _ in
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    showWelcomeBanner = true
+                }
+                Task {
+                    try? await Task.sleep(for: .seconds(3))
+                    withAnimation(.easeInOut(duration: 0.4)) {
+                        showWelcomeBanner = false
+                    }
+                }
+            }
         }
     }
 }
@@ -92,25 +111,30 @@ private extension NewsView {
     }
 
     var dateHeader: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+        HStack(spacing: AppSpacing.xs) {
             Text(greeting)
                 .font(AppTypography.subheadline)
                 .foregroundColor(BrandColors.textSecondary)
 
-            Text("Daily")
-                .font(AppTypography.articleTitle)
-                .foregroundColor(BrandColors.textPrimary)
+            Circle()
+                .fill(BrandColors.textQuaternary)
+                .frame(width: 3, height: 3)
 
             Text(formattedFullDate)
-                .font(AppTypography.caption1)
+                .font(AppTypography.subheadline)
                 .foregroundColor(BrandColors.textTertiary)
 
             if let subtitle = updatedSubtitle {
+                Circle()
+                    .fill(BrandColors.textQuaternary)
+                    .frame(width: 3, height: 3)
+
                 Text(subtitle)
-                    .font(AppTypography.caption2)
+                    .font(AppTypography.subheadline)
                     .foregroundColor(BrandColors.textQuaternary)
-                    .padding(.top, 2)
             }
+
+            Spacer()
         }
     }
 
@@ -163,19 +187,21 @@ private extension NewsView {
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.sm)
 
-                VStack(spacing: AppSpacing.lg) {
+                VStack(spacing: 0) {
                     ForEach(articles.dropFirst()) { article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
-                            FeaturedArticleCard(
+                            EditorialRow(
                                 article: article,
-                                isRead: bookmarks.isRead(article.id),
-                                style: .feed
+                                isRead: bookmarks.isRead(article.id)
                             )
                         }
                         .buttonStyle(PressableButtonStyle())
                         .contextMenu {
                             articleContextMenu(for: article)
                         }
+
+                        HairlineDivider()
+                            .padding(.leading, AppSpacing.lg)
                     }
                 }
                 .padding(.horizontal, AppSpacing.lg)
@@ -209,10 +235,27 @@ private extension NewsView {
         }
     }
 
+    var welcomeBanner: some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(AppTypography.headline)
+                .foregroundColor(BrandColors.success)
+
+            Text("Your personalized feed is ready")
+                .font(AppTypography.subheadline)
+                .foregroundColor(BrandColors.textPrimary)
+
+            Spacer()
+        }
+        .padding(AppSpacing.md)
+        .background(BrandColors.success.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
+    }
+
     func sectionLabel(_ title: String) -> some View {
         Text(title.uppercased())
             .font(AppTypography.sectionTitle)
-            .foregroundColor(BrandColors.primary)
+            .foregroundColor(BrandColors.sectionHeader)
             .tracking(0.8)
     }
 
@@ -355,7 +398,7 @@ struct FeaturedArticleCard: View {
 
                 Text(article.displaySource.uppercased())
                     .font(AppTypography.sourceLabel)
-                    .foregroundColor(BrandColors.primary)
+                    .foregroundColor(BrandColors.sourceText)
 
                 if !article.formattedDate.isEmpty {
                     Circle()
@@ -424,6 +467,75 @@ struct FeaturedArticleCard: View {
     }
 }
 
+// MARK: - Editorial Row (dense headline-first layout)
+
+struct EditorialRow: View {
+    let article: NewsArticle
+    var isRead: Bool = false
+
+    var body: some View {
+        HStack(alignment: .top, spacing: AppSpacing.md) {
+            // Text content — headline first
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(article.title)
+                    .font(AppTypography.feedCardTitle)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .opacity(isRead ? 0.6 : 1)
+                    .lineLimit(3)
+                    .lineSpacing(2)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // Source + date + reading time
+                HStack(spacing: AppSpacing.xs) {
+                    if !isRead {
+                        Circle()
+                            .fill(BrandColors.primary)
+                            .frame(width: 5, height: 5)
+                    }
+
+                    Text(article.displaySource.uppercased())
+                        .font(AppTypography.metaLabel)
+                        .foregroundColor(BrandColors.sourceText)
+
+                    if !article.formattedDate.isEmpty {
+                        Circle()
+                            .fill(BrandColors.textQuaternary)
+                            .frame(width: 2.5, height: 2.5)
+                        Text(article.formattedDate)
+                            .font(AppTypography.metaLabelRegular)
+                            .foregroundColor(BrandColors.textTertiary)
+                    }
+
+                    Circle()
+                        .fill(BrandColors.textQuaternary)
+                        .frame(width: 2.5, height: 2.5)
+                    Text("\(article.estimatedReadingTime) min")
+                        .font(AppTypography.metaLabelRegular)
+                        .foregroundColor(BrandColors.textTertiary)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            // Small square thumbnail
+            if let imageURL = article.imageURL, let url = URL(string: imageURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().aspectRatio(contentMode: .fill)
+                    default:
+                        Rectangle()
+                            .fill(Color(.tertiarySystemFill))
+                    }
+                }
+                .frame(width: 64, height: 64)
+                .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.small, style: .continuous))
+            }
+        }
+        .padding(.vertical, AppSpacing.smLg)
+    }
+}
+
 // MARK: - Compact Article Row
 
 struct CompactArticleRow: View {
@@ -465,7 +577,7 @@ struct CompactArticleRow: View {
 
                 Text(article.displaySource.uppercased())
                     .font(AppTypography.metaLabel)
-                    .foregroundColor(BrandColors.primary)
+                    .foregroundColor(BrandColors.sourceText)
 
                 if !article.formattedDate.isEmpty {
                     Circle()

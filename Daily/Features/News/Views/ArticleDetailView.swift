@@ -16,9 +16,11 @@ struct ArticleDetailView: View {
     @State private var loadErrorMessage: String?
     @State private var showingSafari = false
     @State private var showingTextSize = false
+    @State private var showingChat = false
     @AppStorage("articleFontSize") private var fontSizeIndex: Int = 2 // 0-4, default middle
 
     @ObservedObject private var bookmarks = BookmarkService.shared
+    @StateObject private var chatViewModel = ChatViewModel()
 
     private var fontSizeMultiplier: CGFloat {
         [0.8, 0.9, 1.0, 1.15, 1.3][fontSizeIndex]
@@ -49,6 +51,10 @@ struct ArticleDetailView: View {
                         .padding(.horizontal, AppSpacing.xxl)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onTapGesture {
+                    loadErrorMessage = nil
+                    Task { await loadFullArticleIfNeeded() }
+                }
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
@@ -61,7 +67,7 @@ struct ArticleDetailView: View {
                                     Text(full.displaySource.uppercased())
                                         .font(AppTypography.sourceLabel)
                                         .tracking(0.8)
-                                        .foregroundColor(BrandColors.primary)
+                                        .foregroundColor(BrandColors.sourceText)
 
                                     if let category = full.category, !category.isEmpty {
                                         Circle()
@@ -143,7 +149,8 @@ struct ArticleDetailView: View {
                 Button {
                     HapticService.impact(.medium)
                     if let full = fullArticle {
-                        NotificationCenter.default.post(name: .discussArticle, object: full)
+                        chatViewModel.articleContext = full
+                        showingChat = true
                     }
                 } label: {
                     Image(systemName: "sparkles")
@@ -204,6 +211,13 @@ struct ArticleDetailView: View {
                     .ignoresSafeArea()
             }
         }
+        .sheet(isPresented: $showingChat) {
+            ChatView(
+                viewModel: chatViewModel,
+                selectedTab: .constant(.chat),
+                presentedAsSheet: true
+            )
+        }
         .task {
             BookmarkService.shared.markAsRead(article.id)
             await loadFullArticleIfNeeded()
@@ -255,7 +269,8 @@ struct ArticleDetailView: View {
     private func discussButton(for article: NewsArticle) -> some View {
         Button {
             HapticService.impact(.medium)
-            NotificationCenter.default.post(name: .discussArticle, object: article)
+            chatViewModel.articleContext = article
+            showingChat = true
         } label: {
             HStack(spacing: AppSpacing.sm) {
                 Image(systemName: "sparkles")
@@ -327,7 +342,7 @@ struct ArticleDetailView: View {
             ).normalizedForDisplay()
             isLoadingFullContent = false
         } catch {
-            loadErrorMessage = error.localizedDescription
+            loadErrorMessage = "Couldn't load article. Tap to retry."
             isLoadingFullContent = false
         }
     }
