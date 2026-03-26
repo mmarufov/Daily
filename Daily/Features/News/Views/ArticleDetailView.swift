@@ -17,6 +17,7 @@ struct ArticleDetailView: View {
     @State private var showingSafari = false
     @State private var showingTextSize = false
     @State private var showingChat = false
+    @State private var relatedArticles: [NewsArticle] = []
     @AppStorage("articleFontSize") private var fontSizeIndex: Int = 2 // 0-4, default middle
 
     @ObservedObject private var bookmarks = BookmarkService.shared
@@ -130,6 +131,24 @@ struct ArticleDetailView: View {
 
                                 // External link
                                 externalLinkButton(for: full)
+
+                                // Related articles
+                                if !relatedArticles.isEmpty {
+                                    HairlineDivider()
+                                        .padding(.vertical, AppSpacing.lg)
+
+                                    Text("MORE LIKE THIS")
+                                        .font(AppTypography.sectionTitle)
+                                        .foregroundColor(BrandColors.sectionHeader)
+                                        .tracking(0.8)
+
+                                    ForEach(relatedArticles.prefix(4)) { related in
+                                        NavigationLink(destination: ArticleDetailView(article: related)) {
+                                            FeaturedArticleCard(article: related, style: .feed)
+                                        }
+                                        .buttonStyle(PressableButtonStyle())
+                                    }
+                                }
                             }
                             .frame(maxWidth: 700, alignment: .leading)
                             .frame(maxWidth: .infinity, alignment: .center)
@@ -221,6 +240,15 @@ struct ArticleDetailView: View {
         .task {
             BookmarkService.shared.markAsRead(article.id)
             await loadFullArticleIfNeeded()
+        }
+        .task(id: fullArticle?.id) {
+            guard fullArticle != nil,
+                  let token = AuthService.shared.getAccessToken() else { return }
+            if let results = try? await BackendService.shared.semanticSearch(
+                query: article.title, limit: 5, accessToken: token
+            ) {
+                relatedArticles = results.filter { $0.id != article.id }
+            }
         }
     }
 
