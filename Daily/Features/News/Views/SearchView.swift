@@ -98,7 +98,7 @@ private extension SearchView {
             LazyVStack(spacing: 0) {
                 ForEach(Array(searchResults.enumerated()), id: \.element.id) { index, article in
                     NavigationLink(destination: ArticleDetailView(article: article)) {
-                        CompactArticleRow(article: article, isRead: bookmarks.isRead(article.id))
+                        EditorialRow(article: article, isRead: bookmarks.isRead(article.id))
                     }
                     .buttonStyle(PressableButtonStyle())
 

@@ -11,26 +11,36 @@ import Combine
 @MainActor
 final class NewsPersonalizationViewModel: ObservableObject {
     @Published var promptText: String = ""
+    @Published var topics: [String] = []
+    @Published var exclusions: [String] = []
     @Published var isLoading: Bool = false
     @Published var isSaving: Bool = false
     @Published var errorMessage: String?
-    
+
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
-    
+
     func load() async {
         guard !isLoading else { return }
         guard let token = authService.getAccessToken() else {
             errorMessage = "Authentication required"
             return
         }
-        
+
         isLoading = true
         errorMessage = nil
-        
+
         do {
             let prefs = try await backendService.fetchUserPreferences(accessToken: token)
             promptText = prefs.aiProfile ?? ""
+            // Parse topics from interests if available
+            let interests = prefs.interestsDictionary
+            if let topicsList = interests["topics"] as? [String] {
+                topics = topicsList
+            }
+            if let excludedTopics = interests["excluded_topics"] as? [String] {
+                exclusions = excludedTopics
+            }
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription
