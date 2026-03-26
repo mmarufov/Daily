@@ -212,7 +212,7 @@ private extension OnboardingChatView {
                             ? BrandColors.textTertiary
                             : BrandColors.primary
                         )
-                        .frame(width: 42, height: 42)
+                        .frame(width: 44, height: 44)
 
                     if viewModel.isLoading {
                         ProgressView()

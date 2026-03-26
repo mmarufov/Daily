@@ -263,6 +263,20 @@ struct ArticleDetailView: View {
                     )
                 }
             }
+        } else if !isLoadingFullContent {
+            VStack(spacing: AppSpacing.sm) {
+                Text("Full article content is not available.")
+                    .font(AppTypography.subheadline)
+                    .foregroundColor(BrandColors.textTertiary)
+
+                if article.url != nil {
+                    Text("Read the full article at the source below.")
+                        .font(AppTypography.caption1)
+                        .foregroundColor(BrandColors.textQuaternary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, AppSpacing.md)
         }
     }
 

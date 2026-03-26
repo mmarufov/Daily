@@ -22,7 +22,7 @@ struct BookmarksView: View {
                         LazyVStack(spacing: 0) {
                             ForEach(bookmarks.bookmarkedArticles) { entry in
                                 NavigationLink(destination: ArticleDetailView(article: entry.article)) {
-                                    EditorialRow(article: entry.article)
+                                    FeaturedArticleCard(article: entry.article, style: .feed)
                                 }
                                 .buttonStyle(PressableButtonStyle())
                                 .swipeActions(edge: .trailing) {
@@ -35,7 +35,7 @@ struct BookmarksView: View {
                                 }
 
                                 HairlineDivider()
-                                    .padding(.leading, AppSpacing.lg)
+                                    .padding(.vertical, AppSpacing.md)
                             }
                         }
                         .padding(.horizontal, AppSpacing.lg)
