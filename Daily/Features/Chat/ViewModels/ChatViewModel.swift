@@ -16,13 +16,14 @@ final class ChatViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var inputText: String = ""
     @Published var articleContext: NewsArticle?
+    @Published var isSearchingArticles: Bool = false
 
     var hasArticleContext: Bool { articleContext != nil }
 
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
 
-    func sendMessage() async {
+    func sendMessage(articlesContext: [[String: String]]? = nil) async {
         let messageText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !messageText.isEmpty else { return }
 
@@ -44,7 +45,8 @@ final class ChatViewModel: ObservableObject {
                 message: messageText,
                 accessToken: token,
                 history: buildHistory(),
-                articleContext: buildArticleContext()
+                articleContext: buildArticleContext(),
+                articlesContext: articlesContext
             )
 
             let aiMessage = ChatMessage(content: response, isUser: false)
@@ -86,6 +88,39 @@ final class ChatViewModel: ObservableObject {
         messages = []
         errorMessage = nil
         articleContext = nil
+    }
+
+    /// Send a suggestion chip with article context from semantic search
+    func sendSuggestionChip(_ prompt: String) async {
+        isSearchingArticles = true
+
+        guard let token = authService.getAccessToken() else {
+            isSearchingArticles = false
+            inputText = prompt
+            await sendMessage()
+            return
+        }
+
+        do {
+            let articles = try await backendService.semanticSearch(
+                query: prompt, limit: 8, accessToken: token
+            )
+            isSearchingArticles = false
+
+            let articlesCtx: [[String: String]] = articles.map { article in
+                var ctx: [String: String] = ["title": article.title]
+                ctx["source"] = article.displaySource
+                if let summary = article.summary { ctx["summary"] = summary }
+                return ctx
+            }
+
+            inputText = prompt
+            await sendMessage(articlesContext: articlesCtx)
+        } catch {
+            isSearchingArticles = false
+            inputText = prompt
+            await sendMessage()  // Fallback: send without article context
+        }
     }
 
     // MARK: - Private

@@ -18,9 +18,17 @@ struct NewsView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    dateHeader
+                    Text("Daily")
+                        .font(AppTypography.brandTitle)
+                        .foregroundColor(BrandColors.textPrimary)
+                        .tracking(-0.5)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.md)
+
+                    dateHeader
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.xs)
                         .padding(.bottom, AppSpacing.lg)
 
                     if showWelcomeBanner {
@@ -290,7 +298,7 @@ private extension NewsView {
 
     @ToolbarContentBuilder
     var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarLeading) {
+        ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: { showingProfile = true }) {
                 if let photoURL = auth.currentUser?.photo_url,
                    let url = URL(string: photoURL) {

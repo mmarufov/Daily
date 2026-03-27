@@ -58,6 +58,18 @@ struct ChatView: View {
                                     }
                                     .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.messages.count)
 
+                                    if viewModel.isSearchingArticles {
+                                        HStack(spacing: AppSpacing.sm) {
+                                            ProgressView()
+                                                .tint(BrandColors.primary)
+                                            Text("Searching articles...")
+                                                .font(AppTypography.bodySmall)
+                                                .foregroundColor(BrandColors.textSecondary)
+                                        }
+                                        .padding(.horizontal, AppSpacing.md)
+                                        .transition(.opacity)
+                                    }
+
                                     if viewModel.isLoading {
                                         TypingIndicatorView()
                                             .transition(.asymmetric(
@@ -208,7 +220,11 @@ private extension ChatView {
                 ForEach(prompts, id: \.text) { prompt in
                     Button(action: {
                         HapticService.impact(.light)
-                        sendPrompt(prompt.text)
+                        if viewModel.hasArticleContext {
+                            sendPrompt(prompt.text)
+                        } else {
+                            Task { await viewModel.sendSuggestionChip(prompt.text) }
+                        }
                     }) {
                         HStack(spacing: 6) {
                             Image(systemName: prompt.icon)
