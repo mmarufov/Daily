@@ -15,6 +15,7 @@ from fastapi import FastAPI, HTTPException, Header, Depends, Query
 from fastapi.responses import JSONResponse
 import psycopg
 from psycopg.rows import dict_row
+from psycopg_pool import ConnectionPool
 from app.services.openai_service import get_openai_service
 
 load_dotenv()
@@ -31,6 +32,7 @@ async def _ingestion_loop():
     from app.services.news_ingestion import fetch_rss_feeds, fetch_topic_feeds
     from app.services.content_extractor import extract_article_content
     from app.services.article_enrichment import enrich_articles
+    from app.services.source_discovery import fetch_user_sources, populate_seed_sources
 
     # Wait a few seconds for the app to fully start
     await asyncio.sleep(5)
@@ -39,11 +41,15 @@ async def _ingestion_loop():
     while True:
         try:
             # 1. Fetch RSS feeds
-            with psycopg.connect(DATABASE_URL, row_factory=dict_row, autocommit=True) as conn:
+            with pool.connection() as conn:
                 _ensure_tables(conn)
+                await populate_seed_sources(conn)
                 new_count = await fetch_rss_feeds(conn)
                 topic_count = await fetch_topic_feeds(conn)
-                print(f"Ingestion: {new_count} from RSS, {topic_count} from topic feeds")
+
+                # 1b. Fetch articles from user-discovered sources
+                user_source_count = await fetch_user_sources(conn)
+                print(f"Ingestion: {new_count} from RSS, {topic_count} from topics, {user_source_count} from user sources")
 
                 # 2. Extract content for articles that don't have it yet (batch of 20, 6 concurrent)
                 with conn.cursor() as cur:
@@ -128,10 +134,10 @@ async def _ingestion_loop():
                         f"found {enrichment_stats['images_found']} images"
                     )
 
-                # 4. Clean up articles older than 7 days
+                # 4. Clean up articles older than 14 days (extended for behavioral learning)
                 with conn.cursor() as cur:
                     cur.execute(
-                        "DELETE FROM public.articles WHERE ingested_at < now() - interval '7 days'"
+                        "DELETE FROM public.articles WHERE ingested_at < now() - interval '14 days'"
                     )
                     if cur.rowcount > 0:
                         print(f"Ingestion: Cleaned up {cur.rowcount} old articles")
@@ -145,23 +151,63 @@ async def _ingestion_loop():
         await asyncio.sleep(180)
 
 
+pool: ConnectionPool | None = None
+
+
+async def _source_quality_loop():
+    """Background task: update global source quality scores every 30 min."""
+    from app.services.source_quality import update_source_quality
+    await asyncio.sleep(60)  # Let ingestion get some data first
+    while True:
+        try:
+            with pool.connection() as conn:
+                await update_source_quality(conn)
+        except Exception as e:
+            print(f"Source quality loop error: {e}")
+        await asyncio.sleep(1800)  # 30 minutes
+
+
+async def _interest_evolution_loop():
+    """Background task: check for interest evolution every 6 hours."""
+    from app.services.interest_evolution import check_interest_evolution
+    await asyncio.sleep(300)  # Let reading events accumulate
+    while True:
+        try:
+            with pool.connection() as conn:
+                await check_interest_evolution(conn)
+        except Exception as e:
+            print(f"Interest evolution loop error: {e}")
+        await asyncio.sleep(21600)  # 6 hours
+
+
 @asynccontextmanager
 async def lifespan(app):
-    """Start background ingestion on startup, cancel on shutdown."""
-    task = asyncio.create_task(_ingestion_loop())
+    """Start connection pool and background tasks on startup."""
+    global pool
+    pool = ConnectionPool(
+        DATABASE_URL,
+        min_size=2,
+        max_size=10,
+        kwargs={"row_factory": dict_row, "autocommit": True},
+    )
+    ingestion_task = asyncio.create_task(_ingestion_loop())
+    quality_task = asyncio.create_task(_source_quality_loop())
+    evolution_task = asyncio.create_task(_interest_evolution_loop())
     yield
-    task.cancel()
-    try:
-        await task
-    except asyncio.CancelledError:
-        pass
+    for t in (ingestion_task, quality_task, evolution_task):
+        t.cancel()
+        try:
+            await t
+        except asyncio.CancelledError:
+            pass
+    pool.close()
 
 
 app = FastAPI(title="Daily API", version="0.2.0", lifespan=lifespan)
 
 
 def get_db():
-    with psycopg.connect(DATABASE_URL, row_factory=dict_row, autocommit=True) as conn:
+    with pool.connection() as conn:
         yield conn
 
 
@@ -263,6 +309,132 @@ def _ensure_tables(conn) -> None:
         cur.execute("""
             CREATE INDEX IF NOT EXISTS idx_articles_embedding
             ON public.articles USING hnsw (embedding vector_cosine_ops);
+        """)
+
+        # Migration: behavior_cache on user_preferences (ENG-5)
+        cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS behavior_cache text;")
+
+        # Curated seed sources (global, maintained by system)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.seed_sources (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                url TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                category TEXT,
+                quality_tier TEXT DEFAULT 'standard',
+                active BOOLEAN DEFAULT true,
+                failure_count INTEGER DEFAULT 0,
+                last_validated_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT now()
+            );
+        """)
+
+        # Per-user discovered sources
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.user_sources (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                source_url TEXT NOT NULL,
+                source_name TEXT,
+                category TEXT,
+                discovery_method TEXT DEFAULT 'seed',
+                active BOOLEAN DEFAULT true,
+                failure_count INTEGER DEFAULT 0,
+                last_fetched_at TIMESTAMPTZ,
+                validated_at TIMESTAMPTZ,
+                next_fetch_at TIMESTAMPTZ DEFAULT now(),
+                etag TEXT,
+                last_modified TEXT,
+                created_at TIMESTAMPTZ DEFAULT now(),
+                UNIQUE(user_id, source_url)
+            );
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_user_sources_user_active
+            ON public.user_sources (user_id, active) WHERE active = true;
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_user_sources_next_fetch
+            ON public.user_sources (next_fetch_at) WHERE active = true;
+        """)
+
+        # Reading events for behavioral learning
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.reading_events (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+                event_type TEXT NOT NULL,
+                duration_seconds INTEGER,
+                feed_request_id UUID,
+                position_in_feed INTEGER,
+                created_at TIMESTAMPTZ DEFAULT now()
+            );
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_reading_events_user
+            ON public.reading_events (user_id, created_at DESC);
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_reading_events_article
+            ON public.reading_events (article_id);
+        """)
+        cur.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_reading_events_dedup
+            ON public.reading_events (user_id, article_id, event_type, feed_request_id);
+        """)
+
+        # Global source quality scoring
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.source_quality (
+                source_domain TEXT PRIMARY KEY,
+                impressions INTEGER DEFAULT 0,
+                taps INTEGER DEFAULT 0,
+                reads INTEGER DEFAULT 0,
+                avg_read_duration FLOAT DEFAULT 0,
+                quality_score FLOAT DEFAULT 0.5,
+                updated_at TIMESTAMPTZ DEFAULT now()
+            );
+        """)
+
+        # Entity pins for tracking people/companies/topics
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.entity_pins (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                entity_name TEXT NOT NULL,
+                entity_type TEXT NOT NULL DEFAULT 'topic',
+                created_at TIMESTAMPTZ DEFAULT now(),
+                UNIQUE(user_id, entity_name)
+            );
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_entity_pins_user
+            ON public.entity_pins (user_id);
+        """)
+
+        # Briefing cache
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.briefing_cache (
+                user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+                content TEXT NOT NULL,
+                source_article_ids UUID[],
+                generated_at TIMESTAMPTZ DEFAULT now()
+            );
+        """)
+
+        # Interest evolution suggestions
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.interest_suggestions (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                topic TEXT NOT NULL,
+                confidence FLOAT NOT NULL,
+                source_articles UUID[],
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMPTZ DEFAULT now(),
+                UNIQUE(user_id, topic)
+            );
         """)
 
 
@@ -941,6 +1113,17 @@ Do not include any other top-level keys. Do not wrap in backticks. Do not explai
 
         _clear_user_feed_cache(conn, user_id)
 
+        # Fire-and-forget: discover sources for this user (ENG-3)
+        # Uses its own connection since the request connection returns to pool
+        if interests and isinstance(interests, dict):
+            from app.services.source_discovery import discover_sources_for_user
+
+            async def _discover_bg():
+                with pool.connection() as bg_conn:
+                    await discover_sources_for_user(bg_conn, user_id, interests, ai_profile)
+
+            asyncio.create_task(_discover_bg())
+
         return {
             "id": str(row["id"]),
             "user_id": str(row["user_id"]),
@@ -1045,13 +1228,16 @@ async def get_feed(
     user_id = _get_user_id_from_token(conn, token)
 
     try:
+        import uuid
         from app.services.feed_service import get_personalized_feed
 
         _ensure_tables(conn)
         articles = await get_personalized_feed(
             user_id, conn, limit=limit,
         )
-        return articles
+        # Include feed_request_id for impression tracking
+        feed_request_id = str(uuid.uuid4())
+        return {"articles": articles, "feed_request_id": feed_request_id}
     except HTTPException:
         raise
     except Exception as e:
@@ -1095,13 +1281,15 @@ async def refresh_feed(
     user_id = _get_user_id_from_token(conn, token)
 
     try:
+        import uuid
         from app.services.feed_service import get_personalized_feed
 
         _ensure_tables(conn)
         articles = await get_personalized_feed(
             user_id, conn, limit=limit, force_refresh=True,
         )
-        return articles
+        feed_request_id = str(uuid.uuid4())
+        return {"articles": articles, "feed_request_id": feed_request_id}
     except HTTPException:
         raise
     except Exception as e:
@@ -1197,6 +1385,347 @@ async def get_categories(
         rows = cur.fetchall()
 
     return {"categories": [{"name": row["category"], "count": row["count"]} for row in rows]}
+
+
+# ---------------------------------------------------------------------------
+# Reading events (behavioral learning)
+# ---------------------------------------------------------------------------
+
+@app.post("/reading-events")
+async def submit_reading_events(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Batch submit reading events from iOS client."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    events = payload.get("events", [])
+    if not events or len(events) > 100:
+        raise HTTPException(400, "Events must be 1-100 items")
+
+    inserted = 0
+    with conn.transaction():
+        with conn.cursor() as cur:
+            for event in events:
+                event_type = event.get("type")
+                if event_type not in ("impression", "tap", "read", "skip"):
+                    continue
+                article_id = event.get("article_id")
+                if not article_id:
+                    continue
+                duration = event.get("duration_seconds")
+                feed_request_id = event.get("feed_request_id")
+                position = event.get("position")
+                try:
+                    cur.execute(
+                        """
+                        INSERT INTO public.reading_events
+                        (user_id, article_id, event_type, duration_seconds, feed_request_id, position_in_feed)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        ON CONFLICT DO NOTHING
+                        """,
+                        (user_id, article_id, event_type, duration,
+                         feed_request_id, position),
+                    )
+                    inserted += cur.rowcount
+                except Exception as e:
+                    logger.warning("Failed to insert reading event: %s", e)
+
+    # Recompute behavioral signals cache after new events
+    if inserted > 0:
+        _recompute_behavior_signals(conn, user_id)
+
+    return {"inserted": inserted}
+
+
+def _recompute_behavior_signals(conn, user_id: str):
+    """Recompute and cache behavioral signals from reading events."""
+    import json as _json
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT a.category, a.source_name, re.event_type, COUNT(*) as count
+                FROM public.reading_events re
+                JOIN public.articles a ON a.id = re.article_id
+                WHERE re.user_id = %s AND re.created_at > now() - interval '14 days'
+                GROUP BY a.category, a.source_name, re.event_type
+            """, (user_id,))
+            rows = cur.fetchall()
+
+        if not rows:
+            return
+
+        # Compute category affinity: tap_rate = taps / impressions per category
+        cat_impressions: dict[str, int] = {}
+        cat_taps: dict[str, int] = {}
+        src_impressions: dict[str, int] = {}
+        src_taps: dict[str, int] = {}
+
+        for row in rows:
+            cat = row.get("category") or "general"
+            src = row.get("source_name") or ""
+            count = row["count"]
+            if row["event_type"] == "impression":
+                cat_impressions[cat] = cat_impressions.get(cat, 0) + count
+                src_impressions[src] = src_impressions.get(src, 0) + count
+            elif row["event_type"] in ("tap", "read"):
+                cat_taps[cat] = cat_taps.get(cat, 0) + count
+                src_taps[src] = src_taps.get(src, 0) + count
+
+        # Compute boost values (capped at 0.15)
+        cat_boost = {}
+        for cat, imps in cat_impressions.items():
+            if imps >= 5:  # Need at least 5 impressions for signal
+                rate = cat_taps.get(cat, 0) / imps
+                cat_boost[cat] = min(round(rate * 0.3, 3), 0.15)
+
+        src_boost = {}
+        for src, imps in src_impressions.items():
+            if imps >= 3 and src:
+                rate = src_taps.get(src, 0) / imps
+                src_boost[src] = min(round(rate * 0.2, 3), 0.1)
+
+        signals = {"category_boost": cat_boost, "source_boost": src_boost}
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE public.user_preferences SET behavior_cache = %s WHERE user_id = %s",
+                (_json.dumps(signals), user_id),
+            )
+    except Exception as e:
+        logger.warning("Failed to recompute behavior signals for %s: %s", user_id, e)
+
+
+# ---------------------------------------------------------------------------
+# Entity pins (track people/companies/topics)
+# ---------------------------------------------------------------------------
+
+@app.get("/entities")
+async def list_entity_pins(
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """List user's pinned entities."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT id, entity_name, entity_type, created_at FROM public.entity_pins WHERE user_id = %s ORDER BY created_at DESC",
+            (user_id,),
+        )
+        pins = cur.fetchall()
+    return {"entities": [{"id": str(p["id"]), "name": p["entity_name"], "type": p["entity_type"], "created_at": _format_datetime_iso(p["created_at"])} for p in pins]}
+
+
+@app.post("/entities")
+async def create_entity_pin(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Pin a new entity for tracking."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    name = (payload.get("name") or "").strip()
+    entity_type = payload.get("type", "topic")
+    if not name or len(name) < 3:
+        raise HTTPException(400, "Entity name must be at least 3 characters")
+    if entity_type not in ("person", "company", "topic"):
+        raise HTTPException(400, "Entity type must be person, company, or topic")
+
+    # Check max pins
+    with conn.cursor() as cur:
+        cur.execute("SELECT COUNT(*) as cnt FROM public.entity_pins WHERE user_id = %s", (user_id,))
+        if cur.fetchone()["cnt"] >= 20:
+            raise HTTPException(400, "Maximum 20 pinned entities")
+
+        try:
+            cur.execute(
+                """
+                INSERT INTO public.entity_pins (user_id, entity_name, entity_type)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (user_id, entity_name) DO NOTHING
+                RETURNING id, entity_name, entity_type, created_at
+                """,
+                (user_id, name, entity_type),
+            )
+            row = cur.fetchone()
+        except Exception as e:
+            raise HTTPException(500, f"Error creating entity pin: {e}")
+
+    if not row:
+        raise HTTPException(409, "Entity already pinned")
+    return {"id": str(row["id"]), "name": row["entity_name"], "type": row["entity_type"], "created_at": _format_datetime_iso(row["created_at"])}
+
+
+@app.delete("/entities/{entity_id}")
+async def delete_entity_pin(
+    entity_id: str,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Unpin an entity."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    with conn.cursor() as cur:
+        cur.execute(
+            "DELETE FROM public.entity_pins WHERE id = %s AND user_id = %s",
+            (entity_id, user_id),
+        )
+        if cur.rowcount == 0:
+            raise HTTPException(404, "Entity pin not found")
+    return {"deleted": True}
+
+
+# ---------------------------------------------------------------------------
+# Briefing (AI morning briefing)
+# ---------------------------------------------------------------------------
+
+@app.get("/briefing")
+async def get_briefing(
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Return the user's morning briefing. Cached for 4 hours."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    # Check cache
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT content, generated_at FROM public.briefing_cache WHERE user_id = %s",
+            (user_id,),
+        )
+        cached = cur.fetchone()
+
+    if cached and cached.get("generated_at"):
+        age = datetime.now(timezone.utc) - cached["generated_at"]
+        if age.total_seconds() < 4 * 3600:
+            return {"content": cached["content"], "generated_at": _format_datetime_iso(cached["generated_at"])}
+
+    # Generate new briefing from top relevant articles
+    from app.services.feed_service import get_personalized_feed
+    articles = await get_personalized_feed(user_id, conn, limit=5)
+    if len(articles) < 3:
+        return {"content": None}
+
+    # Load user profile for personalized briefing
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT ai_profile FROM public.user_preferences WHERE user_id = %s AND completed = true",
+            (user_id,),
+        )
+        pref_row = cur.fetchone()
+    ai_profile = pref_row.get("ai_profile", "") if pref_row else ""
+
+    try:
+        from app.services.openai_service import get_openai_service
+        openai_svc = get_openai_service()
+        briefing = await openai_svc.generate_briefing(articles, ai_profile)
+        if not briefing:
+            return {"content": None}
+
+        # Cache the briefing
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.briefing_cache (user_id, content, source_article_ids, generated_at)
+                VALUES (%s, %s, %s, now())
+                ON CONFLICT (user_id) DO UPDATE SET
+                    content = EXCLUDED.content,
+                    source_article_ids = EXCLUDED.source_article_ids,
+                    generated_at = now()
+                """,
+                (user_id, briefing, [a.get("id") for a in articles[:5]]),
+            )
+
+        return {"content": briefing, "generated_at": _format_datetime_iso(datetime.now(timezone.utc))}
+    except Exception as e:
+        logger.warning("Briefing generation failed for %s: %s", user_id, e)
+        return {"content": None}
+
+
+# ---------------------------------------------------------------------------
+# Interest evolution suggestions
+# ---------------------------------------------------------------------------
+
+@app.get("/interests/suggestions")
+async def list_interest_suggestions(
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """List pending interest suggestions for a user."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT id, topic, confidence, created_at FROM public.interest_suggestions WHERE user_id = %s AND status = 'pending' ORDER BY confidence DESC",
+            (user_id,),
+        )
+        rows = cur.fetchall()
+    return {"suggestions": [{"id": str(r["id"]), "topic": r["topic"], "confidence": r["confidence"], "created_at": _format_datetime_iso(r["created_at"])} for r in rows]}
+
+
+@app.post("/interests/suggestions/{suggestion_id}/accept")
+async def accept_interest_suggestion(
+    suggestion_id: str,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Accept an interest suggestion — adds it to user's interests."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    with conn.cursor() as cur:
+        cur.execute(
+            "UPDATE public.interest_suggestions SET status = 'accepted' WHERE id = %s AND user_id = %s RETURNING topic",
+            (suggestion_id, user_id),
+        )
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(404, "Suggestion not found")
+
+        # Add topic to user's interests
+        cur.execute("SELECT interests FROM public.user_preferences WHERE user_id = %s", (user_id,))
+        pref_row = cur.fetchone()
+        if pref_row and pref_row.get("interests"):
+            import json as _json
+            try:
+                interests = _json.loads(pref_row["interests"]) if isinstance(pref_row["interests"], str) else pref_row["interests"]
+            except (ValueError, TypeError):
+                interests = {}
+            topics = interests.get("topics", [])
+            if row["topic"] not in topics:
+                topics.append(row["topic"])
+                interests["topics"] = topics
+                cur.execute(
+                    "UPDATE public.user_preferences SET interests = %s, updated_at = now() WHERE user_id = %s",
+                    (_json.dumps(interests), user_id),
+                )
+
+    _clear_user_feed_cache(conn, user_id)
+    return {"accepted": True, "topic": row["topic"]}
+
+
+@app.post("/interests/suggestions/{suggestion_id}/dismiss")
+async def dismiss_interest_suggestion(
+    suggestion_id: str,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Dismiss an interest suggestion."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    with conn.cursor() as cur:
+        cur.execute(
+            "UPDATE public.interest_suggestions SET status = 'dismissed' WHERE id = %s AND user_id = %s",
+            (suggestion_id, user_id),
+        )
+        if cur.rowcount == 0:
+            raise HTTPException(404, "Suggestion not found")
+    return {"dismissed": True}
 
 
 # ---------------------------------------------------------------------------
