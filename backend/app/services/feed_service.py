@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 
 FEED_CACHE_TTL_MINUTES = 60
 CANDIDATE_EXPANSION_STEPS = (
-    (24 * 2, 250),
-    (24 * 7, 500),
-    (24 * 14, 1000),
+    (24 * 3, 300),    # 3 days, 300 articles (was 2d/250)
+    (24 * 7, 600),    # 7 days, 600 (was 500)
+    (24 * 14, 1200),  # 14 days, 1200 (was 1000)
 )
 BATCH_SCORING_SIZE = 40
 MIN_CANDIDATE_TEXT_LENGTH = 40
@@ -165,6 +165,9 @@ async def get_personalized_feed(
         finalized = finalized[:limit]
         await _hydrate_missing_feed_images(conn, finalized)
         return finalized
+
+    # Load behavioral signals, entity pins, source quality for scoring context
+    _prepare_scoring_context(conn, user_id)
 
     openai_service = get_openai_service()
     batches = [
@@ -827,8 +830,9 @@ def _prefilter_candidates(
     profile: PreferenceProfile,
     max_candidates: int = MAX_LLM_CANDIDATES,
 ) -> list[dict]:
-    scored_candidates: list[dict] = []
-    threshold = STRICT_MATCH_THRESHOLD if profile.strict_mode else DETERMINISTIC_MATCH_THRESHOLD
+    """Score candidates deterministically but don't drop any except excluded topics.
+    Prefilter score is used as a SIGNAL (blended at 35% weight), not a gate."""
+    non_excluded: list[dict] = []
 
     for candidate in candidates:
         score, reason, excluded = _score_candidate(candidate, profile)
@@ -838,19 +842,86 @@ def _prefilter_candidates(
 
         if excluded:
             continue
-        scored_candidates.append(candidate)
+        non_excluded.append(candidate)
 
-    scored_candidates.sort(
+    # Sort by prefilter score to prioritize strong matches for LLM batching
+    non_excluded.sort(
         key=lambda article: (article.get("_prefilter_score", 0.0), article.get("published_at") or ""),
         reverse=True,
     )
 
-    # Drop zero-signal articles that waste LLM capacity
-    if len(scored_candidates) > MIN_SHORTLIST_SIZE:
-        above_zero = [a for a in scored_candidates if a["_prefilter_score"] > 0.0]
-        scored_candidates = above_zero if len(above_zero) >= MIN_SHORTLIST_SIZE else scored_candidates[:MIN_SHORTLIST_SIZE]
+    return non_excluded[:max_candidates]
 
-    return scored_candidates[:max_candidates]
+
+# Module-level closures set per scoring call — avoids threading these through every function
+_behavior_signals: dict = {}
+_entity_pins: list[str] = []
+_entity_patterns: dict = {}
+_source_quality: dict = {}
+
+
+def _extract_domain(source_name: str) -> str:
+    """Extract a rough domain key from source_name for quality lookup."""
+    return (source_name or "").lower().strip()
+
+
+def _load_behavior_signals(conn, user_id: str) -> dict:
+    """Load cached behavioral signals from user_preferences.behavior_cache."""
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT behavior_cache FROM public.user_preferences WHERE user_id = %s",
+                (user_id,),
+            )
+            row = cur.fetchone()
+        if row and row.get("behavior_cache"):
+            return json.loads(row["behavior_cache"])
+    except Exception:
+        pass
+    return {}
+
+
+def _load_entity_pins(conn, user_id: str) -> list[str]:
+    """Load entity pin names for a user."""
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT entity_name FROM public.entity_pins WHERE user_id = %s",
+                (user_id,),
+            )
+            return [row["entity_name"] for row in cur.fetchall()]
+    except Exception:
+        return []
+
+
+def _load_source_quality(conn) -> dict:
+    """Load global source quality scores."""
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT source_domain, quality_score FROM public.source_quality")
+            return {row["source_domain"]: row["quality_score"] for row in cur.fetchall()}
+    except Exception:
+        return {}
+
+
+def _build_entity_patterns(pins: list[str]) -> dict:
+    """Pre-compile word-boundary regex patterns for entity matching (ENG-6)."""
+    patterns = {}
+    for name in pins:
+        try:
+            patterns[name] = re.compile(r'\b' + re.escape(name.lower()) + r'\b')
+        except re.error:
+            pass
+    return patterns
+
+
+def _prepare_scoring_context(conn, user_id: str) -> None:
+    """Load all scoring context (behavior, entities, source quality) into module-level state."""
+    global _behavior_signals, _entity_pins, _entity_patterns, _source_quality
+    _behavior_signals = _load_behavior_signals(conn, user_id)
+    _entity_pins = _load_entity_pins(conn, user_id)
+    _entity_patterns = _build_entity_patterns(_entity_pins)
+    _source_quality = _load_source_quality(conn)
 
 
 def _apply_individual_analysis_results(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
@@ -884,6 +955,38 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             continue
 
         blended_score = 0.65 * model_score + 0.35 * deterministic_score
+
+        # Behavioral boost from cached reading signals (ENG-5)
+        behavior = _behavior_signals or {}
+        if behavior:
+            category = candidate.get("category", "")
+            source = candidate.get("source_name", "")
+            cat_boost = behavior.get("category_boost", {}).get(category, 0.0)
+            src_boost = behavior.get("source_boost", {}).get(source, 0.0)
+            blended_score = min(blended_score + min(cat_boost + src_boost, 0.15), 1.0)
+
+        # Entity boost from pinned entities
+        if _entity_pins:
+            title_lower = candidate.get("title", "").lower()
+            summary_lower = (candidate.get("summary") or "").lower()
+            searchable = title_lower + " " + summary_lower
+            for pin_name in _entity_pins:
+                pattern = _entity_patterns.get(pin_name)
+                if pattern and pattern.search(searchable):
+                    blended_score = min(blended_score + 0.2, 1.0)
+                    model_relevant = True
+                    break
+
+        # Source quality adjustment
+        if _source_quality:
+            domain = _extract_domain(candidate.get("source_name", ""))
+            sq = _source_quality.get(domain)
+            if sq is not None:
+                if sq > 0.6:
+                    blended_score = min(blended_score + 0.05, 1.0)
+                elif sq < 0.3:
+                    blended_score = max(blended_score - 0.05, 0.0)
+
         candidate["_score"] = blended_score
         candidate["_relevant"] = model_relevant and blended_score >= 0.35
         candidate["_reason"] = reason or prefilter_reason
