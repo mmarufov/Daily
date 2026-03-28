@@ -13,6 +13,7 @@ struct NewsView: View {
     @ObservedObject private var bookmarks = BookmarkService.shared
     @State private var showingProfile = false
     @State private var showWelcomeBanner = false
+    @State private var briefingContent: String?
 
     var body: some View {
         NavigationStack {
@@ -92,6 +93,14 @@ struct NewsView: View {
                     }
                 }
             }
+            .task {
+                // Load morning briefing
+                guard let token = AuthService.shared.getAccessToken() else { return }
+                if let response = try? await BackendService.shared.fetchBriefing(accessToken: token),
+                   let content = response.content {
+                    briefingContent = content
+                }
+            }
         }
     }
 }
@@ -169,6 +178,13 @@ private extension NewsView {
         let articles = viewModel.articles
 
         return VStack(alignment: .leading, spacing: 0) {
+            // Briefing card
+            if let briefing = briefingContent {
+                BriefingCard(content: briefing)
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.bottom, AppSpacing.md)
+            }
+
             // Top Story
             if let featured = articles.first {
                 sectionLabel("Top Story")
@@ -183,6 +199,9 @@ private extension NewsView {
                 .contextMenu {
                     articleContextMenu(for: featured)
                 }
+                .onAppear {
+                    ReadingEventTracker.shared.logImpression(articleId: featured.id, position: 0)
+                }
             }
 
             // For You
@@ -196,7 +215,7 @@ private extension NewsView {
                     .padding(.bottom, AppSpacing.sm)
 
                 VStack(spacing: 0) {
-                    ForEach(articles.dropFirst()) { article in
+                    ForEach(Array(articles.dropFirst().enumerated()), id: \.element.id) { index, article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
                             FeaturedArticleCard(
                                 article: article,
@@ -208,6 +227,9 @@ private extension NewsView {
                         .padding(.horizontal, AppSpacing.lg)
                         .contextMenu {
                             articleContextMenu(for: article)
+                        }
+                        .onAppear {
+                            ReadingEventTracker.shared.logImpression(articleId: article.id, position: index + 1)
                         }
 
                         HairlineDivider()

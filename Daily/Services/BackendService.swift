@@ -81,7 +81,10 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        return try Self.iso8601Decoder.decode([NewsArticle].self, from: data)
+        // Feed response is now {"articles": [...], "feed_request_id": "..."}
+        let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
+        ReadingEventTracker.shared.setFeedRequestId(feedResponse.feedRequestId)
+        return feedResponse.articles
     }
 
     /// Fetch a single article with full content (extracts on-demand if needed).
@@ -137,7 +140,9 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        return try Self.iso8601Decoder.decode([NewsArticle].self, from: data)
+        let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
+        ReadingEventTracker.shared.setFeedRequestId(feedResponse.feedRequestId)
+        return feedResponse.articles
     }
 
     // MARK: - Chat Endpoints
@@ -246,6 +251,58 @@ final class BackendService {
 
     struct CategoriesResponse: Decodable {
         let categories: [CategoryCount]
+    }
+
+    struct FeedResponse: Decodable {
+        let articles: [NewsArticle]
+        let feedRequestId: String
+
+        enum CodingKeys: String, CodingKey {
+            case articles
+            case feedRequestId = "feed_request_id"
+        }
+    }
+
+    struct BriefingResponse: Decodable {
+        let content: String?
+        let generatedAt: String?
+
+        enum CodingKeys: String, CodingKey {
+            case content
+            case generatedAt = "generated_at"
+        }
+    }
+
+    struct EntityPin: Codable, Identifiable {
+        let id: String
+        let name: String
+        let type: String
+        let createdAt: String?
+
+        enum CodingKeys: String, CodingKey {
+            case id, name, type
+            case createdAt = "created_at"
+        }
+    }
+
+    struct EntityListResponse: Decodable {
+        let entities: [EntityPin]
+    }
+
+    struct InterestSuggestion: Codable, Identifiable {
+        let id: String
+        let topic: String
+        let confidence: Double
+        let createdAt: String?
+
+        enum CodingKeys: String, CodingKey {
+            case id, topic, confidence
+            case createdAt = "created_at"
+        }
+    }
+
+    struct SuggestionsResponse: Decodable {
+        let suggestions: [InterestSuggestion]
     }
 
     // MARK: - Interest Onboarding & Preferences
@@ -451,6 +508,147 @@ final class BackendService {
             return responseText
         } else {
             throw NSError(domain: "BackendService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid response format"])
+        }
+    }
+
+    // MARK: - Reading Events
+
+    func submitReadingEvents(_ events: [ReadingEventTracker.ReadingEvent], accessToken: String) async throws {
+        let endpoint = baseURL.appendingPathComponent("/reading-events")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let eventsPayload = events.map { event -> [String: Any] in
+            var dict: [String: Any] = [
+                "article_id": event.articleId,
+                "type": event.type
+            ]
+            if let duration = event.durationSeconds { dict["duration_seconds"] = duration }
+            if let feedReqId = event.feedRequestId { dict["feed_request_id"] = feedReqId }
+            if let position = event.position { dict["position"] = position }
+            return dict
+        }
+        let body: [String: Any] = ["events": eventsPayload]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            return // Silent failure — reading events are non-critical
+        }
+    }
+
+    // MARK: - Briefing
+
+    func fetchBriefing(accessToken: String) async throws -> BriefingResponse {
+        let endpoint = baseURL.appendingPathComponent("/briefing")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            return BriefingResponse(content: nil, generatedAt: nil)
+        }
+
+        return try Self.iso8601Decoder.decode(BriefingResponse.self, from: data)
+    }
+
+    // MARK: - Entities
+
+    func fetchEntityPins(accessToken: String) async throws -> [EntityPin] {
+        let endpoint = baseURL.appendingPathComponent("/entities")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            return []
+        }
+
+        return try Self.iso8601Decoder.decode(EntityListResponse.self, from: data).entities
+    }
+
+    func createEntityPin(name: String, type: String = "topic", accessToken: String) async throws -> EntityPin {
+        let endpoint = baseURL.appendingPathComponent("/entities")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = ["name": name, "type": type]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Failed to create entity"
+            throw NSError(domain: "BackendService", code: statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        return try Self.iso8601Decoder.decode(EntityPin.self, from: data)
+    }
+
+    func deleteEntityPin(id: String, accessToken: String) async throws {
+        let endpoint = baseURL.appendingPathComponent("/entities/\(id)")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to delete entity"])
+        }
+    }
+
+    // MARK: - Interest Suggestions
+
+    func fetchInterestSuggestions(accessToken: String) async throws -> [InterestSuggestion] {
+        let endpoint = baseURL.appendingPathComponent("/interests/suggestions")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            return []
+        }
+
+        return try Self.iso8601Decoder.decode(SuggestionsResponse.self, from: data).suggestions
+    }
+
+    func acceptInterestSuggestion(id: String, accessToken: String) async throws {
+        let endpoint = baseURL.appendingPathComponent("/interests/suggestions/\(id)/accept")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to accept suggestion"])
+        }
+    }
+
+    func dismissInterestSuggestion(id: String, accessToken: String) async throws {
+        let endpoint = baseURL.appendingPathComponent("/interests/suggestions/\(id)/dismiss")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to dismiss suggestion"])
         }
     }
 }

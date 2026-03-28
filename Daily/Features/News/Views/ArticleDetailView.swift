@@ -19,6 +19,7 @@ struct ArticleDetailView: View {
     @State private var showingChat = false
     @State private var relatedArticles: [NewsArticle] = []
     @AppStorage("articleFontSize") private var fontSizeIndex: Int = 2 // 0-4, default middle
+    @State private var articleOpenTime = Date()
 
     @ObservedObject private var bookmarks = BookmarkService.shared
     @StateObject private var chatViewModel = ChatViewModel()
@@ -239,7 +240,13 @@ struct ArticleDetailView: View {
         }
         .task {
             BookmarkService.shared.markAsRead(article.id)
+            ReadingEventTracker.shared.logTap(articleId: article.id)
+            articleOpenTime = Date()
             await loadFullArticleIfNeeded()
+        }
+        .onDisappear {
+            let duration = Int(Date().timeIntervalSince(articleOpenTime))
+            ReadingEventTracker.shared.logRead(articleId: article.id, durationSeconds: duration)
         }
         .task(id: fullArticle?.id) {
             guard fullArticle != nil,
