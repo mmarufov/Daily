@@ -1026,6 +1026,51 @@ Select the best matching image (0-based index) or return -1 if none are relevant
         )
         return json.loads(response.choices[0].message.content)
 
+    async def route_chat_turn(
+        self,
+        *,
+        prompt: str,
+        thread_kind: str,
+    ) -> dict[str, Any]:
+        system_prompt = (
+            "You classify chat turns for Daily, a news app assistant.\n"
+            "Return ONLY valid JSON with this exact shape:\n"
+            "{"
+            '"response_mode":"general_chat | news_qa | article_qa | structured_intent",'
+            '"needs_retrieval":true,'
+            '"needs_related_coverage":false,'
+            '"reason":"short string"'
+            "}\n"
+            "Rules:\n"
+            "- general_chat: ordinary conversation or questions not specifically about news/current events.\n"
+            "- news_qa: questions about stories, companies, markets, the feed, or recent/current events.\n"
+            "- article_qa: only if the question clearly refers to a current article/thread context.\n"
+            "- structured_intent: never choose this for freeform typing.\n"
+            "- needs_retrieval must be false for general_chat and true for news_qa/article_qa.\n"
+            "- needs_related_coverage should only be true when broader context beyond a single article is likely needed.\n"
+        )
+        user_prompt = (
+            f"Thread kind: {thread_kind}\n"
+            f"User prompt: {prompt}\n\n"
+            "Return the JSON object now."
+        )
+
+        response = await asyncio.wait_for(
+            asyncio.to_thread(
+                self.client.chat.completions.create,
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.1,
+                max_tokens=160,
+            ),
+            timeout=10.0,
+        )
+        return json.loads(response.choices[0].message.content)
+
     async def stream_structured_chat_response(
         self,
         *,
@@ -1091,6 +1136,84 @@ Select the best matching image (0-based index) or return -1 if none are relevant
                     ],
                     temperature=0.45,
                     max_tokens=900,
+                    stream=True,
+                )
+                for chunk in stream:
+                    delta = chunk.choices[0].delta.content or ""
+                    if delta:
+                        asyncio.run_coroutine_threadsafe(queue.put(delta), loop).result()
+                asyncio.run_coroutine_threadsafe(queue.put(None), loop).result()
+            except Exception as exc:
+                asyncio.run_coroutine_threadsafe(queue.put(exc), loop).result()
+
+        threading.Thread(target=worker, daemon=True).start()
+
+        while True:
+            item = await queue.get()
+            if item is None:
+                break
+            if isinstance(item, Exception):
+                raise item
+            yield item
+
+    async def stream_qa_chat_response(
+        self,
+        *,
+        response_mode: str,
+        prompt: str,
+        thread: dict,
+        selected_articles: list[dict],
+        prior_messages: list[dict],
+    ):
+        history = "\n".join(
+            f"{message.get('role', 'assistant')}: {(message.get('plain_text') or '')[:280]}"
+            for message in prior_messages[-6:]
+        ) or "No prior conversation."
+        catalog = "\n\n".join(
+            (
+                f"[{index}] {article.get('title', 'Untitled')}\n"
+                f"Source: {article.get('source_name', article.get('source', 'Daily'))}\n"
+                f"Summary: {(article.get('summary') or '')[:240]}\n"
+                f"Content: {(article.get('content') or '')[:450]}"
+            )
+            for index, article in enumerate(selected_articles[:4])
+        )
+
+        system_prompt = (
+            "You are Daily's AI assistant.\n"
+            "Answer the user's question directly like a normal helpful LLM.\n"
+            "Use provided article or feed context only when it is relevant to the user's question.\n"
+            "Do not summarize every article unless the user asked for a summary.\n"
+            "If the user asks about very recent news and the provided context is insufficient, say that plainly.\n"
+            "Do not invent source-backed claims that are not supported by the provided context.\n"
+            "Return ONLY <answer>...</answer> with no other text."
+        )
+        user_prompt = (
+            f"Response mode: {response_mode}\n"
+            f"Thread kind: {thread.get('kind')}\n"
+            f"User request: {prompt}\n\n"
+            f"Recent conversation:\n{history}\n\n"
+            + (
+                f"Relevant context:\n{catalog}\n\n"
+                if catalog
+                else "No article context was retrieved for this answer.\n\n"
+            )
+            + "Return the answer now."
+        )
+
+        queue: asyncio.Queue[Any] = asyncio.Queue()
+        loop = asyncio.get_running_loop()
+
+        def worker() -> None:
+            try:
+                stream = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.5,
+                    max_tokens=700,
                     stream=True,
                 )
                 for chunk in stream:

@@ -588,6 +588,12 @@ private struct AssistantBlockView: View {
             }
 
             switch block.kind {
+            case .answer:
+                Text(block.text ?? "")
+                    .font(AppTypography.body)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .lineSpacing(5)
+                    .fixedSize(horizontal: false, vertical: true)
             case .headline:
                 Text(block.text ?? "")
                     .font(AppTypography.feedHeroTitle)

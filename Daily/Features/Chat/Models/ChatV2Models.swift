@@ -38,6 +38,7 @@ struct ChatThread: Identifiable, Codable, Equatable {
 }
 
 enum AssistantBlockKind: String, Codable, Equatable {
+    case answer
     case headline
     case summary
     case bulletList = "bullet_list"
