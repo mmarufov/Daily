@@ -113,9 +113,16 @@ final class BackgroundNewsFetcher: NSObject, ObservableObject {
         }
 
         do {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            let articles = try decoder.decode([NewsArticle].self, from: data).map { $0.normalizedForDisplay() }
+            let response = try BackendService.iso8601Decoder.decode(BackendService.FeedResponse.self, from: data)
+            guard response.status == .ready else {
+                DispatchQueue.main.async {
+                    self.lastErrorMessage = "Feed is not ready yet"
+                    self.isFetching = false
+                }
+                return
+            }
+
+            let articles = response.articles.map { $0.normalizedForDisplay() }
 
             let encoded = try JSONEncoder().encode(articles)
             let defaults = UserDefaults.standard

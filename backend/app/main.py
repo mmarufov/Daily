@@ -32,7 +32,7 @@ async def _ingestion_loop():
     from app.services.news_ingestion import fetch_rss_feeds, fetch_topic_feeds
     from app.services.content_extractor import extract_article_content
     from app.services.article_enrichment import enrich_articles
-    from app.services.source_discovery import fetch_user_sources, populate_seed_sources
+    from app.services.source_discovery import populate_seed_sources
 
     # Wait a few seconds for the app to fully start
     await asyncio.sleep(5)
@@ -46,10 +46,7 @@ async def _ingestion_loop():
                 await populate_seed_sources(conn)
                 new_count = await fetch_rss_feeds(conn)
                 topic_count = await fetch_topic_feeds(conn)
-
-                # 1b. Fetch articles from user-discovered sources
-                user_source_count = await fetch_user_sources(conn)
-                print(f"Ingestion: {new_count} from RSS, {topic_count} from topics, {user_source_count} from user sources")
+                print(f"Ingestion: {new_count} from RSS, {topic_count} from topics")
 
                 # 2. Extract content for articles that don't have it yet (batch of 20, 6 concurrent)
                 with conn.cursor() as cur:
@@ -180,6 +177,53 @@ async def _interest_evolution_loop():
         await asyncio.sleep(21600)  # 6 hours
 
 
+async def _per_user_refresh_loop():
+    """Background task: refresh articles from per-user sources every 30 minutes."""
+    from app.services.user_source_pipeline import build_feed_for_user
+
+    await asyncio.sleep(120)  # Let startup settle
+    print("Per-user refresh loop started")
+
+    user_semaphore = asyncio.Semaphore(3)  # Max 3 users refreshed concurrently
+
+    while True:
+        try:
+            with pool.connection() as conn:
+                # Find users who have sources and were active in the last 24 hours
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        SELECT DISTINCT us.user_id
+                        FROM public.user_sources us
+                        WHERE us.active = true
+                        AND EXISTS (
+                            SELECT 1 FROM public.users u
+                            WHERE u.id::text = us.user_id
+                            AND u.last_active_at > now() - interval '24 hours'
+                        )
+                    """)
+                    active_users = [row["user_id"] for row in cur.fetchall()]
+
+            if active_users:
+                async def _refresh_one(uid: str):
+                    async with user_semaphore:
+                        try:
+                            with pool.connection() as conn:
+                                await build_feed_for_user(conn, uid, limit=50)
+                        except Exception as e:
+                            print(f"Per-user refresh error for {uid[:8]}...: {e}")
+
+                await asyncio.gather(
+                    *[_refresh_one(uid) for uid in active_users],
+                    return_exceptions=True,
+                )
+                print(f"Per-user refresh: processed {len(active_users)} users")
+
+        except Exception as e:
+            print(f"Per-user refresh loop error: {e}")
+
+        await asyncio.sleep(1800)  # 30 minutes
+
+
 @asynccontextmanager
 async def lifespan(app):
     """Start connection pool and background tasks on startup."""
@@ -193,8 +237,9 @@ async def lifespan(app):
     ingestion_task = asyncio.create_task(_ingestion_loop())
     quality_task = asyncio.create_task(_source_quality_loop())
     evolution_task = asyncio.create_task(_interest_evolution_loop())
+    per_user_task = asyncio.create_task(_per_user_refresh_loop())
     yield
-    for t in (ingestion_task, quality_task, evolution_task):
+    for t in (ingestion_task, quality_task, evolution_task, per_user_task):
         t.cancel()
         try:
             await t
@@ -349,6 +394,12 @@ def _ensure_tables(conn) -> None:
                 UNIQUE(user_id, source_url)
             );
         """)
+        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS scope TEXT DEFAULT 'supporting';")
+        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS source_kind TEXT DEFAULT 'publisher';")
+        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_targets JSONB DEFAULT '[]'::jsonb;")
+        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS discovery_score FLOAT DEFAULT 0.0;")
+        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS selection_rank INTEGER DEFAULT 0;")
+        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_discovered_at TIMESTAMPTZ;")
         cur.execute("""
             CREATE INDEX IF NOT EXISTS idx_user_sources_user_active
             ON public.user_sources (user_id, active) WHERE active = true;
@@ -356,6 +407,23 @@ def _ensure_tables(conn) -> None:
         cur.execute("""
             CREATE INDEX IF NOT EXISTS idx_user_sources_next_fetch
             ON public.user_sources (next_fetch_at) WHERE active = true;
+        """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.article_source_links (
+                article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+                source_url TEXT NOT NULL,
+                fetched_at TIMESTAMPTZ DEFAULT now(),
+                published_at TIMESTAMPTZ,
+                PRIMARY KEY (article_id, source_url)
+            );
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_article_source_links_source
+            ON public.article_source_links (source_url, fetched_at DESC);
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_article_source_links_article
+            ON public.article_source_links (article_id);
         """)
 
         # Reading events for behavioral learning
@@ -704,6 +772,11 @@ def _clear_user_feed_cache(conn, user_id: str) -> None:
         cur.execute("DELETE FROM public.user_feed_cache WHERE user_id = %s", (user_id,))
 
 
+def _clear_user_source_graph(conn, user_id: str) -> None:
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM public.user_sources WHERE user_id = %s", (user_id,))
+
+
 def _require_auth(authorization: str | None) -> str:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing token")
@@ -962,7 +1035,11 @@ async def save_user_preferences(
         )
         row = cur.fetchone()
 
+    from app.services.source_discovery import determine_profile_specificity
+
     _clear_user_feed_cache(conn, user_id)
+    _clear_user_source_graph(conn, user_id)
+    profile_specificity = determine_profile_specificity(normalized_interests, ai_profile)
 
     return {
         "id": str(row["id"]),
@@ -971,6 +1048,8 @@ async def save_user_preferences(
         "ai_profile": row.get("ai_profile"),
         "completed": row.get("completed", False),
         "completed_at": _format_datetime_iso(row.get("completed_at")),
+        "profile_specificity": profile_specificity,
+        "setup_required": True,
     }
 
 
@@ -1111,18 +1190,11 @@ Do not include any other top-level keys. Do not wrap in backticks. Do not explai
             )
             row = cur.fetchone()
 
+        from app.services.source_discovery import determine_profile_specificity
+
         _clear_user_feed_cache(conn, user_id)
-
-        # Fire-and-forget: discover sources for this user (ENG-3)
-        # Uses its own connection since the request connection returns to pool
-        if interests and isinstance(interests, dict):
-            from app.services.source_discovery import discover_sources_for_user
-
-            async def _discover_bg():
-                with pool.connection() as bg_conn:
-                    await discover_sources_for_user(bg_conn, user_id, interests, ai_profile)
-
-            asyncio.create_task(_discover_bg())
+        _clear_user_source_graph(conn, user_id)
+        profile_specificity = determine_profile_specificity(interests, ai_profile)
 
         return {
             "id": str(row["id"]),
@@ -1131,6 +1203,8 @@ Do not include any other top-level keys. Do not wrap in backticks. Do not explai
             "ai_profile": row.get("ai_profile"),
             "completed": row.get("completed", False),
             "completed_at": _format_datetime_iso(row.get("completed_at")),
+            "profile_specificity": profile_specificity,
+            "setup_required": True,
         }
     except HTTPException:
         raise
@@ -1168,9 +1242,19 @@ You are an onboarding assistant helping a user configure their personal news fee
 Your goal:
 - Ask friendly, short questions to understand what kind of news they want to see.
 - Clarify topics, categories, locations, people, industries, and things they do NOT want.
-- Keep replies concise and conversational.
+- Push for specificity before you stop asking questions.
+
+Specificity gate:
+- Broad inputs like "tech", "AI", "coding", "sports", or "business" are not enough by themselves.
+- Ask follow-up questions until you have at least 3 concrete interests, entities, or subtopics.
+- Examples:
+  - "AI" -> ask whether they care about model launches, research, enterprise adoption, coding tools, or policy.
+  - "Tech" -> ask whether they want startups, software engineering, gadgets, developer tools, or platform/company news.
+  - "Sports" -> ask which league, sport, team, or athlete.
+- If the user explicitly says they want broad/general headlines, accept that and stop pushing.
 
 IMPORTANT:
+- Keep replies concise and conversational.
 - Do NOT output JSON or code.
 - Do NOT summarize their preferences here. Just continue the conversation.
 - The app will later summarize this chat into a profile.
@@ -1217,27 +1301,122 @@ IMPORTANT:
 # Feed endpoints (new architecture)
 # ---------------------------------------------------------------------------
 
+_DISCOVERY_COOLDOWN_SECONDS = 300  # 5-minute cooldown between discoveries
+_discovery_last_run: dict[str, float] = {}  # user_id -> timestamp
+
+
+@app.post("/sources/discover")
+async def discover_sources(
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Discover the source graph for the authenticated user."""
+    import time
+
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    # Cooldown: max 1 discovery per 5 minutes per user
+    last_run = _discovery_last_run.get(user_id, 0)
+    if time.time() - last_run < _DISCOVERY_COOLDOWN_SECONDS:
+        remaining = int(_DISCOVERY_COOLDOWN_SECONDS - (time.time() - last_run))
+        raise HTTPException(
+            status_code=429,
+            detail=f"Source discovery cooling down. Try again in {remaining}s.",
+        )
+
+    try:
+        from app.services.source_discovery import discover_sources_for_user
+
+        _ensure_tables(conn)
+
+        # Advisory lock: prevent concurrent discovery for same user
+        lock_key = abs(hash(user_id)) % (2**31)
+        with conn.cursor() as cur:
+            cur.execute("SELECT pg_try_advisory_lock(%s)", (lock_key,))
+            acquired = cur.fetchone()["pg_try_advisory_lock"]
+
+        if not acquired:
+            raise HTTPException(status_code=409, detail="Discovery already in progress for this user")
+
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT ai_profile, interests
+                    FROM public.user_preferences
+                    WHERE user_id = %s AND completed = true
+                    """,
+                    (user_id,),
+                )
+                row = cur.fetchone()
+
+            if not row:
+                raise HTTPException(status_code=400, detail="Complete onboarding before discovering sources")
+
+            interests = _parse_interests(row.get("interests"))
+            ai_profile = row.get("ai_profile") or ""
+            result = await discover_sources_for_user(conn, user_id, interests or {}, ai_profile)
+            _discovery_last_run[user_id] = time.time()
+            return result
+        finally:
+            # Always release the advisory lock
+            with conn.cursor() as cur:
+                cur.execute("SELECT pg_advisory_unlock(%s)", (lock_key,))
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error discovering sources: {str(e)}")
+
+
+@app.post("/feed/build")
+async def build_feed(
+    Authorization: str | None = Header(default=None),
+    limit: int = 50,
+    conn=Depends(get_db),
+):
+    """Build the authenticated user's feed from their active source graph."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+
+    try:
+        import uuid
+        from app.services.user_source_pipeline import build_feed_for_user
+
+        _ensure_tables(conn)
+        result = await build_feed_for_user(conn, user_id, limit=limit)
+        if result["status"] == "ready":
+            result["feed_request_id"] = str(uuid.uuid4())
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error building feed: {str(e)}")
+
+
 @app.get("/feed")
 async def get_feed(
     Authorization: str | None = Header(default=None),
     limit: int = 50,
     conn=Depends(get_db),
 ):
-    """Return a personalized news feed — AI decides what's relevant for this user."""
+    """Return cached feed state for the authenticated user."""
     token = _require_auth(Authorization)
     user_id = _get_user_id_from_token(conn, token)
 
     try:
         import uuid
-        from app.services.feed_service import get_personalized_feed
+        from app.services.user_source_pipeline import get_feed_state
 
         _ensure_tables(conn)
-        articles = await get_personalized_feed(
-            user_id, conn, limit=limit,
-        )
-        # Include feed_request_id for impression tracking
-        feed_request_id = str(uuid.uuid4())
-        return {"articles": articles, "feed_request_id": feed_request_id}
+        result = get_feed_state(conn, user_id, limit=limit)
+        if result["status"] == "ready":
+            result["feed_request_id"] = str(uuid.uuid4())
+        return result
     except HTTPException:
         raise
     except Exception as e:
@@ -1276,20 +1455,19 @@ async def refresh_feed(
     limit: int = 50,
     conn=Depends(get_db),
 ):
-    """Force re-score articles for this user (ignores cache)."""
+    """Refresh the authenticated user's feed from their current source graph."""
     token = _require_auth(Authorization)
     user_id = _get_user_id_from_token(conn, token)
 
     try:
         import uuid
-        from app.services.feed_service import get_personalized_feed
+        from app.services.user_source_pipeline import build_feed_for_user
 
         _ensure_tables(conn)
-        articles = await get_personalized_feed(
-            user_id, conn, limit=limit, force_refresh=True,
-        )
-        feed_request_id = str(uuid.uuid4())
-        return {"articles": articles, "feed_request_id": feed_request_id}
+        result = await build_feed_for_user(conn, user_id, limit=limit)
+        if result["status"] == "ready":
+            result["feed_request_id"] = str(uuid.uuid4())
+        return result
     except HTTPException:
         raise
     except Exception as e:
@@ -1706,6 +1884,7 @@ async def accept_interest_suggestion(
                 )
 
     _clear_user_feed_cache(conn, user_id)
+    _clear_user_source_graph(conn, user_id)
     return {"accepted": True, "topic": row["topic"]}
 
 

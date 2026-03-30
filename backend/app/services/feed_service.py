@@ -128,6 +128,21 @@ async def get_personalized_feed(
     user_uuid = _uuid.UUID(user_id)
     ai_profile, interests, preferences_updated_at = _load_user_preferences(conn, user_uuid)
 
+    if conn is not None and hasattr(conn, "cursor"):
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 1
+                FROM public.user_sources
+                WHERE user_id = %s AND active = true
+                LIMIT 1
+                """,
+                (user_uuid,),
+            )
+            has_sources = bool(cur.fetchone())
+        if not has_sources:
+            return []
+
     logger.info(
         "Feed scoring prefs loaded for user %s: ai_profile=%s interests=%s",
         user_id,
@@ -150,7 +165,7 @@ async def get_personalized_feed(
 
     profile = _build_preference_profile(ai_profile or "", interests)
 
-    candidates = await _load_candidates_for_profile(conn, profile, limit)
+    candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid)
     if not candidates:
         return []
 
@@ -189,31 +204,7 @@ async def get_personalized_feed(
     _save_feed_cache(conn, user_uuid, candidates)
     finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
     relevant = [article for article in finalized if article.get("relevant", False)]
-    if len(relevant) < MIN_FEED_SIZE:
-        backfill = [
-            a for a in finalized
-            if not a.get("relevant", False)
-            and a.get("relevance_score", 0) >= 0.50
-            and "excluded" not in (a.get("relevance_reason") or "").lower()
-        ]
-        relevant.extend(backfill[:MIN_FEED_SIZE - len(relevant)])
     relevant = _enforce_diversity(relevant)
-    # Only backfill with random recent news for broad profiles.
-    # For specific profiles (e.g. "Claude AI"), a short on-topic feed
-    # is better than padding with unrelated articles.
-    if len(relevant) < MIN_FEED_SIZE and not profile.is_specific:
-        seen_ids = {a["id"] for a in relevant}
-        recency_fill = [
-            a for a in finalized
-            if a["id"] not in seen_ids
-            and "excluded" not in (a.get("relevance_reason") or "").lower()
-        ]
-        recency_fill.sort(key=lambda a: a.get("published_at") or "", reverse=True)
-        max_recency = min(3, MIN_FEED_SIZE - len(relevant))
-        for a in recency_fill[:max_recency]:
-            a["relevance_reason"] = a.get("relevance_reason") or "Recent news"
-            a["relevant"] = True
-            relevant.append(a)
     relevant = relevant[:limit]
     await _hydrate_missing_feed_images(conn, relevant)
     return relevant
@@ -260,14 +251,19 @@ def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, da
     return row.get("ai_profile"), _parse_interests(row.get("interests")), row.get("updated_at")
 
 
-async def _load_candidates_for_profile(conn, profile: PreferenceProfile, limit: int) -> list[dict]:
+async def _load_candidates_for_profile(
+    conn,
+    profile: PreferenceProfile,
+    limit: int,
+    user_uuid=None,
+) -> list[dict]:
     """Load and widen candidate windows until we have enough strong matches."""
     seen_ids: set[str] = set()
     gathered: list[dict] = []
     desired_shortlist = min(max(max(limit, 10) * 2, MIN_SHORTLIST_SIZE), MAX_LLM_CANDIDATES)
 
     for lookback_hours, row_limit in CANDIDATE_EXPANSION_STEPS:
-        rows = _query_candidate_rows(conn, lookback_hours=lookback_hours, row_limit=row_limit)
+        rows = _query_candidate_rows(conn, lookback_hours=lookback_hours, row_limit=row_limit, user_uuid=user_uuid)
         window_candidates = []
         for candidate in _rows_to_candidates(rows):
             candidate_id = candidate["id"]
@@ -311,18 +307,47 @@ async def _load_candidates_for_profile(conn, profile: PreferenceProfile, limit: 
     return shortlisted
 
 
-def _query_candidate_rows(conn, lookback_hours: int, row_limit: int) -> list[dict]:
+def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=None) -> list[dict]:
     with conn.cursor() as cur:
-        cur.execute(
-            f"""
-            SELECT id, url, title, summary, content, author, source_name, image_url,
-                   published_at, ingested_at, category
-            FROM public.articles
-            WHERE COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
-            ORDER BY COALESCE(published_at, ingested_at) DESC
-            LIMIT {row_limit}
-            """,
-        )
+        if user_uuid is None:
+            cur.execute(
+                f"""
+                SELECT id, url, title, summary, content, author, source_name, image_url,
+                       published_at, ingested_at, category
+                FROM public.articles
+                WHERE COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
+                ORDER BY COALESCE(published_at, ingested_at) DESC
+                LIMIT {row_limit}
+                """,
+            )
+        else:
+            cur.execute(
+                f"""
+                SELECT scoped.id, scoped.url, scoped.title, scoped.summary, scoped.content,
+                       scoped.author, scoped.source_name, scoped.image_url,
+                       scoped.published_at, scoped.ingested_at, scoped.category
+                FROM (
+                    SELECT DISTINCT ON (a.id)
+                           a.id, a.url, a.title, a.summary, a.content, a.author, a.source_name,
+                           a.image_url,
+                           COALESCE(asl.published_at, a.published_at) AS published_at,
+                           a.ingested_at,
+                           COALESCE(us.category, a.category) AS category,
+                           COALESCE(asl.published_at, a.published_at, a.ingested_at) AS scoped_published_at
+                    FROM public.articles a
+                    JOIN public.article_source_links asl ON asl.article_id = a.id
+                    JOIN public.user_sources us
+                      ON us.user_id = %s
+                     AND us.active = true
+                     AND us.source_url = asl.source_url
+                    WHERE COALESCE(asl.published_at, a.published_at, a.ingested_at) > now() - interval '{lookback_hours} hours'
+                    ORDER BY a.id, COALESCE(asl.published_at, a.published_at, a.ingested_at) DESC
+                ) AS scoped
+                ORDER BY scoped.scoped_published_at DESC
+                LIMIT {row_limit}
+                """,
+                (user_uuid,),
+            )
         return cur.fetchall()
 
 
@@ -1026,23 +1051,41 @@ def _finalize_articles(articles: list[dict]) -> list[dict]:
     return finalized
 
 
-def _load_cached_feed(conn, user_uuid, preferences_updated_at: datetime | None = None) -> list[dict] | None:
+def _load_cached_feed(
+    conn,
+    user_uuid,
+    preferences_updated_at: datetime | None = None,
+    max_age_minutes: int | None = FEED_CACHE_TTL_MINUTES,
+) -> list[dict] | None:
     """Load cached feed if it's still fresh (< TTL minutes old)."""
-    cutoff = datetime.now(timezone.utc) - timedelta(minutes=FEED_CACHE_TTL_MINUTES)
-
     with conn.cursor() as cur:
-        cur.execute(
-            """
-            SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
-                   a.id, a.url, a.title, a.summary, a.content, a.author,
-                   a.source_name, a.image_url, a.published_at, a.category
-            FROM public.user_feed_cache ufc
-            JOIN public.articles a ON a.id = ufc.article_id
-            WHERE ufc.user_id = %s AND ufc.created_at > %s
-            ORDER BY ufc.relevance_score DESC
-            """,
-            (user_uuid, cutoff),
-        )
+        if max_age_minutes is None:
+            cur.execute(
+                """
+                SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
+                       a.id, a.url, a.title, a.summary, a.content, a.author,
+                       a.source_name, a.image_url, a.published_at, a.category
+                FROM public.user_feed_cache ufc
+                JOIN public.articles a ON a.id = ufc.article_id
+                WHERE ufc.user_id = %s
+                ORDER BY ufc.relevance_score DESC
+                """,
+                (user_uuid,),
+            )
+        else:
+            cutoff = datetime.now(timezone.utc) - timedelta(minutes=max_age_minutes)
+            cur.execute(
+                """
+                SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
+                       a.id, a.url, a.title, a.summary, a.content, a.author,
+                       a.source_name, a.image_url, a.published_at, a.category
+                FROM public.user_feed_cache ufc
+                JOIN public.articles a ON a.id = ufc.article_id
+                WHERE ufc.user_id = %s AND ufc.created_at > %s
+                ORDER BY ufc.relevance_score DESC
+                """,
+                (user_uuid, cutoff),
+            )
         rows = cur.fetchall()
 
     if not rows:

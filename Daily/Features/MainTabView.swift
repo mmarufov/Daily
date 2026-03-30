@@ -67,8 +67,6 @@ struct MainTabView: View {
             let prefs = try await BackendService.shared.fetchUserPreferences(accessToken: token)
             if !prefs.completed {
                 showOnboarding = true
-            } else {
-                NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
             }
         } catch {
             showOnboarding = true

@@ -623,25 +623,24 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         # Blended should be below threshold since deterministic is ~0
         self.assertFalse(candidates[0]["_relevant"])
 
-    def test_backfill_threshold_rejects_low_scores(self):
-        """Backfill threshold at 0.50 should reject articles scored 0.40."""
-        # This is a constant check — verify the threshold in the source
+    def test_generic_backfill_threshold_removed(self):
+        """The rebuilt feed should not pad results using generic score thresholds."""
         import inspect
         source = inspect.getsource(feed_service.get_personalized_feed)
-        self.assertIn("0.50", source)
+        self.assertNotIn("0.50", source)
 
-    def test_recency_fill_capped_at_three(self):
-        """Recency fill should be capped at 3 articles."""
+    def test_recency_fill_removed(self):
+        """The rebuilt feed should not recency-pad sparse personalized feeds."""
         import inspect
         source = inspect.getsource(feed_service.get_personalized_feed)
-        self.assertIn("max_recency", source)
-        self.assertIn("min(3,", source)
+        self.assertNotIn("max_recency", source)
+        self.assertNotIn("min(3,", source)
 
-    def test_specific_profile_skips_recency_fill(self):
-        """Specific profiles should not get recency backfill."""
+    def test_specific_profile_no_longer_uses_padding_branch(self):
+        """Specific profiles no longer need a special-case skip because padding is gone entirely."""
         import inspect
         source = inspect.getsource(feed_service.get_personalized_feed)
-        self.assertIn("not profile.is_specific", source)
+        self.assertNotIn("not profile.is_specific", source)
 
     def test_llm_fallback_uses_deterministic_only(self):
         """When LLM returns fallback reason, deterministic score is used alone."""

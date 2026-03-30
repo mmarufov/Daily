@@ -82,6 +82,12 @@ struct NewsView: View {
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
             }
+            .overlay {
+                if viewModel.isSettingUp, let phase = viewModel.setupPhase {
+                    BuildingFeedView(phase: phase, detailText: viewModel.setupDetailText)
+                        .transition(.opacity)
+                }
+            }
             .onReceive(NotificationCenter.default.publisher(for: .onboardingCompleted)) { _ in
                 withAnimation(.easeInOut(duration: 0.4)) {
                     showWelcomeBanner = true
