@@ -178,7 +178,8 @@ struct PersonalizationSettingsView: View {
                             composePromptFromStructuredInputs()
                             let success = await viewModel.save()
                             if success {
-                                NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
+                                // Trigger source re-discovery + feed rebuild (not just cache reload)
+                                NotificationCenter.default.post(name: .preferencesChanged, object: nil)
                                 dismiss()
                             }
                         }

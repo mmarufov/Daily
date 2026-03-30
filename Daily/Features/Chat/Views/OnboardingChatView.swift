@@ -247,6 +247,8 @@ private extension OnboardingChatView {
     func saveAndComplete() async {
         do {
             try await viewModel.saveOnboardingPreferences()
+            // Post notification so NewsViewModel starts the discovery → build flow
+            // instead of dismissing immediately. The feed tab will show BuildingFeedView.
             NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
             onCompleted?()
             dismiss()
@@ -260,4 +262,5 @@ private extension OnboardingChatView {
 
 extension Notification.Name {
     static let onboardingCompleted = Notification.Name("OnboardingCompleted")
+    static let preferencesChanged = Notification.Name("PreferencesChanged")
 }
