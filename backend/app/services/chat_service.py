@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from datetime import datetime, timezone
 from typing import Any
 
@@ -162,6 +163,18 @@ INTENT_LIBRARY: dict[str, dict[str, Any]] = {
     },
 }
 
+QA_RESPONSE_LAYOUT = {
+    "title": "Answer",
+    "layout": "qa",
+    "sections": [_section("answer")],
+    "follow_ups": [],
+}
+
+PHATIC_PROMPT_RE = re.compile(
+    r"^\s*(?:hey|hi|hello|yo|sup|what'?s up|whats up|how are you|thanks|thank you|thx|lol|lmao|haha|ok|okay|cool|nice|gm|good morning|good evening)\b[\s!?.,]*$",
+    re.IGNORECASE,
+)
+
 
 class ChatService:
     def __init__(self, openai_service=None):
@@ -243,11 +256,27 @@ class ChatService:
             raise HTTPException(status_code=404, detail="Thread not found")
 
         prior_messages = chat_repository.get_thread_messages(conn, thread_id=thread_id)
-        intent_spec = self._resolve_intent_spec(thread["kind"], intent)
-        prompt = (content or "").strip() or intent_spec["default_prompt"]
+        intent_spec = self._resolve_intent_spec(intent)
+        if intent and not intent_spec:
+            raise HTTPException(status_code=400, detail="Unsupported chat intent")
+
+        prompt = (content or "").strip()
+        if intent_spec:
+            prompt = prompt or intent_spec["default_prompt"]
 
         if not prompt:
             raise HTTPException(status_code=400, detail="content or intent is required")
+
+        route = (
+            {
+                "response_mode": "structured_intent",
+                "needs_retrieval": True,
+                "needs_related_coverage": False,
+                "reason": "explicit_intent",
+            }
+            if intent_spec
+            else await self._route_freeform_turn(thread=thread, prompt=prompt)
+        )
 
         if thread["kind"] == "manual" and not prior_messages:
             chat_repository.update_thread_title(
@@ -268,7 +297,12 @@ class ChatService:
             thread_id=thread_id,
             role="assistant",
             plain_text="",
-            generation_meta={"state": "streaming", "intent": intent},
+            generation_meta={
+                "state": "streaming",
+                "intent": intent,
+                "response_mode": route["response_mode"],
+                "router_reason": route.get("reason"),
+            },
         )
 
         async def event_stream():
@@ -286,39 +320,86 @@ class ChatService:
             selected_articles: list[dict[str, Any]] = []
             plan: dict[str, Any] = {}
             try:
-                yield sse_event("status", {"label": "Scanning your feed"})
-                selected_articles = await self._load_context_articles(
-                    conn=conn,
-                    user_id=user_id,
-                    thread=thread,
-                    prompt=prompt,
-                    intent_spec=intent_spec,
-                )
+                if route["response_mode"] == "structured_intent":
+                    yield sse_event("status", {"label": "Scanning your feed"})
+                    selected_articles = await self._load_context_for_structured_intent(
+                        conn=conn,
+                        user_id=user_id,
+                        thread=thread,
+                        prompt=prompt,
+                        intent_spec=intent_spec,
+                    )
 
-                yield sse_event("status", {"label": "Pulling related coverage"})
-                plan = await self._plan_response(
-                    thread=thread,
-                    prompt=prompt,
-                    intent_spec=intent_spec,
-                    selected_articles=selected_articles,
-                    prior_messages=prior_messages,
-                )
+                    yield sse_event("status", {"label": "Pulling related coverage"})
+                    plan = await self._plan_response(
+                        thread=thread,
+                        prompt=prompt,
+                        intent_spec=intent_spec,
+                        selected_articles=selected_articles,
+                        prior_messages=prior_messages,
+                    )
 
-                source_cards = [self._serialize_source_card(article) for article in selected_articles[:4]]
-                yield sse_event("sources", {"sources": source_cards})
+                    source_cards = [
+                        self._serialize_source_card(article) for article in selected_articles[:4]
+                    ]
+                    if source_cards:
+                        yield sse_event("sources", {"sources": source_cards})
 
-                yield sse_event("status", {"label": "Writing your briefing"})
-                parser = SectionStreamParser(plan["sections"])
-                async for delta in self.openai_service.stream_structured_chat_response(
-                    plan=plan,
-                    prompt=prompt,
-                    thread=thread,
-                    selected_articles=selected_articles,
-                    prior_messages=prior_messages,
-                ):
-                    full_text += delta
-                    for event_name, payload in parser.feed(delta):
-                        yield sse_event(event_name, payload)
+                    yield sse_event("status", {"label": "Writing your briefing"})
+                    parser = SectionStreamParser(plan["sections"])
+                    async for delta in self.openai_service.stream_structured_chat_response(
+                        plan=plan,
+                        prompt=prompt,
+                        thread=thread,
+                        selected_articles=selected_articles,
+                        prior_messages=prior_messages,
+                    ):
+                        full_text += delta
+                        for event_name, payload in parser.feed(delta):
+                            yield sse_event(event_name, payload)
+                else:
+                    if route["response_mode"] == "general_chat":
+                        yield sse_event("status", {"label": "Thinking"})
+                        selected_articles = []
+                    elif route["response_mode"] == "news_qa":
+                        yield sse_event("status", {"label": "Checking your feed"})
+                        yield sse_event("status", {"label": "Pulling related coverage"})
+                        selected_articles = await self._load_context_for_news_qa(
+                            conn=conn,
+                            user_id=user_id,
+                            thread=thread,
+                            prompt=prompt,
+                        )
+                    else:
+                        yield sse_event("status", {"label": "Reading this story"})
+                        if route.get("needs_related_coverage"):
+                            yield sse_event("status", {"label": "Checking related coverage"})
+                        selected_articles = await self._load_context_for_article_qa(
+                            conn=conn,
+                            thread=thread,
+                            prompt=prompt,
+                            needs_related_coverage=route.get("needs_related_coverage", False),
+                        )
+
+                    plan = self._qa_plan(response_mode=route["response_mode"])
+                    source_cards = [
+                        self._serialize_source_card(article) for article in selected_articles[:4]
+                    ]
+                    if source_cards:
+                        yield sse_event("sources", {"sources": source_cards})
+
+                    yield sse_event("status", {"label": "Writing answer"})
+                    parser = SectionStreamParser(plan["sections"])
+                    async for delta in self._stream_qa_response(
+                        response_mode=route["response_mode"],
+                        prompt=prompt,
+                        thread=thread,
+                        selected_articles=selected_articles,
+                        prior_messages=prior_messages,
+                    ):
+                        full_text += delta
+                        for event_name, payload in parser.feed(delta):
+                            yield sse_event(event_name, payload)
 
                 for event_name, payload in parser.finish():
                     yield sse_event(event_name, payload)
@@ -326,12 +407,16 @@ class ChatService:
                 blocks = build_blocks_from_text(full_text, plan["sections"])
                 degraded = len(blocks) == 1 and blocks[0]["kind"] == "body"
                 plain_text = blocks_plain_text(blocks)
+                source_article_ids = [article["id"] for article in selected_articles[:4]]
                 generation_meta = {
                     "state": "completed",
                     "intent": intent,
+                    "response_mode": route["response_mode"],
+                    "retrieval_used": bool(source_article_ids),
+                    "router_reason": route.get("reason"),
                     "layout": plan["layout"],
                     "title": plan["title"],
-                    "source_article_ids": [article["id"] for article in selected_articles[:4]],
+                    "source_article_ids": source_article_ids,
                 }
                 updated_message = chat_repository.update_message(
                     conn,
@@ -346,7 +431,7 @@ class ChatService:
                 chat_repository.set_message_sources(
                     conn,
                     message_id=str(assistant_message["id"]),
-                    article_ids=[article["id"] for article in selected_articles[:4]],
+                    article_ids=source_article_ids,
                 )
                 final_sources = chat_repository.get_message_sources(
                     conn,
@@ -356,7 +441,8 @@ class ChatService:
                     updated_message,
                     final_sources.get(str(assistant_message["id"]), []),
                 )
-                yield sse_event("follow_ups", {"follow_ups": plan["follow_ups"]})
+                if plan["follow_ups"]:
+                    yield sse_event("follow_ups", {"follow_ups": plan["follow_ups"]})
                 yield sse_event("done", {"message": serialized_message})
             except Exception as exc:
                 fallback_text = (
@@ -376,6 +462,8 @@ class ChatService:
                     generation_meta={
                         "state": "error",
                         "intent": intent,
+                        "response_mode": route["response_mode"],
+                        "router_reason": route.get("reason"),
                         "error": str(exc),
                     },
                 )
@@ -383,7 +471,7 @@ class ChatService:
 
         return event_stream()
 
-    async def _load_context_articles(
+    async def _load_context_for_structured_intent(
         self,
         *,
         conn,
@@ -434,17 +522,125 @@ class ChatService:
             )
             articles = cited + feed_articles + support
 
-        deduped: list[dict[str, Any]] = []
-        seen: set[str] = set()
-        for article in articles:
-            if not article or not article.get("id"):
-                continue
-            article_id = str(article["id"])
-            if article_id in seen:
-                continue
-            seen.add(article_id)
-            deduped.append(self._normalize_article(article))
-        return deduped[:14]
+        return self._dedupe_articles(articles, limit=14)
+
+    async def _route_freeform_turn(
+        self,
+        *,
+        thread: dict[str, Any],
+        prompt: str,
+    ) -> dict[str, Any]:
+        if self._is_phatic_prompt(prompt):
+            return {
+                "response_mode": "general_chat",
+                "needs_retrieval": False,
+                "needs_related_coverage": False,
+                "reason": "phatic greeting",
+            }
+
+        if thread["kind"] == "article":
+            return {
+                "response_mode": "article_qa",
+                "needs_retrieval": True,
+                "needs_related_coverage": self._needs_related_coverage(prompt),
+                "reason": "article thread default",
+            }
+
+        try:
+            route = await self.openai_service.route_chat_turn(
+                prompt=prompt,
+                thread_kind=str(thread.get("kind") or "manual"),
+            )
+        except Exception:
+            route = {}
+
+        response_mode = str(route.get("response_mode") or "general_chat")
+        if response_mode not in {"general_chat", "news_qa", "article_qa"}:
+            response_mode = "general_chat"
+
+        needs_retrieval = bool(route.get("needs_retrieval"))
+        if response_mode == "general_chat":
+            needs_retrieval = False
+        elif response_mode in {"news_qa", "article_qa"}:
+            needs_retrieval = True
+
+        return {
+            "response_mode": response_mode,
+            "needs_retrieval": needs_retrieval,
+            "needs_related_coverage": bool(route.get("needs_related_coverage", False)),
+            "reason": str(route.get("reason") or "classifier"),
+        }
+
+    async def _load_context_for_news_qa(
+        self,
+        *,
+        conn,
+        user_id: str,
+        thread: dict[str, Any],
+        prompt: str,
+    ) -> list[dict[str, Any]]:
+        cited = chat_repository.get_recent_thread_source_articles(
+            conn,
+            thread_id=str(thread["id"]),
+            limit=4,
+        )
+        semantic = await self._semantic_lookup(
+            conn,
+            query=prompt,
+            limit=4,
+            lookback_hours=24 * 7,
+        )
+        articles = cited + semantic
+        if self._should_include_feed_articles(cited=cited, semantic=semantic):
+            feed_articles = await get_personalized_feed(user_id, conn, limit=2)
+            articles.extend(feed_articles)
+        return self._dedupe_articles(articles, limit=10)
+
+    async def _load_context_for_article_qa(
+        self,
+        *,
+        conn,
+        thread: dict[str, Any],
+        prompt: str,
+        needs_related_coverage: bool,
+    ) -> list[dict[str, Any]]:
+        articles: list[dict[str, Any]] = []
+        if thread.get("article_id"):
+            article_rows = chat_repository.get_articles_by_ids(
+                conn,
+                article_ids=[str(thread["article_id"])],
+            )
+            if article_rows:
+                articles.append(article_rows[0])
+
+        if not articles or needs_related_coverage:
+            related = await self._semantic_lookup(
+                conn,
+                query=thread.get("article_title") or prompt,
+                limit=3,
+                lookback_hours=24 * 7,
+            )
+            articles.extend(related)
+
+        return self._dedupe_articles(articles, limit=4)
+
+    async def _stream_qa_response(
+        self,
+        *,
+        response_mode: str,
+        prompt: str,
+        thread: dict[str, Any],
+        selected_articles: list[dict[str, Any]],
+        prior_messages: list[dict[str, Any]],
+    ):
+        async for delta in self.openai_service.stream_qa_chat_response(
+            response_mode=response_mode,
+            prompt=prompt,
+            thread=thread,
+            selected_articles=selected_articles,
+            prior_messages=prior_messages,
+        ):
+            yield delta
 
     async def _semantic_lookup(
         self,
@@ -574,29 +770,17 @@ class ChatService:
             "url": article.get("url"),
         }
 
-    def _resolve_intent_spec(self, thread_kind: str, intent: str | None) -> dict[str, Any]:
+    def _resolve_intent_spec(self, intent: str | None) -> dict[str, Any] | None:
         if intent and intent in INTENT_LIBRARY:
             return INTENT_LIBRARY[intent]
-        if thread_kind == "article":
-            return INTENT_LIBRARY["explain_simply"]
-        if thread_kind == "today":
-            return INTENT_LIBRARY["your_briefing"]
+        return None
+
+    def _qa_plan(self, *, response_mode: str) -> dict[str, Any]:
         return {
-            "title": "News Copilot",
-            "default_prompt": "Help me understand the most important part of this news.",
-            "layout": "analysis",
-            "retrieval": "manual",
-            "sections": [
-                _section("headline", "Headline"),
-                _section("summary", "TL;DR"),
-                _section("bullet_list", "Key Points"),
-                _section("why_it_matters", "Why It Matters"),
-            ],
-            "follow_ups": [
-                "Give me the short version.",
-                "What matters most here?",
-                "Show me the best source.",
-            ],
+            "title": "Answer",
+            "layout": response_mode,
+            "sections": QA_RESPONSE_LAYOUT["sections"],
+            "follow_ups": [],
         }
 
     def _normalize_sections(
@@ -640,6 +824,54 @@ class ChatService:
         if len(collapsed) <= 50:
             return collapsed
         return f"{collapsed[:47].rstrip()}..."
+
+    def _is_phatic_prompt(self, prompt: str) -> bool:
+        collapsed = " ".join(prompt.split())
+        if len(collapsed) > 40:
+            return False
+        return bool(PHATIC_PROMPT_RE.match(collapsed))
+
+    def _needs_related_coverage(self, prompt: str) -> bool:
+        return bool(
+            re.search(
+                r"\b(compare|context|broader|related|elsewhere|other coverage|other stories|market|industry|mean for|impact on|what changed)\b",
+                prompt,
+                re.IGNORECASE,
+            )
+        )
+
+    def _should_include_feed_articles(
+        self,
+        *,
+        cited: list[dict[str, Any]],
+        semantic: list[dict[str, Any]],
+    ) -> bool:
+        if len(cited) + len(semantic) < 2:
+            return True
+
+        best_similarity = max(
+            (float(article.get("similarity") or 0.0) for article in semantic),
+            default=0.0,
+        )
+        return best_similarity < 0.35 and not cited
+
+    def _dedupe_articles(
+        self,
+        articles: list[dict[str, Any]],
+        *,
+        limit: int,
+    ) -> list[dict[str, Any]]:
+        deduped: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for article in articles:
+            if not article or not article.get("id"):
+                continue
+            article_id = str(article["id"])
+            if article_id in seen:
+                continue
+            seen.add(article_id)
+            deduped.append(self._normalize_article(article))
+        return deduped[:limit]
 
     def _normalize_article(self, article: dict[str, Any]) -> dict[str, Any]:
         normalized = dict(article)
