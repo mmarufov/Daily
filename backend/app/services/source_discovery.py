@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 """
 Source discovery service: finds and validates RSS/Atom feeds for user interests.
-Hybrid approach: curated seed database + AI-suggested feeds + validation.
+Hybrid approach: curated seed database + exact-topic query feeds + AI suggestions.
 """
 import asyncio
 import json
 import logging
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import feedparser
 import httpx
@@ -139,6 +141,141 @@ CATEGORY_KEYWORDS = {
 
 MAX_SOURCES_PER_USER = 100
 MAX_AI_SUGGESTIONS = 10
+MAX_QUERY_FEEDS = 6
+TARGET_SOURCE_LIMIT = {
+    "specific": 12,
+    "mixed": 16,
+    "broad": 20,
+}
+OFFICIAL_SOURCE_CAP_RATIO = 0.35
+GENERAL_INTENT_TERMS = {
+    "general", "general news", "news", "headlines", "current events",
+    "world news", "global news", "breaking news", "top stories",
+}
+ANALYST_DOMAIN_HINTS = {
+    "lilianweng.github.io",
+    "marktechpost.com",
+    "pragmaticengineer.com",
+}
+OFFICIAL_DOMAIN_HINTS = {
+    "openai.com",
+    "blog.google",
+    "huggingface.co",
+    "anthropic.com",
+    "formula1.com",
+}
+
+
+def _normalize_term(value: str | None) -> str:
+    return " ".join((value or "").strip().lower().split())
+
+
+def _dedupe_preserve(values: list[str]) -> list[str]:
+    seen = set()
+    deduped: list[str] = []
+    for value in values:
+        normalized = _normalize_term(value)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        deduped.append(value.strip())
+    return deduped
+
+
+def _extract_interest_terms(interests: dict | None) -> list[str]:
+    if not isinstance(interests, dict):
+        return []
+
+    ordered_terms: list[str] = []
+    for key in ("topics", "people", "industries", "locations"):
+        values = interests.get(key)
+        if not isinstance(values, list):
+            continue
+        ordered_terms.extend(str(value).strip() for value in values if str(value).strip())
+    return _dedupe_preserve(ordered_terms)
+
+
+def _categories_for_terms(terms: list[str]) -> set[str]:
+    matched: set[str] = set()
+    for term in terms:
+        normalized = _normalize_term(term)
+        for category, keywords in CATEGORY_KEYWORDS.items():
+            if (
+                normalized == category
+                or normalized in keywords
+                or any(keyword in normalized for keyword in keywords)
+            ):
+                matched.add(category)
+    return matched
+
+
+def _has_general_intent(interests: dict | None, ai_profile: str | None = None) -> bool:
+    haystacks = _extract_interest_terms(interests)
+    if ai_profile:
+        haystacks.append(ai_profile)
+    searchable = " ".join(_normalize_term(value) for value in haystacks if value)
+    return any(term in searchable for term in GENERAL_INTENT_TERMS)
+
+
+def _exact_interest_terms(interests: dict | None) -> list[str]:
+    exact_terms: list[str] = []
+    for term in _extract_interest_terms(interests):
+        normalized = _normalize_term(term)
+        if normalized in GENERAL_INTENT_TERMS:
+            continue
+        if len(normalized.split()) >= 2:
+            exact_terms.append(term)
+            continue
+        if normalized not in CATEGORY_KEYWORDS and normalized not in {"tech", "technology", "coding", "programming", "sports", "business"}:
+            exact_terms.append(term)
+    return _dedupe_preserve(exact_terms)
+
+
+def determine_profile_specificity(interests: dict | None, ai_profile: str | None = None) -> str:
+    """Classify a profile as specific, mixed, or broad for source discovery and quality gates."""
+    terms = _extract_interest_terms(interests)
+    if not terms:
+        return "broad"
+
+    if _has_general_intent(interests, ai_profile):
+        return "broad"
+
+    exact_terms = _exact_interest_terms(interests)
+    matched_categories = _categories_for_terms(terms)
+
+    if len(exact_terms) >= 2:
+        return "specific"
+    if len(exact_terms) == 1 and matched_categories:
+        return "specific"
+    if len(matched_categories) >= 2:
+        return "mixed"
+    if len(matched_categories) == 1:
+        return "mixed"
+    return "broad"
+
+
+def _category_for_term(term: str) -> str:
+    normalized = _normalize_term(term)
+    for category, keywords in CATEGORY_KEYWORDS.items():
+        if (
+            normalized == category
+            or normalized in keywords
+            or any(keyword in normalized for keyword in keywords)
+        ):
+            return category
+    return "general"
+
+
+def _classify_source_kind(url: str, discovery_method: str) -> str:
+    if discovery_method == "query_feed":
+        return "aggregator_query"
+
+    domain = (urlparse(url).netloc or "").lower()
+    if any(hint in domain for hint in ANALYST_DOMAIN_HINTS):
+        return "analyst"
+    if any(hint in domain for hint in OFFICIAL_DOMAIN_HINTS):
+        return "official"
+    return "publisher"
 
 
 async def populate_seed_sources(conn) -> int:
@@ -170,25 +307,15 @@ async def populate_seed_sources(conn) -> int:
     return inserted
 
 
-def _match_seed_sources(conn, interests: dict) -> list[dict]:
-    """Select relevant seed sources based on user interests."""
-    # Extract all topic terms from interests
-    topics = set()
-    for key in ("topics", "people", "industries", "locations"):
-        for term in interests.get(key) or []:
-            topics.add(str(term).lower().strip())
+def _match_seed_sources(conn, interests: dict, profile_specificity: str, ai_profile: str | None = None) -> list[dict]:
+    """Select relevant seed sources without auto-injecting broad/general news."""
+    matched_categories = _categories_for_terms(_extract_interest_terms(interests))
+    if profile_specificity == "broad" or _has_general_intent(interests, ai_profile):
+        matched_categories.add("general")
 
-    # Find matching categories
-    matched_categories = set()
-    for topic in topics:
-        for category, keywords in CATEGORY_KEYWORDS.items():
-            if topic in keywords or any(kw in topic for kw in keywords):
-                matched_categories.add(category)
+    if not matched_categories:
+        return []
 
-    # Always include 'general' for baseline news
-    matched_categories.add("general")
-
-    # Select seeds from matching categories
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -203,7 +330,31 @@ def _match_seed_sources(conn, interests: dict) -> list[dict]:
         )
         seeds = cur.fetchall()
 
-    return seeds
+    normalized_targets = {_normalize_term(term) for term in _extract_interest_terms(interests)}
+    candidates: list[dict] = []
+    for seed in seeds:
+        source_text = " ".join(
+            [
+                _normalize_term(seed.get("name")),
+                _normalize_term(seed.get("category")),
+                _normalize_term(seed.get("url")),
+            ]
+        )
+        matched_targets = [
+            term
+            for term in normalized_targets
+            if term and term in source_text
+        ]
+        candidates.append({
+            "url": seed["url"],
+            "name": seed["name"],
+            "category": seed.get("category") or "general",
+            "discovery_method": "seed",
+            "source_kind": _classify_source_kind(seed["url"], "seed"),
+            "matched_targets": matched_targets,
+            "selection_rank": 10,
+        })
+    return candidates
 
 
 async def _validate_feed(client: httpx.AsyncClient, url: str) -> bool:
@@ -220,6 +371,23 @@ async def _validate_feed(client: httpx.AsyncClient, url: str) -> bool:
         return len(feed.entries) > 0
     except Exception:
         return False
+
+
+async def _fetch_feed_sample(client: httpx.AsyncClient, url: str) -> tuple[bool, list[str]]:
+    """Fetch a feed and sample a few titles for discovery scoring."""
+    try:
+        resp = await client.get(
+            url,
+            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
+            timeout=10.0,
+        )
+        if resp.status_code != 200:
+            return False, []
+        feed = feedparser.parse(resp.text)
+        titles = [str(entry.get("title", "")).strip() for entry in feed.entries[:5] if str(entry.get("title", "")).strip()]
+        return bool(feed.entries), titles
+    except Exception:
+        return False, []
 
 
 async def _ai_suggest_feeds(openai_svc, interests: dict, ai_profile: str) -> list[dict]:
@@ -264,99 +432,270 @@ async def _ai_suggest_feeds(openai_svc, interests: dict, ai_profile: str) -> lis
         return []
 
 
-async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_profile: str):
-    """
-    Discover and assign sources for a user based on their interests.
-    Called via asyncio.create_task() — fire-and-forget from onboarding.
-    """
+def _build_query_feed_candidates(interests: dict) -> list[dict]:
+    query_terms = _exact_interest_terms(interests) or _extract_interest_terms(interests)
+    candidates: list[dict] = []
+    for index, term in enumerate(query_terms[:MAX_QUERY_FEEDS]):
+        candidates.append({
+            "url": f"https://news.google.com/rss/search?q={quote(term)}&hl=en-US&gl=US&ceid=US:en",
+            "name": f"{term} News Search",
+            "category": _category_for_term(term),
+            "discovery_method": "query_feed",
+            "source_kind": "aggregator_query",
+            "matched_targets": [term],
+            "selection_rank": 20 + index,
+        })
+    return candidates
+
+
+def _build_ai_candidates(suggestions: list[dict], base_rank: int = 40) -> list[dict]:
+    candidates: list[dict] = []
+    for index, suggestion in enumerate(suggestions):
+        url = suggestion.get("url")
+        if not url:
+            continue
+        discovery_method = "ai_suggested"
+        source_kind = _classify_source_kind(url, discovery_method)
+        candidates.append({
+            "url": url,
+            "name": suggestion.get("name") or urlparse(url).netloc,
+            "category": suggestion.get("category") or "general",
+            "discovery_method": discovery_method,
+            "source_kind": source_kind,
+            "matched_targets": suggestion.get("matched_targets") or [],
+            "selection_rank": base_rank + index,
+        })
+    return candidates
+
+
+def _dedupe_candidates(candidates: list[dict]) -> list[dict]:
+    deduped: list[dict] = []
+    seen = set()
+    for candidate in candidates:
+        url = candidate.get("url")
+        if not url or url in seen:
+            continue
+        seen.add(url)
+        deduped.append(candidate)
+    return deduped
+
+
+def _score_candidate_source(candidate: dict, interests: dict, profile_specificity: str, sample_titles: list[str]) -> tuple[float, str, list[str]]:
+    exact_targets = _exact_interest_terms(interests)
+    all_targets = _extract_interest_terms(interests)
+    searchable = " ".join(
+        [
+            _normalize_term(candidate.get("name")),
+            _normalize_term(candidate.get("category")),
+            _normalize_term(candidate.get("url")),
+            *[_normalize_term(title) for title in sample_titles],
+        ]
+    )
+
+    matched_exact = [term for term in exact_targets if _normalize_term(term) in searchable]
+    matched_any = matched_exact[:]
+    for term in all_targets:
+        normalized = _normalize_term(term)
+        if normalized and normalized in searchable and term not in matched_any:
+            matched_any.append(term)
+
+    score = 0.0
+    if candidate.get("discovery_method") == "seed":
+        score += 0.55
+    elif candidate.get("discovery_method") == "query_feed":
+        score += 0.8
+    else:
+        score += 0.35
+
+    if matched_exact:
+        score += 0.4 + 0.1 * min(len(matched_exact), 3)
+    elif matched_any:
+        score += 0.25
+
+    if candidate.get("category") in _categories_for_terms(all_targets):
+        score += 0.15
+
+    if candidate.get("source_kind") == "official":
+        score += 0.15
+    elif candidate.get("source_kind") == "analyst":
+        score += 0.1
+
+    if candidate.get("category") == "general" and profile_specificity != "broad":
+        score -= 1.0
+
+    scope = "exact" if candidate.get("discovery_method") == "query_feed" or matched_exact else "supporting"
+    return score, scope, matched_any
+
+
+async def _validate_candidate_sources(candidates: list[dict]) -> list[dict]:
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        semaphore = asyncio.Semaphore(8)
+
+        async def _validate(candidate: dict) -> dict | None:
+            async with semaphore:
+                is_valid, sample_titles = await _fetch_feed_sample(client, candidate["url"])
+                if not is_valid:
+                    return None
+                enriched = dict(candidate)
+                enriched["sample_titles"] = sample_titles
+                return enriched
+
+        results = await asyncio.gather(*[_validate(candidate) for candidate in candidates], return_exceptions=True)
+
+    validated: list[dict] = []
+    for result in results:
+        if isinstance(result, dict):
+            validated.append(result)
+    return validated
+
+
+def _select_sources_for_profile(candidates: list[dict], profile_specificity: str) -> list[dict]:
+    limit = TARGET_SOURCE_LIMIT[profile_specificity]
+    official_cap = max(1, int(limit * OFFICIAL_SOURCE_CAP_RATIO))
+    chosen: list[dict] = []
+    official_count = 0
+
+    for candidate in sorted(candidates, key=lambda item: (-item["discovery_score"], item["selection_rank"])):
+        if len(chosen) >= limit:
+            break
+        if candidate["source_kind"] == "official" and official_count >= official_cap:
+            continue
+        chosen.append(candidate)
+        if candidate["source_kind"] == "official":
+            official_count += 1
+
+    return chosen
+
+
+async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_profile: str) -> dict:
+    """Discover and assign sources for a user based on their profile and exact interests."""
+    started = asyncio.get_running_loop().time()
+    profile_specificity = determine_profile_specificity(interests, ai_profile)
+
     try:
-        # Check existing source count
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT COUNT(*) as cnt FROM public.user_sources WHERE user_id = %s AND active = true",
-                (user_id,),
-            )
-            existing = cur.fetchone()["cnt"]
+        seed_candidates = _match_seed_sources(conn, interests, profile_specificity, ai_profile=ai_profile)
+        query_candidates = _build_query_feed_candidates(interests)
 
-        if existing >= MAX_SOURCES_PER_USER:
-            logger.info("User %s already has %d sources, skipping discovery", user_id, existing)
-            return
-
-        # 1. Match interests to seed sources
-        seeds = _match_seed_sources(conn, interests)
-        logger.info("User %s: matched %d seed sources", user_id, len(seeds))
-
-        # 2. AI suggestions for niche interests
-        ai_suggestions = []
+        ai_suggestions: list[dict] = []
         try:
             from app.services.openai_service import get_openai_service
+
             openai_svc = get_openai_service()
             ai_suggestions = await _ai_suggest_feeds(openai_svc, interests, ai_profile)
-            logger.info("User %s: AI suggested %d feeds", user_id, len(ai_suggestions))
         except Exception as e:
             logger.warning("AI suggestion failed for user %s: %s", user_id, e)
 
-        # 3. Validate AI suggestions
-        validated_ai = []
-        if ai_suggestions:
-            async with httpx.AsyncClient(follow_redirects=True) as client:
-                sem = asyncio.Semaphore(5)
+        candidate_pool = _dedupe_candidates(
+            seed_candidates
+            + query_candidates
+            + _build_ai_candidates(ai_suggestions)
+        )
+        validated = await _validate_candidate_sources(candidate_pool)
 
-                async def _validate_one(suggestion):
-                    async with sem:
-                        if await _validate_feed(client, suggestion["url"]):
-                            return suggestion
-                        return None
+        scored_candidates: list[dict] = []
+        for candidate in validated:
+            discovery_score, scope, matched_targets = _score_candidate_source(
+                candidate,
+                interests,
+                profile_specificity,
+                candidate.get("sample_titles") or [],
+            )
+            if discovery_score <= 0:
+                continue
+            scored = dict(candidate)
+            scored["scope"] = scope
+            scored["matched_targets"] = matched_targets
+            scored["discovery_score"] = round(discovery_score, 4)
+            scored_candidates.append(scored)
 
-                results = await asyncio.gather(
-                    *[_validate_one(s) for s in ai_suggestions],
-                    return_exceptions=True,
-                )
-                validated_ai = [r for r in results if isinstance(r, dict)]
-            logger.info("User %s: %d/%d AI suggestions validated", user_id, len(validated_ai), len(ai_suggestions))
+        selected = _select_sources_for_profile(scored_candidates, profile_specificity)
 
-        # 4. Store in user_sources (seeds + validated AI)
-        inserted = 0
-        remaining_slots = MAX_SOURCES_PER_USER - existing
+        if not selected:
+            logger.warning("User %s: discovery found 0 sources, keeping existing sources", user_id)
+            return {
+                "sources_found": 0,
+                "exact_sources": 0,
+                "supporting_sources": 0,
+                "profile_specificity": profile_specificity,
+                "discovery_time_seconds": round(time.time() - start_time, 2),
+            }
+
         with conn.cursor() as cur:
-            # Add seed sources first (premium first)
-            for seed in seeds[:remaining_slots]:
-                try:
-                    cur.execute(
-                        """
-                        INSERT INTO public.user_sources (user_id, source_url, source_name, category, discovery_method, validated_at)
-                        VALUES (%s, %s, %s, %s, 'seed', now())
-                        ON CONFLICT (user_id, source_url) DO NOTHING
-                        """,
-                        (user_id, seed["url"], seed["name"], seed["category"]),
+            cur.execute("DELETE FROM public.user_sources WHERE user_id = %s", (user_id,))
+            for index, source in enumerate(selected):
+                cur.execute(
+                    """
+                    INSERT INTO public.user_sources (
+                        user_id,
+                        source_url,
+                        source_name,
+                        category,
+                        discovery_method,
+                        source_kind,
+                        scope,
+                        matched_targets,
+                        discovery_score,
+                        selection_rank,
+                        active,
+                        failure_count,
+                        validated_at,
+                        last_discovered_at,
+                        next_fetch_at
                     )
-                    if cur.rowcount == 1:
-                        inserted += 1
-                except Exception as e:
-                    logger.warning("Error inserting seed source for user %s: %s", user_id, e)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, true, 0, now(), now(), now())
+                    ON CONFLICT (user_id, source_url) DO UPDATE SET
+                        source_name = EXCLUDED.source_name,
+                        category = EXCLUDED.category,
+                        discovery_method = EXCLUDED.discovery_method,
+                        source_kind = EXCLUDED.source_kind,
+                        scope = EXCLUDED.scope,
+                        matched_targets = EXCLUDED.matched_targets,
+                        discovery_score = EXCLUDED.discovery_score,
+                        selection_rank = EXCLUDED.selection_rank,
+                        active = true,
+                        failure_count = 0,
+                        validated_at = now(),
+                        last_discovered_at = now(),
+                        next_fetch_at = now()
+                    """,
+                    (
+                        user_id,
+                        source["url"],
+                        source.get("name"),
+                        source.get("category"),
+                        source.get("discovery_method"),
+                        source.get("source_kind"),
+                        source.get("scope"),
+                        json.dumps(source.get("matched_targets") or []),
+                        source.get("discovery_score", 0.0),
+                        index + 1,
+                    ),
+                )
 
-            # Add validated AI suggestions
-            for suggestion in validated_ai[: remaining_slots - inserted]:
-                try:
-                    cur.execute(
-                        """
-                        INSERT INTO public.user_sources (user_id, source_url, source_name, category, discovery_method, validated_at)
-                        VALUES (%s, %s, %s, %s, 'ai_suggested', now())
-                        ON CONFLICT (user_id, source_url) DO NOTHING
-                        """,
-                        (user_id, suggestion["url"], suggestion["name"], suggestion["category"]),
-                    )
-                    if cur.rowcount == 1:
-                        inserted += 1
-                except Exception as e:
-                    logger.warning("Error inserting AI source for user %s: %s", user_id, e)
+        exact_sources = sum(1 for source in selected if source.get("scope") == "exact")
+        supporting_sources = len(selected) - exact_sources
 
-        logger.info("User %s: discovered %d sources (%d seeds, %d AI)", user_id, inserted, len(seeds), len(validated_ai))
+        logger.info(
+            "User %s: discovered %d sources (%d exact / %d supporting) specificity=%s",
+            user_id,
+            len(selected),
+            exact_sources,
+            supporting_sources,
+            profile_specificity,
+        )
 
+        return {
+            "sources_found": len(selected),
+            "exact_sources": exact_sources,
+            "supporting_sources": supporting_sources,
+            "profile_specificity": profile_specificity,
+            "discovery_time_seconds": round(asyncio.get_running_loop().time() - started, 2),
+        }
     except Exception as e:
         logger.error("Source discovery failed for user %s: %s", user_id, e)
         import traceback
         traceback.print_exc()
+        raise
 
 
 async def fetch_user_sources(conn) -> int:

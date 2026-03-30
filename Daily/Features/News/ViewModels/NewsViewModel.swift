@@ -9,13 +9,42 @@ import Foundation
 import Combine
 import UIKit
 
-// MARK: - ViewModel
-
 @MainActor
 final class NewsViewModel: ObservableObject {
+    enum SetupPhase {
+        case discovering
+        case building
+        case rebuilding
+
+        var title: String {
+            switch self {
+            case .discovering:
+                return "Finding the right sources"
+            case .building:
+                return "Building your feed"
+            case .rebuilding:
+                return "Updating your feed"
+            }
+        }
+
+        var subtitle: String {
+            switch self {
+            case .discovering:
+                return "Scanning for feeds that actually match what you asked for."
+            case .building:
+                return "Fetching fresh articles and filtering them against your profile."
+            case .rebuilding:
+                return "Re-discovering sources for your updated interests."
+            }
+        }
+    }
+
     @Published var articles: [NewsArticle] = []
     @Published var isLoading: Bool = false
     @Published var isRefreshing: Bool = false
+    @Published var isSettingUp: Bool = false
+    @Published var setupPhase: SetupPhase?
+    @Published var setupDetailText: String?
     @Published var errorMessage: String?
     @Published var lastFetchDate: Date?
 
@@ -24,20 +53,28 @@ final class NewsViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var isRequestInFlight = false
     private var queuedForceRefresh = false
-
-    // MARK: - Init
+    private var activeBuildTask: Task<Void, Never>?
 
     init() {
-        // Listen for onboarding completion to reload feed
+        // After onboarding completes, check feed state (will trigger discovery if needed)
         NotificationCenter.default.publisher(for: .onboardingCompleted)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }
-                self.articles = []
-                self.isLoading = true
                 self.errorMessage = nil
                 Task { [weak self] in
-                    await self?.loadFeed(forceRefresh: true)
+                    await self?.loadFeed(forceRefresh: false)
+                }
+            }
+            .store(in: &cancellables)
+
+        // After preferences change, re-discover sources + rebuild feed
+        NotificationCenter.default.publisher(for: .preferencesChanged)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                Task { [weak self] in
+                    await self?.rebuildAfterPreferenceChange()
                 }
             }
             .store(in: &cancellables)
@@ -47,8 +84,6 @@ final class NewsViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Public Methods
-
     func loadFeed(forceRefresh: Bool = false) async {
         guard let token = authService.getAccessToken() else { return }
 
@@ -57,42 +92,34 @@ final class NewsViewModel: ObservableObject {
             return
         }
 
+        let existingArticles = articles
         isRequestInFlight = true
+
         if forceRefresh {
             isRefreshing = true
-        } else if articles.isEmpty {
+        } else if articles.isEmpty && !isSettingUp {
             isLoading = true
         }
+
         errorMessage = nil
 
         do {
-            let fetched: [NewsArticle]
-
+            let response: BackendService.FeedResponse
             if forceRefresh {
-                fetched = try await backendService.refreshFeed(
-                    accessToken: token,
-                    limit: 50
-                )
+                response = try await backendService.refreshFeedStatus(accessToken: token, limit: 50)
             } else {
-                fetched = try await backendService.fetchFeed(
-                    accessToken: token,
-                    limit: 50
-                )
+                response = try await backendService.fetchFeedState(accessToken: token, limit: 50)
             }
 
-            articles = fetched.map { $0.normalizedForDisplay() }
-            lastFetchDate = Date()
-
-            if !articles.isEmpty {
-                ImageCacheService.shared.preloadImages(for: articles)
-            }
+            try await handleFeedResponse(response, accessToken: token, fallbackArticles: existingArticles)
         } catch is CancellationError {
-            // Ignore task cancellation so the UI keeps the last successful feed.
+            // Keep the last good feed.
         } catch {
+            if forceRefresh && !existingArticles.isEmpty {
+                articles = existingArticles
+            }
             let errorMsg = error.localizedDescription.lowercased()
-            if errorMsg.contains("cancelled") || errorMsg.contains("canceled") {
-                // Ignore transient cancellation errors from overlapping refreshes.
-            } else if !errorMsg.contains("not found") && !errorMsg.contains("404") {
+            if !errorMsg.contains("cancelled") && !errorMsg.contains("canceled") {
                 errorMessage = error.localizedDescription
             }
         }
@@ -101,24 +128,144 @@ final class NewsViewModel: ObservableObject {
         queuedForceRefresh = false
         isRequestInFlight = false
         isLoading = false
+        isRefreshing = false
 
         if shouldRunQueuedRefresh {
             await loadFeed(forceRefresh: true)
-        } else {
-            isRefreshing = false
         }
     }
 
     func refreshFeed() async {
-        errorMessage = nil
-
         await loadFeed(forceRefresh: true)
-
         if errorMessage == nil {
             HapticService.notification(.success)
         } else {
             HapticService.notification(.error)
         }
-        isRefreshing = false
+    }
+
+    /// Re-discover sources and rebuild feed after user changes preferences.
+    func rebuildAfterPreferenceChange() async {
+        guard let token = authService.getAccessToken() else { return }
+
+        // Cancel any in-flight build
+        activeBuildTask?.cancel()
+
+        let fallback = articles
+
+        activeBuildTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            await self.runSetupFlow(
+                accessToken: token,
+                needsDiscovery: true,
+                fallbackArticles: fallback,
+                phaseOverride: .rebuilding
+            )
+        }
+
+        await activeBuildTask?.value
+    }
+}
+
+private extension NewsViewModel {
+    func handleFeedResponse(
+        _ response: BackendService.FeedResponse,
+        accessToken: String,
+        fallbackArticles: [NewsArticle]
+    ) async throws {
+        switch response.status {
+        case .ready:
+            applyReadyFeed(response.articles)
+        case .needsDiscovery:
+            try await runSetupFlow(accessToken: accessToken, needsDiscovery: true, fallbackArticles: fallbackArticles)
+        case .needsBuild:
+            try await runSetupFlow(accessToken: accessToken, needsDiscovery: false, fallbackArticles: fallbackArticles)
+        }
+    }
+
+    @discardableResult
+    func runSetupFlow(
+        accessToken: String,
+        needsDiscovery: Bool,
+        fallbackArticles: [NewsArticle],
+        phaseOverride: SetupPhase? = nil
+    ) async -> Bool {
+        isSettingUp = true
+        setupDetailText = nil
+
+        // Safety timeout: dismiss overlay after 90s even if network is still in flight
+        let timeoutTask = Task { @MainActor [weak self] in
+            try await Task.sleep(for: .seconds(90))
+            guard let self, self.isSettingUp else { return }
+            self.isSettingUp = false
+            self.setupPhase = nil
+            self.setupDetailText = nil
+            if self.articles.isEmpty {
+                self.errorMessage = "Feed setup is taking too long. Pull down to retry."
+            }
+        }
+
+        defer {
+            timeoutTask.cancel()
+            isSettingUp = false
+            setupPhase = nil
+            setupDetailText = nil
+        }
+
+        do {
+            if needsDiscovery {
+                setupPhase = phaseOverride ?? .discovering
+                let discovery = try await backendService.discoverSources(accessToken: accessToken)
+                if discovery.sourcesFound > 0 {
+                    setupDetailText = "\(discovery.sourcesFound) sources selected"
+                } else {
+                    setupDetailText = "No strong sources found yet"
+                }
+            }
+
+            setupPhase = .building
+            let build = try await backendService.buildFeed(accessToken: accessToken, limit: 50)
+
+            switch build.status {
+            case .ready:
+                applyReadyFeed(build.articles)
+                if build.qualityMet == false && !build.articles.isEmpty {
+                    errorMessage = "Your feed is small right now, but it's staying tightly on-topic."
+                }
+                return true
+            case .needsDiscovery:
+                if !fallbackArticles.isEmpty {
+                    articles = fallbackArticles
+                }
+                errorMessage = "We couldn't find a stable source graph for this profile yet."
+            case .needsBuild:
+                if !fallbackArticles.isEmpty {
+                    articles = fallbackArticles
+                }
+                errorMessage = "Your feed still needs another build pass."
+            }
+        } catch is CancellationError {
+            if !fallbackArticles.isEmpty {
+                articles = fallbackArticles
+            }
+        } catch {
+            if !fallbackArticles.isEmpty {
+                articles = fallbackArticles
+            }
+            let errorMsg = error.localizedDescription.lowercased()
+            if !errorMsg.contains("cancelled") && !errorMsg.contains("canceled") {
+                errorMessage = "Couldn't build your feed. Pull down to retry."
+            }
+        }
+        return false
+    }
+
+    func applyReadyFeed(_ fetchedArticles: [NewsArticle]) {
+        articles = fetchedArticles.map { $0.normalizedForDisplay() }
+        lastFetchDate = Date()
+
+        if !articles.isEmpty {
+            ImageCacheService.shared.preloadImages(for: articles)
+        }
     }
 }
