@@ -14,7 +14,7 @@ final class BackendService {
     private let urlSession: URLSession
 
     /// ISO8601 date decoder that handles fractional seconds (from PostgreSQL's `now()`).
-    private static let iso8601Decoder: JSONDecoder = {
+    static let iso8601Decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         let withFractional = ISO8601DateFormatter()
         withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -51,11 +51,10 @@ final class BackendService {
 
     // MARK: - Feed Endpoints (new architecture)
 
-    /// Fetch personalized feed from the shared article pool.
-    func fetchFeed(
+    func fetchFeedState(
         accessToken: String,
         limit: Int = 50
-    ) async throws -> [NewsArticle] {
+    ) async throws -> FeedResponse {
         let endpoint = baseURL.appendingPathComponent("/feed")
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
         let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
@@ -81,10 +80,20 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        // Feed response is now {"articles": [...], "feed_request_id": "..."}
         let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
-        ReadingEventTracker.shared.setFeedRequestId(feedResponse.feedRequestId)
-        return feedResponse.articles
+        if let feedRequestId = feedResponse.feedRequestId {
+            ReadingEventTracker.shared.setFeedRequestId(feedRequestId)
+        }
+        return feedResponse
+    }
+
+    /// Convenience wrapper for legacy callers that only need ready articles.
+    func fetchFeed(
+        accessToken: String,
+        limit: Int = 50
+    ) async throws -> [NewsArticle] {
+        let response = try await fetchFeedState(accessToken: accessToken, limit: limit)
+        return response.articles
     }
 
     /// Fetch a single article with full content (extracts on-demand if needed).
@@ -110,11 +119,47 @@ final class BackendService {
         return try Self.iso8601Decoder.decode(NewsArticle.self, from: data)
     }
 
-    /// Force re-score articles (ignores cache).
-    func refreshFeed(
+    func buildFeed(
         accessToken: String,
         limit: Int = 50
-    ) async throws -> [NewsArticle] {
+    ) async throws -> FeedResponse {
+        let endpoint = baseURL.appendingPathComponent("/feed/build")
+        let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
+        var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
+        components?.queryItems = queryItems
+
+        guard let url = components?.url else {
+            throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await feedSession.data(for: request)
+
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
+        if let feedRequestId = feedResponse.feedRequestId {
+            ReadingEventTracker.shared.setFeedRequestId(feedRequestId)
+        }
+        return feedResponse
+    }
+
+    /// Force refresh from the existing personalized source graph.
+    func refreshFeedStatus(
+        accessToken: String,
+        limit: Int = 50
+    ) async throws -> FeedResponse {
         let endpoint = baseURL.appendingPathComponent("/feed/refresh")
         let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
@@ -141,8 +186,40 @@ final class BackendService {
         }
 
         let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
-        ReadingEventTracker.shared.setFeedRequestId(feedResponse.feedRequestId)
-        return feedResponse.articles
+        if let feedRequestId = feedResponse.feedRequestId {
+            ReadingEventTracker.shared.setFeedRequestId(feedRequestId)
+        }
+        return feedResponse
+    }
+
+    func refreshFeed(
+        accessToken: String,
+        limit: Int = 50
+    ) async throws -> [NewsArticle] {
+        let response = try await refreshFeedStatus(accessToken: accessToken, limit: limit)
+        return response.articles
+    }
+
+    func discoverSources(accessToken: String) async throws -> DiscoverSourcesResponse {
+        let endpoint = baseURL.appendingPathComponent("/sources/discover")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await feedSession.data(for: request)
+
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        return try Self.iso8601Decoder.decode(DiscoverSourcesResponse.self, from: data)
     }
 
     // MARK: - Chat Endpoints
@@ -253,13 +330,45 @@ final class BackendService {
         let categories: [CategoryCount]
     }
 
+    enum FeedStatus: String, Decodable {
+        case ready
+        case needsBuild = "needs_build"
+        case needsDiscovery = "needs_discovery"
+    }
+
     struct FeedResponse: Decodable {
+        let status: FeedStatus
         let articles: [NewsArticle]
-        let feedRequestId: String
+        let feedRequestId: String?
+        let articleCount: Int?
+        let qualityMet: Bool?
+        let buildTimeSeconds: Double?
+        let profileSpecificity: String?
 
         enum CodingKeys: String, CodingKey {
+            case status
             case articles
             case feedRequestId = "feed_request_id"
+            case articleCount = "article_count"
+            case qualityMet = "quality_met"
+            case buildTimeSeconds = "build_time_seconds"
+            case profileSpecificity = "profile_specificity"
+        }
+    }
+
+    struct DiscoverSourcesResponse: Decodable {
+        let sourcesFound: Int
+        let exactSources: Int
+        let supportingSources: Int
+        let discoveryTimeSeconds: Double?
+        let profileSpecificity: String?
+
+        enum CodingKeys: String, CodingKey {
+            case sourcesFound = "sources_found"
+            case exactSources = "exact_sources"
+            case supportingSources = "supporting_sources"
+            case discoveryTimeSeconds = "discovery_time_seconds"
+            case profileSpecificity = "profile_specificity"
         }
     }
 
@@ -314,6 +423,8 @@ final class BackendService {
         let aiProfile: String?
         let completed: Bool
         let completedAt: Date?
+        let profileSpecificity: String?
+        let setupRequired: Bool?
 
         enum CodingKeys: String, CodingKey {
             case id
@@ -322,8 +433,12 @@ final class BackendService {
             case aiProfile = "ai_profile"
             case completed
             case completedAt = "completed_at"
+            case profileSpecificity = "profile_specificity"
+            case setupRequired = "setup_required"
         }
     }
+
+    typealias CompleteUserPreferencesResponse = UserPreferencesResponse
 
     /// Lightweight type-erased wrapper to decode arbitrary JSON into Swift.
     struct AnyCodable: Codable {
@@ -443,11 +558,10 @@ final class BackendService {
     }
 
     /// Let the backend/AI summarize full chat history and store a compact profile.
-    /// Returns nothing — we only care that the server accepted it.
     func completeUserPreferences(
         accessToken: String,
         history: [[String: String]]
-    ) async throws {
+    ) async throws -> CompleteUserPreferencesResponse {
         let endpoint = baseURL.appendingPathComponent("/user/preferences/complete")
 
         var request = URLRequest(url: endpoint)
@@ -470,6 +584,8 @@ final class BackendService {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
+
+        return try Self.iso8601Decoder.decode(CompleteUserPreferencesResponse.self, from: data)
     }
 
     // MARK: - Interest Onboarding Chat
