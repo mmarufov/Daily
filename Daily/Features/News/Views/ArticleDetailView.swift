@@ -169,8 +169,10 @@ struct ArticleDetailView: View {
                 Button {
                     HapticService.impact(.medium)
                     if let full = fullArticle {
-                        chatViewModel.articleContext = full
-                        showingChat = true
+                        Task {
+                            await chatViewModel.startArticleDiscussion(full)
+                            showingChat = true
+                        }
                     }
                 } label: {
                     Image(systemName: "sparkles")
@@ -318,8 +320,10 @@ struct ArticleDetailView: View {
     private func discussButton(for article: NewsArticle) -> some View {
         Button {
             HapticService.impact(.medium)
-            chatViewModel.articleContext = article
-            showingChat = true
+            Task {
+                await chatViewModel.startArticleDiscussion(article)
+                showingChat = true
+            }
         } label: {
             HStack(spacing: AppSpacing.sm) {
                 Image(systemName: "sparkles")

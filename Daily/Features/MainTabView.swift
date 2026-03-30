@@ -50,9 +50,11 @@ struct MainTabView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .discussArticle)) { notification in
             if let article = notification.object as? NewsArticle {
-                chatViewModel.startArticleDiscussion(article)
-                withAnimation {
-                    selectedTab = .chat
+                Task {
+                    await chatViewModel.startArticleDiscussion(article)
+                    withAnimation {
+                        selectedTab = .chat
+                    }
                 }
             }
         }
