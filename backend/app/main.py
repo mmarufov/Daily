@@ -12,10 +12,12 @@ import jwt
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Header, Depends, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import psycopg
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
+from app.services import chat_repository
+from app.services.chat_service import ChatService
 from app.services.openai_service import get_openai_service
 
 load_dotenv()
@@ -249,6 +251,7 @@ async def lifespan(app):
 
 
 app = FastAPI(title="Daily API", version="0.2.0", lifespan=lifespan)
+chat_service = ChatService()
 
 
 def get_db():
@@ -504,6 +507,7 @@ def _ensure_tables(conn) -> None:
                 UNIQUE(user_id, topic)
             );
         """)
+    chat_repository.ensure_chat_tables(conn)
 
 
 
@@ -800,6 +804,80 @@ def _get_user_id_from_token(conn, token: str) -> str:
         if not row:
             raise HTTPException(status_code=401, detail="Invalid or expired token")
         return str(row["id"])
+
+
+@app.get("/chat/threads")
+async def list_chat_threads(
+    Authorization: str | None = Header(default=None),
+    limit: int = Query(default=40, ge=1, le=100),
+    conn=Depends(get_db),
+):
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    _ensure_tables(conn)
+    threads = await chat_service.list_threads(conn, user_id=user_id, limit=limit)
+    return {"threads": threads}
+
+
+@app.post("/chat/threads")
+async def create_chat_thread(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    _ensure_tables(conn)
+    thread = await chat_service.create_thread(
+        conn,
+        user_id=user_id,
+        kind=str(payload.get("kind") or "manual"),
+        title=payload.get("title"),
+        article_id=payload.get("article_id"),
+        article_title=payload.get("article_title"),
+        local_day=payload.get("local_day"),
+    )
+    return thread
+
+
+@app.get("/chat/threads/{thread_id}")
+async def get_chat_thread(
+    thread_id: str,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    _ensure_tables(conn)
+    return await chat_service.get_thread_detail(conn, user_id=user_id, thread_id=thread_id)
+
+
+@app.post("/chat/threads/{thread_id}/messages/stream")
+async def stream_chat_message(
+    thread_id: str,
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    _ensure_tables(conn)
+    event_stream = await chat_service.stream_thread_message(
+        conn,
+        user_id=user_id,
+        thread_id=thread_id,
+        content=payload.get("content"),
+        intent=payload.get("intent"),
+    )
+    return StreamingResponse(
+        event_stream,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.get("/me")

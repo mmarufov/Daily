@@ -273,6 +273,145 @@ final class BackendService {
         }
     }
 
+    func fetchChatThreads(accessToken: String) async throws -> [ChatThread] {
+        let endpoint = baseURL.appendingPathComponent("/chat/threads")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        return try JSONDecoder.dailyChatDecoder.decode(ChatThreadsResponse.self, from: data).threads
+    }
+
+    func createChatThread(
+        _ createThreadRequest: CreateThreadRequest,
+        accessToken: String
+    ) async throws -> ChatThread {
+        let endpoint = baseURL.appendingPathComponent("/chat/threads")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(createThreadRequest)
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        return try JSONDecoder.dailyChatDecoder.decode(ChatThread.self, from: data)
+    }
+
+    func fetchChatThread(
+        id: String,
+        accessToken: String
+    ) async throws -> ChatThreadDetail {
+        let endpoint = baseURL.appendingPathComponent("/chat/threads/\(id)")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Request failed with status \(http.statusCode)"
+            throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+
+        return try JSONDecoder.dailyChatDecoder.decode(ChatThreadDetail.self, from: data)
+    }
+
+    func streamChatMessage(
+        threadID: String,
+        request streamRequest: StreamMessageRequest,
+        accessToken: String
+    ) async throws -> AsyncThrowingStream<StreamingEvent, Error> {
+        let endpoint = baseURL.appendingPathComponent("/chat/threads/\(threadID)/messages/stream")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(streamRequest)
+
+        let (bytes, response) = try await urlSession.bytes(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
+        }
+
+        guard (200..<300).contains(http.statusCode) else {
+            var errorBody = ""
+            for try await line in bytes.lines {
+                errorBody += line
+            }
+            throw NSError(
+                domain: "BackendService",
+                code: http.statusCode,
+                userInfo: [NSLocalizedDescriptionKey: errorBody.isEmpty ? "Streaming request failed" : errorBody]
+            )
+        }
+
+        return AsyncThrowingStream { continuation in
+            Task {
+                var currentEvent: String?
+                var dataLines: [String] = []
+
+                do {
+                    for try await line in bytes.lines {
+                        if line.isEmpty {
+                            if let currentEvent, !dataLines.isEmpty {
+                                let payload = dataLines.joined(separator: "\n")
+                                let data = Data(payload.utf8)
+                                do {
+                                    let event = try StreamingEvent.decode(event: currentEvent, data: data)
+                                    continuation.yield(event)
+                                } catch {
+                                    continuation.finish(throwing: error)
+                                    return
+                                }
+                            }
+
+                            currentEvent = nil
+                            dataLines.removeAll(keepingCapacity: true)
+                            continue
+                        }
+
+                        if line.hasPrefix("event:") {
+                            currentEvent = line.replacingOccurrences(of: "event:", with: "").trimmingCharacters(in: .whitespaces)
+                        } else if line.hasPrefix("data:") {
+                            let value = line.replacingOccurrences(of: "data:", with: "")
+                                .trimmingCharacters(in: .whitespaces)
+                            dataLines.append(value)
+                        }
+                    }
+
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     // MARK: - Semantic Search & Categories
 
     func semanticSearch(query: String, limit: Int = 8, accessToken: String) async throws -> [NewsArticle] {
@@ -380,6 +519,10 @@ final class BackendService {
             case content
             case generatedAt = "generated_at"
         }
+    }
+
+    struct ChatThreadsResponse: Decodable {
+        let threads: [ChatThread]
     }
 
     struct EntityPin: Codable, Identifiable {

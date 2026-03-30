@@ -2,289 +2,124 @@
 //  ChatView.swift
 //  Daily
 //
-//  Created by Muhammadjon on 11/4/25.
-//
 
 import SwiftUI
+import UIKit
 
 struct ChatView: View {
     @ObservedObject var viewModel: ChatViewModel
     @Binding var selectedTab: MainTabView.AppTab
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isInputFocused: Bool
+    @State private var presentedSourceArticle: NewsArticle?
     var presentedAsSheet: Bool = false
-
-    private let generalPrompts: [(icon: String, text: String)] = [
-        ("list.bullet.clipboard", "Summarize today's top headlines"),
-        ("lightbulb", "Why does this story matter?"),
-        ("sun.max", "Give me a positive news highlight")
-    ]
-
-    private let articlePrompts: [(icon: String, text: String)] = [
-        ("rectangle.3.group", "Break this down for me"),
-        ("lightbulb", "Why does this matter?"),
-        ("arrow.left.arrow.right", "What's the other side?"),
-        ("eye", "What should I watch next?")
-    ]
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemBackground).ignoresSafeArea()
+                chatBackground
+                    .ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    ScrollViewReader { proxy in
-                        ScrollView(.vertical, showsIndicators: false) {
-                            LazyVStack(spacing: AppSpacing.md) {
-                                if viewModel.messages.isEmpty {
-                                    if viewModel.hasArticleContext {
-                                        articleContextCard
-                                    } else {
-                                        introCard
-                                    }
-                                    suggestionChips
-                                } else {
-                                    if viewModel.hasArticleContext {
-                                        articleContextCard
-                                    }
-
-                                    ForEach(viewModel.messages) { message in
-                                        ChatBubbleView(message: message)
-                                            .padding(.horizontal, AppSpacing.md)
-                                            .transition(.asymmetric(
-                                                insertion: .move(edge: .bottom).combined(with: .opacity),
-                                                removal: .opacity
-                                            ))
-                                    }
-                                    .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.messages.count)
-
-                                    if viewModel.isSearchingArticles {
-                                        HStack(spacing: AppSpacing.sm) {
-                                            ProgressView()
-                                                .tint(BrandColors.primary)
-                                            Text("Searching articles...")
-                                                .font(AppTypography.bodySmall)
-                                                .foregroundColor(BrandColors.textSecondary)
-                                        }
-                                        .padding(.horizontal, AppSpacing.md)
-                                        .transition(.opacity)
-                                    }
-
-                                    if viewModel.isLoading {
-                                        TypingIndicatorView()
-                                            .transition(.asymmetric(
-                                                insertion: .scale(scale: 0.8).combined(with: .opacity),
-                                                removal: .opacity
-                                            ))
-                                    }
-                                }
-                            }
-                            .padding(.top, AppSpacing.lg)
-                            .padding(.bottom, AppSpacing.xl)
-                        }
-                        .scrollDismissesKeyboard(.interactively)
-                        .onChange(of: viewModel.messages.count) { _, _ in
-                            scrollToBottom(proxy: proxy)
-                        }
-                        .onChange(of: viewModel.isLoading) { _, isLoading in
-                            if isLoading {
-                                scrollToBottom(proxy: proxy)
-                            }
-                        }
+                    if viewModel.currentThread == nil {
+                        ChatHomeContent(viewModel: viewModel)
+                    } else if viewModel.isPreparingThread {
+                        threadLoadingState
+                    } else {
+                        ChatThreadContent(
+                            viewModel: viewModel,
+                            onOpenSource: { article in presentedSourceArticle = article }
+                        )
                     }
 
                     if let errorMessage = viewModel.errorMessage {
                         errorBanner(message: errorMessage)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
 
-                    inputArea
+                    composer
                 }
-                .animation(.easeInOut(duration: 0.3), value: viewModel.errorMessage != nil)
             }
-            .navigationTitle(viewModel.hasArticleContext ? "Discuss Article" : "AI Briefing")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if presentedAsSheet {
-                        Button("Done") {
-                            dismiss()
-                        }
-                        .font(AppTypography.bodyMedium)
-                    } else {
-                        Button {
-                            HapticService.impact(.light)
-                            withAnimation { selectedTab = .news }
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                    .font(AppTypography.navIcon)
-                                Text("News")
-                                    .font(AppTypography.bodyMedium)
-                            }
-                            .foregroundColor(BrandColors.primary)
-                        }
-                    }
+                    leadingToolbarButton
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if !viewModel.messages.isEmpty || viewModel.hasArticleContext {
-                        Button(action: {
-                            HapticService.impact(.medium)
-                            viewModel.clearChat()
-                        }) {
-                            HStack(spacing: AppSpacing.xs) {
-                                Image(systemName: "trash")
-                                    .font(AppTypography.labelSmall)
-                                Text("Clear")
-                                    .font(AppTypography.labelSmall)
-                            }
-                            .foregroundColor(BrandColors.error)
-                        }
-                    }
+                    trailingToolbarButton
                 }
+            }
+            .task {
+                await viewModel.loadHomeIfNeeded()
+            }
+            .sheet(item: $presentedSourceArticle) { article in
+                ArticleDetailView(article: article)
             }
         }
     }
 
-    private func scrollToBottom(proxy: ScrollViewProxy) {
-        if let lastMessage = viewModel.messages.last {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                proxy.scrollTo(lastMessage.id, anchor: .bottom)
-            }
+    private var navigationTitle: String {
+        if let currentThread = viewModel.currentThread {
+            return currentThread.title
         }
-    }
-}
-
-// MARK: - Private builders
-
-private extension ChatView {
-    var introCard: some View {
-        VStack(spacing: AppSpacing.md) {
-            Text("Ask anything about the news")
-                .font(AppTypography.title3)
-                .foregroundColor(BrandColors.textPrimary)
-
-            Text("Get concise explanations, summaries, or let Daily craft a briefing for you.")
-                .font(AppTypography.subheadline)
-                .foregroundColor(BrandColors.textSecondary)
-                .multilineTextAlignment(.center)
-                .lineSpacing(2)
-                .padding(.horizontal, AppSpacing.lg)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, AppSpacing.xxl)
-        .padding(.horizontal, AppSpacing.lg)
+        return "Daily Copilot"
     }
 
-    var articleContextCard: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    if let source = viewModel.articleContext?.displaySource {
-                        Text(source.uppercased())
-                            .font(AppTypography.metaLabel)
-                            .tracking(0.6)
-                            .foregroundColor(BrandColors.sourceText)
-                    }
-                    Text(viewModel.articleContext?.title ?? "")
-                        .font(AppTypography.feedCardTitle)
-                        .foregroundColor(BrandColors.textPrimary)
-                        .lineLimit(2)
+    private var leadingToolbarButton: some View {
+        Group {
+            if presentedAsSheet {
+                Button("Done") {
+                    dismiss()
                 }
-
-                Spacer(minLength: AppSpacing.sm)
-
+                .font(AppTypography.bodyMedium)
+            } else if viewModel.currentThread != nil {
                 Button {
                     HapticService.impact(.light)
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        viewModel.articleContext = nil
-                    }
+                    viewModel.goHome()
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(AppTypography.closeIcon)
-                        .foregroundColor(BrandColors.textTertiary)
-                }
-            }
-        }
-        .padding(AppSpacing.md)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
-        .padding(.horizontal, AppSpacing.md)
-    }
-
-    var suggestionChips: some View {
-        let prompts = viewModel.hasArticleContext ? articlePrompts : generalPrompts
-        return ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: AppSpacing.sm) {
-                ForEach(prompts, id: \.text) { prompt in
-                    Button(action: {
-                        HapticService.impact(.light)
-                        if viewModel.hasArticleContext {
-                            sendPrompt(prompt.text)
-                        } else {
-                            Task { await viewModel.sendSuggestionChip(prompt.text) }
-                        }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: prompt.icon)
-                                .font(AppTypography.chipIcon)
-                                .foregroundColor(BrandColors.primary)
-                            Text(prompt.text)
-                                .font(AppTypography.caption1)
-                                .fontWeight(.medium)
-                                .foregroundColor(BrandColors.textPrimary)
-                        }
-                        .padding(.horizontal, AppSpacing.md)
-                        .padding(.vertical, AppSpacing.smPlus)
-                        .glassEffect(.regular.interactive(), in: .capsule)
+                    HStack(spacing: AppSpacing.xs) {
+                        Image(systemName: "chevron.left")
+                            .font(AppTypography.navIcon)
+                        Text("Copilot")
+                            .font(AppTypography.bodyMedium)
                     }
+                    .foregroundColor(BrandColors.primary)
                 }
             }
-            .padding(.horizontal, AppSpacing.lg)
         }
     }
 
-    func errorBanner(message: String) -> some View {
-        HStack(spacing: AppSpacing.sm) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(BrandColors.error)
-            Text(message)
+    private var trailingToolbarButton: some View {
+        Group {
+            if !presentedAsSheet, viewModel.currentThread == nil {
+                Button {
+                    HapticService.impact(.light)
+                    selectedTab = .news
+                } label: {
+                    Image(systemName: "newspaper")
+                        .font(AppTypography.toolbarIcon)
+                        .foregroundColor(BrandColors.primary)
+                }
+            } else if !presentedAsSheet, viewModel.currentThread != nil {
+                Button("Home") {
+                    HapticService.impact(.light)
+                    viewModel.goHome()
+                }
                 .font(AppTypography.bodySmall)
-                .foregroundColor(BrandColors.error)
-                .lineLimit(2)
-            Spacer()
-
-            Button {
-                HapticService.impact(.light)
-                Task { await viewModel.retryLastMessage() }
-            } label: {
-                Text("Retry")
-                    .font(AppTypography.labelSmall)
-                    .foregroundColor(BrandColors.primary)
-            }
-
-            Button {
-                withAnimation { viewModel.errorMessage = nil }
-            } label: {
-                Image(systemName: "xmark")
-                    .font(AppTypography.metaLabel)
-                    .foregroundColor(BrandColors.textTertiary)
+                .foregroundColor(BrandColors.primary)
             }
         }
-        .padding(AppSpacing.md)
-        .glassEffect(
-            .regular.tint(BrandColors.error),
-            in: RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous)
-        )
-        .padding(.horizontal, AppSpacing.md)
-        .padding(.bottom, AppSpacing.sm)
     }
 
-    var inputArea: some View {
+    private var composer: some View {
         VStack(spacing: AppSpacing.sm) {
+            if let currentThread = viewModel.currentThread, currentThread.kind == .article {
+                articleContextHeader(thread: currentThread)
+            }
+
             HStack(spacing: AppSpacing.sm) {
-                TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
+                TextField(composerPlaceholder, text: $viewModel.inputText, axis: .vertical)
                     .font(AppTypography.body)
                     .padding(.horizontal, AppSpacing.md)
                     .padding(.vertical, AppSpacing.smPlus)
@@ -295,168 +130,599 @@ private extension ChatView {
                     .overlay(
                         RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous)
                             .stroke(
-                                isInputFocused
-                                ? BrandColors.primary.opacity(0.4)
-                                : Color(.separator),
+                                isInputFocused ? BrandColors.primary.opacity(0.35) : Color(.separator),
                                 lineWidth: isInputFocused ? 1.5 : 1
                             )
                     )
-                    .lineLimit(1...5)
+                    .lineLimit(1...6)
                     .focused($isInputFocused)
                     .onSubmit {
-                        submitMessage()
+                        submitComposer()
                     }
-                    .animation(.easeInOut(duration: 0.2), value: isInputFocused)
 
-                sendButton
+                Button {
+                    HapticService.impact(.light)
+                    submitComposer()
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(canSend ? BrandColors.primary : BrandColors.textTertiary.opacity(0.55))
+                            .frame(width: 46, height: 46)
+
+                        if viewModel.isStreaming {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        } else {
+                            Image(systemName: "arrow.up")
+                                .font(AppTypography.actionLabel)
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+                .disabled(!canSend)
+            }
+            .padding(.horizontal, AppSpacing.md)
+            .padding(.top, AppSpacing.sm)
+            .padding(.bottom, AppSpacing.smPlus)
+            .background(.ultraThinMaterial)
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(BrandColors.textQuaternary.opacity(0.15))
+                    .frame(height: 0.5)
             }
         }
-        .padding(.horizontal, AppSpacing.md)
-        .padding(.vertical, AppSpacing.sm)
-        .background(.ultraThinMaterial)
-        .overlay(
-            Rectangle()
-                .frame(height: 0.5)
-                .foregroundColor(BrandColors.textQuaternary.opacity(0.2)),
-            alignment: .top
+    }
+
+    private var canSend: Bool {
+        !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isStreaming
+    }
+
+    private var composerPlaceholder: String {
+        viewModel.currentThread?.kind == .article ? "Ask about this story..." : "Ask Daily anything about your news..."
+    }
+
+    private var chatBackground: some View {
+        LinearGradient(
+            colors: [
+                BrandColors.background,
+                BrandColors.primary.opacity(0.035),
+                BrandColors.background
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
     }
 
-    @ViewBuilder
-    var sendButton: some View {
-        let canSend = !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !viewModel.isLoading
-
-        Button(action: {
-            HapticService.impact(.light)
-            submitMessage()
-        }) {
-            ZStack {
-                if canSend {
-                    Circle()
-                        .fill(BrandColors.primary)
-                        .frame(width: 44, height: 44)
-                } else {
-                    Circle()
-                        .fill(BrandColors.textTertiary.opacity(0.6))
-                        .frame(width: 44, height: 44)
-                }
-
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Image(systemName: "arrow.up")
-                        .font(AppTypography.actionLabel)
-                        .foregroundColor(.white)
-                }
-            }
+    private var threadLoadingState: some View {
+        VStack(spacing: AppSpacing.md) {
+            ProgressView()
+                .scaleEffect(1.1)
+            Text("Loading conversation...")
+                .font(AppTypography.subheadline)
+                .foregroundColor(BrandColors.textSecondary)
         }
-        .disabled(!canSend)
-        .scaleEffect(canSend ? 1.0 : 0.95)
-        .animation(.easeInOut(duration: 0.2), value: canSend)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    func submitMessage() {
-        guard !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        Task {
-            await viewModel.sendMessage()
-        }
-    }
-
-    func sendPrompt(_ prompt: String) {
-        viewModel.inputText = prompt
-        submitMessage()
-    }
-}
-
-// MARK: - Typing Indicator
-
-struct TypingIndicatorView: View {
-    @State private var animating = false
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        HStack(alignment: .bottom, spacing: AppSpacing.sm) {
-            HStack(spacing: 5) {
-                ForEach(0..<3, id: \.self) { index in
-                    Circle()
-                        .fill(BrandColors.primary)
-                        .frame(width: 8, height: 8)
-                        .scaleEffect(reduceMotion ? 1.0 : (animating ? 1.0 : 0.5))
-                        .opacity(reduceMotion ? 0.6 : (animating ? 1.0 : 0.3))
-                        .animation(
-                            reduceMotion ? nil :
-                            .easeInOut(duration: 0.5)
-                            .repeatForever(autoreverses: true)
-                            .delay(Double(index) * 0.15),
-                            value: animating
-                        )
-                }
-            }
-            .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.smLg)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
-
-            Spacer(minLength: 50)
+    private func articleContextHeader(thread: ChatThread) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: "doc.text")
+                .font(AppTypography.metaLabel)
+                .foregroundColor(BrandColors.primary)
+            Text(thread.articleTitle ?? thread.title)
+                .font(AppTypography.caption1)
+                .foregroundColor(BrandColors.textSecondary)
+                .lineLimit(1)
+            Spacer()
         }
         .padding(.horizontal, AppSpacing.md)
-        .onAppear {
-            guard !reduceMotion else { return }
-            animating = true
+        .padding(.top, AppSpacing.sm)
+    }
+
+    private func errorBanner(message: String) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(BrandColors.error)
+            Text(message)
+                .font(AppTypography.bodySmall)
+                .foregroundColor(BrandColors.error)
+                .lineLimit(2)
+            Spacer()
+
+            Button("Retry") {
+                Task { await viewModel.retryLastUserPrompt() }
+            }
+            .font(AppTypography.labelSmall)
+            .foregroundColor(BrandColors.primary)
+        }
+        .padding(AppSpacing.md)
+        .background(BrandColors.error.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.bottom, AppSpacing.xs)
+    }
+
+    private func submitComposer() {
+        guard canSend else { return }
+        Task { await viewModel.sendComposerMessage() }
+    }
+}
+
+private struct ChatHomeContent: View {
+    @ObservedObject var viewModel: ChatViewModel
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                intro
+
+                if let todayThread = viewModel.todayThread {
+                    todayCard(thread: todayThread)
+                }
+
+                intentSection
+
+                if !viewModel.recentThreads.isEmpty {
+                    recentSection
+                }
+            }
+            .padding(.top, AppSpacing.md)
+            .padding(.bottom, AppSpacing.xl)
+        }
+    }
+
+    private var intro: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("Your news, with context")
+                .font(AppTypography.articleTitle)
+                .foregroundColor(BrandColors.textPrimary)
+
+            Text("Daily Copilot turns your feed into a clean briefing, deeper analysis, and fast follow-up conversations grounded in the stories you already follow.")
+                .font(AppTypography.subheadline)
+                .foregroundColor(BrandColors.textSecondary)
+                .lineSpacing(3)
+        }
+        .padding(.horizontal, AppSpacing.lg)
+    }
+
+    private func todayCard(thread: ChatThread) -> some View {
+        Button {
+            HapticService.impact(.light)
+            Task {
+                await viewModel.openThread(thread)
+                if thread.messageCount == 0 {
+                    await viewModel.sendIntent(.yourBriefing)
+                }
+            }
+        } label: {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Text("TODAY")
+                    .font(AppTypography.metaLabel)
+                    .tracking(0.8)
+                    .foregroundColor(BrandColors.sourceText)
+
+                Text(thread.title)
+                    .font(AppTypography.feedHeroTitle)
+                    .foregroundColor(BrandColors.textPrimary)
+
+                Text(thread.lastMessagePreview ?? "Open your saved briefing workspace and let Daily synthesize the strongest signal across your feed.")
+                    .font(AppTypography.bodyMedium)
+                    .foregroundColor(BrandColors.textSecondary)
+                    .lineLimit(3)
+
+                HStack(spacing: AppSpacing.sm) {
+                    Label("Open Today", systemImage: "sparkles")
+                        .font(AppTypography.labelMedium)
+                        .foregroundColor(BrandColors.primary)
+                    Spacer()
+                    if let updatedAt = thread.updatedAt {
+                        Text(updatedAt.formatted(.relative(presentation: .named)))
+                            .font(AppTypography.caption2)
+                            .foregroundColor(BrandColors.textTertiary)
+                    }
+                }
+            }
+            .padding(AppSpacing.lg)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: AppCornerRadius.xlarge, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, AppSpacing.lg)
+    }
+
+    private var intentSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("Quick Takes")
+                .font(AppTypography.sectionTitle)
+                .foregroundColor(BrandColors.sectionHeader)
+                .tracking(0.8)
+                .padding(.horizontal, AppSpacing.lg)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: AppSpacing.sm) {
+                    ForEach(viewModel.homeIntents) { intent in
+                        Button {
+                            HapticService.impact(.light)
+                            Task { await viewModel.sendIntent(intent) }
+                        } label: {
+                            HStack(spacing: AppSpacing.xs) {
+                                Image(systemName: intent.icon)
+                                    .font(AppTypography.chipIcon)
+                                    .foregroundColor(BrandColors.primary)
+                                Text(intent.title)
+                                    .font(AppTypography.caption1)
+                                    .foregroundColor(BrandColors.textPrimary)
+                            }
+                            .padding(.horizontal, AppSpacing.md)
+                            .padding(.vertical, AppSpacing.smPlus)
+                            .glassEffect(.regular.interactive(), in: .capsule)
+                        }
+                    }
+                }
+                .padding(.horizontal, AppSpacing.lg)
+            }
+        }
+    }
+
+    private var recentSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("Recent")
+                .font(AppTypography.sectionTitle)
+                .foregroundColor(BrandColors.sectionHeader)
+                .tracking(0.8)
+                .padding(.horizontal, AppSpacing.lg)
+
+            VStack(spacing: AppSpacing.sm) {
+                ForEach(viewModel.recentThreads) { thread in
+                    Button {
+                        HapticService.impact(.light)
+                        Task { await viewModel.openThread(thread) }
+                    } label: {
+                        HStack(alignment: .top, spacing: AppSpacing.md) {
+                            Image(systemName: thread.kind == .article ? "doc.text" : "bubble.left.and.bubble.right")
+                                .font(AppTypography.iconButton)
+                                .foregroundColor(BrandColors.primary)
+                                .frame(width: 22)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(thread.title)
+                                    .font(AppTypography.headline)
+                                    .foregroundColor(BrandColors.textPrimary)
+                                    .lineLimit(2)
+                                if let preview = thread.lastMessagePreview {
+                                    Text(preview)
+                                        .font(AppTypography.bodySmall)
+                                        .foregroundColor(BrandColors.textSecondary)
+                                        .lineLimit(2)
+                                }
+                            }
+
+                            Spacer()
+                        }
+                        .padding(AppSpacing.md)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, AppSpacing.lg)
         }
     }
 }
 
-// MARK: - Chat Bubble
-
-struct ChatBubbleView: View {
-    let message: ChatMessage
+private struct ChatThreadContent: View {
+    @ObservedObject var viewModel: ChatViewModel
+    let onOpenSource: (NewsArticle) -> Void
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: AppSpacing.sm) {
-            if message.isUser {
-                Spacer(minLength: 50)
-            }
+        ScrollViewReader { proxy in
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(alignment: .leading, spacing: AppSpacing.md) {
+                    if viewModel.currentThread?.kind == .article {
+                        articleIntentRow
+                    }
 
-            VStack(alignment: message.isUser ? .trailing : .leading, spacing: 4) {
-                if message.isUser {
-                    userBubble
-                } else {
-                    aiBubble
+                    ForEach(viewModel.turns) { turn in
+                        if turn.isUser {
+                            userTurn(turn)
+                        } else {
+                            assistantTurn(turn)
+                        }
+                    }
+
+                    if viewModel.isStreaming, let status = viewModel.streamStatus {
+                        streamingStatus(status: status)
+                    }
                 }
-
-                Text(message.timestamp, style: .time)
-                    .font(AppTypography.caption2)
-                    .foregroundColor(BrandColors.textTertiary)
-                    .padding(.horizontal, AppSpacing.xs)
+                .padding(.horizontal, AppSpacing.md)
+                .padding(.top, AppSpacing.md)
+                .padding(.bottom, AppSpacing.xl)
             }
-
-            if !message.isUser {
-                Spacer(minLength: 50)
+            .scrollDismissesKeyboard(.interactively)
+            .onChange(of: viewModel.turns.count) { _, _ in
+                scrollToBottom(with: proxy)
+            }
+            .onChange(of: viewModel.isStreaming) { _, _ in
+                scrollToBottom(with: proxy)
             }
         }
     }
 
-    private var userBubble: some View {
-        Text(message.content)
-            .font(AppTypography.body)
-            .foregroundColor(.white)
-            .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.smPlus)
-            .background(BrandColors.primary)
-            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+    private var articleIntentRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: AppSpacing.sm) {
+                ForEach(viewModel.threadIntents) { intent in
+                    Button {
+                        HapticService.impact(.light)
+                        Task { await viewModel.sendIntent(intent) }
+                    } label: {
+                        HStack(spacing: AppSpacing.xs) {
+                            Image(systemName: intent.icon)
+                                .font(AppTypography.chipIcon)
+                                .foregroundColor(BrandColors.primary)
+                            Text(intent.title)
+                                .font(AppTypography.caption1)
+                                .foregroundColor(BrandColors.textPrimary)
+                        }
+                        .padding(.horizontal, AppSpacing.md)
+                        .padding(.vertical, AppSpacing.smPlus)
+                        .glassEffect(.regular.interactive(), in: .capsule)
+                    }
+                }
+            }
+        }
     }
 
-    private var aiBubble: some View {
-        Text(message.content)
-            .font(AppTypography.body)
-            .foregroundColor(BrandColors.textPrimary)
-            .textSelection(.enabled)
-            .padding(.horizontal, AppSpacing.md)
-            .padding(.vertical, AppSpacing.smPlus)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+    private func userTurn(_ turn: ChatTurn) -> some View {
+        HStack {
+            Spacer(minLength: 48)
+
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(turn.plainText)
+                    .font(AppTypography.body)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, AppSpacing.md)
+                    .padding(.vertical, AppSpacing.smPlus)
+                    .background(BrandColors.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+
+                if let createdAt = turn.createdAt {
+                    Text(createdAt, style: .time)
+                        .font(AppTypography.caption2)
+                        .foregroundColor(BrandColors.textTertiary)
+                }
+            }
+        }
+        .id(turn.id)
+    }
+
+    private func assistantTurn(_ turn: ChatTurn) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            ForEach(turn.blocks) { block in
+                AssistantBlockView(block: block)
+            }
+
+            if !turn.sources.isEmpty {
+                SourceRailView(sources: turn.sources) { source in
+                    onOpenSource(source.asNewsArticle)
+                }
+            }
+
+            if !turn.followUps.isEmpty {
+                FollowUpChipsView(followUps: turn.followUps) { followUp in
+                    viewModel.inputText = followUp
+                    Task { await viewModel.sendComposerMessage() }
+                }
+            }
+
+            HStack(spacing: AppSpacing.md) {
+                Button("Copy") {
+                    UIPasteboard.general.string = turn.plainText
+                }
+                .font(AppTypography.caption1)
+                .foregroundColor(BrandColors.textSecondary)
+
+                ShareLink(item: turn.plainText) {
+                    Text("Share")
+                        .font(AppTypography.caption1)
+                        .foregroundColor(BrandColors.textSecondary)
+                }
+
+                Button("Regenerate") {
+                    Task { await viewModel.regenerateLastResponse() }
+                }
+                .font(AppTypography.caption1)
+                .foregroundColor(BrandColors.textSecondary)
+
+                Spacer()
+
+                if turn.degraded {
+                    Text("Fallback")
+                        .font(AppTypography.caption2)
+                        .foregroundColor(BrandColors.textTertiary)
+                }
+            }
+            .padding(.top, AppSpacing.xs)
+        }
+        .padding(AppSpacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.xlarge, style: .continuous))
+        .id(turn.id)
+    }
+
+    private func streamingStatus(status: String) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            ProgressView()
+                .tint(BrandColors.primary)
+            Text(status)
+                .font(AppTypography.bodySmall)
+                .foregroundColor(BrandColors.textSecondary)
+            Spacer()
+        }
+        .padding(AppSpacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+    }
+
+    private func scrollToBottom(with proxy: ScrollViewProxy) {
+        if let lastTurn = viewModel.turns.last {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                proxy.scrollTo(lastTurn.id, anchor: .bottom)
+            }
+        }
+    }
+}
+
+private struct AssistantBlockView: View {
+    let block: AssistantBlock
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            if let heading = block.heading, !heading.isEmpty {
+                Text(heading.uppercased())
+                    .font(AppTypography.metaLabel)
+                    .tracking(0.8)
+                    .foregroundColor(BrandColors.sourceText)
+            }
+
+            switch block.kind {
+            case .headline:
+                Text(block.text ?? "")
+                    .font(AppTypography.feedHeroTitle)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            case .summary:
+                Text(block.text ?? "")
+                    .font(AppTypography.body)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .lineSpacing(4)
+            case .whyItMatters:
+                Text(block.text ?? "")
+                    .font(AppTypography.articleLeadIn)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .lineSpacing(4)
+                    .padding(.leading, AppSpacing.sm)
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .fill(BrandColors.primary.opacity(0.6))
+                            .frame(width: 2)
+                    }
+            case .bulletList, .timeline, .watchlist:
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    ForEach(displayItems, id: \.self) { item in
+                        HStack(alignment: .top, spacing: AppSpacing.sm) {
+                            Circle()
+                                .fill(BrandColors.primary)
+                                .frame(width: 6, height: 6)
+                                .padding(.top, 7)
+                            Text(item)
+                                .font(AppTypography.bodyMedium)
+                                .foregroundColor(BrandColors.textPrimary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            case .body:
+                Text(block.text ?? "")
+                    .font(AppTypography.body)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .lineSpacing(4)
+            }
+        }
+    }
+
+    private var displayItems: [String] {
+        if let items = block.items, !items.isEmpty {
+            return items
+        }
+        guard let text = block.text else { return [] }
+        return text
+            .split(separator: "\n")
+            .map { line in
+                line.replacingOccurrences(of: "^-\\s*", with: "", options: .regularExpression)
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            .filter { !$0.isEmpty }
+    }
+}
+
+private struct SourceRailView: View {
+    let sources: [SourceCard]
+    let onOpen: (SourceCard) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("Sources")
+                .font(AppTypography.metaLabel)
+                .tracking(0.8)
+                .foregroundColor(BrandColors.sourceText)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: AppSpacing.sm) {
+                    ForEach(sources) { source in
+                        Button {
+                            onOpen(source)
+                        } label: {
+                            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                                Text((source.source ?? "Daily").uppercased())
+                                    .font(AppTypography.caption2)
+                                    .foregroundColor(BrandColors.sourceText)
+                                Text(source.title)
+                                    .font(AppTypography.headlineSmall)
+                                    .foregroundColor(BrandColors.textPrimary)
+                                    .lineLimit(3)
+                                if let summary = source.summary {
+                                    Text(summary)
+                                        .font(AppTypography.caption1)
+                                        .foregroundColor(BrandColors.textSecondary)
+                                        .lineLimit(3)
+                                }
+                            }
+                            .padding(AppSpacing.md)
+                            .frame(width: 240, alignment: .leading)
+                            .background(Color(.systemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct FollowUpChipsView: View {
+    let followUps: [String]
+    let onTap: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("Keep Going")
+                .font(AppTypography.metaLabel)
+                .tracking(0.8)
+                .foregroundColor(BrandColors.sourceText)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: AppSpacing.sm) {
+                    ForEach(followUps, id: \.self) { followUp in
+                        Button {
+                            onTap(followUp)
+                        } label: {
+                            Text(followUp)
+                                .font(AppTypography.caption1)
+                                .foregroundColor(BrandColors.textPrimary)
+                                .padding(.horizontal, AppSpacing.md)
+                                .padding(.vertical, AppSpacing.smPlus)
+                                .background(Color(.systemBackground))
+                                .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
     }
 }
 
