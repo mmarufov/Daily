@@ -5,6 +5,7 @@ import os
 import sys
 import types
 import unittest
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -38,11 +39,7 @@ class ChatStreamingTests(unittest.TestCase):
         self.assertTrue(payload.endswith("\n\n"))
 
     def test_section_stream_parser_handles_split_answer_tags(self):
-        parser = SectionStreamParser(
-            [
-                {"kind": "answer", "heading": None},
-            ]
-        )
+        parser = SectionStreamParser([{"kind": "answer", "heading": None}])
 
         first = parser.feed("<ans")
         second = parser.feed("wer>Hello")
@@ -73,23 +70,13 @@ class ChatStreamingTests(unittest.TestCase):
 class ChatServiceFlowTests(unittest.IsolatedAsyncioTestCase):
     async def test_structured_intent_keeps_briefing_flow(self):
         fake_openai = _FakeOpenAIService()
-        service = ChatService(openai_service=fake_openai)
+        fake_newsapi = _FakeNewsAPIService()
+        service = ChatService(openai_service=fake_openai, newsapi_service=fake_newsapi)
         service._semantic_lookup = AsyncMock(return_value=[_article("a2", "Support coverage", similarity=0.7)])
         store = _InMemoryChatStore(kind="today")
         fake_feed = AsyncMock(return_value=[_article("a1", "Main feed story", similarity=0.9)])
 
-        with patch("app.services.chat_service.get_personalized_feed", fake_feed), patch.multiple(
-            "app.services.chat_service.chat_repository",
-            get_thread=store.get_thread,
-            get_thread_messages=store.get_thread_messages,
-            create_message=store.create_message,
-            update_message=store.update_message,
-            set_message_sources=store.set_message_sources,
-            get_message_sources=store.get_message_sources,
-            get_recent_thread_source_articles=store.get_recent_thread_source_articles,
-            get_articles_by_ids=store.get_articles_by_ids,
-            update_thread_title=store.update_thread_title,
-        ):
+        with _patched_chat_repo(store), patch("app.services.chat_service.get_personalized_feed", fake_feed):
             generator = await service.stream_thread_message(
                 conn=object(),
                 user_id="user-1",
@@ -102,30 +89,21 @@ class ChatServiceFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(any("event: sources" in event for event in events))
         self.assertEqual(fake_openai.plan_calls, 1)
         self.assertEqual(fake_openai.structured_stream_calls, 1)
-        self.assertEqual(fake_openai.qa_stream_calls, 0)
+        self.assertEqual(fake_openai.news_answer_stream_calls, 0)
+        self.assertEqual(fake_openai.news_roundup_stream_calls, 0)
         self.assertEqual(fake_openai.route_calls, 0)
         self.assertEqual(store.updated_message["blocks_json"][0]["kind"], "headline")
         self.assertEqual(store.source_article_ids, ["a1", "a2"])
 
     async def test_general_chat_greeting_skips_retrieval_and_sources(self):
         fake_openai = _FakeOpenAIService()
-        service = ChatService(openai_service=fake_openai)
+        fake_newsapi = _FakeNewsAPIService()
+        service = ChatService(openai_service=fake_openai, newsapi_service=fake_newsapi)
         service._semantic_lookup = AsyncMock(return_value=[_article("a2", "Unused support")])
         store = _InMemoryChatStore(kind="manual")
         fake_feed = AsyncMock(return_value=[_article("a1", "Unused feed story")])
 
-        with patch("app.services.chat_service.get_personalized_feed", fake_feed), patch.multiple(
-            "app.services.chat_service.chat_repository",
-            get_thread=store.get_thread,
-            get_thread_messages=store.get_thread_messages,
-            create_message=store.create_message,
-            update_message=store.update_message,
-            set_message_sources=store.set_message_sources,
-            get_message_sources=store.get_message_sources,
-            get_recent_thread_source_articles=store.get_recent_thread_source_articles,
-            get_articles_by_ids=store.get_articles_by_ids,
-            update_thread_title=store.update_thread_title,
-        ):
+        with _patched_chat_repo(store), patch("app.services.chat_service.get_personalized_feed", fake_feed):
             generator = await service.stream_thread_message(
                 conn=object(),
                 user_id="user-1",
@@ -138,46 +116,75 @@ class ChatServiceFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(any('"label": "Thinking"' in event for event in events))
         self.assertFalse(any("event: sources" in event for event in events))
         self.assertEqual(fake_openai.route_calls, 0)
-        self.assertEqual(fake_openai.qa_stream_calls, 1)
+        self.assertEqual(fake_openai.news_answer_stream_calls, 1)
+        self.assertEqual(fake_openai.news_roundup_stream_calls, 0)
         self.assertEqual(fake_openai.plan_calls, 0)
-        service._semantic_lookup.assert_not_awaited()
         self.assertEqual(fake_feed.await_count, 0)
+        service._semantic_lookup.assert_not_awaited()
+        self.assertEqual(fake_newsapi.search_calls, 0)
+        self.assertEqual(fake_newsapi.headline_calls, 0)
         self.assertEqual(store.updated_message["blocks_json"][0]["kind"], "answer")
         self.assertEqual(store.updated_message["generation_meta"]["response_mode"], "general_chat")
-        self.assertEqual(store.updated_message["generation_meta"]["retrieval_used"], False)
+        self.assertFalse(store.updated_message["generation_meta"]["retrieval_used"])
+        self.assertFalse(store.updated_message["generation_meta"]["live_search_used"])
         self.assertEqual(store.source_article_ids, [])
 
-    async def test_today_freeform_question_routes_to_news_qa_without_briefing(self):
+    async def test_broad_news_prompt_routes_to_roundup_and_retitles_weak_manual_thread(self):
+        fake_openai = _FakeOpenAIService()
+        fake_newsapi = _FakeNewsAPIService()
+        service = ChatService(openai_service=fake_openai, newsapi_service=fake_newsapi)
+        service._semantic_lookup = AsyncMock(
+            return_value=[_article("a2", "Support coverage", similarity=0.82)]
+        )
+        store = _InMemoryChatStore(kind="manual", title="Yo")
+        store.messages = [
+            store.make_existing_message("user", "Yo"),
+            store.make_existing_message("assistant", "Hey there! How can I help you today?"),
+        ]
+        fake_feed = AsyncMock(return_value=[_article("a1", "Main feed story", similarity=0.91)])
+
+        with _patched_chat_repo(store), patch("app.services.chat_service.get_personalized_feed", fake_feed):
+            generator = await service.stream_thread_message(
+                conn=object(),
+                user_id="user-1",
+                thread_id="thread-1",
+                content="What are the most interesting topics and news today mate",
+                intent=None,
+            )
+            events = [event async for event in generator]
+
+        self.assertTrue(any('"label": "Scanning your feed"' in event for event in events))
+        self.assertTrue(any('"label": "Writing your roundup"' in event for event in events))
+        self.assertEqual(fake_openai.route_calls, 0)
+        self.assertEqual(fake_openai.news_roundup_stream_calls, 1)
+        self.assertEqual(fake_openai.news_answer_stream_calls, 0)
+        self.assertEqual(store.updated_message["blocks_json"][0]["kind"], "headline")
+        self.assertEqual(store.updated_message["generation_meta"]["response_mode"], "news_roundup")
+        self.assertEqual(store.source_article_ids, ["a1", "a2"])
+        self.assertEqual(store.thread["title"], "What are the most interesting topics and news t...")
+
+    async def test_news_answer_uses_live_search_when_internal_context_is_weak(self):
         fake_openai = _FakeOpenAIService(
             route_response={
-                "response_mode": "news_qa",
+                "response_mode": "news_answer",
                 "needs_retrieval": True,
                 "needs_related_coverage": False,
+                "allow_live_search": True,
                 "reason": "current-events question",
             }
         )
-        service = ChatService(openai_service=fake_openai)
-        service._semantic_lookup = AsyncMock(
-            return_value=[
-                _article("a1", "Nvidia margins jump", similarity=0.92),
-                _article("a2", "Chip stocks react", similarity=0.88),
-            ]
+        fake_newsapi = _FakeNewsAPIService(
+            search_results=[_live_article("Fed decision live", url="https://example.com/live-fed")]
         )
-        store = _InMemoryChatStore(kind="today")
-        fake_feed = AsyncMock(return_value=[_article("a3", "Unused feed story")])
+        service = ChatService(openai_service=fake_openai, newsapi_service=fake_newsapi)
+        stale = datetime.now(timezone.utc) - timedelta(days=3)
+        service._semantic_lookup = AsyncMock(
+            return_value=[_article("a1", "Weak match", similarity=0.12, published_at=stale)]
+        )
+        store = _InMemoryChatStore(kind="manual")
+        fake_feed = AsyncMock(return_value=[])
 
-        with patch("app.services.chat_service.get_personalized_feed", fake_feed), patch.multiple(
-            "app.services.chat_service.chat_repository",
-            get_thread=store.get_thread,
-            get_thread_messages=store.get_thread_messages,
-            create_message=store.create_message,
-            update_message=store.update_message,
-            set_message_sources=store.set_message_sources,
-            get_message_sources=store.get_message_sources,
-            get_recent_thread_source_articles=store.get_recent_thread_source_articles,
-            get_articles_by_ids=store.get_articles_by_ids,
-            update_thread_title=store.update_thread_title,
-        ):
+        with _patched_chat_repo(store), patch("app.services.chat_service.get_personalized_feed", fake_feed):
             generator = await service.stream_thread_message(
                 conn=object(),
                 user_id="user-1",
@@ -187,20 +194,20 @@ class ChatServiceFlowTests(unittest.IsolatedAsyncioTestCase):
             )
             events = [event async for event in generator]
 
-        self.assertTrue(any('"label": "Checking your feed"' in event for event in events))
-        self.assertTrue(any('"label": "Writing answer"' in event for event in events))
+        self.assertTrue(any('"label": "Searching live coverage"' in event for event in events))
         self.assertEqual(fake_openai.route_calls, 1)
-        self.assertEqual(fake_openai.plan_calls, 0)
-        self.assertEqual(fake_openai.qa_stream_calls, 1)
-        self.assertEqual(fake_feed.await_count, 0)
-        self.assertEqual(store.updated_message["blocks_json"][0]["kind"], "answer")
-        self.assertEqual(store.updated_message["generation_meta"]["response_mode"], "news_qa")
-        self.assertEqual(store.source_article_ids, ["a1", "a2"])
+        self.assertEqual(fake_openai.news_answer_stream_calls, 1)
+        self.assertEqual(fake_newsapi.search_calls, 1)
+        self.assertEqual(fake_newsapi.headline_calls, 0)
+        self.assertTrue(store.updated_message["generation_meta"]["live_search_used"])
+        self.assertEqual(store.updated_message["generation_meta"]["response_mode"], "news_answer")
+        self.assertEqual(store.source_article_ids, ["a1", "live-1"])
 
-    async def test_article_freeform_question_uses_current_article_first(self):
+    async def test_article_thread_uses_current_article_first(self):
         fake_openai = _FakeOpenAIService()
-        service = ChatService(openai_service=fake_openai)
-        service._semantic_lookup = AsyncMock(return_value=[_article("a2", "Related coverage", similarity=0.6)])
+        fake_newsapi = _FakeNewsAPIService()
+        service = ChatService(openai_service=fake_openai, newsapi_service=fake_newsapi)
+        service._semantic_lookup = AsyncMock(return_value=[_article("a2", "Related coverage", similarity=0.64)])
         store = _InMemoryChatStore(
             kind="article",
             article_id="article-1",
@@ -209,20 +216,9 @@ class ChatServiceFlowTests(unittest.IsolatedAsyncioTestCase):
         store.articles_by_id = {
             "article-1": _article("article-1", "Tesla supply chain"),
         }
-        fake_feed = AsyncMock(return_value=[_article("a3", "Unused feed story")])
+        fake_feed = AsyncMock(return_value=[])
 
-        with patch("app.services.chat_service.get_personalized_feed", fake_feed), patch.multiple(
-            "app.services.chat_service.chat_repository",
-            get_thread=store.get_thread,
-            get_thread_messages=store.get_thread_messages,
-            create_message=store.create_message,
-            update_message=store.update_message,
-            set_message_sources=store.set_message_sources,
-            get_message_sources=store.get_message_sources,
-            get_recent_thread_source_articles=store.get_recent_thread_source_articles,
-            get_articles_by_ids=store.get_articles_by_ids,
-            update_thread_title=store.update_thread_title,
-        ):
+        with _patched_chat_repo(store), patch("app.services.chat_service.get_personalized_feed", fake_feed):
             generator = await service.stream_thread_message(
                 conn=object(),
                 user_id="user-1",
@@ -233,53 +229,40 @@ class ChatServiceFlowTests(unittest.IsolatedAsyncioTestCase):
             events = [event async for event in generator]
 
         self.assertTrue(any('"label": "Reading this story"' in event for event in events))
-        self.assertTrue(any('"label": "Checking related coverage"' in event for event in events))
         self.assertEqual(fake_openai.route_calls, 0)
-        self.assertEqual(fake_openai.plan_calls, 0)
-        self.assertEqual(fake_openai.qa_stream_calls, 1)
-        self.assertEqual(service._semantic_lookup.await_count, 1)
-        self.assertEqual(fake_feed.await_count, 0)
-        self.assertEqual(store.updated_message["blocks_json"][0]["kind"], "answer")
+        self.assertEqual(fake_openai.news_answer_stream_calls, 1)
         self.assertEqual(store.updated_message["generation_meta"]["response_mode"], "article_qa")
         self.assertEqual(store.source_article_ids, ["article-1", "a2"])
 
-    async def test_news_qa_uses_feed_when_semantic_results_are_weak(self):
-        fake_openai = _FakeOpenAIService(
-            route_response={
-                "response_mode": "news_qa",
-                "needs_retrieval": True,
-                "needs_related_coverage": False,
-                "reason": "news question",
-            }
+    async def test_roundup_uses_live_headlines_when_internal_context_is_stale(self):
+        fake_openai = _FakeOpenAIService()
+        fake_newsapi = _FakeNewsAPIService(
+            headline_results=[_live_article("Top headline", url="https://example.com/top-headline")]
         )
-        service = ChatService(openai_service=fake_openai)
-        service._semantic_lookup = AsyncMock(return_value=[_article("a1", "Weak match", similarity=0.1)])
+        service = ChatService(openai_service=fake_openai, newsapi_service=fake_newsapi)
+        stale = datetime.now(timezone.utc) - timedelta(days=5)
+        service._semantic_lookup = AsyncMock(
+            return_value=[_article("a2", "Old support story", similarity=0.18, published_at=stale)]
+        )
         store = _InMemoryChatStore(kind="manual")
-        fake_feed = AsyncMock(return_value=[_article("a2", "Feed article", similarity=0.9)])
+        fake_feed = AsyncMock(return_value=[_article("a1", "Older feed story", published_at=stale)])
 
-        with patch("app.services.chat_service.get_personalized_feed", fake_feed), patch.multiple(
-            "app.services.chat_service.chat_repository",
-            get_thread=store.get_thread,
-            get_thread_messages=store.get_thread_messages,
-            create_message=store.create_message,
-            update_message=store.update_message,
-            set_message_sources=store.set_message_sources,
-            get_message_sources=store.get_message_sources,
-            get_recent_thread_source_articles=store.get_recent_thread_source_articles,
-            get_articles_by_ids=store.get_articles_by_ids,
-            update_thread_title=store.update_thread_title,
-        ):
+        with _patched_chat_repo(store), patch("app.services.chat_service.get_personalized_feed", fake_feed):
             generator = await service.stream_thread_message(
                 conn=object(),
                 user_id="user-1",
                 thread_id="thread-1",
-                content="What happened in markets today?",
+                content="What's happening today?",
                 intent=None,
             )
-            _ = [event async for event in generator]
+            events = [event async for event in generator]
 
-        self.assertEqual(fake_feed.await_count, 1)
-        self.assertEqual(store.source_article_ids, ["a1", "a2"])
+        self.assertTrue(any('"label": "Searching live coverage"' in event for event in events))
+        self.assertEqual(fake_openai.news_roundup_stream_calls, 1)
+        self.assertEqual(fake_newsapi.headline_calls, 1)
+        self.assertTrue(store.updated_message["generation_meta"]["live_search_used"])
+        self.assertEqual(store.updated_message["generation_meta"]["response_mode"], "news_roundup")
+        self.assertEqual(store.source_article_ids, ["a1", "a2", "live-1"])
 
 
 class _FakeOpenAIService:
@@ -288,12 +271,14 @@ class _FakeOpenAIService:
             "response_mode": "general_chat",
             "needs_retrieval": False,
             "needs_related_coverage": False,
+            "allow_live_search": False,
             "reason": "default general chat",
         }
         self.route_calls = 0
         self.plan_calls = 0
         self.structured_stream_calls = 0
-        self.qa_stream_calls = 0
+        self.news_roundup_stream_calls = 0
+        self.news_answer_stream_calls = 0
 
     async def generate_embedding(self, text: str):
         return None
@@ -323,8 +308,20 @@ class _FakeOpenAIService:
             await asyncio.sleep(0)
             yield chunk
 
-    async def stream_qa_chat_response(self, **kwargs):
-        self.qa_stream_calls += 1
+    async def stream_news_roundup_response(self, **kwargs):
+        self.news_roundup_stream_calls += 1
+        chunks = [
+            "<headline>Top stories today</headline>",
+            "<summary>Fresh roundup.</summary>",
+            "<bullet_list>- One\n- Two</bullet_list>",
+            "<why_it_matters>Signal is shifting.</why_it_matters>",
+        ]
+        for chunk in chunks:
+            await asyncio.sleep(0)
+            yield chunk
+
+    async def stream_news_answer_response(self, **kwargs):
+        self.news_answer_stream_calls += 1
         chunks = [
             "<answer>Direct answer.",
             " With context when useful.</answer>",
@@ -334,12 +331,28 @@ class _FakeOpenAIService:
             yield chunk
 
 
+class _FakeNewsAPIService:
+    def __init__(self, *, search_results=None, headline_results=None):
+        self.search_results = search_results or []
+        self.headline_results = headline_results or []
+        self.search_calls = 0
+        self.headline_calls = 0
+
+    async def search_recent_for_prompt(self, prompt: str, *, page_size: int = 6):
+        self.search_calls += 1
+        return [dict(article) for article in self.search_results[:page_size]]
+
+    async def top_headlines_for_roundup(self, *, country: str = "us", page_size: int = 20):
+        self.headline_calls += 1
+        return [dict(article) for article in self.headline_results[:page_size]]
+
+
 class _InMemoryChatStore:
-    def __init__(self, *, kind="manual", article_id=None, article_title=None):
+    def __init__(self, *, kind="manual", article_id=None, article_title=None, title=None):
         self.thread = {
             "id": "thread-1",
             "kind": kind,
-            "title": "New chat" if kind == "manual" else "Today" if kind == "today" else "Article discussion",
+            "title": title or ("New chat" if kind == "manual" else "Today" if kind == "today" else "Article discussion"),
             "article_id": article_id,
             "article_title": article_title,
             "local_day": None,
@@ -354,6 +367,8 @@ class _InMemoryChatStore:
         self.source_article_ids = []
         self.recent_source_articles = []
         self.articles_by_id = {}
+        self.articles_by_url = {}
+        self._external_counter = 0
 
     def get_thread(self, conn, *, user_id: str, thread_id: str):
         return self.thread if thread_id == "thread-1" else None
@@ -387,6 +402,19 @@ class _InMemoryChatStore:
         self.messages.append(row)
         self.thread["message_count"] = len(self.messages)
         return row
+
+    def make_existing_message(self, role: str, plain_text: str):
+        return {
+            "id": f"existing-{len(self.messages) + 1}",
+            "thread_id": "thread-1",
+            "role": role,
+            "plain_text": plain_text,
+            "blocks_json": [],
+            "follow_ups": [],
+            "degraded": False,
+            "generation_meta": {},
+            "created_at": None,
+        }
 
     def update_message(
         self,
@@ -425,6 +453,31 @@ class _InMemoryChatStore:
     def get_articles_by_ids(self, conn, *, article_ids):
         return [self._article_for_id(article_id) for article_id in article_ids if article_id in self.articles_by_id]
 
+    def get_articles_by_urls(self, conn, *, urls):
+        return [self.articles_by_url[url] for url in urls if url in self.articles_by_url]
+
+    def upsert_external_articles(self, conn, *, articles):
+        rows = []
+        for article in articles:
+            url = article["url"]
+            if url in self.articles_by_url:
+                rows.append(self.articles_by_url[url])
+                continue
+            self._external_counter += 1
+            article_id = f"live-{self._external_counter}"
+            row = _article(
+                article_id,
+                article.get("title") or f"Article {article_id}",
+                published_at=article.get("published_at"),
+            )
+            row["summary"] = article.get("summary")
+            row["source_name"] = article.get("source_name") or "Live"
+            row["url"] = url
+            self.articles_by_url[url] = row
+            self.articles_by_id[article_id] = row
+            rows.append(row)
+        return rows
+
     def update_thread_title(self, conn, *, thread_id: str, title: str):
         self.thread["title"] = title
 
@@ -432,7 +485,30 @@ class _InMemoryChatStore:
         return self.articles_by_id.get(article_id, _article(article_id, f"Article {article_id}"))
 
 
-def _article(article_id: str, title: str, similarity: float | None = None):
+def _patched_chat_repo(store: _InMemoryChatStore):
+    return patch.multiple(
+        "app.services.chat_service.chat_repository",
+        get_thread=store.get_thread,
+        get_thread_messages=store.get_thread_messages,
+        create_message=store.create_message,
+        update_message=store.update_message,
+        set_message_sources=store.set_message_sources,
+        get_message_sources=store.get_message_sources,
+        get_recent_thread_source_articles=store.get_recent_thread_source_articles,
+        get_articles_by_ids=store.get_articles_by_ids,
+        get_articles_by_urls=store.get_articles_by_urls,
+        upsert_external_articles=store.upsert_external_articles,
+        update_thread_title=store.update_thread_title,
+    )
+
+
+def _article(
+    article_id: str,
+    title: str,
+    *,
+    similarity: float | None = None,
+    published_at: datetime | None = None,
+):
     article = {
         "id": article_id,
         "title": title,
@@ -441,10 +517,24 @@ def _article(article_id: str, title: str, similarity: float | None = None):
         "author": None,
         "source_name": "Daily",
         "image_url": None,
-        "published_at": None,
+        "published_at": published_at,
         "category": "technology",
-        "url": "https://example.com/story",
+        "url": f"https://example.com/{article_id}",
     }
     if similarity is not None:
         article["similarity"] = similarity
     return article
+
+
+def _live_article(title: str, *, url: str):
+    return {
+        "title": title,
+        "summary": "Live summary",
+        "content": "Live content",
+        "author": None,
+        "source_name": "LiveWire",
+        "image_url": None,
+        "published_at": datetime.now(timezone.utc),
+        "category": "business",
+        "url": url,
+    }

@@ -1036,17 +1036,20 @@ Select the best matching image (0-based index) or return -1 if none are relevant
             "You classify chat turns for Daily, a news app assistant.\n"
             "Return ONLY valid JSON with this exact shape:\n"
             "{"
-            '"response_mode":"general_chat | news_qa | article_qa | structured_intent",'
+            '"response_mode":"general_chat | news_answer | news_roundup | article_qa | structured_intent",'
             '"needs_retrieval":true,'
             '"needs_related_coverage":false,'
+            '"allow_live_search":true,'
             '"reason":"short string"'
             "}\n"
             "Rules:\n"
             "- general_chat: ordinary conversation or questions not specifically about news/current events.\n"
-            "- news_qa: questions about stories, companies, markets, the feed, or recent/current events.\n"
+            "- news_answer: direct questions about stories, companies, markets, the feed, or recent/current events.\n"
+            "- news_roundup: broad prompts asking for the biggest stories, interesting news, top news, or what happened today overall.\n"
             "- article_qa: only if the question clearly refers to a current article/thread context.\n"
             "- structured_intent: never choose this for freeform typing.\n"
-            "- needs_retrieval must be false for general_chat and true for news_qa/article_qa.\n"
+            "- needs_retrieval must be false for general_chat and true for news_answer/news_roundup/article_qa.\n"
+            "- allow_live_search should be true for news_answer/news_roundup, and only true for article_qa if fresh/current coverage is likely needed.\n"
             "- needs_related_coverage should only be true when broader context beyond a single article is likely needed.\n"
         )
         user_prompt = (
@@ -1156,7 +1159,85 @@ Select the best matching image (0-based index) or return -1 if none are relevant
                 raise item
             yield item
 
-    async def stream_qa_chat_response(
+    async def stream_news_roundup_response(
+        self,
+        *,
+        plan: dict[str, Any],
+        prompt: str,
+        thread: dict,
+        selected_articles: list[dict],
+        prior_messages: list[dict],
+    ):
+        catalog = "\n\n".join(
+            (
+                f"[{index}] {article.get('title', 'Untitled')}\n"
+                f"Source: {article.get('source_name', article.get('source', 'Daily'))}\n"
+                f"Published: {article.get('published_at') or 'unknown'}\n"
+                f"Summary: {(article.get('summary') or '')[:300]}\n"
+                f"Content: {(article.get('content') or '')[:500]}"
+            )
+            for index, article in enumerate(selected_articles[:8])
+        ) or "No source articles were retrieved."
+        history = "\n".join(
+            f"{message.get('role', 'assistant')}: {(message.get('plain_text') or '')[:280]}"
+            for message in prior_messages[-6:]
+        ) or "No prior conversation."
+
+        system_prompt = (
+            "You are Daily's News Copilot, a sharp and trustworthy news editor.\n"
+            "Synthesize the strongest and freshest themes from the provided coverage.\n"
+            "Do not summarize each article one by one.\n"
+            "Stay grounded in the provided catalog. Do not invent unsupported facts.\n"
+            "Return ONLY these tags in this exact order with no extra prose:\n"
+            "<headline>...</headline>\n"
+            "<summary>...</summary>\n"
+            "<bullet_list>...</bullet_list>\n"
+            "<why_it_matters>...</why_it_matters>\n"
+            "Inside <bullet_list>, write 3-5 lines starting with '- '."
+        )
+        user_prompt = (
+            f"Thread kind: {thread.get('kind')}\n"
+            f"Response title: {plan.get('title')}\n"
+            f"User request: {prompt}\n\n"
+            f"Recent conversation:\n{history}\n\n"
+            f"Source catalog:\n{catalog}\n\n"
+            "Deliver a concise analyzed roundup now."
+        )
+
+        queue: asyncio.Queue[Any] = asyncio.Queue()
+        loop = asyncio.get_running_loop()
+
+        def worker() -> None:
+            try:
+                stream = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.4,
+                    max_tokens=900,
+                    stream=True,
+                )
+                for chunk in stream:
+                    delta = chunk.choices[0].delta.content or ""
+                    if delta:
+                        asyncio.run_coroutine_threadsafe(queue.put(delta), loop).result()
+                asyncio.run_coroutine_threadsafe(queue.put(None), loop).result()
+            except Exception as exc:
+                asyncio.run_coroutine_threadsafe(queue.put(exc), loop).result()
+
+        threading.Thread(target=worker, daemon=True).start()
+
+        while True:
+            item = await queue.get()
+            if item is None:
+                break
+            if isinstance(item, Exception):
+                raise item
+            yield item
+
+    async def stream_news_answer_response(
         self,
         *,
         response_mode: str,
@@ -1184,7 +1265,8 @@ Select the best matching image (0-based index) or return -1 if none are relevant
             "Answer the user's question directly like a normal helpful LLM.\n"
             "Use provided article or feed context only when it is relevant to the user's question.\n"
             "Do not summarize every article unless the user asked for a summary.\n"
-            "If the user asks about very recent news and the provided context is insufficient, say that plainly.\n"
+            "If the user asks about very recent news and the provided context is insufficient, say that plainly in Daily's voice.\n"
+            "Do not tell the user to check another source as your main answer.\n"
             "Do not invent source-backed claims that are not supported by the provided context.\n"
             "Return ONLY <answer>...</answer> with no other text."
         )
@@ -1233,6 +1315,24 @@ Select the best matching image (0-based index) or return -1 if none are relevant
             if isinstance(item, Exception):
                 raise item
             yield item
+
+    async def stream_qa_chat_response(
+        self,
+        *,
+        response_mode: str,
+        prompt: str,
+        thread: dict,
+        selected_articles: list[dict],
+        prior_messages: list[dict],
+    ):
+        async for delta in self.stream_news_answer_response(
+            response_mode=response_mode,
+            prompt=prompt,
+            thread=thread,
+            selected_articles=selected_articles,
+            prior_messages=prior_messages,
+        ):
+            yield delta
 
     async def client_chat_completion(self, **kwargs) -> any:
         """Wrapper for chat completions — used by source discovery for AI feed suggestions."""
