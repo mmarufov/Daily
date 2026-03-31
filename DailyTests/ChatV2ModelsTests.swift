@@ -2,6 +2,21 @@ import XCTest
 @testable import Daily
 
 final class ChatV2ModelsTests: XCTestCase {
+    func testStreamingEventDecodesLiveCoverageStatus() throws {
+        let payload = """
+        {"label":"Searching live coverage"}
+        """.data(using: .utf8)!
+
+        let event = try StreamingEvent.decode(event: "status", data: payload)
+
+        switch event {
+        case .status(let decoded):
+            XCTAssertEqual(decoded.label, "Searching live coverage")
+        default:
+            XCTFail("Expected status")
+        }
+    }
+
     func testStreamingEventDecodesAnswerSectionDelta() throws {
         let payload = """
         {"index":1,"kind":"answer","delta":"Hello world"}
