@@ -19,18 +19,7 @@ struct NewsView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    Text("Daily")
-                        .font(AppTypography.brandTitle)
-                        .foregroundColor(BrandColors.textPrimary)
-                        .tracking(-0.5)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, AppSpacing.lg)
-                        .padding(.top, AppSpacing.md)
-
-                    dateHeader
-                        .padding(.horizontal, AppSpacing.lg)
-                        .padding(.top, AppSpacing.xs)
-                        .padding(.bottom, AppSpacing.lg)
+                    heroHeader
 
                     if showWelcomeBanner {
                         welcomeBanner
@@ -75,10 +64,6 @@ struct NewsView: View {
             .refreshable {
                 await viewModel.refreshFeed()
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                toolbarContent
-            }
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
             }
@@ -114,51 +99,31 @@ struct NewsView: View {
 // MARK: - Private builders
 
 private extension NewsView {
-    var greeting: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        let firstName = auth.currentUser?.display_name?.components(separatedBy: " ").first
+    var heroHeader: some View {
+        HStack(alignment: .top, spacing: AppSpacing.md) {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text("Daily")
+                    .font(AppTypography.brandTitle)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .tracking(-0.5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-        switch hour {
-        case 5..<12:
-            if let name = firstName { return "Good morning, \(name)" }
-            return "Good morning"
-        case 12..<17:
-            if let name = firstName { return "Good afternoon, \(name)" }
-            return "Good afternoon"
-        case 17..<21:
-            if let name = firstName { return "Good evening, \(name)" }
-            return "Good evening"
-        default:
-            return "Late night reads"
+                dateHeader
+            }
+
+            profileButton
         }
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.top, AppSpacing.sm)
+        .padding(.bottom, AppSpacing.lg)
     }
 
     var dateHeader: some View {
-        HStack(spacing: AppSpacing.xs) {
-            Text(greeting)
-                .font(AppTypography.subheadline)
-                .foregroundColor(BrandColors.textSecondary)
-
-            Circle()
-                .fill(BrandColors.textQuaternary)
-                .frame(width: 3, height: 3)
-
-            Text(formattedFullDate)
-                .font(AppTypography.subheadline)
-                .foregroundColor(BrandColors.textTertiary)
-
-            if let subtitle = updatedSubtitle {
-                Circle()
-                    .fill(BrandColors.textQuaternary)
-                    .frame(width: 3, height: 3)
-
-                Text(subtitle)
-                    .font(AppTypography.subheadline)
-                    .foregroundColor(BrandColors.textQuaternary)
-            }
-
-            Spacer()
-        }
+        Text(formattedHeroDate)
+            .font(AppTypography.brandSubtitle)
+            .foregroundColor(BrandColors.textPrimary.opacity(0.92))
+            .tracking(-0.3)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Skeleton Loading
@@ -193,7 +158,7 @@ private extension NewsView {
 
             // Top Story
             if let featured = articles.first {
-                sectionLabel("Top Story")
+                sectionLabel("Top Story", style: .hero)
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.md)
 
@@ -290,11 +255,16 @@ private extension NewsView {
         .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
     }
 
-    func sectionLabel(_ title: String) -> some View {
-        Text(title.uppercased())
-            .font(AppTypography.sectionTitle)
-            .foregroundColor(BrandColors.sectionHeader)
-            .tracking(0.8)
+    enum SectionLabelStyle {
+        case standard
+        case hero
+    }
+
+    func sectionLabel(_ title: String, style: SectionLabelStyle = .standard) -> some View {
+        Text(title)
+            .font(style == .hero ? AppTypography.sectionHeroTitle : AppTypography.headline)
+            .foregroundColor(BrandColors.textPrimary.opacity(style == .hero ? 0.96 : 1))
+            .tracking(style == .hero ? -0.35 : -0.2)
     }
 
     func errorBanner(_ message: String) -> some View {
@@ -324,45 +294,37 @@ private extension NewsView {
         .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
     }
 
-    @ToolbarContentBuilder
-    var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            Button(action: { showingProfile = true }) {
-                if let photoURL = auth.currentUser?.photo_url,
-                   let url = URL(string: photoURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        default:
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .foregroundColor(BrandColors.textTertiary)
-                        }
+    var profileButton: some View {
+        Button(action: { showingProfile = true }) {
+            if let photoURL = auth.currentUser?.photo_url,
+               let url = URL(string: photoURL) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().aspectRatio(contentMode: .fill)
+                    default:
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .foregroundColor(BrandColors.textTertiary)
                     }
-                    .frame(width: 30, height: 30)
-                    .clipShape(Circle())
-                } else {
-                    Image(systemName: "person.crop.circle.fill")
-                        .font(AppTypography.profileIcon)
-                        .foregroundColor(BrandColors.textTertiary)
                 }
+                .frame(width: 34, height: 34)
+                .clipShape(Circle())
+            } else {
+                Image(systemName: "person.crop.circle.fill")
+                    .font(AppTypography.profileIcon)
+                    .foregroundColor(BrandColors.textTertiary)
             }
-            .accessibilityLabel("Open profile")
         }
+        .frame(width: 34, height: 34)
+        .padding(.top, AppSpacing.xs)
+        .accessibilityLabel("Open profile")
     }
 
-    var formattedFullDate: String {
+    var formattedHeroDate: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMMM d"
+        formatter.dateFormat = "MMMM d"
         return formatter.string(from: Date())
-    }
-
-    var updatedSubtitle: String? {
-        guard let date = viewModel.lastFetchDate else { return nil }
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        return "Updated \(formatter.localizedString(for: date, relativeTo: Date()))"
     }
 }
 
@@ -391,7 +353,23 @@ struct FeaturedArticleCard: View {
     }
 
     private var titleFont: Font {
-        style == .hero ? AppTypography.articleTitle : AppTypography.feedHeroTitle
+        style == .hero ? AppTypography.heroHeadline : AppTypography.feedHeroTitle
+    }
+
+    private var summaryFont: Font {
+        style == .hero ? AppTypography.articleLeadIn : AppTypography.subheadline
+    }
+
+    private var headlineTracking: CGFloat {
+        style == .hero ? -0.7 : -0.3
+    }
+
+    private var headlineLineSpacing: CGFloat {
+        style == .hero ? 4 : 2
+    }
+
+    private var summaryLineSpacing: CGFloat {
+        style == .hero ? 3 : 1
     }
 
     private var summaryLineLimit: Int {
@@ -465,16 +443,17 @@ struct FeaturedArticleCard: View {
                 .foregroundColor(BrandColors.textPrimary)
                 .opacity(isRead ? 0.6 : 1)
                 .lineLimit(3)
-                .lineSpacing(2)
+                .tracking(headlineTracking)
+                .lineSpacing(headlineLineSpacing)
                 .fixedSize(horizontal: false, vertical: true)
 
             // Summary
             if let summary = article.summary, !summary.isEmpty {
                 Text(summary)
-                    .font(AppTypography.subheadline)
+                    .font(summaryFont)
                     .foregroundColor(BrandColors.textSecondary)
                     .lineLimit(summaryLineLimit)
-                    .lineSpacing(1)
+                    .lineSpacing(summaryLineSpacing)
             }
         }
     }

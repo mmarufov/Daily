@@ -80,9 +80,12 @@ struct AppTypography {
     static let labelSmall = Font.system(.footnote, design: .default, weight: .medium)
 
     // Editorial typography — serif for headlines and reading
+    static let brandSubtitle = Font.system(.title2, design: .serif, weight: .bold)
     static let feedHeroTitle = Font.system(.title2, design: .serif, weight: .bold)
+    static let heroHeadline = Font.system(.largeTitle, design: .serif, weight: .bold)
     static let feedCardTitle = Font.system(.subheadline, design: .serif, weight: .semibold)
-    static let sectionTitle = Font.system(.caption, design: .default, weight: .bold)
+    static let sectionHeroTitle = Font.system(.title3, design: .serif, weight: .bold)
+    static let sectionTitle = Font.system(.footnote, design: .default, weight: .bold)
     static let sourceLabel = Font.system(.caption, design: .default, weight: .bold)
     static let dateLabel = Font.system(.caption, design: .default, weight: .regular)
 

@@ -16,15 +16,26 @@ struct BriefingCard: View {
         content
             .components(separatedBy: "\n")
             .map { line in
-                line.trimmingCharacters(in: .whitespaces)
+                line.trimmingCharacters(in: .whitespacesAndNewlines)
                     .replacingOccurrences(of: "^[•\\-\\*\\d+\\.]+\\s*", with: "", options: .regularExpression)
             }
             .filter { !$0.isEmpty }
     }
 
+    private var teaserLine: String {
+        switch bulletPoints.count {
+        case 3:
+            return "Three signals worth your attention today."
+        case 2:
+            return "Two shifts worth tracking right now."
+        default:
+            return "The few stories actually worth your attention."
+        }
+    }
+
     var body: some View {
         Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+            withAnimation(.snappy(duration: 0.38, extraBounce: 0.08)) {
                 isExpanded.toggle()
             }
         } label: {
@@ -33,15 +44,17 @@ struct BriefingCard: View {
 
                 if isExpanded {
                     expandedContent
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        .transition(
+                            .opacity.combined(with: .scale(scale: 0.98, anchor: .top))
+                        )
                 }
             }
-            .padding(AppSpacing.md)
+            .padding(.vertical, AppSpacing.md)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(BrandColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.card, style: .continuous))
+            .contentShape(Rectangle())
+            .clipped()
         }
-        .buttonStyle(.plain)
+        .buttonStyle(BriefingCardButtonStyle())
     }
 }
 
@@ -49,66 +62,79 @@ struct BriefingCard: View {
 
 private extension BriefingCard {
     var collapsedHeader: some View {
-        HStack(spacing: AppSpacing.smLg) {
-            // Icon
-            Image(systemName: "newspaper.fill")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(BrandColors.primary)
-                .frame(width: 30, height: 30)
-                .background(BrandColors.primary.opacity(0.10))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text("MORNING BRIEFING")
+                    .font(AppTypography.sectionTitle)
+                    .foregroundColor(BrandColors.sectionHeader)
+                    .tracking(0.8)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Your Briefing")
+                Text("What matters today")
                     .font(AppTypography.headline)
                     .foregroundColor(BrandColors.textPrimary)
 
-                if !isExpanded {
-                    Text(previewText)
-                        .font(AppTypography.subheadline)
-                        .foregroundColor(BrandColors.textSecondary)
-                        .lineLimit(1)
-                }
+                Text(teaserLine)
+                    .font(AppTypography.articleLeadIn)
+                    .foregroundColor(BrandColors.textPrimary)
+                    .lineSpacing(2)
+                    .multilineTextAlignment(.leading)
             }
 
-            Spacer()
+            HStack(spacing: AppSpacing.sm) {
+                Circle()
+                    .fill(BrandColors.primary.opacity(0.85))
+                    .frame(width: 6, height: 6)
 
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(BrandColors.textTertiary)
-                .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                Text("\(bulletPoints.count) key updates")
+                    .font(AppTypography.caption1)
+                    .foregroundColor(BrandColors.textSecondary)
+
+                Spacer()
+            }
+
+            HairlineDivider()
         }
     }
 
     var expandedContent: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.smLg) {
-            HairlineDivider()
-                .padding(.top, AppSpacing.smLg)
-
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
             ForEach(Array(bulletPoints.enumerated()), id: \.offset) { index, point in
                 HStack(alignment: .top, spacing: AppSpacing.smLg) {
                     Text("\(index + 1)")
-                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .font(AppTypography.metaLabel)
                         .foregroundStyle(BrandColors.primary)
-                        .frame(width: 22, height: 22)
-                        .background(BrandColors.primary.opacity(0.10))
-                        .clipShape(Circle())
+                        .frame(width: 18, alignment: .leading)
+                        .padding(.top, 2)
 
-                    Text(point)
-                        .font(AppTypography.subheadline)
-                        .foregroundColor(BrandColors.textSecondary)
+                    Text(markdownAttributed(point))
+                        .font(AppTypography.bodyMedium)
+                        .foregroundColor(BrandColors.textPrimary)
                         .lineSpacing(3)
+                        .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
+        .padding(.top, AppSpacing.md)
     }
 
-    var previewText: String {
-        let first = bulletPoints.first ?? content.prefix(60).description
-        if first.count > 55 {
-            return String(first.prefix(55)) + "..."
+    func markdownAttributed(_ text: String) -> AttributedString {
+        if let attributed = try? AttributedString(
+            markdown: text,
+            options: AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        ) {
+            return attributed
         }
-        return first
+
+        return AttributedString(text)
+    }
+}
+
+private struct BriefingCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .opacity(configuration.isPressed ? 0.92 : 1)
+            .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
     }
 }
