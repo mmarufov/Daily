@@ -196,6 +196,9 @@ BROAD_NEWS_PROMPT_RE = re.compile(
     r"\b("
     r"what(?:'s| is) happening(?: today| right now)?|"
     r"what(?:'s| is) going on(?: today| right now)?|"
+    r"what(?:'s| is| are) (?:the )?new+w*s?(?: today| right now)?|"
+    r"tell me (?:the )?(?:new+w*s?|latest news)(?: today| right now)?|"
+    r"give me (?:the )?(?:new+w*s?|latest news)(?: today| right now)?|"
     r"top news|"
     r"biggest stories|"
     r"interesting (?:topics|stories|news)|"
@@ -216,6 +219,82 @@ WEAK_THREAD_TITLE_RE = re.compile(
     r"^\s*(?:new chat|hey|hi|hello|yo|sup|what'?s up|gm|good morning|good evening)\s*$",
     re.IGNORECASE,
 )
+
+ARTICLE_FOLLOW_UP_RE = re.compile(
+    r"\b("
+    r"this|that|it|"
+    r"this article|that article|the article|"
+    r"this story|that story|the story|"
+    r"mean here|mean for|"
+    r"about this|on this|from this"
+    r")\b",
+    re.IGNORECASE,
+)
+
+CONTEXTUAL_FOLLOW_UP_RE = re.compile(
+    r"\b("
+    r"what about|how about|"
+    r"and\b|also\b|else\b|more\b|"
+    r"that|this|it|they|them|those|these|"
+    r"same|another|"
+    r"what changed|what happened next|"
+    r"why|how so"
+    r")\b",
+    re.IGNORECASE,
+)
+
+PROMPT_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+PROMPT_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "any",
+    "are",
+    "around",
+    "article",
+    "articles",
+    "be",
+    "bro",
+    "else",
+    "for",
+    "from",
+    "give",
+    "happened",
+    "happening",
+    "here",
+    "how",
+    "i",
+    "in",
+    "is",
+    "it",
+    "latest",
+    "mate",
+    "me",
+    "more",
+    "news",
+    "of",
+    "on",
+    "right",
+    "s",
+    "smth",
+    "story",
+    "stories",
+    "tell",
+    "that",
+    "the",
+    "them",
+    "these",
+    "they",
+    "this",
+    "those",
+    "today",
+    "up",
+    "us",
+    "what",
+    "whats",
+    "with",
+}
 
 
 class ChatService:
@@ -319,8 +398,22 @@ class ChatService:
                 "reason": "explicit_intent",
             }
             if intent_spec
-            else await self._route_freeform_turn(thread=thread, prompt=prompt)
+            else await self._route_freeform_turn(
+                thread=thread,
+                prompt=prompt,
+                prior_messages=prior_messages,
+            )
         )
+
+        if self._should_start_new_thread(thread=thread, route=route):
+            thread = chat_repository.create_or_reuse_thread(
+                conn,
+                user_id=user_id,
+                kind="manual",
+                title="New chat",
+            )
+            prior_messages = []
+            thread_id = str(thread["id"])
 
         if thread["kind"] == "manual" and not prior_messages and not self._is_phatic_prompt(prompt):
             chat_repository.update_thread_title(
@@ -461,6 +554,7 @@ class ChatService:
                             user_id=user_id,
                             thread=thread,
                             prompt=prompt,
+                            prior_messages=prior_messages,
                         )
                     else:
                         yield sse_event("status", {"label": "Reading this story"})
@@ -658,6 +752,7 @@ class ChatService:
         *,
         thread: dict[str, Any],
         prompt: str,
+        prior_messages: list[dict[str, Any]],
     ) -> dict[str, Any]:
         if self._is_phatic_prompt(prompt):
             return {
@@ -677,7 +772,7 @@ class ChatService:
                 "reason": "broad current-news prompt",
             }
 
-        if thread["kind"] == "article":
+        if self._is_article_follow_up(thread=thread, prompt=prompt):
             return {
                 "response_mode": "article_qa",
                 "needs_retrieval": True,
@@ -690,6 +785,8 @@ class ChatService:
             route = await self.openai_service.route_chat_turn(
                 prompt=prompt,
                 thread_kind=str(thread.get("kind") or "manual"),
+                article_title=thread.get("article_title"),
+                recent_history=self._route_history(prior_messages),
             )
         except Exception:
             route = {}
@@ -719,20 +816,39 @@ class ChatService:
         user_id: str,
         thread: dict[str, Any],
         prompt: str,
+        prior_messages: list[dict[str, Any]],
     ) -> list[dict[str, Any]]:
         cited = chat_repository.get_recent_thread_source_articles(
             conn,
             thread_id=str(thread["id"]),
             limit=4,
         )
-        feed_articles = await get_personalized_feed(user_id, conn, limit=4)
+        feed_articles = await get_personalized_feed(user_id, conn, limit=6)
+        retrieval_query = self._build_retrieval_query(
+            prompt=prompt,
+            thread=thread,
+            prior_messages=prior_messages,
+        )
         semantic = await self._semantic_lookup(
             conn,
-            query=prompt,
+            query=retrieval_query,
             limit=6,
             lookback_hours=24 * 7,
         )
-        articles = cited + feed_articles + semantic
+        ranked_semantic = self._rank_articles_for_prompt(retrieval_query, semantic, limit=6)
+        ranked_cited = self._rank_articles_for_prompt(retrieval_query, cited, limit=3, minimum_score=0.25)
+        ranked_feed = self._rank_articles_for_prompt(
+            retrieval_query,
+            feed_articles,
+            limit=4,
+            minimum_score=0.15,
+        )
+        articles = ranked_semantic + ranked_cited
+        if len(articles) < 4:
+            articles.extend(ranked_feed)
+        if not articles:
+            articles.extend(cited[:2])
+            articles.extend(feed_articles[:2])
         return self._dedupe_articles(articles, limit=10)
 
     async def _load_context_for_news_roundup(
@@ -940,6 +1056,140 @@ class ChatService:
             "follow_ups": follow_ups,
         }
 
+    def _should_start_new_thread(
+        self,
+        *,
+        thread: dict[str, Any],
+        route: dict[str, Any],
+    ) -> bool:
+        return (
+            str(thread.get("kind")) == "article"
+            and route.get("response_mode") in {"news_answer", "news_roundup"}
+        )
+
+    def _route_history(self, prior_messages: list[dict[str, Any]], limit: int = 4) -> str:
+        snippets = []
+        for message in prior_messages[-limit:]:
+            role = str(message.get("role") or "assistant")
+            text = " ".join(str(message.get("plain_text") or "").split())
+            if not text:
+                continue
+            snippets.append(f"{role}: {text[:180]}")
+        return "\n".join(snippets)
+
+    def _is_article_follow_up(
+        self,
+        *,
+        thread: dict[str, Any],
+        prompt: str,
+    ) -> bool:
+        if str(thread.get("kind")) != "article":
+            return False
+
+        collapsed = " ".join(prompt.split())
+        if ARTICLE_FOLLOW_UP_RE.search(collapsed):
+            return True
+
+        article_title = str(thread.get("article_title") or "").strip()
+        if not article_title:
+            return False
+
+        prompt_tokens = set(self._keyword_tokens(collapsed))
+        title_tokens = set(self._keyword_tokens(article_title))
+        return bool(prompt_tokens and title_tokens and prompt_tokens.intersection(title_tokens))
+
+    def _build_retrieval_query(
+        self,
+        *,
+        prompt: str,
+        thread: dict[str, Any],
+        prior_messages: list[dict[str, Any]],
+    ) -> str:
+        if not self._should_carry_conversation_context(prompt):
+            return prompt
+
+        seed_parts: list[str] = []
+        if self._is_article_follow_up(thread=thread, prompt=prompt):
+            article_title = str(thread.get("article_title") or "").strip()
+            if article_title:
+                seed_parts.append(article_title)
+
+        previous_user_turns = [
+            " ".join(str(message.get("plain_text") or "").split())
+            for message in prior_messages
+            if str(message.get("role") or "") == "user"
+        ]
+        for previous in reversed(previous_user_turns):
+            if previous and previous != prompt:
+                seed_parts.append(previous)
+                break
+
+        if not seed_parts:
+            return prompt
+
+        query_parts: list[str] = []
+        seen: set[str] = set()
+        for value in seed_parts + [prompt]:
+            normalized = value.lower()
+            if normalized in seen:
+                continue
+            seen.add(normalized)
+            query_parts.append(value)
+        return " ".join(query_parts)
+
+    def _should_carry_conversation_context(self, prompt: str) -> bool:
+        collapsed = " ".join(prompt.split())
+        keyword_count = len(self._keyword_tokens(collapsed))
+        if keyword_count <= 2:
+            return True
+        return bool(CONTEXTUAL_FOLLOW_UP_RE.search(collapsed))
+
+    def _keyword_tokens(self, text: str) -> list[str]:
+        return [
+            token
+            for token in PROMPT_TOKEN_RE.findall(text.lower())
+            if token and token not in PROMPT_STOPWORDS
+        ]
+
+    def _rank_articles_for_prompt(
+        self,
+        prompt: str,
+        articles: list[dict[str, Any]],
+        *,
+        limit: int,
+        minimum_score: float = 0.0,
+    ) -> list[dict[str, Any]]:
+        scored = []
+        for article in articles:
+            score = self._article_prompt_score(prompt, article)
+            if score < minimum_score:
+                continue
+            scored.append(
+                (
+                    score,
+                    self._coerce_datetime(article.get("published_at")) or datetime.min.replace(tzinfo=timezone.utc),
+                    article,
+                )
+            )
+        scored.sort(key=lambda item: (item[0], item[1]), reverse=True)
+        return [article for _, _, article in scored[:limit]]
+
+    def _article_prompt_score(self, prompt: str, article: dict[str, Any]) -> float:
+        prompt_tokens = set(self._keyword_tokens(prompt))
+        title_tokens = set(self._keyword_tokens(str(article.get("title") or "")))
+        summary_tokens = set(self._keyword_tokens(str(article.get("summary") or "")))
+
+        overlap = len(prompt_tokens.intersection(title_tokens)) * 1.5
+        overlap += len(prompt_tokens.intersection(summary_tokens)) * 0.5
+
+        similarity = float(article.get("similarity") or 0.0) * 4.0
+        freshness_bonus = 0.0
+        published_at = self._coerce_datetime(article.get("published_at"))
+        if published_at and published_at > datetime.now(timezone.utc) - timedelta(hours=24):
+            freshness_bonus = 0.1
+
+        return similarity + overlap + freshness_bonus
+
     def _serialize_thread(self, row: dict[str, Any]) -> dict[str, Any]:
         return {
             "id": str(row["id"]),
@@ -1095,6 +1345,16 @@ class ChatService:
     ) -> bool:
         if len(articles) < minimum_articles:
             return True
+
+        if not self._is_broad_news_prompt(prompt):
+            relevant_articles = [
+                self._article_prompt_score(prompt, article)
+                for article in articles
+            ]
+            if not relevant_articles or max(relevant_articles) < 0.5:
+                return True
+            if sum(1 for score in relevant_articles if score >= 0.5) < minimum_articles:
+                return True
 
         similarities = [
             float(article.get("similarity") or 0.0)

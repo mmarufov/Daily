@@ -4,7 +4,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct ChatView: View {
     @ObservedObject var viewModel: ChatViewModel
@@ -501,7 +500,7 @@ private struct ChatThreadContent: View {
     private func assistantTurn(_ turn: ChatTurn) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             ForEach(turn.blocks) { block in
-                AssistantBlockView(block: block)
+                AssistantBlockView(block: block, isStreaming: viewModel.isStreaming && turn.id == viewModel.turns.last?.id)
             }
 
             if !turn.sources.isEmpty {
@@ -516,39 +515,14 @@ private struct ChatThreadContent: View {
                     Task { await viewModel.sendComposerMessage() }
                 }
             }
-
-            HStack(spacing: AppSpacing.md) {
-                Button("Copy") {
-                    UIPasteboard.general.string = turn.plainText
-                }
-                .font(AppTypography.caption1)
-                .foregroundColor(BrandColors.textSecondary)
-
-                ShareLink(item: turn.plainText) {
-                    Text("Share")
-                        .font(AppTypography.caption1)
-                        .foregroundColor(BrandColors.textSecondary)
-                }
-
-                Button("Regenerate") {
-                    Task { await viewModel.regenerateLastResponse() }
-                }
-                .font(AppTypography.caption1)
-                .foregroundColor(BrandColors.textSecondary)
-
-                Spacer()
-
-                if turn.degraded {
-                    Text("Fallback")
-                        .font(AppTypography.caption2)
-                        .foregroundColor(BrandColors.textTertiary)
-                }
+            if turn.degraded {
+                Text("Fallback")
+                    .font(AppTypography.caption2)
+                    .foregroundColor(BrandColors.textTertiary)
+                    .padding(.top, AppSpacing.xs)
             }
-            .padding(.top, AppSpacing.xs)
         }
-        .padding(AppSpacing.md)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.xlarge, style: .continuous))
+        .padding(.vertical, AppSpacing.xs)
         .id(turn.id)
     }
 
@@ -561,9 +535,7 @@ private struct ChatThreadContent: View {
                 .foregroundColor(BrandColors.textSecondary)
             Spacer()
         }
-        .padding(AppSpacing.md)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.large, style: .continuous))
+        .padding(.vertical, AppSpacing.xs)
     }
 
     private func scrollToBottom(with proxy: ScrollViewProxy) {
@@ -577,6 +549,7 @@ private struct ChatThreadContent: View {
 
 private struct AssistantBlockView: View {
     let block: AssistantBlock
+    var isStreaming: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -589,26 +562,13 @@ private struct AssistantBlockView: View {
 
             switch block.kind {
             case .answer:
-                Text(block.text ?? "")
-                    .font(AppTypography.body)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .lineSpacing(5)
-                    .fixedSize(horizontal: false, vertical: true)
+                streamingText(block.text ?? "", font: AppTypography.body, lineSpacing: 5)
             case .headline:
-                Text(block.text ?? "")
-                    .font(AppTypography.feedHeroTitle)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
+                streamingText(block.text ?? "", font: AppTypography.feedHeroTitle)
             case .summary:
-                Text(block.text ?? "")
-                    .font(AppTypography.body)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .lineSpacing(4)
+                streamingText(block.text ?? "", font: AppTypography.body, lineSpacing: 4)
             case .whyItMatters:
-                Text(block.text ?? "")
-                    .font(AppTypography.articleLeadIn)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .lineSpacing(4)
+                streamingText(block.text ?? "", font: AppTypography.articleLeadIn, lineSpacing: 4)
                     .padding(.leading, AppSpacing.sm)
                     .overlay(alignment: .leading) {
                         Rectangle()
@@ -631,10 +591,29 @@ private struct AssistantBlockView: View {
                     }
                 }
             case .body:
-                Text(block.text ?? "")
-                    .font(AppTypography.body)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .lineSpacing(4)
+                streamingText(block.text ?? "", font: AppTypography.body, lineSpacing: 4)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func streamingText(
+        _ text: String,
+        font: Font,
+        lineSpacing: CGFloat = 0
+    ) -> some View {
+        HStack(alignment: .lastTextBaseline, spacing: 3) {
+            Text(text)
+                .font(font)
+                .foregroundColor(BrandColors.textPrimary)
+                .lineSpacing(lineSpacing)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if isStreaming && !text.isEmpty {
+                RoundedRectangle(cornerRadius: 1)
+                    .fill(BrandColors.primary.opacity(0.7))
+                    .frame(width: 2, height: 18)
+                    .padding(.bottom, 3)
             }
         }
     }
