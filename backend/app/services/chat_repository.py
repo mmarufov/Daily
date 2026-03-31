@@ -389,6 +389,72 @@ def get_articles_by_ids(conn, *, article_ids: list[str]) -> list[dict[str, Any]]
     return rows
 
 
+def get_articles_by_urls(conn, *, urls: list[str]) -> list[dict[str, Any]]:
+    if not urls:
+        return []
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, title, summary, content, author, source_name, image_url,
+                   published_at, category, url
+            FROM public.articles
+            WHERE url = ANY(%s)
+            """,
+            (urls,),
+        )
+        rows = cur.fetchall()
+
+    order = {url: index for index, url in enumerate(urls)}
+    rows.sort(key=lambda row: order.get(str(row.get("url")), 9999))
+    return rows
+
+
+def upsert_external_articles(
+    conn,
+    *,
+    articles: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    cleaned = [article for article in articles if article.get("url")]
+    if not cleaned:
+        return []
+
+    with conn.cursor() as cur:
+        for article in cleaned:
+            cur.execute(
+                """
+                INSERT INTO public.articles (
+                    url, title, summary, author, source_name, image_url, published_at, category, ingested_at
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, now())
+                ON CONFLICT (url) DO UPDATE SET
+                    title = COALESCE(NULLIF(EXCLUDED.title, ''), public.articles.title),
+                    summary = COALESCE(public.articles.summary, EXCLUDED.summary),
+                    author = COALESCE(public.articles.author, EXCLUDED.author),
+                    source_name = COALESCE(public.articles.source_name, EXCLUDED.source_name),
+                    image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
+                    published_at = COALESCE(public.articles.published_at, EXCLUDED.published_at),
+                    category = COALESCE(public.articles.category, EXCLUDED.category),
+                    ingested_at = now()
+                """,
+                (
+                    article.get("url"),
+                    article.get("title") or "Untitled",
+                    article.get("summary"),
+                    article.get("author"),
+                    article.get("source_name") or article.get("source"),
+                    article.get("image_url"),
+                    article.get("published_at"),
+                    article.get("category"),
+                ),
+            )
+
+    return get_articles_by_urls(
+        conn,
+        urls=[str(article["url"]) for article in cleaned],
+    )
+
+
 def touch_thread(conn, *, thread_id: str, preview: str | None = None) -> None:
     with conn.cursor() as cur:
         cur.execute(

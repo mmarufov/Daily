@@ -2,6 +2,7 @@
 NewsAPI Service for fetching news articles
 """
 import os
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 import httpx
 from dotenv import load_dotenv
@@ -173,15 +174,51 @@ class NewsAPIService:
         """
         return {
             "title": article.get("title", ""),
+            "summary": article.get("description"),
             "description": article.get("description"),
             "content": article.get("content"),
             "author": article.get("author"),
             "source": article.get("source", {}).get("name") if isinstance(article.get("source"), dict) else article.get("source"),
+            "source_name": article.get("source", {}).get("name") if isinstance(article.get("source"), dict) else article.get("source"),
             "image_url": article.get("urlToImage"),
             "url": article.get("url"),
             "published_at": article.get("publishedAt"),
             "category": None,  # NewsAPI doesn't provide category per article
         }
+
+    async def search_recent_for_prompt(
+        self,
+        prompt: str,
+        *,
+        page_size: int = 6,
+        language: str = "en",
+    ) -> List[Dict]:
+        from_date = (datetime.now(timezone.utc) - timedelta(days=2)).date().isoformat()
+        response = await self.search_everything(
+            query=prompt,
+            language=language,
+            sort_by="publishedAt",
+            page_size=page_size,
+            from_date=from_date,
+        )
+        return [
+            self.format_article(article)
+            for article in response.get("articles", [])
+            if article.get("url")
+        ]
+
+    async def top_headlines_for_roundup(
+        self,
+        *,
+        country: str = "us",
+        page_size: int = 20,
+    ) -> List[Dict]:
+        response = await self.get_top_headlines(country=country, page_size=page_size)
+        return [
+            self.format_article(article)
+            for article in response.get("articles", [])
+            if article.get("url")
+        ]
     
     async def close(self):
         """Close the HTTP client"""
@@ -197,7 +234,6 @@ def get_newsapi_service() -> NewsAPIService:
     if _newsapi_service is None:
         _newsapi_service = NewsAPIService()
     return _newsapi_service
-
 
 
 

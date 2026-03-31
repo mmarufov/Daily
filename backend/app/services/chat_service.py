@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from fastapi import HTTPException
@@ -15,6 +15,7 @@ from app.services.chat_streaming import (
     sse_event,
 )
 from app.services.feed_service import get_personalized_feed
+from app.services.newsapi_service import get_newsapi_service
 from app.services.openai_service import get_openai_service
 
 
@@ -170,15 +171,57 @@ QA_RESPONSE_LAYOUT = {
     "follow_ups": [],
 }
 
+ROUNDUP_RESPONSE_LAYOUT = {
+    "title": "Top stories today",
+    "layout": "news_roundup",
+    "sections": [
+        _section("headline", "Headline"),
+        _section("summary", "TL;DR"),
+        _section("bullet_list", "Key Themes"),
+        _section("why_it_matters", "Why It Matters"),
+    ],
+    "follow_ups": [
+        "Which story matters most for me?",
+        "What changed in the last few hours?",
+        "Give me the skeptical take.",
+    ],
+}
+
 PHATIC_PROMPT_RE = re.compile(
     r"^\s*(?:hey|hi|hello|yo|sup|what'?s up|whats up|how are you|thanks|thank you|thx|lol|lmao|haha|ok|okay|cool|nice|gm|good morning|good evening)\b[\s!?.,]*$",
     re.IGNORECASE,
 )
 
+BROAD_NEWS_PROMPT_RE = re.compile(
+    r"\b("
+    r"what(?:'s| is) happening(?: today| right now)?|"
+    r"what(?:'s| is) going on(?: today| right now)?|"
+    r"top news|"
+    r"biggest stories|"
+    r"interesting (?:topics|stories|news)|"
+    r"most important (?:stories|news)|"
+    r"what should i know today|"
+    r"what changed today|"
+    r"news today"
+    r")\b",
+    re.IGNORECASE,
+)
+
+FRESH_NEWS_RE = re.compile(
+    r"\b(today|latest|right now|breaking|just happened|fresh|newest)\b",
+    re.IGNORECASE,
+)
+
+WEAK_THREAD_TITLE_RE = re.compile(
+    r"^\s*(?:new chat|hey|hi|hello|yo|sup|what'?s up|gm|good morning|good evening)\s*$",
+    re.IGNORECASE,
+)
+
 
 class ChatService:
-    def __init__(self, openai_service=None):
+    def __init__(self, openai_service=None, newsapi_service=None):
         self.openai_service = openai_service or get_openai_service()
+        self.newsapi_service = newsapi_service
 
     async def list_threads(self, conn, *, user_id: str, limit: int = 40) -> list[dict[str, Any]]:
         rows = chat_repository.list_threads(conn, user_id=user_id, limit=limit)
@@ -272,13 +315,14 @@ class ChatService:
                 "response_mode": "structured_intent",
                 "needs_retrieval": True,
                 "needs_related_coverage": False,
+                "allow_live_search": False,
                 "reason": "explicit_intent",
             }
             if intent_spec
             else await self._route_freeform_turn(thread=thread, prompt=prompt)
         )
 
-        if thread["kind"] == "manual" and not prior_messages:
+        if thread["kind"] == "manual" and not prior_messages and not self._is_phatic_prompt(prompt):
             chat_repository.update_thread_title(
                 conn,
                 thread_id=thread_id,
@@ -319,6 +363,8 @@ class ChatService:
             full_text = ""
             selected_articles: list[dict[str, Any]] = []
             plan: dict[str, Any] = {}
+            parser: SectionStreamParser | None = None
+            live_search_used = False
             try:
                 if route["response_mode"] == "structured_intent":
                     yield sse_event("status", {"label": "Scanning your feed"})
@@ -357,14 +403,60 @@ class ChatService:
                         full_text += delta
                         for event_name, payload in parser.feed(delta):
                             yield sse_event(event_name, payload)
+                elif route["response_mode"] == "news_roundup":
+                    yield sse_event("status", {"label": "Scanning your feed"})
+                    yield sse_event("status", {"label": "Pulling related coverage"})
+                    selected_articles = await self._load_context_for_news_roundup(
+                        conn=conn,
+                        user_id=user_id,
+                        prompt=prompt,
+                    )
+
+                    if route.get("allow_live_search") and self._context_is_weak_or_stale(
+                        articles=selected_articles,
+                        prompt=prompt,
+                        minimum_articles=4,
+                    ):
+                        yield sse_event("status", {"label": "Searching live coverage"})
+                        live_articles = await self._load_live_news_context(
+                            conn=conn,
+                            prompt=prompt,
+                            mode="news_roundup",
+                        )
+                        if live_articles:
+                            live_search_used = True
+                            selected_articles = self._dedupe_articles(
+                                selected_articles + live_articles,
+                                limit=14,
+                            )
+
+                    plan = self._roundup_plan(prompt=prompt)
+                    source_cards = [
+                        self._serialize_source_card(article) for article in selected_articles[:4]
+                    ]
+                    if source_cards:
+                        yield sse_event("sources", {"sources": source_cards})
+
+                    yield sse_event("status", {"label": "Writing your roundup"})
+                    parser = SectionStreamParser(plan["sections"])
+                    async for delta in self.openai_service.stream_news_roundup_response(
+                        plan=plan,
+                        prompt=prompt,
+                        thread=thread,
+                        selected_articles=selected_articles,
+                        prior_messages=prior_messages,
+                    ):
+                        full_text += delta
+                        for event_name, payload in parser.feed(delta):
+                            yield sse_event(event_name, payload)
                 else:
                     if route["response_mode"] == "general_chat":
                         yield sse_event("status", {"label": "Thinking"})
                         selected_articles = []
-                    elif route["response_mode"] == "news_qa":
+                    elif route["response_mode"] == "news_answer":
                         yield sse_event("status", {"label": "Checking your feed"})
-                        yield sse_event("status", {"label": "Pulling related coverage"})
-                        selected_articles = await self._load_context_for_news_qa(
+                        yield sse_event("status", {"label": "Pulling recent coverage"})
+                        selected_articles = await self._load_context_for_news_answer(
                             conn=conn,
                             user_id=user_id,
                             thread=thread,
@@ -381,7 +473,30 @@ class ChatService:
                             needs_related_coverage=route.get("needs_related_coverage", False),
                         )
 
-                    plan = self._qa_plan(response_mode=route["response_mode"])
+                    if (
+                        route["response_mode"] in {"news_answer", "article_qa"}
+                        and route.get("allow_live_search")
+                        and self._context_is_weak_or_stale(
+                            articles=selected_articles,
+                            prompt=prompt,
+                            minimum_articles=2,
+                        )
+                    ):
+                        yield sse_event("status", {"label": "Searching live coverage"})
+                        live_prompt = thread.get("article_title") or prompt
+                        live_articles = await self._load_live_news_context(
+                            conn=conn,
+                            prompt=live_prompt,
+                            mode=route["response_mode"],
+                        )
+                        if live_articles:
+                            live_search_used = True
+                            selected_articles = self._dedupe_articles(
+                                selected_articles + live_articles,
+                                limit=10 if route["response_mode"] == "news_answer" else 6,
+                            )
+
+                    plan = self._answer_plan(response_mode=route["response_mode"])
                     source_cards = [
                         self._serialize_source_card(article) for article in selected_articles[:4]
                     ]
@@ -390,7 +505,7 @@ class ChatService:
 
                     yield sse_event("status", {"label": "Writing answer"})
                     parser = SectionStreamParser(plan["sections"])
-                    async for delta in self._stream_qa_response(
+                    async for delta in self._stream_answer_response(
                         response_mode=route["response_mode"],
                         prompt=prompt,
                         thread=thread,
@@ -401,7 +516,7 @@ class ChatService:
                         for event_name, payload in parser.feed(delta):
                             yield sse_event(event_name, payload)
 
-                for event_name, payload in parser.finish():
+                for event_name, payload in (parser.finish() if parser else []):
                     yield sse_event(event_name, payload)
 
                 blocks = build_blocks_from_text(full_text, plan["sections"])
@@ -413,6 +528,7 @@ class ChatService:
                     "intent": intent,
                     "response_mode": route["response_mode"],
                     "retrieval_used": bool(source_article_ids),
+                    "live_search_used": live_search_used,
                     "router_reason": route.get("reason"),
                     "layout": plan["layout"],
                     "title": plan["title"],
@@ -441,6 +557,18 @@ class ChatService:
                     updated_message,
                     final_sources.get(str(assistant_message["id"]), []),
                 )
+                if self._should_retitle_thread_after_turn(
+                    thread=thread,
+                    route=route,
+                    prompt=prompt,
+                ):
+                    new_title = self._title_from_prompt(prompt)
+                    chat_repository.update_thread_title(
+                        conn,
+                        thread_id=thread_id,
+                        title=new_title,
+                    )
+                    thread["title"] = new_title
                 if plan["follow_ups"]:
                     yield sse_event("follow_ups", {"follow_ups": plan["follow_ups"]})
                 yield sse_event("done", {"message": serialized_message})
@@ -463,6 +591,7 @@ class ChatService:
                         "state": "error",
                         "intent": intent,
                         "response_mode": route["response_mode"],
+                        "live_search_used": live_search_used,
                         "router_reason": route.get("reason"),
                         "error": str(exc),
                     },
@@ -535,7 +664,17 @@ class ChatService:
                 "response_mode": "general_chat",
                 "needs_retrieval": False,
                 "needs_related_coverage": False,
+                "allow_live_search": False,
                 "reason": "phatic greeting",
+            }
+
+        if self._is_broad_news_prompt(prompt):
+            return {
+                "response_mode": "news_roundup",
+                "needs_retrieval": True,
+                "needs_related_coverage": False,
+                "allow_live_search": True,
+                "reason": "broad current-news prompt",
             }
 
         if thread["kind"] == "article":
@@ -543,6 +682,7 @@ class ChatService:
                 "response_mode": "article_qa",
                 "needs_retrieval": True,
                 "needs_related_coverage": self._needs_related_coverage(prompt),
+                "allow_live_search": self._mentions_freshness(prompt),
                 "reason": "article thread default",
             }
 
@@ -555,23 +695,24 @@ class ChatService:
             route = {}
 
         response_mode = str(route.get("response_mode") or "general_chat")
-        if response_mode not in {"general_chat", "news_qa", "article_qa"}:
+        if response_mode not in {"general_chat", "news_answer", "news_roundup", "article_qa"}:
             response_mode = "general_chat"
 
         needs_retrieval = bool(route.get("needs_retrieval"))
         if response_mode == "general_chat":
             needs_retrieval = False
-        elif response_mode in {"news_qa", "article_qa"}:
+        elif response_mode in {"news_answer", "news_roundup", "article_qa"}:
             needs_retrieval = True
 
         return {
             "response_mode": response_mode,
             "needs_retrieval": needs_retrieval,
             "needs_related_coverage": bool(route.get("needs_related_coverage", False)),
+            "allow_live_search": bool(route.get("allow_live_search", response_mode != "general_chat")),
             "reason": str(route.get("reason") or "classifier"),
         }
 
-    async def _load_context_for_news_qa(
+    async def _load_context_for_news_answer(
         self,
         *,
         conn,
@@ -584,17 +725,31 @@ class ChatService:
             thread_id=str(thread["id"]),
             limit=4,
         )
+        feed_articles = await get_personalized_feed(user_id, conn, limit=4)
         semantic = await self._semantic_lookup(
             conn,
             query=prompt,
-            limit=4,
+            limit=6,
             lookback_hours=24 * 7,
         )
-        articles = cited + semantic
-        if self._should_include_feed_articles(cited=cited, semantic=semantic):
-            feed_articles = await get_personalized_feed(user_id, conn, limit=2)
-            articles.extend(feed_articles)
+        articles = cited + feed_articles + semantic
         return self._dedupe_articles(articles, limit=10)
+
+    async def _load_context_for_news_roundup(
+        self,
+        *,
+        conn,
+        user_id: str,
+        prompt: str,
+    ) -> list[dict[str, Any]]:
+        feed_articles = await get_personalized_feed(user_id, conn, limit=8)
+        support_articles = await self._semantic_lookup(
+            conn,
+            query=prompt,
+            limit=6,
+            lookback_hours=72,
+        )
+        return self._dedupe_articles(feed_articles + support_articles, limit=14)
 
     async def _load_context_for_article_qa(
         self,
@@ -613,6 +768,13 @@ class ChatService:
             if article_rows:
                 articles.append(article_rows[0])
 
+        cited = chat_repository.get_recent_thread_source_articles(
+            conn,
+            thread_id=str(thread["id"]),
+            limit=2,
+        )
+        articles.extend(cited)
+
         if not articles or needs_related_coverage:
             related = await self._semantic_lookup(
                 conn,
@@ -624,7 +786,72 @@ class ChatService:
 
         return self._dedupe_articles(articles, limit=4)
 
-    async def _stream_qa_response(
+    async def _load_live_news_context(
+        self,
+        *,
+        conn,
+        prompt: str,
+        mode: str,
+    ) -> list[dict[str, Any]]:
+        newsapi_service = self.newsapi_service
+        if newsapi_service is None:
+            try:
+                newsapi_service = get_newsapi_service()
+            except Exception:
+                return []
+
+        external_articles: list[dict[str, Any]] = []
+        try:
+            if mode == "news_roundup":
+                external_articles.extend(
+                    await newsapi_service.top_headlines_for_roundup(country="us", page_size=20)
+                )
+                focus_query = self._roundup_focus_query(prompt)
+                if focus_query:
+                    external_articles.extend(
+                        await newsapi_service.search_recent_for_prompt(focus_query, page_size=4)
+                    )
+            else:
+                external_articles.extend(
+                    await newsapi_service.search_recent_for_prompt(prompt, page_size=6)
+                )
+        except Exception:
+            return []
+
+        return self._normalize_live_articles(conn, external_articles)
+
+    def _normalize_live_articles(
+        self,
+        conn,
+        articles: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        normalized = []
+        for article in articles:
+            url = article.get("url")
+            if not url:
+                continue
+            normalized.append(
+                {
+                    "url": url,
+                    "title": article.get("title") or "Untitled",
+                    "summary": article.get("summary") or article.get("description"),
+                    "author": article.get("author"),
+                    "source_name": article.get("source_name") or article.get("source"),
+                    "image_url": article.get("image_url"),
+                    "published_at": article.get("published_at"),
+                    "category": article.get("category"),
+                }
+            )
+
+        if not normalized:
+            return []
+
+        try:
+            return chat_repository.upsert_external_articles(conn, articles=normalized)
+        except Exception:
+            return []
+
+    async def _stream_answer_response(
         self,
         *,
         response_mode: str,
@@ -633,7 +860,7 @@ class ChatService:
         selected_articles: list[dict[str, Any]],
         prior_messages: list[dict[str, Any]],
     ):
-        async for delta in self.openai_service.stream_qa_chat_response(
+        async for delta in self.openai_service.stream_news_answer_response(
             response_mode=response_mode,
             prompt=prompt,
             thread=thread,
@@ -775,12 +1002,24 @@ class ChatService:
             return INTENT_LIBRARY[intent]
         return None
 
-    def _qa_plan(self, *, response_mode: str) -> dict[str, Any]:
+    def _answer_plan(self, *, response_mode: str) -> dict[str, Any]:
         return {
             "title": "Answer",
             "layout": response_mode,
             "sections": QA_RESPONSE_LAYOUT["sections"],
             "follow_ups": [],
+        }
+
+    def _roundup_plan(self, *, prompt: str) -> dict[str, Any]:
+        title = "Top stories today"
+        focus_query = self._roundup_focus_query(prompt)
+        if focus_query:
+            title = f"Top {focus_query} stories today"
+        return {
+            "title": title[:120],
+            "layout": ROUNDUP_RESPONSE_LAYOUT["layout"],
+            "sections": ROUNDUP_RESPONSE_LAYOUT["sections"],
+            "follow_ups": ROUNDUP_RESPONSE_LAYOUT["follow_ups"],
         }
 
     def _normalize_sections(
@@ -831,6 +1070,13 @@ class ChatService:
             return False
         return bool(PHATIC_PROMPT_RE.match(collapsed))
 
+    def _is_broad_news_prompt(self, prompt: str) -> bool:
+        collapsed = " ".join(prompt.split())
+        return bool(BROAD_NEWS_PROMPT_RE.search(collapsed))
+
+    def _mentions_freshness(self, prompt: str) -> bool:
+        return bool(FRESH_NEWS_RE.search(prompt))
+
     def _needs_related_coverage(self, prompt: str) -> bool:
         return bool(
             re.search(
@@ -840,20 +1086,69 @@ class ChatService:
             )
         )
 
-    def _should_include_feed_articles(
+    def _context_is_weak_or_stale(
         self,
         *,
-        cited: list[dict[str, Any]],
-        semantic: list[dict[str, Any]],
+        articles: list[dict[str, Any]],
+        prompt: str,
+        minimum_articles: int,
     ) -> bool:
-        if len(cited) + len(semantic) < 2:
+        if len(articles) < minimum_articles:
             return True
 
-        best_similarity = max(
-            (float(article.get("similarity") or 0.0) for article in semantic),
-            default=0.0,
+        similarities = [
+            float(article.get("similarity") or 0.0)
+            for article in articles
+            if article.get("similarity") is not None
+        ]
+        if similarities and max(similarities) < 0.35 and len(articles) < minimum_articles + 2:
+            return True
+
+        if not self._mentions_freshness(prompt):
+            return False
+
+        newest = max(
+            (self._coerce_datetime(article.get("published_at")) for article in articles),
+            default=None,
         )
-        return best_similarity < 0.35 and not cited
+        if newest is None:
+            return True
+        return newest < datetime.now(timezone.utc) - timedelta(hours=24)
+
+    def _roundup_focus_query(self, prompt: str) -> str | None:
+        lowered = prompt.lower()
+        domains = {
+            "markets": "markets",
+            "stocks": "markets",
+            "ai": "ai",
+            "artificial intelligence": "ai",
+            "politics": "politics",
+            "tech": "technology",
+            "technology": "technology",
+            "crypto": "crypto",
+            "business": "business",
+            "world": "world",
+        }
+        for needle, label in domains.items():
+            if needle in lowered:
+                return label
+        return None
+
+    def _should_retitle_thread_after_turn(
+        self,
+        *,
+        thread: dict[str, Any],
+        route: dict[str, Any],
+        prompt: str,
+    ) -> bool:
+        if thread.get("kind") != "manual":
+            return False
+        if route.get("response_mode") not in {"news_answer", "news_roundup"}:
+            return False
+        if self._is_phatic_prompt(prompt):
+            return False
+        title = str(thread.get("title") or "").strip()
+        return not title or bool(WEAK_THREAD_TITLE_RE.match(title))
 
     def _dedupe_articles(
         self,
@@ -878,6 +1173,18 @@ class ChatService:
         if normalized.get("source") and not normalized.get("source_name"):
             normalized["source_name"] = normalized["source"]
         return normalized
+
+    def _coerce_datetime(self, value: Any) -> datetime | None:
+        if isinstance(value, datetime):
+            if value.tzinfo is None:
+                return value.replace(tzinfo=timezone.utc)
+            return value
+        if isinstance(value, str):
+            try:
+                return datetime.fromisoformat(value.replace("Z", "+00:00"))
+            except ValueError:
+                return None
+        return None
 
     def _iso(self, value: Any) -> str | None:
         if value is None:
