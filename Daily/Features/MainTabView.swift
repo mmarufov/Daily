@@ -31,12 +31,11 @@ struct MainTabView: View {
                 ChatView(viewModel: chatViewModel, selectedTab: $selectedTab)
             }
 
-            Tab("Search", systemImage: "magnifyingglass", value: .search) {
+            Tab("Search", systemImage: "magnifyingglass", value: .search, role: .search) {
                 SearchView(newsViewModel: newsViewModel)
             }
         }
         .tint(BrandColors.primary)
-        .tabBarMinimizeBehavior(.onScrollDown)
         .onChange(of: selectedTab) { _, _ in
             HapticService.selection()
         }
