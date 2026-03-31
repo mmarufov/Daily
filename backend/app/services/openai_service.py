@@ -1031,6 +1031,8 @@ Select the best matching image (0-based index) or return -1 if none are relevant
         *,
         prompt: str,
         thread_kind: str,
+        article_title: str | None = None,
+        recent_history: str | None = None,
     ) -> dict[str, Any]:
         system_prompt = (
             "You classify chat turns for Daily, a news app assistant.\n"
@@ -1048,15 +1050,21 @@ Select the best matching image (0-based index) or return -1 if none are relevant
             "- news_roundup: broad prompts asking for the biggest stories, interesting news, top news, or what happened today overall.\n"
             "- article_qa: only if the question clearly refers to a current article/thread context.\n"
             "- structured_intent: never choose this for freeform typing.\n"
+            "- In article threads, choose article_qa only when the user is still talking about that article/story. If they pivot to broader news or a different company/topic, choose news_answer or news_roundup instead.\n"
             "- needs_retrieval must be false for general_chat and true for news_answer/news_roundup/article_qa.\n"
             "- allow_live_search should be true for news_answer/news_roundup, and only true for article_qa if fresh/current coverage is likely needed.\n"
             "- needs_related_coverage should only be true when broader context beyond a single article is likely needed.\n"
         )
-        user_prompt = (
-            f"Thread kind: {thread_kind}\n"
-            f"User prompt: {prompt}\n\n"
-            "Return the JSON object now."
-        )
+        parts = [
+            f"Thread kind: {thread_kind}",
+            f"User prompt: {prompt}",
+        ]
+        if article_title:
+            parts.append(f"Current article title: {article_title}")
+        if recent_history:
+            parts.append(f"Recent conversation:\n{recent_history}")
+        parts.append("Return the JSON object now.")
+        user_prompt = "\n\n".join(parts)
 
         response = await asyncio.wait_for(
             asyncio.to_thread(
@@ -1257,7 +1265,7 @@ Select the best matching image (0-based index) or return -1 if none are relevant
                 f"Summary: {(article.get('summary') or '')[:240]}\n"
                 f"Content: {(article.get('content') or '')[:450]}"
             )
-            for index, article in enumerate(selected_articles[:4])
+            for index, article in enumerate(selected_articles[:6])
         )
 
         system_prompt = (
