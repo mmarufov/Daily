@@ -11,6 +11,8 @@ struct OnboardingChatView: View {
     @StateObject private var viewModel = OnboardingChatViewModel()
     @Environment(\.dismiss) private var dismiss
     @FocusState private var isInputFocused: Bool
+    @State private var newLocation = ""
+    @State private var newCurrentInterest = ""
 
     /// Called after preferences are successfully saved.
     var onCompleted: (() -> Void)?
@@ -25,6 +27,8 @@ struct OnboardingChatView: View {
         ("globe", "World News"),
         ("sportscourt", "Sports"),
     ]
+    private let utilityOptions = ["Work", "Money", "Health", "Local", "Travel"]
+    private let depthOptions: [(label: String, value: String)] = [("Quick", "breaking"), ("Balanced", "balanced"), ("Deep", "deep")]
 
     var body: some View {
         NavigationStack {
@@ -47,6 +51,8 @@ struct OnboardingChatView: View {
                                 if viewModel.messages.count <= 1 {
                                     chipSuggestions
                                 }
+
+                                quickContextCard
 
                                 if viewModel.isLoading {
                                     HStack(spacing: AppSpacing.sm) {
@@ -181,6 +187,83 @@ private extension OnboardingChatView {
         .padding(.bottom, AppSpacing.xs)
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .animation(.easeInOut(duration: 0.3), value: viewModel.messages.count)
+    }
+
+    var quickContextCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Text("Fine-tune what matters")
+                .font(AppTypography.headline)
+                .foregroundColor(BrandColors.textPrimary)
+
+            FlowLayout(spacing: AppSpacing.sm) {
+                ForEach(utilityOptions, id: \.self) { option in
+                    let isSelected = viewModel.utilityPriorities.contains(option)
+                    Button {
+                        if let index = viewModel.utilityPriorities.firstIndex(of: option) {
+                            viewModel.utilityPriorities.remove(at: index)
+                        } else {
+                            viewModel.utilityPriorities.append(option)
+                        }
+                    } label: {
+                        Text(option)
+                            .font(AppTypography.caption1)
+                            .foregroundColor(isSelected ? .white : BrandColors.textPrimary)
+                            .padding(.horizontal, AppSpacing.md)
+                            .padding(.vertical, AppSpacing.sm)
+                            .background(isSelected ? BrandColors.primary : BrandColors.cardBackground.opacity(0.9))
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+
+            Picker("Depth", selection: $viewModel.contentDepth) {
+                ForEach(depthOptions, id: \.value) { option in
+                    Text(option.label).tag(option.value)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            HStack(spacing: AppSpacing.sm) {
+                TextField("Current focus", text: $newCurrentInterest)
+                    .textFieldStyle(.roundedBorder)
+                Button("Add") {
+                    let trimmed = newCurrentInterest.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !trimmed.isEmpty, !viewModel.currentInterests.contains(trimmed) else { return }
+                    viewModel.currentInterests.append(trimmed)
+                    newCurrentInterest = ""
+                }
+                .disabled(newCurrentInterest.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+
+            if !viewModel.currentInterests.isEmpty {
+                ChipFlowView(items: viewModel.currentInterests) { item in
+                    viewModel.currentInterests.removeAll { $0 == item }
+                }
+            }
+
+            HStack(spacing: AppSpacing.sm) {
+                TextField("Location relevance", text: $newLocation)
+                    .textFieldStyle(.roundedBorder)
+                Button("Add") {
+                    let trimmed = newLocation.trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !trimmed.isEmpty, !viewModel.locations.contains(trimmed) else { return }
+                    viewModel.locations.append(trimmed)
+                    newLocation = ""
+                }
+                .disabled(newLocation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+
+            if !viewModel.locations.isEmpty {
+                ChipFlowView(items: viewModel.locations) { item in
+                    viewModel.locations.removeAll { $0 == item }
+                }
+            }
+
+            TextField("Anything about your life or work we should consider?", text: $viewModel.lifeContext, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(2...4)
+        }
+        .padding(.horizontal, AppSpacing.md)
     }
 
     var inputArea: some View {

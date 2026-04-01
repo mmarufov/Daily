@@ -12,7 +12,13 @@ import Combine
 final class NewsPersonalizationViewModel: ObservableObject {
     @Published var promptText: String = ""
     @Published var topics: [String] = []
+    @Published var currentInterests: [String] = []
+    @Published var utilityPriorities: [String] = []
+    @Published var locations: [String] = []
     @Published var exclusions: [String] = []
+    @Published var lifeContext: String = ""
+    @Published var contentDepth: String = "balanced"
+    @Published var tonePreferences: [String] = ["neutral"]
     @Published var isLoading: Bool = false
     @Published var isSaving: Bool = false
     @Published var errorMessage: String?
@@ -38,8 +44,27 @@ final class NewsPersonalizationViewModel: ObservableObject {
             if let topicsList = interests["topics"] as? [String] {
                 topics = topicsList
             }
+            if let locationList = interests["locations"] as? [String] {
+                locations = locationList
+            }
             if let excludedTopics = interests["excluded_topics"] as? [String] {
                 exclusions = excludedTopics
+            }
+            let profile = prefs.userProfileV2Dictionary
+            if let current = profile["current_interests"] as? [String] {
+                currentInterests = current
+            }
+            if let priorities = profile["utility_priorities"] as? [String] {
+                utilityPriorities = priorities
+            }
+            if let depth = profile["content_depth"] as? String, !depth.isEmpty {
+                contentDepth = depth
+            }
+            if let tone = profile["tone_preferences"] as? [String], !tone.isEmpty {
+                tonePreferences = tone
+            }
+            if let context = profile["life_context"] as? String {
+                lifeContext = context
             }
             isLoading = false
         } catch {
@@ -63,11 +88,13 @@ final class NewsPersonalizationViewModel: ObservableObject {
         
         do {
             let existingPreferences = try await backendService.fetchUserPreferences(accessToken: token)
+            let profileV2 = buildUserProfileV2()
 
             _ = try await backendService.saveUserPreferences(
                 accessToken: token,
                 interests: existingPreferences.interestsDictionary,
                 aiProfile: promptText,
+                userProfileV2: profileV2,
                 completed: true
             )
             isSaving = false
@@ -78,5 +105,17 @@ final class NewsPersonalizationViewModel: ObservableObject {
             return false
         }
     }
-}
 
+    func buildUserProfileV2() -> [String: Any] {
+        [
+            "stable_interests": topics,
+            "current_interests": currentInterests.isEmpty ? Array(topics.prefix(4)) : currentInterests,
+            "locations": locations,
+            "excluded_topics": exclusions,
+            "utility_priorities": utilityPriorities,
+            "content_depth": contentDepth,
+            "tone_preferences": tonePreferences,
+            "life_context": lifeContext
+        ]
+    }
+}
