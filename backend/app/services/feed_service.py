@@ -4,6 +4,7 @@ from __future__ import annotations
 Feed service: score articles from shared pool with AI, cache results, return personalized feed.
 """
 import asyncio
+import hashlib
 import json
 import logging
 import re
@@ -126,7 +127,11 @@ async def get_personalized_feed(
 ) -> list[dict]:
     """Return a personalized news feed for the given user."""
     user_uuid = _uuid.UUID(user_id)
-    ai_profile, interests, preferences_updated_at = _load_user_preferences(conn, user_uuid)
+    if conn is None or not hasattr(conn, "cursor"):
+        ai_profile, interests, preferences_updated_at = _load_user_preferences(conn, user_uuid)
+        user_profile_v2 = None
+    else:
+        ai_profile, interests, user_profile_v2, _source_selection_brief, preferences_updated_at = _load_user_preferences_full(conn, user_uuid)
 
     if conn is not None and hasattr(conn, "cursor"):
         with conn.cursor() as cur:
@@ -197,6 +202,7 @@ async def get_personalized_feed(
     analysis_results = [r for results in batch_results_list for r in results]
 
     _apply_individual_analysis_results(candidates, analysis_results, profile)
+    _annotate_candidate_feed_roles(candidates, user_profile_v2 or {})
     candidates.sort(
         key=lambda article: (article.get("_score", 0.0), article.get("published_at") or ""),
         reverse=True,
@@ -205,6 +211,7 @@ async def get_personalized_feed(
     finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
     relevant = [article for article in finalized if article.get("relevant", False)]
     relevant = _enforce_diversity(relevant)
+    relevant = _balance_feed_roles(relevant)
     relevant = relevant[:limit]
     await _hydrate_missing_feed_images(conn, relevant)
     return relevant
@@ -233,11 +240,23 @@ def _log_score_distribution(results: list[dict], context: str) -> None:
     )
 
 
-def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, datetime | None]:
+def _parse_json_object(raw: Any) -> dict | None:
+    if isinstance(raw, dict):
+        return raw
+    if isinstance(raw, str) and raw:
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            return None
+        return payload if isinstance(payload, dict) else None
+    return None
+
+
+def _load_user_preferences_full(conn, user_uuid) -> tuple[str | None, dict | None, dict | None, dict | None, datetime | None]:
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT ai_profile, interests, updated_at
+            SELECT ai_profile, interests, user_profile_v2, source_selection_brief, updated_at
             FROM public.user_preferences
             WHERE user_id = %s AND completed = true
             """,
@@ -246,9 +265,22 @@ def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, da
         row = cur.fetchone()
 
     if not row:
-        return None, None, None
+        return None, None, None, None, None
 
-    return row.get("ai_profile"), _parse_interests(row.get("interests")), row.get("updated_at")
+    return (
+        row.get("ai_profile"),
+        _parse_interests(row.get("interests")),
+        _parse_json_object(row.get("user_profile_v2")),
+        _parse_json_object(row.get("source_selection_brief")),
+        row.get("updated_at"),
+    )
+
+
+def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, datetime | None]:
+    if conn is None or not hasattr(conn, "cursor"):
+        return None, None, None
+    ai_profile, interests, _user_profile_v2, _source_selection_brief, updated_at = _load_user_preferences_full(conn, user_uuid)
+    return ai_profile, interests, updated_at
 
 
 async def _load_candidates_for_profile(
@@ -325,7 +357,9 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
                 f"""
                 SELECT scoped.id, scoped.url, scoped.title, scoped.summary, scoped.content,
                        scoped.author, scoped.source_name, scoped.image_url,
-                       scoped.published_at, scoped.ingested_at, scoped.category
+                       scoped.published_at, scoped.ingested_at, scoped.category,
+                       scoped.coverage_role, scoped.selection_reason, scoped.matched_topics,
+                       scoped.matched_entities, scoped.precision_score, scoped.breadth_score
                 FROM (
                     SELECT DISTINCT ON (a.id)
                            a.id, a.url, a.title, a.summary, a.content, a.author, a.source_name,
@@ -333,6 +367,12 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
                            COALESCE(asl.published_at, a.published_at) AS published_at,
                            a.ingested_at,
                            COALESCE(us.category, a.category) AS category,
+                           us.coverage_role,
+                           us.selection_reason,
+                           us.matched_topics,
+                           us.matched_entities,
+                           us.precision_score,
+                           us.breadth_score,
                            COALESCE(asl.published_at, a.published_at, a.ingested_at) AS scoped_published_at
                     FROM public.articles a
                     JOIN public.article_source_links asl ON asl.article_id = a.id
@@ -379,6 +419,12 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
             "url": row.get("url"),
             "published_at": published_at_str,
             "category": row.get("category"),
+            "source_coverage_role": row.get("coverage_role"),
+            "source_selection_reason": row.get("selection_reason"),
+            "source_matched_topics": row.get("matched_topics") or [],
+            "source_matched_entities": row.get("matched_entities") or [],
+            "source_precision_score": row.get("precision_score") or 0.0,
+            "source_breadth_score": row.get("breadth_score") or 0.0,
         })
 
     return candidates
@@ -985,7 +1031,7 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
         behavior = _behavior_signals or {}
         if behavior:
             category = candidate.get("category", "")
-            source = candidate.get("source_name", "")
+            source = candidate.get("source") or candidate.get("source_name", "")
             cat_boost = behavior.get("category_boost", {}).get(category, 0.0)
             src_boost = behavior.get("source_boost", {}).get(source, 0.0)
             blended_score = min(blended_score + min(cat_boost + src_boost, 0.15), 1.0)
@@ -1031,10 +1077,178 @@ def _enforce_diversity(articles: list[dict], max_per_category_pct: float = 0.4) 
     for group in by_category.values():
         result.extend(group[:max_per_cat])
         overflow.extend(group[max_per_cat:])
-    overflow.sort(key=lambda a: a.get("relevance_score", 0), reverse=True)
+    overflow.sort(key=_article_rank_score, reverse=True)
     result.extend(overflow)
-    result.sort(key=lambda a: a.get("relevance_score", 0), reverse=True)
+    result.sort(key=_article_rank_score, reverse=True)
     return result
+
+
+def _compute_freshness_score(article: dict) -> float:
+    published = _parse_article_datetime(article.get("published_at"))
+    if not published:
+        return 0.35
+    age_hours = max((datetime.now(timezone.utc) - published).total_seconds() / 3600, 0.0)
+    if age_hours <= 6:
+        return 1.0
+    if age_hours <= 24:
+        return 0.8
+    if age_hours <= 72:
+        return 0.55
+    return 0.3
+
+
+def _keyword_match_count(searchable: str, values: list[str]) -> int:
+    count = 0
+    for value in values:
+        normalized = _normalize_text(value)
+        if normalized and normalized in searchable:
+            count += 1
+    return count
+
+
+def _compute_life_impact(article: dict, profile_v2: dict) -> tuple[float, list[str]]:
+    searchable = " ".join(
+        _normalize_text(article.get(key))
+        for key in ("title", "summary", "content", "category", "source")
+    )
+    score = 0.0
+    signals: list[str] = []
+
+    location_matches = _keyword_match_count(searchable, profile_v2.get("locations") or [])
+    if location_matches:
+        score += min(location_matches * 0.3, 0.6)
+        signals.extend((profile_v2.get("locations") or [])[:location_matches])
+
+    utility_priorities = [str(value).strip() for value in profile_v2.get("utility_priorities") or []]
+    category = (article.get("category") or "").lower()
+    utility_rules = {
+        "work": {"technology", "business", "programming", "ai"},
+        "money": {"business", "crypto"},
+        "health": {"health", "science"},
+        "local": {"world", "politics", "general"},
+        "travel": {"world", "business"},
+    }
+    for priority in utility_priorities:
+        normalized = priority.lower()
+        if normalized in searchable or category in utility_rules.get(normalized, set()):
+            score += 0.22
+            signals.append(priority)
+
+    if any(term in searchable for term in ("policy", "regulation", "lawsuit", "ban", "recall", "security", "outage")):
+        score += 0.12
+        signals.append("timely impact")
+
+    return min(score, 1.0), signals[:4]
+
+
+def _make_cluster_id(article: dict) -> str:
+    normalized = _normalize_title_for_dedupe(article.get("title"))
+    if not normalized:
+        normalized = _canonicalize_url(article.get("url"))
+    digest = hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:12]
+    return f"cluster_{digest}"
+
+
+def _explanation_prefix(signals: list[str]) -> str:
+    if not signals:
+        return "Picked for your feed"
+    return f"Because you follow {', '.join(signals[:3])}"
+
+
+def _build_why_now(article: dict, life_impact_score: float) -> str:
+    freshness = _compute_freshness_score(article)
+    if life_impact_score >= 0.5:
+        return "Likely to matter in the near term."
+    if freshness >= 0.8:
+        return "Fresh coverage from the last day."
+    if freshness >= 0.55:
+        return "Recent development still worth tracking."
+    return "Important enough to keep in view."
+
+
+def _annotate_candidate_feed_roles(candidates: list[dict], profile_v2: dict) -> None:
+    for candidate in candidates:
+        searchable = " ".join(
+            _normalize_text(candidate.get(key))
+            for key in ("title", "summary", "content", "category", "source")
+        )
+        matched_signals: list[str] = []
+        matched_signals.extend(candidate.get("source_matched_topics") or [])
+        matched_signals.extend(candidate.get("source_matched_entities") or [])
+        for key in ("current_interests", "stable_interests", "people", "industries"):
+            for value in profile_v2.get(key) or []:
+                normalized = _normalize_text(value)
+                if normalized and normalized in searchable and value not in matched_signals:
+                    matched_signals.append(value)
+
+        life_impact_score, impact_signals = _compute_life_impact(candidate, profile_v2)
+        for signal in impact_signals:
+            if signal not in matched_signals:
+                matched_signals.append(signal)
+
+        source_role = candidate.get("source_coverage_role") or "adjacent"
+        freshness_score = _compute_freshness_score(candidate)
+        source_confidence = max(
+            float(candidate.get("source_precision_score") or 0.0),
+            float(candidate.get("source_breadth_score") or 0.0) * 0.75,
+        )
+        importance_score = min(
+            1.0,
+            0.55 * life_impact_score + 0.25 * source_confidence + 0.2 * freshness_score,
+        )
+
+        if life_impact_score >= 0.55:
+            feed_role = "life_impact"
+        elif source_role in {"core", "entity-tracking"} or matched_signals:
+            feed_role = "direct_match"
+        elif source_role == "breadth" or importance_score >= 0.48:
+            feed_role = "worth_knowing"
+        else:
+            feed_role = "serendipity"
+
+        candidate["_matched_profile_signals"] = matched_signals[:6]
+        candidate["_feed_role"] = feed_role
+        candidate["_cluster_id"] = _make_cluster_id(candidate)
+        candidate["_importance_score"] = round(importance_score, 4)
+        candidate["_why_this_story"] = candidate.get("source_selection_reason") or _explanation_prefix(matched_signals)
+        candidate["_why_now"] = _build_why_now(candidate, life_impact_score)
+
+
+def _balance_feed_roles(articles: list[dict]) -> list[dict]:
+    if len(articles) <= 4:
+        return articles
+
+    role_quota = {
+        "direct_match": 10,
+        "life_impact": 5,
+        "worth_knowing": 3,
+        "serendipity": 2,
+    }
+    target_limit = min(len(articles), 20)
+    grouped: dict[str, list[dict]] = {}
+    for article in articles:
+        grouped.setdefault(article.get("feed_role") or "worth_knowing", []).append(article)
+    for group in grouped.values():
+        group.sort(key=_article_rank_score, reverse=True)
+
+    ordered: list[dict] = []
+    used_ids: set[str] = set()
+    for role, quota in role_quota.items():
+        for article in grouped.get(role, [])[:quota]:
+            if article["id"] in used_ids or len(ordered) >= target_limit:
+                continue
+            ordered.append(article)
+            used_ids.add(article["id"])
+
+    for article in sorted(articles, key=_article_rank_score, reverse=True):
+        if len(ordered) >= len(articles):
+            break
+        if article["id"] in used_ids:
+            continue
+        ordered.append(article)
+        used_ids.add(article["id"])
+
+    return ordered
 
 
 def _finalize_articles(articles: list[dict]) -> list[dict]:
@@ -1044,6 +1258,12 @@ def _finalize_articles(articles: list[dict]) -> list[dict]:
         row["relevance_score"] = row.pop("_score", row.get("relevance_score", 0.0))
         row["relevant"] = row.pop("_relevant", row.get("relevant", False))
         row["relevance_reason"] = row.pop("_reason", row.get("relevance_reason", ""))
+        row["feed_role"] = row.pop("_feed_role", row.get("feed_role"))
+        row["why_this_story"] = row.pop("_why_this_story", row.get("why_this_story"))
+        row["why_now"] = row.pop("_why_now", row.get("why_now"))
+        row["matched_profile_signals"] = row.pop("_matched_profile_signals", row.get("matched_profile_signals", []))
+        row["cluster_id"] = row.pop("_cluster_id", row.get("cluster_id"))
+        row["importance_score"] = row.pop("_importance_score", row.get("importance_score", 0.0))
         row.pop("_prefilter_score", None)
         row.pop("_prefilter_reason", None)
         row.pop("_prefilter_excluded", None)
@@ -1063,6 +1283,8 @@ def _load_cached_feed(
             cur.execute(
                 """
                 SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
+                       ufc.feed_role, ufc.why_this_story, ufc.why_now, ufc.matched_profile_signals,
+                       ufc.cluster_id, ufc.importance_score,
                        a.id, a.url, a.title, a.summary, a.content, a.author,
                        a.source_name, a.image_url, a.published_at, a.category
                 FROM public.user_feed_cache ufc
@@ -1077,6 +1299,8 @@ def _load_cached_feed(
             cur.execute(
                 """
                 SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
+                       ufc.feed_role, ufc.why_this_story, ufc.why_now, ufc.matched_profile_signals,
+                       ufc.cluster_id, ufc.importance_score,
                        a.id, a.url, a.title, a.summary, a.content, a.author,
                        a.source_name, a.image_url, a.published_at, a.category
                 FROM public.user_feed_cache ufc
@@ -1118,6 +1342,12 @@ def _load_cached_feed(
             "relevance_score": row.get("relevance_score"),
             "relevant": row.get("relevant", True),
             "relevance_reason": row.get("relevance_reason", ""),
+            "feed_role": row.get("feed_role"),
+            "why_this_story": row.get("why_this_story"),
+            "why_now": row.get("why_now"),
+            "matched_profile_signals": row.get("matched_profile_signals") or [],
+            "cluster_id": row.get("cluster_id"),
+            "importance_score": row.get("importance_score") or 0.0,
         })
 
     return articles
@@ -1137,18 +1367,45 @@ def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
             score = article.get("_score", 0.5)
             relevant = article.get("_relevant", True)
             reason = article.get("_reason", "")
+            feed_role = article.get("_feed_role")
+            why_this_story = article.get("_why_this_story")
+            why_now = article.get("_why_now")
+            matched_profile_signals = article.get("_matched_profile_signals") or []
+            cluster_id = article.get("_cluster_id")
+            importance_score = article.get("_importance_score", 0.0)
             try:
                 cur.execute(
                     """
-                    INSERT INTO public.user_feed_cache (user_id, article_id, relevance_score, relevant, relevance_reason)
-                    VALUES (%s, %s, %s, %s, %s)
+                    INSERT INTO public.user_feed_cache (
+                        user_id, article_id, relevance_score, relevant, relevance_reason,
+                        feed_role, why_this_story, why_now, matched_profile_signals, cluster_id, importance_score
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s)
                     ON CONFLICT (user_id, article_id) DO UPDATE SET
                         relevance_score = EXCLUDED.relevance_score,
                         relevant = EXCLUDED.relevant,
                         relevance_reason = EXCLUDED.relevance_reason,
+                        feed_role = EXCLUDED.feed_role,
+                        why_this_story = EXCLUDED.why_this_story,
+                        why_now = EXCLUDED.why_now,
+                        matched_profile_signals = EXCLUDED.matched_profile_signals,
+                        cluster_id = EXCLUDED.cluster_id,
+                        importance_score = EXCLUDED.importance_score,
                         created_at = now()
                     """,
-                    (user_uuid, _uuid.UUID(article_id), score, relevant, reason),
+                    (
+                        user_uuid,
+                        _uuid.UUID(article_id),
+                        score,
+                        relevant,
+                        reason,
+                        feed_role,
+                        why_this_story,
+                        why_now,
+                        json.dumps(matched_profile_signals),
+                        cluster_id,
+                        importance_score,
+                    ),
                 )
             except Exception:
                 logger.exception("Feed cache error caching article %s", article_id)

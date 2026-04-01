@@ -90,6 +90,14 @@ private extension BriefingCard {
                     .foregroundColor(BrandColors.textSecondary)
 
                 Spacer()
+
+                HStack(spacing: 4) {
+                    Text(isExpanded ? "Hide" : "Open")
+                        .font(AppTypography.caption2)
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 8, weight: .semibold))
+                }
+                .foregroundColor(BrandColors.textTertiary)
             }
 
             HairlineDivider()

@@ -222,6 +222,36 @@ final class BackendService {
         return try Self.iso8601Decoder.decode(DiscoverSourcesResponse.self, from: data)
     }
 
+    func submitFeedFeedback(
+        articleID: String,
+        action: String,
+        accessToken: String,
+        feedRequestID: String? = nil,
+        position: Int? = nil
+    ) async throws {
+        let endpoint = baseURL.appendingPathComponent("/feed/feedback")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        var body: [String: Any] = [
+            "article_id": articleID,
+            "action": action
+        ]
+        if let feedRequestID { body["feed_request_id"] = feedRequestID }
+        if let position { body["position"] = position }
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Feedback request failed"
+            throw NSError(domain: "BackendService", code: (response as? HTTPURLResponse)?.statusCode ?? -1,
+                          userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        }
+    }
+
     // MARK: - Chat Endpoints
 
     func sendChatMessage(
@@ -496,11 +526,43 @@ final class BackendService {
     }
 
     struct DiscoverSourcesResponse: Decodable {
+        struct Source: Decodable, Identifiable {
+            var id: String { sourceURL }
+            let sourceURL: String
+            let sourceName: String?
+            let category: String?
+            let scope: String?
+            let coverageRole: String?
+            let matchedTargets: [String]?
+            let matchedTopics: [String]?
+            let matchedEntities: [String]?
+            let selectionReason: String?
+            let precisionScore: Double?
+            let breadthScore: Double?
+            let discoveryScore: Double?
+
+            enum CodingKeys: String, CodingKey {
+                case sourceURL = "source_url"
+                case sourceName = "source_name"
+                case category
+                case scope
+                case coverageRole = "coverage_role"
+                case matchedTargets = "matched_targets"
+                case matchedTopics = "matched_topics"
+                case matchedEntities = "matched_entities"
+                case selectionReason = "selection_reason"
+                case precisionScore = "precision_score"
+                case breadthScore = "breadth_score"
+                case discoveryScore = "discovery_score"
+            }
+        }
+
         let sourcesFound: Int
         let exactSources: Int
         let supportingSources: Int
         let discoveryTimeSeconds: Double?
         let profileSpecificity: String?
+        let sources: [Source]?
 
         enum CodingKeys: String, CodingKey {
             case sourcesFound = "sources_found"
@@ -508,6 +570,7 @@ final class BackendService {
             case supportingSources = "supporting_sources"
             case discoveryTimeSeconds = "discovery_time_seconds"
             case profileSpecificity = "profile_specificity"
+            case sources
         }
     }
 
@@ -564,6 +627,8 @@ final class BackendService {
         let userId: String
         let interests: [String: AnyCodable]?
         let aiProfile: String?
+        let userProfileV2: [String: AnyCodable]?
+        let sourceSelectionBrief: [String: AnyCodable]?
         let completed: Bool
         let completedAt: Date?
         let profileSpecificity: String?
@@ -574,6 +639,8 @@ final class BackendService {
             case userId = "user_id"
             case interests
             case aiProfile = "ai_profile"
+            case userProfileV2 = "user_profile_v2"
+            case sourceSelectionBrief = "source_selection_brief"
             case completed
             case completedAt = "completed_at"
             case profileSpecificity = "profile_specificity"
@@ -670,6 +737,7 @@ final class BackendService {
         accessToken: String,
         interests: [String: Any],
         aiProfile: String,
+        userProfileV2: [String: Any]? = nil,
         completed: Bool = true
     ) async throws -> UserPreferencesResponse {
         let endpoint = baseURL.appendingPathComponent("/user/preferences")
@@ -682,6 +750,7 @@ final class BackendService {
         let body: [String: Any] = [
             "interests": interests,
             "ai_profile": aiProfile,
+            "user_profile_v2": userProfileV2 ?? [:],
             "completed": completed
         ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
@@ -703,7 +772,8 @@ final class BackendService {
     /// Let the backend/AI summarize full chat history and store a compact profile.
     func completeUserPreferences(
         accessToken: String,
-        history: [[String: String]]
+        history: [[String: String]],
+        explicitContext: [String: Any]? = nil
     ) async throws -> CompleteUserPreferencesResponse {
         let endpoint = baseURL.appendingPathComponent("/user/preferences/complete")
 
@@ -712,9 +782,10 @@ final class BackendService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: Any] = [
-            "history": history
-        ]
+        var body: [String: Any] = ["history": history]
+        if let explicitContext {
+            body["explicit_context"] = explicitContext
+        }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await urlSession.data(for: request)
@@ -918,6 +989,18 @@ extension BackendService.UserPreferencesResponse {
     /// Preserve the raw interests payload when updating only the AI profile.
     var interestsDictionary: [String: Any] {
         interests?.reduce(into: [:]) { partialResult, element in
+            partialResult[element.key] = element.value.value
+        } ?? [:]
+    }
+
+    var userProfileV2Dictionary: [String: Any] {
+        userProfileV2?.reduce(into: [:]) { partialResult, element in
+            partialResult[element.key] = element.value.value
+        } ?? [:]
+    }
+
+    var sourceSelectionBriefDictionary: [String: Any] {
+        sourceSelectionBrief?.reduce(into: [:]) { partialResult, element in
             partialResult[element.key] = element.value.value
         } ?? [:]
     }
