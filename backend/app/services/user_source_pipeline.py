@@ -34,7 +34,9 @@ def _load_active_user_sources(conn, user_id: str) -> list[dict]:
         cur.execute(
             """
             SELECT id, source_url, source_name, category, discovery_method,
-                   source_kind, scope, matched_targets, discovery_score, selection_rank
+                   source_kind, scope, matched_targets, discovery_score, selection_rank,
+                   coverage_role, selection_reason, matched_topics, matched_entities,
+                   precision_score, breadth_score, last_article_yield, last_relevant_yield
             FROM public.user_sources
             WHERE user_id = %s AND active = true
             ORDER BY selection_rank ASC, discovery_score DESC, source_name ASC
@@ -65,10 +67,18 @@ def _update_source_fetch_outcomes(conn, source_results: list[dict]) -> None:
                 UPDATE public.user_sources
                 SET last_fetched_at = now(),
                     failure_count = 0,
-                    validated_at = now()
+                    validated_at = now(),
+                    last_article_yield = %s,
+                    image_coverage = %s,
+                    article_diversity = %s
                 WHERE id = %s
                 """,
-                (source["id"],),
+                (
+                    len(result.get("articles") or []),
+                    result.get("image_coverage", 0.0),
+                    result.get("article_diversity", 0.0),
+                    source["id"],
+                ),
             )
 
 
@@ -168,7 +178,23 @@ async def _fetch_from_user_sources(conn, sources: list[dict]) -> int:
                     articles = await _fetch_single_feed(client, source["source_url"])
                     for article in articles:
                         article["category"] = source.get("category") or article.get("category")
-                    return {"source": source, "articles": articles, "error": None}
+                    categories = {
+                        (article.get("category") or "general")
+                        for article in articles
+                        if article.get("title")
+                    }
+                    image_coverage = (
+                        sum(1 for article in articles if article.get("image_url")) / len(articles)
+                        if articles else 0.0
+                    )
+                    diversity = min(len(categories) / max(len(articles), 1), 1.0) if articles else 0.0
+                    return {
+                        "source": source,
+                        "articles": articles,
+                        "error": None,
+                        "image_coverage": round(image_coverage, 4),
+                        "article_diversity": round(diversity, 4),
+                    }
                 except Exception as exc:
                     logger.warning("Error fetching user source %s: %s", source.get("source_url"), exc)
                     return {"source": source, "articles": [], "error": exc}
@@ -193,6 +219,47 @@ async def _fetch_from_user_sources(conn, sources: list[dict]) -> int:
 
     await _fetch_source_images(merged)
     return _upsert_articles_and_links(conn, merged)
+
+
+def _update_source_relevance_yield(conn, user_id: str, articles: list[dict]) -> None:
+    if not articles:
+        return
+
+    article_ids = []
+    for article in articles:
+        try:
+            article_ids.append(_uuid.UUID(str(article["id"])))
+        except Exception:
+            continue
+
+    if not article_ids:
+        return
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT asl.source_url, COUNT(*) AS relevant_count
+            FROM public.article_source_links asl
+            WHERE asl.article_id = ANY(%s)
+            GROUP BY asl.source_url
+            """,
+            (article_ids,),
+        )
+        counts = {row["source_url"]: row["relevant_count"] for row in cur.fetchall()}
+
+        for source_url, relevant_count in counts.items():
+            cur.execute(
+                """
+                UPDATE public.user_sources
+                SET last_relevant_yield = %s,
+                    engagement_yield = CASE
+                        WHEN last_article_yield > 0 THEN ROUND((%s::numeric / last_article_yield::numeric), 4)
+                        ELSE engagement_yield
+                    END
+                WHERE user_id = %s AND source_url = %s
+                """,
+                (relevant_count, relevant_count, user_id, source_url),
+            )
 
 
 def get_feed_state(conn, user_id: str, limit: int = 50) -> dict:
@@ -234,6 +301,7 @@ async def build_feed_for_user(conn, user_id: str, limit: int = 50) -> dict:
     await _fetch_from_user_sources(conn, sources)
 
     articles = await get_personalized_feed(user_id, conn, limit=limit, force_refresh=True)
+    _update_source_relevance_yield(conn, user_id, articles)
 
     user_uuid = _uuid.UUID(user_id)
     ai_profile, interests, _preferences_updated_at = _load_user_preferences(conn, user_uuid)

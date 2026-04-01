@@ -15,6 +15,11 @@ final class OnboardingChatViewModel: ObservableObject {
     @Published var isSaving: Bool = false
     @Published var errorMessage: String?
     @Published var inputText: String = ""
+    @Published var utilityPriorities: [String] = []
+    @Published var locations: [String] = []
+    @Published var currentInterests: [String] = []
+    @Published var contentDepth: String = "balanced"
+    @Published var lifeContext: String = ""
     
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
@@ -99,7 +104,8 @@ final class OnboardingChatViewModel: ObservableObject {
         do {
             try await backendService.completeUserPreferences(
                 accessToken: token,
-                history: historyPayload
+                history: historyPayload,
+                explicitContext: explicitContextPayload()
             )
             isSaving = false
         } catch {
@@ -108,6 +114,15 @@ final class OnboardingChatViewModel: ObservableObject {
             throw error
         }
     }
-}
 
+    private func explicitContextPayload() -> [String: Any] {
+        [
+            "utility_priorities": utilityPriorities,
+            "locations": locations,
+            "current_interests": currentInterests,
+            "content_depth": contentDepth,
+            "life_context": lifeContext
+        ]
+    }
+}
 

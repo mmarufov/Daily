@@ -22,6 +22,7 @@ final class ReadingEventTracker {
 
     private(set) var pendingEvents: [ReadingEvent] = []
     private var currentFeedRequestId: String?
+    var feedRequestId: String? { currentFeedRequestId }
 
     func setFeedRequestId(_ id: String) {
         currentFeedRequestId = id

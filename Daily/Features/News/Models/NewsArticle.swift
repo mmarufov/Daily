@@ -21,6 +21,12 @@ struct NewsArticle: Identifiable, Codable, Equatable {
     var relevanceScore: Double? = nil
     var relevant: Bool? = nil
     var relevanceReason: String? = nil
+    var feedRole: String? = nil
+    var whyThisStory: String? = nil
+    var whyNow: String? = nil
+    var matchedProfileSignals: [String]? = nil
+    var clusterID: String? = nil
+    var importanceScore: Double? = nil
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -36,6 +42,12 @@ struct NewsArticle: Identifiable, Codable, Equatable {
         case relevanceScore = "relevance_score"
         case relevant
         case relevanceReason = "relevance_reason"
+        case feedRole = "feed_role"
+        case whyThisStory = "why_this_story"
+        case whyNow = "why_now"
+        case matchedProfileSignals = "matched_profile_signals"
+        case clusterID = "cluster_id"
+        case importanceScore = "importance_score"
     }
     
     // Computed property for formatted date
@@ -60,4 +72,3 @@ struct NewsArticle: Identifiable, Codable, Equatable {
         return max(1, wordCount / 238)
     }
 }
-

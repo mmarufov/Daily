@@ -27,6 +27,12 @@ extension NewsArticle {
         article.relevanceScore = relevanceScore
         article.relevant = relevant
         article.relevanceReason = relevanceReason
+        article.feedRole = feedRole
+        article.whyThisStory = whyThisStory
+        article.whyNow = whyNow
+        article.matchedProfileSignals = matchedProfileSignals
+        article.clusterID = clusterID
+        article.importanceScore = importanceScore
         return article
     }
 }
@@ -107,5 +113,4 @@ enum ArticleTextNormalizer {
         input.replacingOccurrences(of: #"[ ]{2,}"#, with: " ", options: .regularExpression)
     }
 }
-
 

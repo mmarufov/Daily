@@ -215,6 +215,30 @@ private extension NewsView {
     @ViewBuilder
     func articleContextMenu(for article: NewsArticle) -> some View {
         Button {
+            Task { await viewModel.submitFeedback(for: article, action: "more_like_this") }
+        } label: {
+            Label("More Like This", systemImage: "hand.thumbsup")
+        }
+
+        Button {
+            Task { await viewModel.submitFeedback(for: article, action: "less_like_this") }
+        } label: {
+            Label("Less Like This", systemImage: "hand.thumbsdown")
+        }
+
+        Button {
+            Task { await viewModel.submitFeedback(for: article, action: "not_relevant") }
+        } label: {
+            Label("Not Relevant", systemImage: "eye.slash")
+        }
+
+        Button {
+            Task { await viewModel.submitFeedback(for: article, action: "hide_source") }
+        } label: {
+            Label("Hide This Source", systemImage: "nosign")
+        }
+
+        Button {
             HapticService.impact(.medium)
             bookmarks.toggleBookmark(article)
         } label: {
