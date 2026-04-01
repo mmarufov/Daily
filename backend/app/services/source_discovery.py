@@ -7,6 +7,7 @@ Hybrid approach: curated seed database + exact-topic query feeds + AI suggestion
 import asyncio
 import json
 import logging
+import math
 from urllib.parse import quote, urlparse
 
 import feedparser
@@ -480,9 +481,22 @@ def _dedupe_candidates(candidates: list[dict]) -> list[dict]:
     return deduped
 
 
-def _score_candidate_source(candidate: dict, interests: dict, profile_specificity: str, sample_titles: list[str]) -> tuple[float, str, list[str]]:
+def _score_candidate_source(
+    candidate: dict,
+    interests: dict,
+    profile_specificity: str,
+    sample_titles: list[str],
+    *,
+    profile_v2: dict | None = None,
+    source_selection_brief: dict | None = None,
+) -> tuple[float, str, list[str], list[str], str, str, float, float]:
     exact_targets = _exact_interest_terms(interests)
     all_targets = _extract_interest_terms(interests)
+    profile_v2 = profile_v2 or {}
+    source_selection_brief = source_selection_brief or {}
+    priority_topics = [_normalize_term(term) for term in source_selection_brief.get("priority_topics", [])]
+    must_cover_entities = [_normalize_term(term) for term in source_selection_brief.get("must_cover_entities", [])]
+    coverage_targets = [_normalize_term(term) for term in source_selection_brief.get("coverage_targets", [])]
     searchable = " ".join(
         [
             _normalize_term(candidate.get("name")),
@@ -499,6 +513,12 @@ def _score_candidate_source(candidate: dict, interests: dict, profile_specificit
         if normalized and normalized in searchable and term not in matched_any:
             matched_any.append(term)
 
+    matched_entities = [
+        entity
+        for entity in source_selection_brief.get("must_cover_entities", [])
+        if _normalize_term(entity) in searchable
+    ]
+
     score = 0.0
     if candidate.get("discovery_method") == "seed":
         score += 0.55
@@ -511,6 +531,16 @@ def _score_candidate_source(candidate: dict, interests: dict, profile_specificit
         score += 0.4 + 0.1 * min(len(matched_exact), 3)
     elif matched_any:
         score += 0.25
+    if matched_entities:
+        score += 0.35 + 0.05 * min(len(matched_entities), 2)
+
+    priority_hits = sum(1 for term in priority_topics if term and term in searchable)
+    if priority_hits:
+        score += min(priority_hits * 0.12, 0.36)
+
+    coverage_hits = sum(1 for term in coverage_targets if term and term in searchable)
+    if coverage_hits:
+        score += min(coverage_hits * 0.08, 0.24)
 
     if candidate.get("category") in _categories_for_terms(all_targets):
         score += 0.15
@@ -523,8 +553,47 @@ def _score_candidate_source(candidate: dict, interests: dict, profile_specificit
     if candidate.get("category") == "general" and profile_specificity != "broad":
         score -= 1.0
 
-    scope = "exact" if candidate.get("discovery_method") == "query_feed" or matched_exact else "supporting"
-    return score, scope, matched_any
+    if matched_entities or any(term in searchable for term in must_cover_entities):
+        coverage_role = "entity-tracking"
+    elif candidate.get("category") == "general" or coverage_hits:
+        coverage_role = "breadth"
+    elif matched_exact or priority_hits >= 2 or candidate.get("discovery_method") == "query_feed":
+        coverage_role = "core"
+    else:
+        coverage_role = "adjacent"
+
+    precision_score = min(
+        1.0,
+        0.25
+        + (0.3 if matched_exact else 0.0)
+        + (0.2 if matched_entities else 0.0)
+        + min(priority_hits * 0.08, 0.24),
+    )
+    breadth_score = min(
+        1.0,
+        0.2
+        + (0.35 if candidate.get("category") == "general" else 0.0)
+        + min(coverage_hits * 0.1, 0.3)
+        + (0.1 if candidate.get("source_kind") == "publisher" else 0.0),
+    )
+    scope = "exact" if coverage_role in {"core", "entity-tracking"} else "supporting"
+    matched_labels = matched_entities or matched_exact or matched_any or coverage_targets[:1]
+    selection_reason = (
+        f"{coverage_role.replace('-', ' ').title()} coverage for "
+        + ", ".join(matched_labels[:3])
+        if matched_labels
+        else f"{coverage_role.replace('-', ' ').title()} coverage"
+    )
+    return (
+        score,
+        scope,
+        matched_any,
+        matched_entities,
+        coverage_role,
+        selection_reason,
+        round(precision_score, 4),
+        round(breadth_score, 4),
+    )
 
 
 async def _validate_candidate_sources(candidates: list[dict]) -> list[dict]:
@@ -554,20 +623,45 @@ def _select_sources_for_profile(candidates: list[dict], profile_specificity: str
     official_cap = max(1, int(limit * OFFICIAL_SOURCE_CAP_RATIO))
     chosen: list[dict] = []
     official_count = 0
+    role_counts: dict[str, int] = {}
+    role_caps = {
+        "core": max(4, math.ceil(limit * 0.45)),
+        "adjacent": max(3, math.ceil(limit * 0.25)),
+        "breadth": max(2, math.ceil(limit * 0.2)),
+        "entity-tracking": max(2, math.ceil(limit * 0.2)),
+    }
+    category_counts: dict[str, int] = {}
+    category_cap = max(3, math.ceil(limit * 0.4))
 
     for candidate in sorted(candidates, key=lambda item: (-item["discovery_score"], item["selection_rank"])):
         if len(chosen) >= limit:
             break
         if candidate["source_kind"] == "official" and official_count >= official_cap:
             continue
+        role = candidate.get("coverage_role") or "adjacent"
+        if role_counts.get(role, 0) >= role_caps.get(role, limit):
+            continue
+        category = candidate.get("category") or "general"
+        if category_counts.get(category, 0) >= category_cap:
+            continue
         chosen.append(candidate)
+        role_counts[role] = role_counts.get(role, 0) + 1
+        category_counts[category] = category_counts.get(category, 0) + 1
         if candidate["source_kind"] == "official":
             official_count += 1
 
     return chosen
 
 
-async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_profile: str) -> dict:
+async def discover_sources_for_user(
+    conn,
+    user_id: str,
+    interests: dict,
+    ai_profile: str,
+    *,
+    user_profile_v2: dict | None = None,
+    source_selection_brief: dict | None = None,
+) -> dict:
     """Discover and assign sources for a user based on their profile and exact interests."""
     started = asyncio.get_running_loop().time()
     profile_specificity = determine_profile_specificity(interests, ai_profile)
@@ -594,17 +688,34 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
 
         scored_candidates: list[dict] = []
         for candidate in validated:
-            discovery_score, scope, matched_targets = _score_candidate_source(
+            (
+                discovery_score,
+                scope,
+                matched_targets,
+                matched_entities,
+                coverage_role,
+                selection_reason,
+                precision_score,
+                breadth_score,
+            ) = _score_candidate_source(
                 candidate,
                 interests,
                 profile_specificity,
                 candidate.get("sample_titles") or [],
+                profile_v2=user_profile_v2,
+                source_selection_brief=source_selection_brief,
             )
             if discovery_score <= 0:
                 continue
             scored = dict(candidate)
             scored["scope"] = scope
             scored["matched_targets"] = matched_targets
+            scored["matched_topics"] = matched_targets
+            scored["matched_entities"] = matched_entities
+            scored["coverage_role"] = coverage_role
+            scored["selection_reason"] = selection_reason
+            scored["precision_score"] = precision_score
+            scored["breadth_score"] = breadth_score
             scored["discovery_score"] = round(discovery_score, 4)
             scored_candidates.append(scored)
 
@@ -617,7 +728,8 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
                 "exact_sources": 0,
                 "supporting_sources": 0,
                 "profile_specificity": profile_specificity,
-                "discovery_time_seconds": round(time.time() - start_time, 2),
+                "discovery_time_seconds": round(asyncio.get_running_loop().time() - started, 2),
+                "sources": [],
             }
 
         with conn.cursor() as cur:
@@ -634,6 +746,12 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
                         source_kind,
                         scope,
                         matched_targets,
+                        selection_reason,
+                        coverage_role,
+                        matched_topics,
+                        matched_entities,
+                        precision_score,
+                        breadth_score,
                         discovery_score,
                         selection_rank,
                         active,
@@ -642,7 +760,11 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
                         last_discovered_at,
                         next_fetch_at
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, true, 0, now(), now(), now())
+                    VALUES (
+                        %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s,
+                        %s::jsonb, %s::jsonb, %s, %s, %s,
+                        %s, true, 0, now(), now(), now()
+                    )
                     ON CONFLICT (user_id, source_url) DO UPDATE SET
                         source_name = EXCLUDED.source_name,
                         category = EXCLUDED.category,
@@ -650,6 +772,12 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
                         source_kind = EXCLUDED.source_kind,
                         scope = EXCLUDED.scope,
                         matched_targets = EXCLUDED.matched_targets,
+                        selection_reason = EXCLUDED.selection_reason,
+                        coverage_role = EXCLUDED.coverage_role,
+                        matched_topics = EXCLUDED.matched_topics,
+                        matched_entities = EXCLUDED.matched_entities,
+                        precision_score = EXCLUDED.precision_score,
+                        breadth_score = EXCLUDED.breadth_score,
                         discovery_score = EXCLUDED.discovery_score,
                         selection_rank = EXCLUDED.selection_rank,
                         active = true,
@@ -667,6 +795,12 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
                         source.get("source_kind"),
                         source.get("scope"),
                         json.dumps(source.get("matched_targets") or []),
+                        source.get("selection_reason"),
+                        source.get("coverage_role"),
+                        json.dumps(source.get("matched_topics") or []),
+                        json.dumps(source.get("matched_entities") or []),
+                        source.get("precision_score", 0.0),
+                        source.get("breadth_score", 0.0),
                         source.get("discovery_score", 0.0),
                         index + 1,
                     ),
@@ -690,6 +824,23 @@ async def discover_sources_for_user(conn, user_id: str, interests: dict, ai_prof
             "supporting_sources": supporting_sources,
             "profile_specificity": profile_specificity,
             "discovery_time_seconds": round(asyncio.get_running_loop().time() - started, 2),
+            "sources": [
+                {
+                    "source_url": source["url"],
+                    "source_name": source.get("name"),
+                    "category": source.get("category"),
+                    "scope": source.get("scope"),
+                    "coverage_role": source.get("coverage_role"),
+                    "matched_targets": source.get("matched_targets") or [],
+                    "matched_topics": source.get("matched_topics") or [],
+                    "matched_entities": source.get("matched_entities") or [],
+                    "selection_reason": source.get("selection_reason"),
+                    "precision_score": source.get("precision_score", 0.0),
+                    "breadth_score": source.get("breadth_score", 0.0),
+                    "discovery_score": source.get("discovery_score", 0.0),
+                }
+                for source in selected
+            ],
         }
     except Exception as e:
         logger.error("Source discovery failed for user %s: %s", user_id, e)

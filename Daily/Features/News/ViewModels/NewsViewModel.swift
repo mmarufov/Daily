@@ -165,6 +165,26 @@ final class NewsViewModel: ObservableObject {
 
         await activeBuildTask?.value
     }
+
+    func submitFeedback(for article: NewsArticle, action: String, position: Int? = nil) async {
+        guard let token = authService.getAccessToken() else { return }
+
+        do {
+            try await backendService.submitFeedFeedback(
+                articleID: article.id,
+                action: action,
+                accessToken: token,
+                feedRequestID: ReadingEventTracker.shared.feedRequestId,
+                position: position
+            )
+
+            if action == "not_relevant" || action == "hide_source" || action == "less_like_this" {
+                articles.removeAll { $0.id == article.id }
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 }
 
 private extension NewsViewModel {

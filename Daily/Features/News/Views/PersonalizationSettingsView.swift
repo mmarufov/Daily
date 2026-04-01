@@ -14,12 +14,15 @@ struct PersonalizationSettingsView: View {
     @State private var showAIChat = false
     @State private var showAdvanced = false
     @State private var newTopic = ""
+    @State private var newCurrentInterest = ""
+    @State private var newLocation = ""
     @State private var newExclusion = ""
     @State private var contentStyle: Double = 1 // 0=Breaking, 1=Balanced, 2=Deep
     @State private var expertiseLevel: Double = 1 // 0=Casual, 1=Intermediate, 2=Expert
 
     private let contentStyleLabels = ["Breaking News", "Balanced", "Deep Analysis"]
     private let expertiseLabels = ["Casual", "Intermediate", "Expert"]
+    private let utilityPriorityOptions = ["Work", "Money", "Health", "Local", "Travel", "Family"]
 
     var body: some View {
         NavigationStack {
@@ -45,6 +48,46 @@ struct PersonalizationSettingsView: View {
                         }
                     }
 
+                    sectionBlock(title: "Current Focus") {
+                        if !viewModel.currentInterests.isEmpty {
+                            ChipFlowView(
+                                items: viewModel.currentInterests,
+                                onRemove: { item in viewModel.currentInterests.removeAll { $0 == item } }
+                            )
+                        }
+
+                        HStack(spacing: AppSpacing.sm) {
+                            TextField("What matters right now?", text: $newCurrentInterest)
+                                .font(AppTypography.body)
+                                .textFieldStyle(.roundedBorder)
+                                .onSubmit { addCurrentInterest() }
+
+                            Button("Add") { addCurrentInterest() }
+                                .font(AppTypography.labelMedium)
+                                .foregroundColor(BrandColors.primary)
+                                .disabled(newCurrentInterest.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+
+                    sectionBlock(title: "Life Priorities") {
+                        FlowLayout(spacing: AppSpacing.sm) {
+                            ForEach(utilityPriorityOptions, id: \.self) { option in
+                                let isSelected = viewModel.utilityPriorities.contains(option)
+                                Button {
+                                    toggleUtilityPriority(option)
+                                } label: {
+                                    Text(option)
+                                        .font(AppTypography.caption1)
+                                        .foregroundColor(isSelected ? .white : BrandColors.textPrimary)
+                                        .padding(.horizontal, AppSpacing.md)
+                                        .padding(.vertical, AppSpacing.sm)
+                                        .background(isSelected ? BrandColors.primary : BrandColors.cardBackground.opacity(0.9))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                    }
+
                     // Content Style
                     sectionBlock(title: "Content Style") {
                         VStack(spacing: AppSpacing.sm) {
@@ -60,6 +103,37 @@ struct PersonalizationSettingsView: View {
                                 }
                             }
                         }
+                    }
+
+                    sectionBlock(title: "Location Relevance") {
+                        if !viewModel.locations.isEmpty {
+                            ChipFlowView(
+                                items: viewModel.locations,
+                                onRemove: { item in viewModel.locations.removeAll { $0 == item } }
+                            )
+                        }
+
+                        HStack(spacing: AppSpacing.sm) {
+                            TextField("Add city, country, or region...", text: $newLocation)
+                                .font(AppTypography.body)
+                                .textFieldStyle(.roundedBorder)
+                                .onSubmit { addLocation() }
+
+                            Button("Add") { addLocation() }
+                                .font(AppTypography.labelMedium)
+                                .foregroundColor(BrandColors.primary)
+                                .disabled(newLocation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+
+                    sectionBlock(title: "Life Context") {
+                        TextEditor(text: $viewModel.lifeContext)
+                            .font(AppTypography.body)
+                            .foregroundColor(BrandColors.textPrimary)
+                            .frame(minHeight: 96, maxHeight: 160)
+                            .padding(AppSpacing.sm)
+                            .background(Color(.secondarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
                     }
 
                     // Expertise Level
@@ -247,12 +321,25 @@ struct PersonalizationSettingsView: View {
         if !viewModel.topics.isEmpty {
             parts.append("Interested in: \(viewModel.topics.joined(separator: ", "))")
         }
+        if !viewModel.currentInterests.isEmpty {
+            parts.append("Current focus: \(viewModel.currentInterests.joined(separator: ", "))")
+        }
+        if !viewModel.utilityPriorities.isEmpty {
+            parts.append("This matters to my life: \(viewModel.utilityPriorities.joined(separator: ", "))")
+        }
+        if !viewModel.locations.isEmpty {
+            parts.append("Location relevance: \(viewModel.locations.joined(separator: ", "))")
+        }
         parts.append("Content preference: \(contentStyleLabels[Int(contentStyle)])")
         parts.append("Expertise level: \(expertiseLabels[Int(expertiseLevel)])")
         if !viewModel.exclusions.isEmpty {
             parts.append("Exclude: \(viewModel.exclusions.joined(separator: ", "))")
         }
+        if !viewModel.lifeContext.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            parts.append("Context: \(viewModel.lifeContext.trimmingCharacters(in: .whitespacesAndNewlines))")
+        }
         viewModel.promptText = parts.joined(separator: ". ") + "."
+        viewModel.contentDepth = ["breaking", "balanced", "deep"][Int(contentStyle)]
     }
 
     private func parseStructuredInputsFromPrompt() {
@@ -266,6 +353,34 @@ struct PersonalizationSettingsView: View {
         if text.contains("expert") || text.contains("technical") { expertiseLevel = 2 }
         else if text.contains("casual") || text.contains("beginner") { expertiseLevel = 0 }
         else { expertiseLevel = 1 }
+
+        switch viewModel.contentDepth {
+        case "breaking": contentStyle = 0
+        case "deep": contentStyle = 2
+        default: contentStyle = 1
+        }
+    }
+
+    private func addCurrentInterest() {
+        let trimmed = newCurrentInterest.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !viewModel.currentInterests.contains(trimmed) else { return }
+        viewModel.currentInterests.append(trimmed)
+        newCurrentInterest = ""
+    }
+
+    private func addLocation() {
+        let trimmed = newLocation.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !viewModel.locations.contains(trimmed) else { return }
+        viewModel.locations.append(trimmed)
+        newLocation = ""
+    }
+
+    private func toggleUtilityPriority(_ option: String) {
+        if let index = viewModel.utilityPriorities.firstIndex(of: option) {
+            viewModel.utilityPriorities.remove(at: index)
+        } else {
+            viewModel.utilityPriorities.append(option)
+        }
     }
 }
 

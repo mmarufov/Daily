@@ -7,27 +7,45 @@
 
 import SwiftUI
 
+private func dynamicColor(light: UIColor, dark: UIColor) -> Color {
+    Color(uiColor: UIColor { traits in
+        traits.userInterfaceStyle == .dark ? dark : light
+    })
+}
+
 // MARK: - Brand Colors (Editorial palette)
 struct BrandColors {
-    // Primary brand color - Editorial red/vermilion
-    static let primary = Color(red: 0.85, green: 0.18, blue: 0.15)
-    static let primaryDark = Color(red: 0.72, green: 0.14, blue: 0.12)
-    static let primaryLight = Color(red: 0.92, green: 0.30, blue: 0.25)
+    // Primary brand color - restrained editorial brick
+    static let primary = Color(red: 0.70, green: 0.24, blue: 0.18)
+    static let primaryDark = Color(red: 0.54, green: 0.17, blue: 0.13)
+    static let primaryLight = Color(red: 0.82, green: 0.42, blue: 0.35)
 
     // Accent colors
-    static let accent = Color(red: 1.0, green: 0.58, blue: 0.0)
-    static let accentLight = Color(red: 1.0, green: 0.65, blue: 0.20)
+    static let accent = Color(red: 0.30, green: 0.39, blue: 0.48)
+    static let accentLight = Color(red: 0.43, green: 0.53, blue: 0.62)
 
     // Semantic colors - System colors
     static let success = Color(red: 0.20, green: 0.78, blue: 0.35)
     static let warning = Color(red: 1.0, green: 0.58, blue: 0.0)
     static let error = Color(red: 1.0, green: 0.23, blue: 0.19)
 
-    // Background colors - System backgrounds
-    static let background = Color(.systemBackground)
-    static let secondaryBackground = Color(.secondarySystemGroupedBackground)
-    static let cardBackground = Color(.secondarySystemGroupedBackground)
-    static let tertiaryBackground = Color(.tertiarySystemBackground)
+    // Background colors - warm editorial surfaces in light mode
+    static let background = dynamicColor(
+        light: UIColor(red: 0.98, green: 0.97, blue: 0.95, alpha: 1),
+        dark: UIColor(red: 0.08, green: 0.09, blue: 0.10, alpha: 1)
+    )
+    static let secondaryBackground = dynamicColor(
+        light: UIColor(red: 0.96, green: 0.94, blue: 0.91, alpha: 1),
+        dark: UIColor(red: 0.12, green: 0.13, blue: 0.15, alpha: 1)
+    )
+    static let cardBackground = dynamicColor(
+        light: UIColor(red: 0.99, green: 0.98, blue: 0.96, alpha: 1),
+        dark: UIColor(red: 0.14, green: 0.15, blue: 0.17, alpha: 1)
+    )
+    static let tertiaryBackground = dynamicColor(
+        light: UIColor(red: 0.93, green: 0.92, blue: 0.89, alpha: 1),
+        dark: UIColor(red: 0.17, green: 0.18, blue: 0.20, alpha: 1)
+    )
 
     // Text colors - System labels
     static let textPrimary = Color(.label)
@@ -38,9 +56,15 @@ struct BrandColors {
     // Semantic accent roles — red discipline
     // Primary actions + urgent states only (send button, BREAKING badge, CTAs)
     static let actionPrimary = primary
-    // Editorial metadata — neutral tones (source labels, section headers)
-    static let sourceText = Color(.secondaryLabel)
-    static let sectionHeader = Color(.secondaryLabel)
+    // Editorial metadata — cool slate neutrals
+    static let sourceText = dynamicColor(
+        light: UIColor(red: 0.33, green: 0.38, blue: 0.43, alpha: 1),
+        dark: UIColor(red: 0.62, green: 0.67, blue: 0.73, alpha: 1)
+    )
+    static let sectionHeader = dynamicColor(
+        light: UIColor(red: 0.41, green: 0.46, blue: 0.51, alpha: 1),
+        dark: UIColor(red: 0.62, green: 0.67, blue: 0.73, alpha: 1)
+    )
 }
 
 // MARK: - Typography (Dynamic Type — all sizes scale with accessibility settings)
