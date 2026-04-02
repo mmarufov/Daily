@@ -29,6 +29,7 @@ def empty_user_profile_v2() -> dict[str, Any]:
         "locations": [],
         "industries": [],
         "excluded_topics": [],
+        "expanded_exclusions": [],
         "utility_priorities": [],
         "content_depth": DEFAULT_CONTENT_DEPTH,
         "tone_preferences": [DEFAULT_TONE],
@@ -93,6 +94,9 @@ def normalize_user_profile_v2(payload: Any, *, fallback_specificity: str | None 
     profile["locations"] = _normalize_string_list(payload.get("locations"))
     profile["industries"] = _normalize_string_list(payload.get("industries"))
     profile["excluded_topics"] = _normalize_string_list(payload.get("excluded_topics"))
+    expanded = payload.get("expanded_exclusions")
+    if isinstance(expanded, list):
+        profile["expanded_exclusions"] = [str(v).strip().lower() for v in expanded if str(v).strip()]
     profile["utility_priorities"] = _normalize_string_list(payload.get("utility_priorities"), limit=8)
 
     depth = str(payload.get("content_depth") or DEFAULT_CONTENT_DEPTH).strip().lower()

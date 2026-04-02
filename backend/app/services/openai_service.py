@@ -507,6 +507,7 @@ Optimization goals:
         articles: List[Dict],
         user_profile: str,
         interests: dict | None = None,
+        user_profile_v2: dict | None = None,
     ) -> List[Dict]:
         """
         Score articles for relevance to a user profile in a SINGLE API call.
@@ -530,7 +531,7 @@ Optimization goals:
             article_lines.append("\n".join(parts))
 
         articles_text = "\n\n".join(article_lines)
-        profile_text = self._build_scoring_profile(user_profile, interests)
+        profile_text = self._build_scoring_profile(user_profile, interests, user_profile_v2)
         specific = self._is_specific_profile(interests)
 
         if specific:
@@ -551,6 +552,23 @@ Optimization goals:
                 "mentioning AI once is NOT relevant to an AI enthusiast.\n"
             )
 
+        hierarchy_rules = ""
+        if user_profile_v2 and user_profile_v2.get("current_interests"):
+            hierarchy_rules = (
+                "\nINTEREST HIERARCHY RULES (critical):\n"
+                "- PRIMARY FOCUS topics: score normally (0.5-1.0 for genuinely relevant articles).\n"
+                "- BACKGROUND INTERESTS: apply a MUCH HIGHER BAR. Only score above 0.5 if the article covers:\n"
+                "  * A MAJOR event (World Cup match, championship, historic result)\n"
+                "  * BREAKING news that would make headlines globally\n"
+                "  * Something that directly intersects with the user's PRIMARY FOCUS or LIFE CONTEXT\n"
+                "  Routine coverage of a background interest (squad call-ups, league tables,\n"
+                "  regular match results, transfer rumors) should score 0.0-0.2 and relevant=false.\n"
+                "- EXCLUDED topics: always 0.0 and relevant=false, regardless of source.\n"
+                "- LIFE CONTEXT matters: use it to understand the user's perspective. A software developer\n"
+                "  interested in football wants different football content than a sports journalist.\n"
+                "- When a BACKGROUND interest overlaps with an EXCLUDED pattern, exclusion wins.\n\n"
+            )
+
         system_prompt = (
             "You are a personal news curator. Your job is to decide which articles "
             "this specific user would genuinely want to read.\n\n"
@@ -559,8 +577,9 @@ Optimization goals:
             "- EXPERTISE LEVEL: An expert wants technical depth, a casual reader wants accessible overviews.\n"
             "- CONTENT DEPTH: Breaking news vs deep analysis vs investigative pieces.\n"
             "- TONE PREFERENCES: Skeptical, enthusiastic, neutral, narrative.\n"
-            "- WEIGHTED INTERESTS: Topics listed first are higher priority.\n\n"
-            "For each article, decide:\n"
+            "- WEIGHTED INTERESTS: Topics listed first are higher priority.\n"
+            + hierarchy_rules +
+            "\nFor each article, decide:\n"
             '1. "relevant": true/false — Would this user find this interesting or useful? '
             "The article should be meaningfully related to their interests. A passing mention "
             "of a keyword is not enough.\n"
@@ -641,7 +660,12 @@ Optimization goals:
 
         return fallback
 
-    def _build_scoring_profile(self, user_profile: str, interests: dict | None = None) -> str:
+    def _build_scoring_profile(
+        self,
+        user_profile: str,
+        interests: dict | None = None,
+        user_profile_v2: dict | None = None,
+    ) -> str:
         """Combine free-form profile text with structured interests for stricter scoring."""
         sections: List[str] = []
 
@@ -673,6 +697,52 @@ Optimization goals:
             if structured_lines:
                 sections.append("Structured interests:\n" + "\n".join(structured_lines))
 
+        # Interest hierarchy from user_profile_v2
+        if user_profile_v2:
+            hierarchy_lines: List[str] = []
+
+            current = user_profile_v2.get("current_interests")
+            if isinstance(current, list) and current:
+                cleaned = [str(v).strip() for v in current if str(v).strip()]
+                if cleaned:
+                    hierarchy_lines.append(f"- PRIMARY FOCUS (daily interests): {', '.join(cleaned)}")
+
+            stable = user_profile_v2.get("stable_interests")
+            if isinstance(stable, list) and stable and isinstance(current, list) and current:
+                current_lower = {str(v).strip().lower() for v in current}
+                background = [str(v).strip() for v in stable if str(v).strip() and str(v).strip().lower() not in current_lower]
+                if background:
+                    hierarchy_lines.append(f"- BACKGROUND INTERESTS (only major/breaking news): {', '.join(background)}")
+
+            excluded_v2 = user_profile_v2.get("excluded_topics")
+            if isinstance(excluded_v2, list) and excluded_v2:
+                cleaned = [str(v).strip() for v in excluded_v2 if str(v).strip()]
+                if cleaned:
+                    hierarchy_lines.append(f"- EXCLUDED (always score 0.0): {', '.join(cleaned)}")
+
+            life_context = user_profile_v2.get("life_context")
+            if isinstance(life_context, str) and life_context.strip():
+                hierarchy_lines.append(f"- LIFE CONTEXT: {life_context.strip()}")
+
+            content_depth = user_profile_v2.get("content_depth")
+            if isinstance(content_depth, str) and content_depth.strip():
+                hierarchy_lines.append(f"- CONTENT DEPTH: {content_depth.strip()}")
+
+            utility_priorities = user_profile_v2.get("utility_priorities")
+            if isinstance(utility_priorities, list) and utility_priorities:
+                cleaned = [str(v).strip() for v in utility_priorities if str(v).strip()]
+                if cleaned:
+                    hierarchy_lines.append(f"- LIFE PRIORITIES: {', '.join(cleaned)}")
+
+            expanded = user_profile_v2.get("expanded_exclusions")
+            if isinstance(expanded, list) and expanded:
+                cleaned = [str(v).strip() for v in expanded if str(v).strip()]
+                if cleaned:
+                    hierarchy_lines.append(f"- EXCLUSION PATTERNS (routine content to reject): {', '.join(cleaned)}")
+
+            if hierarchy_lines:
+                sections.append("Interest hierarchy:\n" + "\n".join(hierarchy_lines))
+
         if not sections:
             sections.append("No user preferences are available. Use neutral 0.5 scores.")
 
@@ -683,6 +753,66 @@ Optimization goals:
         """Detect narrow/specific interests (e.g. 'Claude AI') vs broad (e.g. 'AI, gaming')."""
         from app.services.feed_service import _is_specific_interests
         return _is_specific_interests(interests)
+
+    async def expand_exclusion_patterns(
+        self,
+        excluded_topics: List[str],
+        interests: dict | None = None,
+    ) -> List[str]:
+        """Expand abstract exclusions into concrete matching phrases.
+
+        Called once at preference-save time, NOT per scoring request.
+        Example: "General sports news" -> ["squad call-up", "team selection", ...]
+        """
+        if not excluded_topics:
+            return []
+
+        interest_context = ""
+        if interests:
+            topics = interests.get("topics", [])
+            if topics:
+                interest_context = f"\nThe user IS interested in: {', '.join(str(t) for t in topics)}"
+
+        system_prompt = (
+            "You expand abstract content exclusion rules into concrete matching phrases.\n"
+            "Given an exclusion like 'General sports news', produce 15-25 specific phrases that "
+            "would appear in headlines and summaries of articles the user wants to AVOID.\n\n"
+            "Rules:\n"
+            "- Be specific: 'squad call-up', 'transfer window', 'injury update' NOT just 'sports'.\n"
+            "- Do NOT exclude phrases for MAJOR events the user might want (World Cup final, "
+            "Olympic gold, historic records) — only routine/daily coverage.\n"
+            "- If the user has specific interests within the excluded domain (e.g., 'World Cup 2026' "
+            "within 'General sports news'), do NOT produce phrases that would block that specific interest.\n"
+            "- Lowercase phrases only.\n"
+            '- Return a JSON object: {"expanded_phrases": ["phrase1", "phrase2", ...]}\n'
+        )
+
+        user_prompt = (
+            f"Exclusions to expand: {', '.join(excluded_topics)}"
+            f"{interest_context}\n\n"
+            "Return the JSON now."
+        )
+
+        try:
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    self.client.chat.completions.create,
+                    model=self.scoring_model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    response_format={"type": "json_object"},
+                    temperature=0.3,
+                ),
+                timeout=20.0,
+            )
+            result = json.loads(response.choices[0].message.content)
+            phrases = result.get("expanded_phrases", [])
+            return [str(p).strip().lower() for p in phrases if str(p).strip()]
+        except Exception:
+            logger.exception("Failed to expand exclusion patterns")
+            return []
 
     async def extract_article_with_tools(self, article_url: str) -> Dict:
         """

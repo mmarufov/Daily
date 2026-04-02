@@ -47,7 +47,7 @@ class _FakeConn:
 
 
 class _FakeOpenAIService:
-    async def score_articles_batch(self, articles, user_profile, interests=None):
+    async def score_articles_batch(self, articles, user_profile, interests=None, user_profile_v2=None):
         return [
             {"relevant": False, "score": 0.0, "reason": "scoring error"}
             for _ in articles
