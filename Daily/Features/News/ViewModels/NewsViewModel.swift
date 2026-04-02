@@ -136,7 +136,13 @@ final class NewsViewModel: ObservableObject {
     }
 
     func refreshFeed() async {
-        await loadFeed(forceRefresh: true)
+        // Run in an unstructured Task so SwiftUI's .refreshable cancellation
+        // (triggered by scrolling) doesn't kill the long-running AI scoring request.
+        let task = Task { @MainActor [weak self] in
+            await self?.loadFeed(forceRefresh: true)
+        }
+        await task.value
+
         if errorMessage == nil {
             HapticService.notification(.success)
         } else {
@@ -235,11 +241,18 @@ private extension NewsViewModel {
         do {
             if needsDiscovery {
                 setupPhase = phaseOverride ?? .discovering
-                let discovery = try await backendService.discoverSources(accessToken: accessToken)
-                if discovery.sourcesFound > 0 {
-                    setupDetailText = "\(discovery.sourcesFound) sources selected"
-                } else {
-                    setupDetailText = "No strong sources found yet"
+                do {
+                    let discovery = try await backendService.discoverSources(accessToken: accessToken)
+                    if discovery.sourcesFound > 0 {
+                        setupDetailText = "\(discovery.sourcesFound) sources selected"
+                    } else {
+                        setupDetailText = "No strong sources found yet"
+                    }
+                } catch is CancellationError {
+                    throw CancellationError()
+                } catch {
+                    // Discovery failed (e.g. 429 cooldown) — proceed with existing sources
+                    setupDetailText = nil
                 }
             }
 
