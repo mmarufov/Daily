@@ -103,6 +103,7 @@ _GAMING_HARDWARE_PROMPT_HINTS = {
 class PreferenceProfile:
     positive_phrases: list[str] = field(default_factory=list)
     negative_phrases: list[str] = field(default_factory=list)
+    expanded_exclusion_phrases: list[str] = field(default_factory=list)
     keyword_terms: set[str] = field(default_factory=set)
     preferred_categories: set[str] = field(default_factory=set)
     strict_mode: bool = False
@@ -168,7 +169,7 @@ async def get_personalized_feed(
                 return []
             logger.info("Cache for user %s exists but lacks reasons; treating as stale", user_id)
 
-    profile = _build_preference_profile(ai_profile or "", interests)
+    profile = _build_preference_profile(ai_profile or "", interests, user_profile_v2=user_profile_v2)
 
     candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid)
     if not candidates:
@@ -195,7 +196,9 @@ async def get_personalized_feed(
         for i in range(0, len(candidates), BATCH_SCORING_SIZE)
     ]
     batch_coros = [
-        openai_service.score_articles_batch(b, ai_profile or "", interests=interests)
+        openai_service.score_articles_batch(
+            b, ai_profile or "", interests=interests, user_profile_v2=user_profile_v2,
+        )
         for b in batches
     ]
     batch_results_list = await asyncio.gather(*batch_coros)
@@ -778,7 +781,9 @@ def _is_specific_interests(interests: dict | None) -> bool:
     return specific_count > 0
 
 
-def _build_preference_profile(ai_profile: str, interests: dict | None) -> PreferenceProfile:
+def _build_preference_profile(
+    ai_profile: str, interests: dict | None, user_profile_v2: dict | None = None,
+) -> PreferenceProfile:
     prompt_positive, prompt_negative = _extract_prompt_terms(ai_profile)
     positive_terms = prompt_positive + _interest_values(interests, "topics")
     positive_terms += _interest_values(interests, "people")
@@ -792,9 +797,17 @@ def _build_preference_profile(ai_profile: str, interests: dict | None) -> Prefer
     keywords = _keyword_terms(positive_phrases)
     strict_mode = _is_strict_profile(ai_profile)
 
+    # Extract expanded exclusion patterns from user_profile_v2
+    expanded_exclusion_phrases: list[str] = []
+    if user_profile_v2 and isinstance(user_profile_v2.get("expanded_exclusions"), list):
+        expanded_exclusion_phrases = [
+            str(v).strip().lower() for v in user_profile_v2["expanded_exclusions"] if str(v).strip()
+        ]
+
     return PreferenceProfile(
         positive_phrases=positive_phrases,
         negative_phrases=negative_phrases,
+        expanded_exclusion_phrases=expanded_exclusion_phrases,
         keyword_terms=keywords,
         preferred_categories=categories,
         strict_mode=strict_mode,
@@ -822,6 +835,12 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
         normalized = _normalize_text(phrase)
         if normalized and normalized in searchable:
             return 0.0, f"Excluded topic match: {phrase}", True
+
+    # Expanded exclusion patterns — require 2+ hits to avoid false positives
+    if profile.expanded_exclusion_phrases:
+        hits = sum(1 for p in profile.expanded_exclusion_phrases if p and p in searchable)
+        if hits >= 2:
+            return 0.0, f"Matched {hits} exclusion patterns", True
 
     if not profile.has_positive_signals:
         return 1.0, "Matches general preference constraints", False

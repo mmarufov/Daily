@@ -1202,6 +1202,18 @@ async def save_user_preferences(
         specificity_level=profile_specificity,
     )
 
+    # Expand abstract exclusions into concrete matching phrases (one-time LLM cost)
+    excluded_topics_list = (normalized_interests or {}).get("excluded_topics", [])
+    if excluded_topics_list:
+        try:
+            expanded = await openai_service.expand_exclusion_patterns(
+                excluded_topics_list, interests=normalized_interests,
+            )
+            if expanded:
+                normalized_profile_v2["expanded_exclusions"] = expanded
+        except Exception:
+            logger.warning("Exclusion expansion failed; proceeding without expanded patterns")
+
     interests_json = dumps_json(normalized_interests)
     profile_json = dumps_json(normalized_profile_v2)
     source_brief_json = dumps_json(source_selection_brief)
@@ -1294,6 +1306,18 @@ async def complete_user_preferences(
             {**normalized_profile_v2, "source_selection_brief": source_selection_brief},
             specificity_level=profile_specificity,
         )
+
+        # Expand abstract exclusions into concrete matching phrases (one-time LLM cost)
+        excluded_topics_list = (interests or {}).get("excluded_topics", []) if isinstance(interests, dict) else []
+        if excluded_topics_list:
+            try:
+                expanded = await openai_service.expand_exclusion_patterns(
+                    excluded_topics_list, interests=interests if isinstance(interests, dict) else None,
+                )
+                if expanded:
+                    normalized_profile_v2["expanded_exclusions"] = expanded
+            except Exception:
+                logger.warning("Exclusion expansion failed; proceeding without expanded patterns")
 
         interests_json = dumps_json(interests)
         profile_json = dumps_json(normalized_profile_v2)
