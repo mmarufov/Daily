@@ -4,12 +4,10 @@ from __future__ import annotations
 Feed service: score articles from shared pool with AI, cache results, return personalized feed.
 """
 import asyncio
-import hashlib
 import json
 import logging
 import re
 import uuid as _uuid
-from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from difflib import SequenceMatcher
 from typing import Any
@@ -28,17 +26,9 @@ CANDIDATE_EXPANSION_STEPS = (
     (24 * 7, 600),    # 7 days, 600 (was 500)
     (24 * 14, 1200),  # 14 days, 1200 (was 1000)
 )
-BATCH_SCORING_SIZE = 40
 MIN_CANDIDATE_TEXT_LENGTH = 40
 MAX_LLM_CANDIDATES = 200
 MIN_SHORTLIST_SIZE = 24
-MIN_FEED_SIZE = 6
-DETERMINISTIC_MATCH_THRESHOLD = 1.5
-STRICT_MATCH_THRESHOLD = 2.5
-DETERMINISTIC_STRONG_MATCH = 3.0
-DETERMINISTIC_SCORE_NORMALIZER = 8.0
-FALLBACK_SCORE_NORMALIZER = 5.0
-_FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
 _DEDUPE_TRACKING_PARAMS = {"fbclid", "gclid", "ocid", "cmpid", "taid"}
 _DEDUPE_STOPWORDS = {
     "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
@@ -47,77 +37,6 @@ _DEDUPE_STOPWORDS = {
     "only",
 }
 _STOPWORDS = set(_DEDUPE_STOPWORDS)
-_CATEGORY_HINTS = {
-    "ai": {"ai", "artificial intelligence", "llm", "machine learning", "openai", "anthropic", "chatgpt"},
-    "technology": {"technology", "tech", "software", "hardware", "developer", "programming", "apple", "google", "microsoft"},
-    "business": {"business", "finance", "economy", "markets", "company", "companies", "startup", "startups", "venture capital"},
-    "gaming": {"gaming", "video game", "video games", "game", "games", "nintendo", "playstation", "xbox", "steam", "esports", "dlc"},
-    "science": {"science", "research", "medical", "medicine", "health", "biotech", "space"},
-    "sports": {"sports", "nba", "nfl", "mlb", "soccer", "football", "tennis"},
-    "world": {"world", "international", "global", "geopolitics", "europe", "asia", "middle east"},
-    "politics": {"politics", "policy", "election", "congress", "government", "white house"},
-}
-_POSITIVE_PROMPT_PATTERNS = [
-    re.compile(
-        r"(?:interested in|care about|focus on|follow|prefer|show me|cover|about|around"
-        r"|(?:i\s+)?like|(?:i\s+)?love|(?:i\s+)?enjoy|(?:i\s+)?want|give me"
-        r"|keep me updated on|track|looking for|into)\s+([^.;\n]+)",
-        re.IGNORECASE,
-    ),
-]
-_NEGATIVE_PROMPT_PATTERNS = [
-    re.compile(r"(?:avoid|exclude|skip|without|not interested in|don't want|do not want|don't show|do not show|no)\s+([^.;\n]+)", re.IGNORECASE),
-]
-_STRICT_PROMPT_PATTERNS = [
-    re.compile(r"\bonly\s+(?:about|show|want|interested|care|cover|focus|give)\b", re.IGNORECASE),
-    re.compile(r"\bonly\s+(?!(?:read|get|check|see|browse|watch|hear)\s)\w+(?:\s+\w+){0,2}\s+news\b", re.IGNORECASE),
-    re.compile(r"\bexclusively\b", re.IGNORECASE),
-    re.compile(r"\bnothing else\b", re.IGNORECASE),
-    re.compile(r"\bnothing but\b", re.IGNORECASE),
-]
-_GAMING_SOURCE_HINTS = {
-    "polygon", "pc gamer", "eurogamer", "rock paper shotgun",
-    "game informer", "gamesindustry", "destructoid", "gamesradar",
-}
-_GAMING_CORE_HINTS = {
-    "gaming", "video game", "video games", "game", "games", "nintendo", "playstation", "xbox",
-    "steam", "epic games", "esports", "dlc", "patch", "update", "trailer", "launch",
-    "release date", "studio", "publisher", "developer",
-}
-_GAMING_DEAL_HINTS = {"best price", "deal", "discount", "sale", "lowest price", "price drop"}
-_GAMING_HARDWARE_HINTS = {
-    "controller", "headset", "keyboard", "mouse", "monitor", "gpu", "graphics card",
-    "accessory", "peripheral", "console bundle",
-}
-_GAMING_NEWS_EVENT_HINTS = {
-    "announce", "announced", "announcement", "launch", "launched", "release", "released",
-    "reveal", "revealed", "trailer", "patch", "update", "expansion", "dlc", "tournament",
-}
-_GAMING_HARDWARE_PROMPT_HINTS = {
-    "hardware", "console", "consoles", "controller", "controllers", "accessory",
-    "accessories", "peripheral", "peripherals", "gpu", "graphics card", "handheld",
-}
-
-
-@dataclass
-class PreferenceProfile:
-    positive_phrases: list[str] = field(default_factory=list)
-    negative_phrases: list[str] = field(default_factory=list)
-    expanded_exclusion_phrases: list[str] = field(default_factory=list)
-    keyword_terms: set[str] = field(default_factory=set)
-    preferred_categories: set[str] = field(default_factory=set)
-    strict_mode: bool = False
-    required_topic_groups: set[str] = field(default_factory=set)
-    allows_gaming_hardware: bool = False
-    is_specific: bool = False
-
-    @property
-    def has_preferences(self) -> bool:
-        return bool(self.positive_phrases or self.negative_phrases or self.keyword_terms or self.preferred_categories)
-
-    @property
-    def has_positive_signals(self) -> bool:
-        return bool(self.positive_phrases or self.keyword_terms or self.preferred_categories)
 
 
 async def get_personalized_feed(
@@ -169,78 +88,76 @@ async def get_personalized_feed(
                 return []
             logger.info("Cache for user %s exists but lacks reasons; treating as stale", user_id)
 
-    profile = _build_preference_profile(ai_profile or "", interests, user_profile_v2=user_profile_v2)
-
-    candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid)
+    # --- LLM Editor-in-Chief: single editorial pass replaces 6-signal scoring ---
+    candidates = await _load_candidates(conn, limit, user_uuid=user_uuid)
     if not candidates:
         return []
 
-    if not profile.has_preferences:
-        for candidate in candidates:
-            candidate["_score"] = 0.5
-            candidate["_relevant"] = True
-            candidate["_reason"] = "no profile available"
-        candidates.sort(key=lambda article: article.get("published_at") or "", reverse=True)
+    # Small candidate pool: skip LLM, serve by recency
+    if len(candidates) < MIN_EDITORIAL_CANDIDATES:
+        for i, c in enumerate(candidates):
+            c["_score"] = 1.0 - (i / max(len(candidates), 1))
+            c["_relevant"] = True
+            c["_reason"] = "Served by recency (small candidate pool)"
+            c["_feed_role"] = "worth_knowing"
+        candidates.sort(key=lambda a: a.get("published_at") or "", reverse=True)
         _save_feed_cache(conn, user_uuid, candidates)
-        finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
-        finalized = finalized[:limit]
-        await _hydrate_missing_feed_images(conn, finalized)
-        return finalized
+        deduped = _collapse_duplicate_coverage(candidates)
+        deduped = deduped[:limit]
+        await _hydrate_missing_feed_images(conn, deduped)
+        return _finalize_curated_articles(deduped)
 
-    # Load behavioral signals, entity pins, source quality for scoring context
-    _prepare_scoring_context(conn, user_id)
+    # Deduplicate before sending to LLM
+    candidates = _collapse_duplicate_coverage(candidates)
 
+    # Single LLM editorial call
     openai_service = get_openai_service()
-    batches = [
-        candidates[i:i + BATCH_SCORING_SIZE]
-        for i in range(0, len(candidates), BATCH_SCORING_SIZE)
-    ]
-    batch_coros = [
-        openai_service.score_articles_batch(
-            b, ai_profile or "", interests=interests, user_profile_v2=user_profile_v2,
-        )
-        for b in batches
-    ]
-    batch_results_list = await asyncio.gather(*batch_coros)
-    analysis_results = [r for results in batch_results_list for r in results]
-
-    _apply_individual_analysis_results(candidates, analysis_results, profile)
-    _annotate_candidate_feed_roles(candidates, user_profile_v2 or {})
-    candidates.sort(
-        key=lambda article: (article.get("_score", 0.0), article.get("published_at") or ""),
-        reverse=True,
+    editorial_picks = await openai_service.curate_feed_editorial(
+        ai_profile=ai_profile or "",
+        interests=interests,
+        user_profile_v2=user_profile_v2,
+        candidates=candidates,
     )
-    _save_feed_cache(conn, user_uuid, candidates)
-    finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
-    relevant = [article for article in finalized if article.get("relevant", False)]
-    relevant = _enforce_diversity(relevant)
-    relevant = _balance_feed_roles(relevant)
-    relevant = relevant[:limit]
-    await _hydrate_missing_feed_images(conn, relevant)
-    return relevant
 
+    # LLM failure fallback: serve last cached feed (any age)
+    if not editorial_picks:
+        logger.warning("Editorial curation failed for user %s; falling back to cache", user_id)
+        cached_fallback = _load_cached_feed(conn, user_uuid, preferences_updated_at=None, max_age_minutes=None)
+        if cached_fallback:
+            relevant = [a for a in cached_fallback if a.get("relevant", False)]
+            if relevant:
+                await _hydrate_missing_feed_images(conn, relevant[:limit])
+                return relevant[:limit]
+        # No cache either: serve by recency
+        for i, c in enumerate(candidates):
+            c["_score"] = 1.0 - (i / max(len(candidates), 1))
+            c["_relevant"] = True
+            c["_reason"] = "Editorial unavailable; served by recency"
+            c["_feed_role"] = "worth_knowing"
+        candidates.sort(key=lambda a: a.get("published_at") or "", reverse=True)
+        _save_feed_cache(conn, user_uuid, candidates[:limit])
+        await _hydrate_missing_feed_images(conn, candidates[:limit])
+        return _finalize_curated_articles(candidates[:limit])
 
-def _log_score_distribution(results: list[dict], context: str) -> None:
-    """Emit compact score distribution logs for debugging personalization quality."""
-    if not results:
-        logger.info("Feed scoring produced no results (%s)", context)
-        return
+    # Map editorial picks back to candidate articles
+    candidate_map = {c["id"]: c for c in candidates}
+    total_picks = len(editorial_picks)
+    curated = []
+    for pick in editorial_picks:
+        article = candidate_map.get(pick["article_id"])
+        if not article:
+            continue
+        article["_score"] = 1.0 - (pick["rank"] / max(total_picks + 1, 1))
+        article["_relevant"] = True
+        article["_reason"] = pick["why_for_you"]
+        article["_feed_role"] = pick["category_tag"]
+        curated.append(article)
 
-    scores = [float(r.get("score", 0.5)) for r in results]
-    relevant_count = sum(1 for r in results if r.get("relevant", False))
-    count = len(scores)
-    mean_score = sum(scores) / count
+    _save_feed_cache(conn, user_uuid, curated)
+    curated = curated[:limit]
+    await _hydrate_missing_feed_images(conn, curated)
+    return _finalize_curated_articles(curated)
 
-    logger.info(
-        "Feed score distribution (%s): total=%d relevant=%d rejected=%d min=%.2f max=%.2f mean=%.2f",
-        context,
-        count,
-        relevant_count,
-        count - relevant_count,
-        min(scores),
-        max(scores),
-        mean_score,
-    )
 
 
 def _parse_json_object(raw: Any) -> dict | None:
@@ -286,60 +203,62 @@ def _load_user_preferences(conn, user_uuid) -> tuple[str | None, dict | None, da
     return ai_profile, interests, updated_at
 
 
-async def _load_candidates_for_profile(
+async def _load_candidates(
     conn,
-    profile: PreferenceProfile,
     limit: int,
     user_uuid=None,
 ) -> list[dict]:
-    """Load and widen candidate windows until we have enough strong matches."""
+    """Load candidates using time-window expansion without keyword pre-filtering.
+
+    The LLM editorial pass handles all filtering — we just need a pool of
+    recent articles from the user's curated sources.
+    """
     seen_ids: set[str] = set()
     gathered: list[dict] = []
-    desired_shortlist = min(max(max(limit, 10) * 2, MIN_SHORTLIST_SIZE), MAX_LLM_CANDIDATES)
+    cap = min(max(limit * 2, MIN_SHORTLIST_SIZE), MAX_LLM_CANDIDATES)
 
     for lookback_hours, row_limit in CANDIDATE_EXPANSION_STEPS:
         rows = _query_candidate_rows(conn, lookback_hours=lookback_hours, row_limit=row_limit, user_uuid=user_uuid)
-        window_candidates = []
         for candidate in _rows_to_candidates(rows):
             candidate_id = candidate["id"]
             if candidate_id in seen_ids:
                 continue
             seen_ids.add(candidate_id)
-            window_candidates.append(candidate)
+            gathered.append(candidate)
 
-        gathered.extend(window_candidates)
-        logger.info(
-            "Loaded %d candidates for %dh/%d window (total=%d)",
-            len(window_candidates),
-            lookback_hours,
-            row_limit,
-            len(gathered),
-        )
-
-        if not profile.has_preferences:
-            continue
-
-        shortlisted = _prefilter_candidates(gathered, profile, max_candidates=desired_shortlist)
-        logger.info(
-            "Shortlisted %d candidates after %dh expansion for strict=%s categories=%s",
-            len(shortlisted),
-            lookback_hours,
-            profile.strict_mode,
-            sorted(profile.preferred_categories),
-        )
-        if len(shortlisted) >= desired_shortlist:
-            return shortlisted
+        logger.info("Loaded candidates for %dh window (total=%d)", lookback_hours, len(gathered))
+        if len(gathered) >= cap:
+            break
 
     if not gathered:
         return []
 
-    if not profile.has_preferences:
-        gathered.sort(key=lambda article: article.get("published_at") or "", reverse=True)
-        return gathered[:max(limit, MAX_LLM_CANDIDATES)]
+    gathered.sort(key=lambda a: a.get("published_at") or "", reverse=True)
+    return gathered[:MAX_LLM_CANDIDATES]
 
-    shortlisted = _prefilter_candidates(gathered, profile, max_candidates=desired_shortlist)
-    logger.info("Returning %d shortlisted candidates after exhausting expansion windows", len(shortlisted))
-    return shortlisted
+
+def _finalize_curated_articles(articles: list[dict]) -> list[dict]:
+    """Map internal scoring keys to public field names for curated feed."""
+    finalized: list[dict] = []
+    for article in articles:
+        row = dict(article)
+        row["relevance_score"] = row.pop("_score", row.get("relevance_score", 0.0))
+        row["relevant"] = row.pop("_relevant", row.get("relevant", False))
+        row["relevance_reason"] = row.pop("_reason", row.get("relevance_reason", ""))
+        row["feed_role"] = row.pop("_feed_role", row.get("feed_role"))
+        row.setdefault("why_this_story", None)
+        row.setdefault("why_now", None)
+        row.setdefault("matched_profile_signals", [])
+        row.setdefault("cluster_id", None)
+        row.setdefault("importance_score", 0.0)
+        row.pop("_prefilter_score", None)
+        row.pop("_prefilter_reason", None)
+        row.pop("_prefilter_excluded", None)
+        finalized.append(row)
+    return finalized
+
+
+MIN_EDITORIAL_CANDIDATES = 30
 
 
 def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=None) -> list[dict]:
@@ -638,656 +557,6 @@ def _parse_interests(raw) -> dict | None:
     if isinstance(raw, dict):
         return raw
     return None
-
-
-def _normalize_text(value: str | None) -> str:
-    if not value:
-        return ""
-    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9+.#-]+", " ", value.lower())).strip()
-
-
-def _dedupe_terms(values: list[str]) -> list[str]:
-    seen = set()
-    deduped: list[str] = []
-    for value in values:
-        normalized = _normalize_text(value)
-        if not normalized or normalized in seen:
-            continue
-        seen.add(normalized)
-        deduped.append(value.strip())
-    return deduped
-
-
-def _split_profile_clause(text: str) -> list[str]:
-    return [
-        piece.strip(" ,.;:()[]{}")
-        for piece in re.split(r",|/|\band\b|\bor\b", text, flags=re.IGNORECASE)
-        if piece.strip(" ,.;:()[]{}")
-    ]
-
-
-def _extract_prompt_terms(ai_profile: str) -> tuple[list[str], list[str]]:
-    positive: list[str] = []
-    negative: list[str] = []
-
-    for pattern in _POSITIVE_PROMPT_PATTERNS:
-        for match in pattern.finditer(ai_profile):
-            positive.extend(_split_profile_clause(match.group(1)))
-
-    for pattern in _NEGATIVE_PROMPT_PATTERNS:
-        for match in pattern.finditer(ai_profile):
-            negative.extend(_split_profile_clause(match.group(1)))
-
-    return _dedupe_terms(positive), _dedupe_terms(negative)
-
-
-def _interest_values(interests: dict | None, key: str) -> list[str]:
-    if not isinstance(interests, dict):
-        return []
-    values = interests.get(key)
-    if not isinstance(values, list):
-        return []
-    return [str(value).strip() for value in values if str(value).strip()]
-
-
-def _categories_for_terms(terms: list[str]) -> set[str]:
-    categories: set[str] = set()
-    for term in terms:
-        normalized = _normalize_text(term)
-        for category, hints in _CATEGORY_HINTS.items():
-            if normalized == category or normalized in hints or any(hint in normalized for hint in hints):
-                categories.add(category)
-    return categories
-
-
-def _keyword_terms(phrases: list[str]) -> set[str]:
-    keywords: set[str] = set()
-    for phrase in phrases:
-        for token in re.findall(r"[A-Za-z0-9+.#-]{2,}", phrase.lower()):
-            if token in _STOPWORDS:
-                continue
-            keywords.add(token)
-            if len(token) > 3 and token.endswith("s"):
-                keywords.add(token[:-1])
-    return keywords
-
-
-def _contains_any(text: str, terms: set[str]) -> bool:
-    for term in terms:
-        if len(term) <= 3 and term.isalnum():
-            if re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", text):
-                return True
-        elif term in text:
-            return True
-    return False
-
-
-def _is_strict_profile(ai_profile: str) -> bool:
-    return any(pattern.search(ai_profile or "") for pattern in _STRICT_PROMPT_PATTERNS)
-
-
-def _allows_gaming_hardware(ai_profile: str, positive_phrases: list[str]) -> bool:
-    searchable = " ".join(_normalize_text(value) for value in [ai_profile, *positive_phrases] if value)
-    return _contains_any(searchable, _GAMING_HARDWARE_PROMPT_HINTS)
-
-
-def _candidate_matches_gaming_topic(fields: dict[str, str], searchable: str, profile: PreferenceProfile) -> bool:
-    source_or_category = fields["category"] == "gaming" or _contains_any(fields["source"], _GAMING_SOURCE_HINTS)
-    core_match = _contains_any(searchable, _GAMING_CORE_HINTS)
-
-    if not (source_or_category or core_match):
-        return False
-
-    if _contains_any(searchable, _GAMING_DEAL_HINTS):
-        return profile.allows_gaming_hardware
-
-    if _contains_any(searchable, _GAMING_HARDWARE_HINTS) and not profile.allows_gaming_hardware:
-        return _contains_any(searchable, _GAMING_NEWS_EVENT_HINTS)
-
-    return True
-
-
-def _candidate_matches_topic_group(
-    fields: dict[str, str],
-    searchable: str,
-    topic_group: str,
-    profile: PreferenceProfile,
-) -> bool:
-    if topic_group == "gaming":
-        return _candidate_matches_gaming_topic(fields, searchable, profile)
-
-    hints = _CATEGORY_HINTS.get(topic_group, set())
-    if fields["category"] == topic_group:
-        return True
-    if hints and _contains_any(fields["source"], hints):
-        return True
-    return bool(hints and _contains_any(searchable, hints))
-
-
-def _is_specific_interests(interests: dict | None) -> bool:
-    """Detect narrow/specific interests (e.g. 'Claude AI') vs broad (e.g. 'AI, gaming')."""
-    if not interests:
-        return False
-    all_terms: list[str] = []
-    for key in ("topics", "people"):
-        values = interests.get(key)
-        if isinstance(values, list):
-            all_terms.extend(str(v).strip() for v in values if str(v).strip())
-    if not all_terms or len(all_terms) > 3:
-        return False
-    specific_count = sum(
-        1 for t in all_terms if len(t.split()) >= 2 or (t and t[0].isupper())
-    )
-    return specific_count > 0
-
-
-def _build_preference_profile(
-    ai_profile: str, interests: dict | None, user_profile_v2: dict | None = None,
-) -> PreferenceProfile:
-    prompt_positive, prompt_negative = _extract_prompt_terms(ai_profile)
-    positive_terms = prompt_positive + _interest_values(interests, "topics")
-    positive_terms += _interest_values(interests, "people")
-    positive_terms += _interest_values(interests, "locations")
-    positive_terms += _interest_values(interests, "industries")
-    negative_terms = prompt_negative + _interest_values(interests, "excluded_topics")
-
-    positive_phrases = _dedupe_terms(positive_terms)
-    negative_phrases = _dedupe_terms(negative_terms)
-    categories = _categories_for_terms(positive_phrases)
-    keywords = _keyword_terms(positive_phrases)
-    strict_mode = _is_strict_profile(ai_profile)
-
-    # Extract expanded exclusion patterns from user_profile_v2
-    expanded_exclusion_phrases: list[str] = []
-    if user_profile_v2 and isinstance(user_profile_v2.get("expanded_exclusions"), list):
-        expanded_exclusion_phrases = [
-            str(v).strip().lower() for v in user_profile_v2["expanded_exclusions"] if str(v).strip()
-        ]
-
-    return PreferenceProfile(
-        positive_phrases=positive_phrases,
-        negative_phrases=negative_phrases,
-        expanded_exclusion_phrases=expanded_exclusion_phrases,
-        keyword_terms=keywords,
-        preferred_categories=categories,
-        strict_mode=strict_mode,
-        required_topic_groups=set(categories) if strict_mode else set(),
-        allows_gaming_hardware=_allows_gaming_hardware(ai_profile, positive_phrases),
-        is_specific=_is_specific_interests(interests),
-    )
-
-
-def _candidate_search_fields(candidate: dict[str, Any]) -> dict[str, str]:
-    return {
-        "title": _normalize_text(candidate.get("title")),
-        "summary": _normalize_text(candidate.get("summary")),
-        "content": _normalize_text(candidate.get("content")),
-        "source": _normalize_text(candidate.get("source")),
-        "category": _normalize_text(candidate.get("category")),
-    }
-
-
-def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> tuple[float, str, bool]:
-    fields = _candidate_search_fields(candidate)
-    searchable = " ".join(value for value in fields.values() if value)
-
-    for phrase in profile.negative_phrases:
-        normalized = _normalize_text(phrase)
-        if normalized and normalized in searchable:
-            return 0.0, f"Excluded topic match: {phrase}", True
-
-    # Expanded exclusion patterns — require 2+ hits to avoid false positives
-    if profile.expanded_exclusion_phrases:
-        hits = sum(1 for p in profile.expanded_exclusion_phrases if p and p in searchable)
-        if hits >= 2:
-            return 0.0, f"Matched {hits} exclusion patterns", True
-
-    if not profile.has_positive_signals:
-        return 1.0, "Matches general preference constraints", False
-
-    score = 0.0
-    matched_terms: list[str] = []
-    matched_topic_groups = [
-        topic_group
-        for topic_group in profile.required_topic_groups
-        if _candidate_matches_topic_group(fields, searchable, topic_group, profile)
-    ]
-
-    if profile.required_topic_groups and not matched_topic_groups:
-        return 0.2, "Outside primary topics", False
-
-    if matched_topic_groups:
-        score += 2.5 * len(matched_topic_groups)
-        matched_terms.extend(matched_topic_groups)
-
-    for phrase in profile.positive_phrases:
-        normalized = _normalize_text(phrase)
-        if not normalized:
-            continue
-
-        if normalized in fields["title"]:
-            score += 4.0
-            matched_terms.append(phrase)
-        elif normalized in fields["category"] or normalized in fields["source"]:
-            score += 3.0
-            matched_terms.append(phrase)
-        elif normalized in fields["summary"]:
-            score += 2.0
-            matched_terms.append(phrase)
-        elif normalized in searchable:
-            score += 1.0
-            matched_terms.append(phrase)
-
-        phrase_tokens = [
-            token for token in re.findall(r"[A-Za-z0-9+.#-]{2,}", normalized)
-            if token not in _STOPWORDS
-        ]
-        if len(phrase_tokens) >= 2:
-            matched_token_count = 0
-            for token in phrase_tokens:
-                token_variants = {token}
-                if len(token) > 3 and token.endswith("s"):
-                    token_variants.add(token[:-1])
-                if any(variant and variant in searchable for variant in token_variants):
-                    matched_token_count += 1
-            if matched_token_count >= 2:
-                score += 2.0
-                matched_terms.append(phrase)
-
-    if fields["category"] in profile.preferred_categories:
-        score += 2.5
-        matched_terms.append(candidate.get("category") or fields["category"])
-
-    keyword_hits = 0
-    for keyword in profile.keyword_terms:
-        if keyword in fields["title"]:
-            keyword_hits += 2
-        elif keyword in fields["summary"] or keyword in fields["category"] or keyword in fields["source"]:
-            keyword_hits += 1
-
-    score += min(keyword_hits * 0.4, 2.4)
-
-    if score <= 0:
-        return 0.0, "No clear preference match", False
-
-    unique_matches = _dedupe_terms(matched_terms)
-    reason = "Matched: " + ", ".join(unique_matches[:3]) if unique_matches else "Matched your profile"
-    return score, reason, False
-
-
-def _prefilter_candidates(
-    candidates: list[dict],
-    profile: PreferenceProfile,
-    max_candidates: int = MAX_LLM_CANDIDATES,
-) -> list[dict]:
-    """Score candidates deterministically but don't drop any except excluded topics.
-    Prefilter score is used as a SIGNAL (blended at 35% weight), not a gate."""
-    non_excluded: list[dict] = []
-
-    for candidate in candidates:
-        score, reason, excluded = _score_candidate(candidate, profile)
-        candidate["_prefilter_score"] = score
-        candidate["_prefilter_reason"] = reason
-        candidate["_prefilter_excluded"] = excluded
-
-        if excluded:
-            continue
-        non_excluded.append(candidate)
-
-    # Sort by prefilter score to prioritize strong matches for LLM batching
-    non_excluded.sort(
-        key=lambda article: (article.get("_prefilter_score", 0.0), article.get("published_at") or ""),
-        reverse=True,
-    )
-
-    return non_excluded[:max_candidates]
-
-
-# Module-level closures set per scoring call — avoids threading these through every function
-_behavior_signals: dict = {}
-_entity_pins: list[str] = []
-_entity_patterns: dict = {}
-_source_quality: dict = {}
-
-
-def _extract_domain(source_name: str) -> str:
-    """Extract a rough domain key from source_name for quality lookup."""
-    return (source_name or "").lower().strip()
-
-
-def _load_behavior_signals(conn, user_id: str) -> dict:
-    """Load cached behavioral signals from user_preferences.behavior_cache."""
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT behavior_cache FROM public.user_preferences WHERE user_id = %s",
-                (user_id,),
-            )
-            row = cur.fetchone()
-        if row and row.get("behavior_cache"):
-            return json.loads(row["behavior_cache"])
-    except Exception:
-        pass
-    return {}
-
-
-def _load_entity_pins(conn, user_id: str) -> list[str]:
-    """Load entity pin names for a user."""
-    try:
-        with conn.cursor() as cur:
-            cur.execute(
-                "SELECT entity_name FROM public.entity_pins WHERE user_id = %s",
-                (user_id,),
-            )
-            return [row["entity_name"] for row in cur.fetchall()]
-    except Exception:
-        return []
-
-
-def _load_source_quality(conn) -> dict:
-    """Load global source quality scores."""
-    try:
-        with conn.cursor() as cur:
-            cur.execute("SELECT source_domain, quality_score FROM public.source_quality")
-            return {row["source_domain"]: row["quality_score"] for row in cur.fetchall()}
-    except Exception:
-        return {}
-
-
-def _build_entity_patterns(pins: list[str]) -> dict:
-    """Pre-compile word-boundary regex patterns for entity matching (ENG-6)."""
-    patterns = {}
-    for name in pins:
-        try:
-            patterns[name] = re.compile(r'\b' + re.escape(name.lower()) + r'\b')
-        except re.error:
-            pass
-    return patterns
-
-
-def _prepare_scoring_context(conn, user_id: str) -> None:
-    """Load all scoring context (behavior, entities, source quality) into module-level state."""
-    global _behavior_signals, _entity_pins, _entity_patterns, _source_quality
-    _behavior_signals = _load_behavior_signals(conn, user_id)
-    _entity_pins = _load_entity_pins(conn, user_id)
-    _entity_patterns = _build_entity_patterns(_entity_pins)
-    _source_quality = _load_source_quality(conn)
-
-
-def _apply_individual_analysis_results(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
-    normalized_results = []
-    for index, candidate in enumerate(candidates):
-        if index < len(results):
-            normalized_results.append(results[index])
-        else:
-            normalized_results.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
-
-    _log_score_distribution(normalized_results, context="individual-analysis")
-
-    for candidate, result in zip(candidates, normalized_results):
-        prefilter_score, prefilter_reason, excluded = _score_candidate(candidate, profile)
-        deterministic_score = min(prefilter_score / DETERMINISTIC_SCORE_NORMALIZER, 1.0)
-        reason = str(result.get("reason", "")).strip()
-        model_score = max(0.0, min(1.0, float(result.get("score", 0.0))))
-        model_relevant = bool(result.get("relevant", False))
-        accept_threshold = STRICT_MATCH_THRESHOLD if profile.strict_mode else DETERMINISTIC_MATCH_THRESHOLD
-
-        if excluded:
-            candidate["_score"] = 0.0
-            candidate["_relevant"] = False
-            candidate["_reason"] = prefilter_reason
-            continue
-
-        if reason in _FALLBACK_REASONS or reason.startswith("Error during analysis:"):
-            candidate["_score"] = min(prefilter_score / FALLBACK_SCORE_NORMALIZER, 1.0)
-            candidate["_relevant"] = prefilter_score >= accept_threshold
-            candidate["_reason"] = prefilter_reason or reason
-            continue
-
-        blended_score = 0.65 * model_score + 0.35 * deterministic_score
-
-        # Behavioral boost from cached reading signals (ENG-5)
-        behavior = _behavior_signals or {}
-        if behavior:
-            category = candidate.get("category", "")
-            source = candidate.get("source") or candidate.get("source_name", "")
-            cat_boost = behavior.get("category_boost", {}).get(category, 0.0)
-            src_boost = behavior.get("source_boost", {}).get(source, 0.0)
-            blended_score = min(blended_score + min(cat_boost + src_boost, 0.15), 1.0)
-
-        # Entity boost from pinned entities
-        if _entity_pins:
-            title_lower = candidate.get("title", "").lower()
-            summary_lower = (candidate.get("summary") or "").lower()
-            searchable = title_lower + " " + summary_lower
-            for pin_name in _entity_pins:
-                pattern = _entity_patterns.get(pin_name)
-                if pattern and pattern.search(searchable):
-                    blended_score = min(blended_score + 0.2, 1.0)
-                    model_relevant = True
-                    break
-
-        # Source quality adjustment
-        if _source_quality:
-            domain = _extract_domain(candidate.get("source_name", ""))
-            sq = _source_quality.get(domain)
-            if sq is not None:
-                if sq > 0.6:
-                    blended_score = min(blended_score + 0.05, 1.0)
-                elif sq < 0.3:
-                    blended_score = max(blended_score - 0.05, 0.0)
-
-        candidate["_score"] = blended_score
-        candidate["_relevant"] = model_relevant and blended_score >= 0.35
-        candidate["_reason"] = reason or prefilter_reason
-
-
-def _enforce_diversity(articles: list[dict], max_per_category_pct: float = 0.4) -> list[dict]:
-    """Ensure no single category dominates the feed."""
-    if len(articles) <= 5:
-        return articles
-    max_per_cat = max(3, int(len(articles) * max_per_category_pct))
-    by_category: dict[str, list[dict]] = {}
-    for article in articles:
-        cat = article.get("category") or "general"
-        by_category.setdefault(cat, []).append(article)
-    result: list[dict] = []
-    overflow: list[dict] = []
-    for group in by_category.values():
-        result.extend(group[:max_per_cat])
-        overflow.extend(group[max_per_cat:])
-    overflow.sort(key=_article_rank_score, reverse=True)
-    result.extend(overflow)
-    result.sort(key=_article_rank_score, reverse=True)
-    return result
-
-
-def _compute_freshness_score(article: dict) -> float:
-    published = _parse_article_datetime(article.get("published_at"))
-    if not published:
-        return 0.35
-    age_hours = max((datetime.now(timezone.utc) - published).total_seconds() / 3600, 0.0)
-    if age_hours <= 6:
-        return 1.0
-    if age_hours <= 24:
-        return 0.8
-    if age_hours <= 72:
-        return 0.55
-    return 0.3
-
-
-def _keyword_match_count(searchable: str, values: list[str]) -> int:
-    count = 0
-    for value in values:
-        normalized = _normalize_text(value)
-        if normalized and normalized in searchable:
-            count += 1
-    return count
-
-
-def _compute_life_impact(article: dict, profile_v2: dict) -> tuple[float, list[str]]:
-    searchable = " ".join(
-        _normalize_text(article.get(key))
-        for key in ("title", "summary", "content", "category", "source")
-    )
-    score = 0.0
-    signals: list[str] = []
-
-    location_matches = _keyword_match_count(searchable, profile_v2.get("locations") or [])
-    if location_matches:
-        score += min(location_matches * 0.3, 0.6)
-        signals.extend((profile_v2.get("locations") or [])[:location_matches])
-
-    utility_priorities = [str(value).strip() for value in profile_v2.get("utility_priorities") or []]
-    category = (article.get("category") or "").lower()
-    utility_rules = {
-        "work": {"technology", "business", "programming", "ai"},
-        "money": {"business", "crypto"},
-        "health": {"health", "science"},
-        "local": {"world", "politics", "general"},
-        "travel": {"world", "business"},
-    }
-    for priority in utility_priorities:
-        normalized = priority.lower()
-        if normalized in searchable or category in utility_rules.get(normalized, set()):
-            score += 0.22
-            signals.append(priority)
-
-    if any(term in searchable for term in ("policy", "regulation", "lawsuit", "ban", "recall", "security", "outage")):
-        score += 0.12
-        signals.append("timely impact")
-
-    return min(score, 1.0), signals[:4]
-
-
-def _make_cluster_id(article: dict) -> str:
-    normalized = _normalize_title_for_dedupe(article.get("title"))
-    if not normalized:
-        normalized = _canonicalize_url(article.get("url"))
-    digest = hashlib.sha1(normalized.encode("utf-8")).hexdigest()[:12]
-    return f"cluster_{digest}"
-
-
-def _explanation_prefix(signals: list[str]) -> str:
-    if not signals:
-        return "Picked for your feed"
-    return f"Because you follow {', '.join(signals[:3])}"
-
-
-def _build_why_now(article: dict, life_impact_score: float) -> str:
-    freshness = _compute_freshness_score(article)
-    if life_impact_score >= 0.5:
-        return "Likely to matter in the near term."
-    if freshness >= 0.8:
-        return "Fresh coverage from the last day."
-    if freshness >= 0.55:
-        return "Recent development still worth tracking."
-    return "Important enough to keep in view."
-
-
-def _annotate_candidate_feed_roles(candidates: list[dict], profile_v2: dict) -> None:
-    for candidate in candidates:
-        searchable = " ".join(
-            _normalize_text(candidate.get(key))
-            for key in ("title", "summary", "content", "category", "source")
-        )
-        matched_signals: list[str] = []
-        matched_signals.extend(candidate.get("source_matched_topics") or [])
-        matched_signals.extend(candidate.get("source_matched_entities") or [])
-        for key in ("current_interests", "stable_interests", "people", "industries"):
-            for value in profile_v2.get(key) or []:
-                normalized = _normalize_text(value)
-                if normalized and normalized in searchable and value not in matched_signals:
-                    matched_signals.append(value)
-
-        life_impact_score, impact_signals = _compute_life_impact(candidate, profile_v2)
-        for signal in impact_signals:
-            if signal not in matched_signals:
-                matched_signals.append(signal)
-
-        source_role = candidate.get("source_coverage_role") or "adjacent"
-        freshness_score = _compute_freshness_score(candidate)
-        source_confidence = max(
-            float(candidate.get("source_precision_score") or 0.0),
-            float(candidate.get("source_breadth_score") or 0.0) * 0.75,
-        )
-        importance_score = min(
-            1.0,
-            0.55 * life_impact_score + 0.25 * source_confidence + 0.2 * freshness_score,
-        )
-
-        if life_impact_score >= 0.55:
-            feed_role = "life_impact"
-        elif source_role in {"core", "entity-tracking"} or matched_signals:
-            feed_role = "direct_match"
-        elif source_role == "breadth" or importance_score >= 0.48:
-            feed_role = "worth_knowing"
-        else:
-            feed_role = "serendipity"
-
-        candidate["_matched_profile_signals"] = matched_signals[:6]
-        candidate["_feed_role"] = feed_role
-        candidate["_cluster_id"] = _make_cluster_id(candidate)
-        candidate["_importance_score"] = round(importance_score, 4)
-        candidate["_why_this_story"] = candidate.get("source_selection_reason") or _explanation_prefix(matched_signals)
-        candidate["_why_now"] = _build_why_now(candidate, life_impact_score)
-
-
-def _balance_feed_roles(articles: list[dict]) -> list[dict]:
-    if len(articles) <= 4:
-        return articles
-
-    role_quota = {
-        "direct_match": 10,
-        "life_impact": 5,
-        "worth_knowing": 3,
-        "serendipity": 2,
-    }
-    target_limit = min(len(articles), 20)
-    grouped: dict[str, list[dict]] = {}
-    for article in articles:
-        grouped.setdefault(article.get("feed_role") or "worth_knowing", []).append(article)
-    for group in grouped.values():
-        group.sort(key=_article_rank_score, reverse=True)
-
-    ordered: list[dict] = []
-    used_ids: set[str] = set()
-    for role, quota in role_quota.items():
-        for article in grouped.get(role, [])[:quota]:
-            if article["id"] in used_ids or len(ordered) >= target_limit:
-                continue
-            ordered.append(article)
-            used_ids.add(article["id"])
-
-    for article in sorted(articles, key=_article_rank_score, reverse=True):
-        if len(ordered) >= len(articles):
-            break
-        if article["id"] in used_ids:
-            continue
-        ordered.append(article)
-        used_ids.add(article["id"])
-
-    return ordered
-
-
-def _finalize_articles(articles: list[dict]) -> list[dict]:
-    finalized: list[dict] = []
-    for article in articles:
-        row = dict(article)
-        row["relevance_score"] = row.pop("_score", row.get("relevance_score", 0.0))
-        row["relevant"] = row.pop("_relevant", row.get("relevant", False))
-        row["relevance_reason"] = row.pop("_reason", row.get("relevance_reason", ""))
-        row["feed_role"] = row.pop("_feed_role", row.get("feed_role"))
-        row["why_this_story"] = row.pop("_why_this_story", row.get("why_this_story"))
-        row["why_now"] = row.pop("_why_now", row.get("why_now"))
-        row["matched_profile_signals"] = row.pop("_matched_profile_signals", row.get("matched_profile_signals", []))
-        row["cluster_id"] = row.pop("_cluster_id", row.get("cluster_id"))
-        row["importance_score"] = row.pop("_importance_score", row.get("importance_score", 0.0))
-        row.pop("_prefilter_score", None)
-        row.pop("_prefilter_reason", None)
-        row.pop("_prefilter_excluded", None)
-        finalized.append(row)
-    return finalized
 
 
 def _load_cached_feed(

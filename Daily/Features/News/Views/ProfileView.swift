@@ -112,7 +112,7 @@ struct ProfileView: View {
         VStack(spacing: AppSpacing.md) {
             if let photoURL = auth.currentUser?.photo_url,
                let url = URL(string: photoURL) {
-                AsyncImage(url: url) { phase in
+                AsyncImage(url: url, transaction: Transaction(animation: nil)) { phase in
                     switch phase {
                     case .success(let image):
                         image
@@ -121,7 +121,7 @@ struct ProfileView: View {
                     default:
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .aspectRatio(contentMode: .fill)
                             .foregroundColor(BrandColors.textTertiary)
                     }
                 }

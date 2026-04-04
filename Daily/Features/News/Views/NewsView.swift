@@ -412,7 +412,7 @@ struct FeaturedArticleCard: View {
             // Image
             ZStack {
                 if let imageURL = article.imageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
+                    AsyncImage(url: url, transaction: Transaction(animation: nil)) { phase in
                         switch phase {
                         case .success(let image):
                             image.resizable().aspectRatio(contentMode: .fill)
@@ -420,6 +420,8 @@ struct FeaturedArticleCard: View {
                             featuredPlaceholder
                         }
                     }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: imageHeight)
                 } else {
                     featuredPlaceholder
                 }

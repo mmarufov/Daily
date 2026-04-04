@@ -19,6 +19,66 @@ if "dotenv" not in sys.modules:
 
 from app.services import feed_service
 
+_DISTINCT_TITLES = [
+    "Apple launches new MacBook Pro with M5 chip",
+    "Senate passes landmark AI regulation bill today",
+    "SpaceX successfully lands Starship on fourth attempt",
+    "Google DeepMind announces breakthrough in protein folding",
+    "Federal Reserve holds interest rates steady for third quarter",
+    "Meta releases open source large language model Llama 4",
+    "Tesla Cybertruck recall affects fifty thousand vehicles",
+    "Microsoft acquires gaming studio for two billion dollars",
+    "Amazon Web Services launches new AI training platform",
+    "Nvidia stock surges after record quarterly earnings report",
+    "Anthropic raises four billion in new funding round",
+    "Samsung unveils foldable tablet with holographic display",
+    "EU Parliament approves comprehensive data privacy reform",
+    "OpenAI releases GPT-5 with improved reasoning capabilities",
+    "Boeing Starliner finally completes crewed mission successfully",
+    "TSMC breaks ground on Arizona chip fabrication plant",
+    "Spotify introduces lossless audio tier for premium users",
+    "China lands rover on far side of Mars surface",
+    "Uber launches autonomous ride-hailing in San Francisco",
+    "Reddit IPO stock price doubles on first trading day",
+    "Intel announces next generation Lunar Lake mobile processors",
+    "Waymo expands driverless taxi service to Miami metro",
+    "Netflix cracks down on password sharing globally now",
+    "Sony PlayStation 6 reveal event set for June date",
+    "Cloudflare mitigates record breaking DDoS attack last week",
+    "Docker announces major container runtime security overhaul",
+    "Stripe launches crypto payment integration for merchants",
+    "Figma releases AI design assistant for professional users",
+    "Rivian electric truck beats range expectations in testing",
+    "GitHub Copilot gets multimodal code generation features today",
+    "Oracle cloud infrastructure surpasses Azure in benchmarks",
+    "Zoom acquires enterprise collaboration startup for expansion",
+    "Palantir wins major defense contract worth billions",
+    "TikTok divests US operations to comply with ban",
+    "Unity game engine introduces real-time ray tracing update",
+    "Block formerly Square launches banking services nationwide",
+    "Databricks reaches fifty billion dollar private valuation",
+    "Shopify introduces AI-powered store builder for merchants",
+    "Qualcomm Snapdragon X Elite beats Apple M4 in tests",
+    "Mozilla Firefox introduces built-in VPN for all users",
+]
+
+
+def _make_distinct_candidates(count: int) -> list:
+    candidates = []
+    for i in range(min(count, len(_DISTINCT_TITLES))):
+        candidates.append({
+            "id": str(uuid.uuid4()),
+            "title": _DISTINCT_TITLES[i],
+            "summary": f"Detailed coverage of {_DISTINCT_TITLES[i].lower()}",
+            "content": "",
+            "source": f"Source-{i}",
+            "image_url": None,
+            "url": f"https://example-{i}.com/{uuid.uuid4().hex[:8]}",
+            "published_at": f"2026-03-23T{i % 24:02d}:{i % 60:02d}:00+00:00",
+            "category": "general",
+        })
+    return candidates
+
 
 class _FakeCursor:
     def __init__(self, rows):
@@ -47,14 +107,24 @@ class _FakeConn:
 
 
 class _FakeOpenAIService:
-    async def score_articles_batch(self, articles, user_profile, interests=None, user_profile_v2=None):
-        return [
-            {"relevant": False, "score": 0.0, "reason": "scoring error"}
-            for _ in articles
-        ]
+    async def curate_feed_editorial(self, ai_profile, interests=None, user_profile_v2=None, candidates=None):
+        if not candidates:
+            return []
+        picks = []
+        for i, c in enumerate(candidates[:15]):
+            picks.append({
+                "article_id": c["id"],
+                "rank": i + 1,
+                "why_for_you": f"Relevant to your interests",
+                "category_tag": "core_topic",
+            })
+        return picks
 
 
 class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
+
+    # --- Deduplication tests (unchanged, functions still exist) ---
+
     def test_canonicalize_url_drops_tracking_params(self):
         canonical = feed_service._canonicalize_url(
             "https://Example.com/story?utm_source=rss&gclid=123&keep=1#section"
@@ -182,222 +252,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(deduped), 2)
 
-    def test_strict_mode_not_triggered_by_casual_just(self):
-        self.assertFalse(feed_service._is_strict_profile("I just want good tech news"))
-
-    def test_strict_mode_not_triggered_by_casual_only(self):
-        self.assertFalse(feed_service._is_strict_profile("I only read the news in the morning"))
-
-    def test_strict_mode_triggered_by_only_topic_news(self):
-        self.assertTrue(feed_service._is_strict_profile("Show me only video game news."))
-
-    def test_strict_mode_triggered_by_only_show(self):
-        self.assertTrue(feed_service._is_strict_profile("Only show me AI articles"))
-
-    def test_strict_mode_triggered_by_exclusively(self):
-        self.assertTrue(feed_service._is_strict_profile("I exclusively want tech news"))
-
-    def test_strict_mode_triggered_by_nothing_but(self):
-        self.assertTrue(feed_service._is_strict_profile("Nothing but gaming news"))
-
-    def test_positive_pattern_matches_i_like(self):
-        profile = feed_service._build_preference_profile("I like AI and gaming", None)
-        self.assertTrue(profile.has_positive_signals)
-        keywords_lower = {k.lower() for k in profile.keyword_terms}
-        self.assertTrue({"ai", "gaming"} & keywords_lower)
-
-    def test_positive_pattern_matches_i_want(self):
-        profile = feed_service._build_preference_profile("I want tech startup news", None)
-        self.assertTrue(profile.has_positive_signals)
-
-    def test_prefilter_drops_zero_score_articles(self):
-        profile = feed_service._build_preference_profile(
-            "Show me AI news.", {"topics": ["AI"]},
-        )
-        candidates = [
-            {"id": str(uuid.uuid4()), "title": "OpenAI launches new model",
-             "summary": "AI research update", "content": "", "source": "TechCrunch",
-             "category": "ai", "published_at": "2026-03-23T10:00:00+00:00"},
-            {"id": str(uuid.uuid4()), "title": "Best pasta recipes for spring",
-             "summary": "Cooking tips for the season.", "content": "", "source": "Food Network",
-             "category": "food", "published_at": "2026-03-23T09:00:00+00:00"},
-        ]
-        shortlisted = feed_service._prefilter_candidates(candidates, profile)
-        titles = [a["title"] for a in shortlisted]
-        self.assertIn("OpenAI launches new model", titles)
-
-    def test_specific_profile_detected_for_narrow_topics(self):
-        profile = feed_service._build_preference_profile(
-            "Show me Claude AI news", {"topics": ["Claude AI"]},
-        )
-        self.assertTrue(profile.is_specific)
-
-    def test_specific_profile_detected_for_proper_noun(self):
-        profile = feed_service._build_preference_profile(
-            "Goldman Sachs news", {"topics": ["Goldman Sachs"], "people": ["Jamie Dimon"]},
-        )
-        self.assertTrue(profile.is_specific)
-
-    def test_broad_profile_not_specific(self):
-        profile = feed_service._build_preference_profile(
-            "AI, gaming, tech, and sports news",
-            {"topics": ["AI", "gaming", "tech", "sports"]},
-        )
-        self.assertFalse(profile.is_specific)
-
-    def test_no_interests_not_specific(self):
-        profile = feed_service._build_preference_profile("Show me news", None)
-        self.assertFalse(profile.is_specific)
-
-    def test_prefilter_uses_preferences_and_exclusions(self):
-        profile = feed_service._build_preference_profile(
-            "Show me OpenAI and startup funding. Avoid sports.",
-            {
-                "topics": ["OpenAI"],
-                "industries": ["startups"],
-                "excluded_topics": ["sports"],
-            },
-        )
-
-        candidates = [
-            {
-                "id": str(uuid.uuid4()),
-                "title": "OpenAI raises new giant funding round",
-                "summary": "Startup funding and model research dominate the week.",
-                "content": "",
-                "source": "TechCrunch",
-                "category": "business",
-                "published_at": "2026-03-23T10:00:00+00:00",
-            },
-            {
-                "id": str(uuid.uuid4()),
-                "title": "ESPN previews the NBA playoffs",
-                "summary": "Sports coverage from around the league.",
-                "content": "",
-                "source": "ESPN",
-                "category": "sports",
-                "published_at": "2026-03-23T09:00:00+00:00",
-            },
-        ]
-
-        shortlisted = feed_service._prefilter_candidates(candidates, profile)
-
-        self.assertEqual(len(shortlisted), 1)
-        self.assertIn("OpenAI", shortlisted[0]["title"])
-
-    def test_prompt_only_profile_still_creates_matches(self):
-        profile = feed_service._build_preference_profile(
-            "Show me AI chips and semiconductor news, avoid politics.",
-            None,
-        )
-
-        matched, reason, excluded = feed_service._score_candidate(
-            {
-                "title": "Nvidia unveils new AI chip roadmap",
-                "summary": "Semiconductor competition is accelerating.",
-                "content": "",
-                "source": "The Verge",
-                "category": "technology",
-            },
-            profile,
-        )
-
-        self.assertGreater(matched, feed_service.DETERMINISTIC_MATCH_THRESHOLD)
-        self.assertFalse(excluded)
-        self.assertIn("Matched", reason)
-
-    def test_strict_video_game_profile_rejects_gaming_adjacent_deals(self):
-        profile = feed_service._build_preference_profile(
-            "Show me only video game news.",
-            {"topics": ["video games"]},
-        )
-
-        matched, reason, excluded = feed_service._score_candidate(
-            {
-                "title": "PDP's wireless guitar controller has returned to its best price to date",
-                "summary": "A deal on a gaming accessory for Fortnite Festival and Rock Band players.",
-                "content": "",
-                "source": "The Verge",
-                "category": "technology",
-            },
-            profile,
-        )
-
-        self.assertAlmostEqual(matched, 0.2)
-        self.assertFalse(excluded)
-        self.assertIn("outside primary topics", reason.lower())
-
-    def test_strict_video_game_profile_keeps_actual_game_news(self):
-        profile = feed_service._build_preference_profile(
-            "Show me only video game news.",
-            {"topics": ["video games"]},
-        )
-
-        matched, reason, excluded = feed_service._score_candidate(
-            {
-                "title": "Nintendo announces a new Zelda release date",
-                "summary": "Polygon reports on the game's launch timing and trailer reveal.",
-                "content": "",
-                "source": "Polygon",
-                "category": "gaming",
-            },
-            profile,
-        )
-
-        self.assertGreaterEqual(matched, feed_service.STRICT_MATCH_THRESHOLD)
-        self.assertFalse(excluded)
-        self.assertIn("gaming", reason.lower())
-
-    async def test_get_personalized_feed_falls_back_to_deterministic_matching(self):
-        user_id = str(uuid.uuid4())
-        matching_article = {
-            "id": str(uuid.uuid4()),
-            "title": "OpenAI unveils a new reasoning model",
-            "summary": "The AI company announced a major model upgrade today.",
-            "content": "",
-            "source": "OpenAI Blog",
-            "image_url": None,
-            "url": "https://example.com/openai",
-            "published_at": "2026-03-23T10:00:00+00:00",
-            "category": "ai",
-        }
-        off_topic_article = {
-            "id": str(uuid.uuid4()),
-            "title": "Travel destinations for spring break",
-            "summary": "A roundup of beach towns and flights.",
-            "content": "",
-            "source": "Travel Weekly",
-            "image_url": None,
-            "url": "https://example.com/travel",
-            "published_at": "2026-03-23T09:00:00+00:00",
-            "category": "general",
-        }
-
-        with patch.object(
-            feed_service,
-            "_load_user_preferences",
-            return_value=("Show me OpenAI and AI news.", {"topics": ["OpenAI", "AI"]}, None),
-        ), patch.object(
-            feed_service,
-            "_load_cached_feed",
-            return_value=None,
-        ), patch.object(
-            feed_service,
-            "_load_candidates_for_profile",
-            new=AsyncMock(return_value=[matching_article, off_topic_article]),
-        ), patch.object(
-            feed_service,
-            "_save_feed_cache",
-        ), patch.object(
-            feed_service,
-            "get_openai_service",
-            return_value=_FakeOpenAIService(),
-        ):
-            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
-
-        self.assertGreaterEqual(len(articles), 1)
-        self.assertEqual(articles[0]["title"], matching_article["title"])
-        self.assertTrue(articles[0]["relevant"])
+    # --- Cache tests ---
 
     def test_cached_feed_is_invalidated_when_preferences_are_newer(self):
         now = datetime.now(timezone.utc)
@@ -428,63 +283,6 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertIsNone(cached)
-
-    async def test_get_personalized_feed_uses_individual_ai_matches(self):
-        user_id = str(uuid.uuid4())
-        matching_article = {
-            "id": str(uuid.uuid4()),
-            "title": "OpenAI launches enterprise agents",
-            "summary": "A major AI product launch aimed at software teams.",
-            "content": "",
-            "source": "OpenAI",
-            "image_url": None,
-            "url": "https://example.com/openai-agents",
-            "published_at": "2026-03-23T10:00:00+00:00",
-            "category": "ai",
-        }
-        off_topic_article = {
-            "id": str(uuid.uuid4()),
-            "title": "Spring recipes for home cooks",
-            "summary": "A food roundup for the weekend.",
-            "content": "",
-            "source": "Bon Appetit",
-            "image_url": None,
-            "url": "https://example.com/food",
-            "published_at": "2026-03-23T09:00:00+00:00",
-            "category": "general",
-        }
-
-        fake_service = AsyncMock()
-        fake_service.score_articles_batch.return_value = [
-            {"relevant": True, "score": 0.92, "reason": "Strong match for AI and OpenAI interests."},
-            {"relevant": False, "score": 0.03, "reason": "Not related to the user's interests."},
-        ]
-
-        with patch.object(
-            feed_service,
-            "_load_user_preferences",
-            return_value=("Show me OpenAI and AI product news.", {"topics": ["OpenAI", "AI"]}, None),
-        ), patch.object(
-            feed_service,
-            "_load_cached_feed",
-            return_value=None,
-        ), patch.object(
-            feed_service,
-            "_load_candidates_for_profile",
-            new=AsyncMock(return_value=[matching_article, off_topic_article]),
-        ), patch.object(
-            feed_service,
-            "_save_feed_cache",
-        ), patch.object(
-            feed_service,
-            "get_openai_service",
-            return_value=fake_service,
-        ):
-            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
-
-        self.assertGreaterEqual(len(articles), 1)
-        self.assertEqual(articles[0]["title"], matching_article["title"])
-        self.assertEqual(articles[0]["relevance_reason"], "Strong match for AI and OpenAI interests.")
 
     async def test_get_personalized_feed_dedupes_cached_results(self):
         user_id = str(uuid.uuid4())
@@ -540,122 +338,246 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(articles[0]["image_url"], "https://images.example.com/anthropic.jpg")
         hydrate_mock.assert_awaited_once()
 
-    async def test_load_candidates_for_profile_expands_windows_for_strict_topics(self):
-        profile = feed_service._build_preference_profile(
-            "Show me only video game news.",
-            {"topics": ["video games"]},
-        )
-        first_window = [
+    # --- Editorial flow tests (new) ---
+
+    async def test_editorial_flow_returns_curated_articles(self):
+        """LLM editorial call curates the feed and returns articles with why_for_you."""
+        user_id = str(uuid.uuid4())
+        article_1 = {
+            "id": str(uuid.uuid4()),
+            "title": "Claude AI gets major update",
+            "summary": "Anthropic releases Claude 4.",
+            "content": "",
+            "source": "TechCrunch",
+            "image_url": None,
+            "url": "https://example.com/claude",
+            "published_at": "2026-03-23T10:00:00+00:00",
+            "category": "ai",
+        }
+        article_2 = {
+            "id": str(uuid.uuid4()),
+            "title": "Spring gardening tips",
+            "summary": "Best flowers for the season.",
+            "content": "",
+            "source": "Garden Weekly",
+            "image_url": None,
+            "url": "https://example.com/garden",
+            "published_at": "2026-03-23T09:00:00+00:00",
+            "category": "lifestyle",
+        }
+        # Generate enough candidates to pass MIN_EDITORIAL_CANDIDATES threshold
+        filler = _make_distinct_candidates(30)
+        candidates = [article_1, article_2] + filler
+
+        fake_service = AsyncMock()
+        fake_service.curate_feed_editorial.return_value = [
             {
-                "id": uuid.uuid4(),
-                "url": "https://example.com/politics",
-                "title": "Election roundup",
-                "summary": "A politics story.",
-                "content": "",
-                "author": None,
-                "source_name": "Example News",
-                "image_url": None,
-                "published_at": datetime.now(timezone.utc),
-                "ingested_at": datetime.now(timezone.utc),
-                "category": "politics",
-            }
-        ]
-        second_window = [
-            {
-                "id": uuid.uuid4(),
-                "url": "https://example.com/gaming",
-                "title": "Nintendo reveals the next Mario Kart trailer",
-                "summary": "A new gameplay trailer and launch window were announced.",
-                "content": "",
-                "author": None,
-                "source_name": "Polygon",
-                "image_url": None,
-                "published_at": datetime.now(timezone.utc),
-                "ingested_at": datetime.now(timezone.utc),
-                "category": "gaming",
-            }
+                "article_id": article_1["id"],
+                "rank": 1,
+                "why_for_you": "Directly relevant to your interest in Claude AI",
+                "category_tag": "core_topic",
+            },
         ]
 
         with patch.object(
             feed_service,
-            "_query_candidate_rows",
-            side_effect=[first_window, second_window, []],
-        ) as query_rows:
-            candidates = await feed_service._load_candidates_for_profile(conn=None, profile=profile, limit=10)
+            "_load_user_preferences",
+            return_value=("Show me Claude AI news.", {"topics": ["Claude AI"]}, None),
+        ), patch.object(
+            feed_service,
+            "_load_cached_feed",
+            return_value=None,
+        ), patch.object(
+            feed_service,
+            "_load_candidates",
+            new=AsyncMock(return_value=candidates),
+        ), patch.object(
+            feed_service,
+            "_save_feed_cache",
+        ), patch.object(
+            feed_service,
+            "_hydrate_missing_feed_images",
+            new=AsyncMock(),
+        ), patch.object(
+            feed_service,
+            "get_openai_service",
+            return_value=fake_service,
+        ):
+            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
 
-        self.assertEqual(len(candidates), 1)
-        self.assertEqual(candidates[0]["source"], "Polygon")
-        self.assertGreaterEqual(query_rows.call_count, 2)
+        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles[0]["title"], "Claude AI gets major update")
+        self.assertEqual(articles[0]["relevance_reason"], "Directly relevant to your interest in Claude AI")
+        self.assertTrue(articles[0]["relevant"])
 
+    async def test_editorial_failure_falls_back_to_cache(self):
+        """When LLM editorial returns empty, serve the last cached feed."""
+        user_id = str(uuid.uuid4())
+        cached_article = {
+            "id": str(uuid.uuid4()),
+            "title": "Previously cached article",
+            "summary": "From earlier.",
+            "content": "",
+            "source": "Cache Source",
+            "image_url": None,
+            "url": "https://example.com/cached",
+            "published_at": "2026-03-22T10:00:00+00:00",
+            "category": "ai",
+            "relevance_score": 0.8,
+            "relevant": True,
+            "relevance_reason": "Previously curated",
+        }
+        candidates = _make_distinct_candidates(35)
 
-    # --- Score blending tests (S3) ---
+        fake_service = AsyncMock()
+        fake_service.curate_feed_editorial.return_value = []  # LLM failure
 
-    def test_score_blending_lowers_high_model_with_low_deterministic(self):
-        """When LLM gives 0.9 but deterministic gives low, blended is pulled down."""
-        profile = feed_service._build_preference_profile(
-            "I like quantum physics", {"topics": ["Quantum Physics"]}
-        )
-        candidates = [
-            {"title": "City council votes on zoning", "summary": "Local zoning debate",
-             "category": "general", "source_name": "Local News",
-             "url": "https://localnews.com/zoning", "content": ""},
+        # _load_cached_feed is called twice: once for the initial cache check (returns None),
+        # and once for the fallback after editorial failure (returns cached article).
+        cache_calls = [None, [cached_article]]
+
+        with patch.object(
+            feed_service,
+            "_load_user_preferences",
+            return_value=("AI news", {"topics": ["AI"]}, None),
+        ), patch.object(
+            feed_service,
+            "_load_cached_feed",
+            side_effect=cache_calls,
+        ), patch.object(
+            feed_service,
+            "_load_candidates",
+            new=AsyncMock(return_value=candidates),
+        ), patch.object(
+            feed_service,
+            "_save_feed_cache",
+        ), patch.object(
+            feed_service,
+            "_hydrate_missing_feed_images",
+            new=AsyncMock(),
+        ), patch.object(
+            feed_service,
+            "get_openai_service",
+            return_value=fake_service,
+        ):
+            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
+
+        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles[0]["title"], "Previously cached article")
+
+    async def test_small_candidate_pool_serves_by_recency(self):
+        """When fewer than MIN_EDITORIAL_CANDIDATES, skip LLM and serve by recency."""
+        user_id = str(uuid.uuid4())
+        distinct_titles = [
+            "Apple launches new MacBook Pro with M5 chip",
+            "Senate passes landmark AI regulation bill today",
+            "SpaceX successfully lands Starship on fourth attempt",
+            "Google DeepMind announces breakthrough in protein folding research",
+            "Federal Reserve holds interest rates steady for third quarter",
+            "Meta releases open source large language model Llama 4",
+            "Tesla Cybertruck recall affects fifty thousand vehicles nationwide",
+            "Microsoft acquires gaming studio for two billion dollars",
+            "Amazon Web Services launches new AI training platform today",
+            "Nvidia stock surges after record quarterly earnings report",
         ]
-        results = [{"relevant": True, "score": 0.9, "reason": "Tangentially related"}]
-        feed_service._apply_individual_analysis_results(candidates, results, profile)
-        # Blended should be < 0.9 (pulled down by low deterministic)
-        self.assertLess(candidates[0]["_score"], 0.9)
-        # But still relevant if blend >= 0.35
-        self.assertTrue(candidates[0]["_relevant"])
+        candidates = []
+        for i in range(10):
+            candidates.append({
+                "id": str(uuid.uuid4()),
+                "title": distinct_titles[i],
+                "summary": f"Detailed coverage of this unique story number {i}",
+                "content": "",
+                "source": f"Source {i}",
+                "image_url": None,
+                "url": f"https://example.com/story-{uuid.uuid4()}",
+                "published_at": f"2026-03-23T{10+i:02d}:00:00+00:00",
+                "category": "general",
+            })
 
-    def test_score_blending_rejects_when_blend_below_threshold(self):
-        """When blended score falls below 0.35, article is not relevant."""
-        profile = feed_service._build_preference_profile(
-            "I like quantum physics", {"topics": ["Quantum Physics"]}
-        )
-        candidates = [
-            {"title": "Celebrity gossip update", "summary": "Stars at party",
-             "category": "entertainment", "source_name": "TMZ",
-             "url": "https://tmz.com/story", "content": ""},
-        ]
-        # LLM says barely relevant with low score
-        results = [{"relevant": True, "score": 0.3, "reason": "Tangentially related"}]
-        feed_service._apply_individual_analysis_results(candidates, results, profile)
-        # Blended should be below threshold since deterministic is ~0
-        self.assertFalse(candidates[0]["_relevant"])
+        with patch.object(
+            feed_service,
+            "_load_user_preferences",
+            return_value=("AI news", {"topics": ["AI"]}, None),
+        ), patch.object(
+            feed_service,
+            "_load_cached_feed",
+            return_value=None,
+        ), patch.object(
+            feed_service,
+            "_load_candidates",
+            new=AsyncMock(return_value=candidates),
+        ), patch.object(
+            feed_service,
+            "_save_feed_cache",
+        ), patch.object(
+            feed_service,
+            "_hydrate_missing_feed_images",
+            new=AsyncMock(),
+        ):
+            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
 
-    def test_generic_backfill_threshold_removed(self):
-        """The rebuilt feed should not pad results using generic score thresholds."""
-        import inspect
-        source = inspect.getsource(feed_service.get_personalized_feed)
-        self.assertNotIn("0.50", source)
+        self.assertEqual(len(articles), 10)
+        # Should be sorted by recency (latest first)
+        self.assertEqual(articles[0]["title"], "Nvidia stock surges after record quarterly earnings report")
+        self.assertEqual(articles[0]["relevance_reason"], "Served by recency (small candidate pool)")
 
-    def test_recency_fill_removed(self):
-        """The rebuilt feed should not recency-pad sparse personalized feeds."""
-        import inspect
-        source = inspect.getsource(feed_service.get_personalized_feed)
-        self.assertNotIn("max_recency", source)
-        self.assertNotIn("min(3,", source)
+    async def test_editorial_failure_no_cache_serves_recency(self):
+        """When LLM fails AND no cache exists, serve candidates by recency."""
+        user_id = str(uuid.uuid4())
+        candidates = _make_distinct_candidates(35)
 
-    def test_specific_profile_no_longer_uses_padding_branch(self):
-        """Specific profiles no longer need a special-case skip because padding is gone entirely."""
-        import inspect
-        source = inspect.getsource(feed_service.get_personalized_feed)
-        self.assertNotIn("not profile.is_specific", source)
+        fake_service = AsyncMock()
+        fake_service.curate_feed_editorial.return_value = []
 
-    def test_llm_fallback_uses_deterministic_only(self):
-        """When LLM returns fallback reason, deterministic score is used alone."""
-        profile = feed_service._build_preference_profile(
-            "I like AI and machine learning", {"topics": ["AI", "Machine Learning"]}
-        )
-        candidates = [
-            {"title": "AI breakthrough in healthcare", "summary": "New AI model helps doctors",
-             "category": "ai", "source_name": "TechCrunch",
-             "url": "https://techcrunch.com/ai", "content": "AI breakthrough details"},
-        ]
-        results = [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"}]
-        feed_service._apply_individual_analysis_results(candidates, results, profile)
-        # Should use deterministic score, not the 0.0 from LLM
-        self.assertGreater(candidates[0]["_score"], 0.0)
+        with patch.object(
+            feed_service,
+            "_load_user_preferences",
+            return_value=("AI news", {"topics": ["AI"]}, None),
+        ), patch.object(
+            feed_service,
+            "_load_cached_feed",
+            return_value=None,
+        ), patch.object(
+            feed_service,
+            "_load_candidates",
+            new=AsyncMock(return_value=candidates),
+        ), patch.object(
+            feed_service,
+            "_save_feed_cache",
+        ), patch.object(
+            feed_service,
+            "_hydrate_missing_feed_images",
+            new=AsyncMock(),
+        ), patch.object(
+            feed_service,
+            "get_openai_service",
+            return_value=fake_service,
+        ):
+            articles = await feed_service.get_personalized_feed(user_id, conn=None, limit=10)
+
+        self.assertEqual(len(articles), 10)
+        self.assertEqual(articles[0]["relevance_reason"], "Editorial unavailable; served by recency")
+
+    def test_finalize_curated_articles_maps_internal_keys(self):
+        """_finalize_curated_articles maps _score/_relevant/_reason/_feed_role to public names."""
+        articles = [{
+            "id": "abc",
+            "title": "Test",
+            "_score": 0.85,
+            "_relevant": True,
+            "_reason": "Great match for AI",
+            "_feed_role": "core_topic",
+        }]
+        result = feed_service._finalize_curated_articles(articles)
+        self.assertEqual(result[0]["relevance_score"], 0.85)
+        self.assertTrue(result[0]["relevant"])
+        self.assertEqual(result[0]["relevance_reason"], "Great match for AI")
+        self.assertEqual(result[0]["feed_role"], "core_topic")
+        self.assertIsNone(result[0]["why_this_story"])
+        self.assertIsNone(result[0]["why_now"])
+        self.assertEqual(result[0]["matched_profile_signals"], [])
+        self.assertIsNone(result[0]["cluster_id"])
+        self.assertEqual(result[0]["importance_score"], 0.0)
 
 
 if __name__ == "__main__":
