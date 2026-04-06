@@ -21,8 +21,8 @@ struct BrandColors {
     static let primaryLight = Color(red: 0.82, green: 0.42, blue: 0.35)
 
     // Accent colors
-    static let accent = Color(red: 0.30, green: 0.39, blue: 0.48)
-    static let accentLight = Color(red: 0.43, green: 0.53, blue: 0.62)
+    static let accent = Color(red: 0.28, green: 0.37, blue: 0.46)
+    static let accentLight = Color(red: 0.41, green: 0.51, blue: 0.60)
 
     // Semantic colors - System colors
     static let success = Color(red: 0.20, green: 0.78, blue: 0.35)
