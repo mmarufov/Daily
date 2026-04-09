@@ -267,21 +267,20 @@ struct ArticleDetailView: View {
     private func headerImage(for article: NewsArticle) -> some View {
         if let imageURL = fullArticle?.imageURL ?? self.article.imageURL,
            let url = URL(string: imageURL) {
-            AsyncImage(url: url) { phase in
+            AsyncImage(url: url, transaction: Transaction(animation: nil)) { phase in
                 switch phase {
                 case .success(let image):
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 260)
-                        .clipped()
                 default:
                     Rectangle()
                         .fill(Color(.tertiarySystemFill))
-                        .frame(height: 200)
                 }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 260)
+            .clipped()
         }
     }
 
