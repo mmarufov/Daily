@@ -1463,7 +1463,8 @@ async def get_article_by_id(article_id: str, conn) -> dict | None:
                     SET content = %s,
                         summary = COALESCE(summary, %s),
                         image_url = COALESCE(image_url, %s),
-                        content_extracted = true
+                        content_extracted = true,
+                        content_extractor_version = 2
                     WHERE id = %s
                     """,
                     (
