@@ -10,3 +10,4 @@ beautifulsoup4==4.12.3
 lxml==5.1.0
 feedparser==6.0.11
 pgvector==0.3.6
+trafilatura>=2.0.0

@@ -83,7 +83,8 @@ async def _ingestion_loop():
                                         SET content = %s,
                                             summary = COALESCE(summary, %s),
                                             image_url = COALESCE(image_url, %s),
-                                            content_extracted = true
+                                            content_extracted = true,
+                                            content_extractor_version = 2
                                         WHERE id = %s
                                         """,
                                         (
@@ -96,7 +97,7 @@ async def _ingestion_loop():
                             else:
                                 with conn.cursor() as cur:
                                     cur.execute(
-                                        "UPDATE public.articles SET content_extracted = true WHERE id = %s",
+                                        "UPDATE public.articles SET content_extracted = true, content_extractor_version = 2 WHERE id = %s",
                                         (row["id"],),
                                     )
                         except Exception as e:
@@ -105,7 +106,55 @@ async def _ingestion_loop():
                 if pending:
                     await asyncio.gather(*[_extract_one(row) for row in pending], return_exceptions=True)
 
-                # 2b. Generate embeddings for articles with content but no embedding
+                # 2b. Re-extract articles from old extractor (version 1) with trafilatura
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        SELECT id, url FROM public.articles
+                        WHERE content_extracted = true
+                          AND (content_extractor_version IS NULL OR content_extractor_version < 2)
+                          AND url IS NOT NULL
+                        ORDER BY published_at DESC NULLS LAST
+                        LIMIT 10
+                    """)
+                    reextract_pending = cur.fetchall()
+
+                if reextract_pending:
+                    reextract_sem = asyncio.Semaphore(6)
+
+                    async def _reextract_one(row):
+                        async with reextract_sem:
+                            try:
+                                extracted = await extract_article_content(row["url"])
+                                if extracted.get("content"):
+                                    with conn.cursor() as cur:
+                                        cur.execute(
+                                            """
+                                            UPDATE public.articles
+                                            SET content = %s,
+                                                summary = COALESCE(summary, %s),
+                                                image_url = COALESCE(image_url, %s),
+                                                content_extractor_version = 2
+                                            WHERE id = %s
+                                            """,
+                                            (
+                                                extracted["content"],
+                                                extracted.get("summary"),
+                                                extracted.get("image_url"),
+                                                row["id"],
+                                            ),
+                                        )
+                                else:
+                                    with conn.cursor() as cur:
+                                        cur.execute(
+                                            "UPDATE public.articles SET content_extractor_version = 2 WHERE id = %s",
+                                            (row["id"],),
+                                        )
+                            except Exception as e:
+                                print(f"Re-extraction error for {row['url'][:60]}: {e}")
+
+                    await asyncio.gather(*[_reextract_one(r) for r in reextract_pending], return_exceptions=True)
+
+                # 2c. Generate embeddings for articles with content but no embedding
                 openai_svc = get_openai_service()
                 with conn.cursor() as cur:
                     cur.execute("""
@@ -367,6 +416,9 @@ def _ensure_tables(conn) -> None:
         # Migration: add enrichment tracking columns
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_attempts integer DEFAULT 0;")
+
+        # Migration: track content extractor version for re-extraction
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_extractor_version integer DEFAULT 1;")
 
         # Migration: pgvector for semantic search
         cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
