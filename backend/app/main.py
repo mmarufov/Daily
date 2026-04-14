@@ -181,12 +181,13 @@ async def _ingestion_loop():
                     await asyncio.gather(*[_embed_one(r) for r in embed_pending], return_exceptions=True)
                     print(f"Ingestion: Generated embeddings for {len(embed_pending)} articles")
 
-                # 3. Enrich articles (expand thin content, find missing images)
+                # 3. Enrich articles (expand thin content, find/generate images)
                 enrichment_stats = await enrich_articles(conn)
-                if enrichment_stats["content_enriched"] or enrichment_stats["images_found"]:
+                if any(enrichment_stats.get(k, 0) for k in ("content_enriched", "images_found", "images_generated")):
                     print(
-                        f"Ingestion: Enriched {enrichment_stats['content_enriched']} thin articles, "
-                        f"found {enrichment_stats['images_found']} images"
+                        f"Ingestion: Enriched {enrichment_stats['content_enriched']} articles, "
+                        f"found {enrichment_stats['images_found']} images, "
+                        f"generated {enrichment_stats.get('images_generated', 0)} images"
                     )
 
                 # 4. Clean up articles older than 14 days (extended for behavioral learning)
@@ -419,6 +420,9 @@ def _ensure_tables(conn) -> None:
 
         # Migration: track content extractor version for re-extraction
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_extractor_version integer DEFAULT 1;")
+
+        # Migration: content quality score for feed ranking
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_quality float DEFAULT 0.0;")
 
         # Migration: pgvector for semantic search
         cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
