@@ -348,9 +348,10 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
             cur.execute(
                 f"""
                 SELECT id, url, title, summary, content, author, source_name, image_url,
-                       published_at, ingested_at, category
+                       published_at, ingested_at, category, content_quality
                 FROM public.articles
                 WHERE COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
+                  AND (content_quality >= 0.4 OR enrichment_completed = false)
                 ORDER BY COALESCE(published_at, ingested_at) DESC
                 LIMIT {row_limit}
                 """,
@@ -362,11 +363,12 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
                        scoped.author, scoped.source_name, scoped.image_url,
                        scoped.published_at, scoped.ingested_at, scoped.category,
                        scoped.coverage_role, scoped.selection_reason, scoped.matched_topics,
-                       scoped.matched_entities, scoped.precision_score, scoped.breadth_score
+                       scoped.matched_entities, scoped.precision_score, scoped.breadth_score,
+                       scoped.content_quality
                 FROM (
                     SELECT DISTINCT ON (a.id)
                            a.id, a.url, a.title, a.summary, a.content, a.author, a.source_name,
-                           a.image_url,
+                           a.image_url, a.content_quality,
                            COALESCE(asl.published_at, a.published_at) AS published_at,
                            a.ingested_at,
                            COALESCE(us.category, a.category) AS category,
@@ -384,6 +386,7 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
                      AND us.active = true
                      AND us.source_url = asl.source_url
                     WHERE COALESCE(asl.published_at, a.published_at, a.ingested_at) > now() - interval '{lookback_hours} hours'
+                      AND (a.content_quality >= 0.4 OR a.enrichment_completed = false)
                     ORDER BY a.id, COALESCE(asl.published_at, a.published_at, a.ingested_at) DESC
                 ) AS scoped
                 ORDER BY scoped.scoped_published_at DESC
@@ -428,6 +431,7 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
             "source_matched_entities": row.get("matched_entities") or [],
             "source_precision_score": row.get("precision_score") or 0.0,
             "source_breadth_score": row.get("breadth_score") or 0.0,
+            "content_quality": row.get("content_quality") or 0.0,
         })
 
     return candidates
@@ -1073,9 +1077,13 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             sq = _source_quality.get(domain)
             if sq is not None:
                 if sq > 0.6:
-                    blended_score = min(blended_score + 0.05, 1.0)
+                    blended_score = min(blended_score + 0.10, 1.0)
                 elif sq < 0.3:
-                    blended_score = max(blended_score - 0.05, 0.0)
+                    blended_score = max(blended_score - 0.10, 0.0)
+
+        # Content quality multiplier — high quality rises, low quality sinks
+        content_quality = candidate.get("content_quality", 0.5)
+        blended_score *= (0.5 + 0.5 * content_quality)
 
         candidate["_score"] = blended_score
         candidate["_relevant"] = model_relevant and blended_score >= 0.35
