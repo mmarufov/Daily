@@ -36,11 +36,15 @@ final class BackendService {
     }()
 
     /// Session with extended timeout for AI-scored feed requests.
+    /// Caching is disabled so pull-to-refresh always hits the network
+    /// instead of returning stale responses from URLCache.
     private let feedSession: URLSession = {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 300
         config.timeoutIntervalForResource = 300
         config.waitsForConnectivity = true
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.urlCache = nil
         return URLSession(configuration: config)
     }()
 
