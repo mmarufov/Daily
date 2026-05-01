@@ -88,6 +88,15 @@ final class BookmarkService: ObservableObject {
             }
         }
     }
+
+    /// Wipe all per-user state. Called from AuthService on sign-out so a new
+    /// user on the same device doesn't inherit the previous user's bookmarks.
+    func clearAll() {
+        bookmarkedArticles = []
+        readArticleIDs = []
+        try? FileManager.default.removeItem(at: bookmarksURL)
+        try? FileManager.default.removeItem(at: readIDsURL)
+    }
 }
 
 private extension JSONDecoder {

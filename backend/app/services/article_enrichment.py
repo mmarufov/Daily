@@ -17,13 +17,15 @@ from app.services.image_extraction import fetch_best_source_image
 logger = logging.getLogger(__name__)
 
 # Thresholds
-MIN_CONTENT_LENGTH = 300  # chars — below this, content needs enrichment
+MIN_CONTENT_LENGTH = 200  # chars — below this, content needs enrichment
 GOOD_CONTENT_LENGTH = 500  # chars — above this, content is considered good
 
 # Batch config
 ENRICHMENT_BATCH_SIZE = 25
 ENRICHMENT_CONCURRENCY = 6
-MAX_ENRICHMENT_ATTEMPTS = 5
+# Cap retries low: each attempt is up to ~3 OpenAI calls + Tavily + Unsplash
+# + Gemini. Permanently broken sources (paywalls, 404s) hit this cap fast.
+MAX_ENRICHMENT_ATTEMPTS = 3
 
 
 def compute_content_quality(content: str | None, image_url: str | None, web_searched: bool = False) -> float:
@@ -105,9 +107,13 @@ async def enrich_articles(conn) -> dict:
                 search_result = None
 
                 # Stage 1: Tavily web search for full content from alternative source
-                if search_svc.available:
-                    search_result = await search_svc.search_article_content(title, summary)
-                    if search_result and len(search_result["content"]) >= MIN_CONTENT_LENGTH:
+                if getattr(search_svc, "available", False):
+                    try:
+                        search_result = await search_svc.search_article_content(title, summary)
+                    except Exception:
+                        logger.exception("Tavily search failed for %s", title[:50])
+                        search_result = None
+                    if search_result and len(search_result.get("content", "")) >= MIN_CONTENT_LENGTH:
                         updates["content"] = search_result["content"]
                         web_searched = True
                         stats["content_enriched"] += 1
@@ -117,27 +123,40 @@ async def enrich_articles(conn) -> dict:
                         )
 
                 # Stage 2: LLM synthesis from Tavily snippets + original content
-                if not updates.get("content") and search_result and search_result["content"]:
-                    synthesized = await openai_svc.generate_expanded_summary(
-                        title=title,
-                        summary=summary,
-                        content=search_result["content"][:2000],
-                    )
-                    if synthesized and len(synthesized) >= MIN_CONTENT_LENGTH:
-                        updates["content"] = synthesized
-                        web_searched = True
-                        stats["content_enriched"] += 1
+                # Skip if Stage 1 already returned a usable snippet (>150 chars).
+                stage1_snippet = (search_result or {}).get("content") if search_result else ""
+                if (
+                    not updates.get("content")
+                    and search_result
+                    and stage1_snippet
+                    and len(stage1_snippet) <= 150
+                ):
+                    try:
+                        synthesized = await openai_svc.generate_expanded_summary(
+                            title=title,
+                            summary=summary,
+                            content=stage1_snippet[:2000],
+                        )
+                        if synthesized and len(synthesized) >= MIN_CONTENT_LENGTH:
+                            updates["content"] = synthesized
+                            web_searched = True
+                            stats["content_enriched"] += 1
+                    except Exception:
+                        logger.exception("LLM synthesis failed for %s", title[:50])
 
                 # Stage 3: LLM expansion from whatever we have (existing fallback)
                 if not updates.get("content"):
-                    expanded = await openai_svc.generate_expanded_summary(
-                        title=title,
-                        summary=summary,
-                        content=content,
-                    )
-                    if expanded and len(expanded) > len(content):
-                        updates["content"] = expanded
-                        stats["content_enriched"] += 1
+                    try:
+                        expanded = await openai_svc.generate_expanded_summary(
+                            title=title,
+                            summary=summary,
+                            content=content,
+                        )
+                        if expanded and len(expanded) > len(content):
+                            updates["content"] = expanded
+                            stats["content_enriched"] += 1
+                    except Exception:
+                        logger.exception("LLM expansion failed for %s", title[:50])
 
             # ── IMAGE ENRICHMENT ────────────────────────────────────────
             if not row.get("image_url"):
@@ -146,28 +165,38 @@ async def enrich_articles(conn) -> dict:
                 # Stage 1: Source page extraction (existing)
                 article_url = row.get("url", "")
                 if article_url:
-                    image_url = await fetch_best_source_image(article_url, timeout=5.0)
+                    try:
+                        image_url = await fetch_best_source_image(article_url, timeout=5.0)
+                    except Exception:
+                        logger.exception("Source-image fetch failed for %s", title[:50])
+                        image_url = None
                     if image_url:
                         stats["images_found"] += 1
 
                 # Stage 2: Unsplash search + GPT selection
                 if not image_url:
-                    search_query = f"{title} {category}".strip()
-                    candidates = await openai_svc.search_unsplash_images(search_query, per_page=10)
-                    if candidates:
-                        article_dict = {"title": title, "summary": summary}
-                        best = await openai_svc.select_best_image(article_dict, candidates)
-                        if best and best.get("url"):
-                            image_url = best["url"]
-                            stats["images_found"] += 1
-                            logger.info("Found Unsplash image for: %s", title[:50])
+                    try:
+                        search_query = f"{title} {category}".strip()
+                        candidates = await openai_svc.search_unsplash_images(search_query, per_page=10)
+                        if candidates:
+                            article_dict = {"title": title, "summary": summary}
+                            best = await openai_svc.select_best_image(article_dict, candidates)
+                            if best and best.get("url"):
+                                image_url = best["url"]
+                                stats["images_found"] += 1
+                                logger.info("Found Unsplash image for: %s", title[:50])
+                    except Exception:
+                        logger.exception("Unsplash stage failed for %s", title[:50])
 
                 # Stage 3: Gemini image generation
-                if not image_url and image_gen_svc.available:
-                    image_url = await image_gen_svc.generate_article_image(title, category)
-                    if image_url:
-                        stats["images_generated"] += 1
-                        logger.info("Generated image via Gemini for: %s", title[:50])
+                if not image_url and getattr(image_gen_svc, "available", False):
+                    try:
+                        image_url = await image_gen_svc.generate_article_image(title, category)
+                        if image_url:
+                            stats["images_generated"] += 1
+                            logger.info("Generated image via Gemini for: %s", title[:50])
+                    except Exception:
+                        logger.exception("Image generation failed for %s", title[:50])
 
                 if image_url:
                     updates["image_url"] = image_url

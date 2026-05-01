@@ -73,4 +73,11 @@ final class ReadingEventTracker {
             pendingEvents = (events + pendingEvents).suffix(500).map { $0 }
         }
     }
+
+    /// Drop all queued events without submitting. Used on sign-out so the
+    /// next user doesn't inherit the previous user's reading history.
+    func discardPending() {
+        pendingEvents = []
+        currentFeedRequestId = nil
+    }
 }

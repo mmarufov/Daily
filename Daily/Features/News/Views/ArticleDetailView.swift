@@ -66,7 +66,9 @@ struct ArticleDetailView: View {
                             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                                 // Source + category
                                 HStack(spacing: AppSpacing.sm) {
-                                    Text(full.displaySource.uppercased())
+                                    Text(full.displaySource)
+                                        .textCase(.uppercase)
+                                        .accessibilityLabel(full.displaySource)
                                         .font(AppTypography.sourceLabel)
                                         .tracking(0.8)
                                         .foregroundColor(BrandColors.sourceText)
@@ -75,7 +77,9 @@ struct ArticleDetailView: View {
                                         Circle()
                                             .fill(BrandColors.textQuaternary)
                                             .frame(width: 3, height: 3)
-                                        Text(category.uppercased())
+                                        Text(category)
+                                            .textCase(.uppercase)
+                                            .accessibilityLabel(category)
                                             .font(AppTypography.chipIcon)
                                             .tracking(0.6)
                                             .foregroundColor(BrandColors.textTertiary)

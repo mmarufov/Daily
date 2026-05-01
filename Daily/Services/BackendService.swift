@@ -48,7 +48,7 @@ final class BackendService {
         return URLSession(configuration: config)
     }()
 
-    private init(baseURL: URL = URL(string: "https://daily-backend.fly.dev")!, urlSession: URLSession = .shared) {
+    private init(baseURL: URL = AppConfig.backendURL, urlSession: URLSession = .shared) {
         self.baseURL = baseURL
         self.urlSession = urlSession
     }

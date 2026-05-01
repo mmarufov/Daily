@@ -2,7 +2,9 @@
 Content extraction service using trafilatura (primary) with BeautifulSoup fallback.
 Extracts clean article text from news pages — zero AI cost, pure HTML parsing.
 """
+import ipaddress
 import re
+import socket
 from urllib.parse import urlparse
 
 import httpx
@@ -10,6 +12,41 @@ import trafilatura
 from bs4 import BeautifulSoup
 
 from app.services.image_extraction import extract_best_image_url
+
+
+def _is_safe_public_url(url: str) -> bool:
+    """Reject non-HTTP(S) schemes, missing hosts, and any host that resolves
+    to a private/loopback/link-local/metadata IP. Cheap defense against SSRF
+    via attacker-controlled URLs (and against open redirects to internal IPs)."""
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return False
+    if parsed.scheme not in ("http", "https"):
+        return False
+    host = parsed.hostname
+    if not host:
+        return False
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except socket.gaierror:
+        return False
+    for info in infos:
+        addr = info[4][0]
+        try:
+            ip = ipaddress.ip_address(addr)
+        except ValueError:
+            continue
+        if (
+            ip.is_private
+            or ip.is_loopback
+            or ip.is_link_local
+            or ip.is_multicast
+            or ip.is_reserved
+            or ip.is_unspecified
+        ):
+            return False
+    return True
 
 _MAX_CONTENT_CHARS = 50_000  # safety cap (~10k words)
 
@@ -46,6 +83,8 @@ async def extract_article_content(url: str) -> dict:
     Uses trafilatura for high-quality extraction with BeautifulSoup fallback.
     Returns dict with: title, summary, content, image_url, source_name
     """
+    if not _is_safe_public_url(url):
+        return {"error": "unsafe_url", "title": "", "content": "", "image_url": "", "source_name": ""}
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
             response = await client.get(
@@ -53,6 +92,11 @@ async def extract_article_content(url: str) -> dict:
                 headers={"User-Agent": "Mozilla/5.0 (compatible; DailyNewsBot/1.0)"},
             )
             response.raise_for_status()
+            # Re-validate the final URL after redirects (defends against
+            # redirect-to-private-IP)
+            final = str(response.url)
+            if final != url and not _is_safe_public_url(final):
+                return {"error": "unsafe_redirect", "title": "", "content": "", "image_url": "", "source_name": ""}
             html = response.text
     except Exception as e:
         return {"error": str(e), "title": "", "content": "", "image_url": "", "source_name": ""}

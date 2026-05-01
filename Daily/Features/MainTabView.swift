@@ -64,13 +64,18 @@ struct MainTabView: View {
             return
         }
 
+        // Only force onboarding when the server explicitly says preferences
+        // aren't complete. Treating any error (network blip, 5xx) as
+        // "not onboarded" can re-onboard a user who's already set up and
+        // overwrite their existing preferences. Better: stay on the feed
+        // and let the next attempt resolve.
         do {
             let prefs = try await BackendService.shared.fetchUserPreferences(accessToken: token)
             if !prefs.completed {
                 showOnboarding = true
             }
         } catch {
-            showOnboarding = true
+            // Silent retry on next launch — do not flip into onboarding.
         }
     }
 }

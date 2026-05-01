@@ -33,6 +33,9 @@ MIN_CANDIDATE_TEXT_LENGTH = 40
 MAX_LLM_CANDIDATES = 200
 MIN_SHORTLIST_SIZE = 24
 MIN_FEED_SIZE = 6
+# Process-wide ceiling on concurrent OpenAI scoring batches across all users.
+# Prevents 429s and cost spikes when the per-user refresh loop fans out.
+_SCORING_SEMAPHORE = asyncio.Semaphore(4)
 DETERMINISTIC_MATCH_THRESHOLD = 1.5
 STRICT_MATCH_THRESHOLD = 2.5
 DETERMINISTIC_STRONG_MATCH = 3.0
@@ -188,23 +191,24 @@ async def get_personalized_feed(
         return finalized
 
     # Load behavioral signals, entity pins, source quality for scoring context
-    _prepare_scoring_context(conn, user_id)
+    scoring_ctx = _prepare_scoring_context(conn, user_id)
 
     openai_service = get_openai_service()
     batches = [
         candidates[i:i + BATCH_SCORING_SIZE]
         for i in range(0, len(candidates), BATCH_SCORING_SIZE)
     ]
-    batch_coros = [
-        openai_service.score_articles_batch(
-            b, ai_profile or "", interests=interests, user_profile_v2=user_profile_v2,
-        )
-        for b in batches
-    ]
-    batch_results_list = await asyncio.gather(*batch_coros)
+
+    async def _scored(batch):
+        async with _SCORING_SEMAPHORE:
+            return await openai_service.score_articles_batch(
+                batch, ai_profile or "", interests=interests, user_profile_v2=user_profile_v2,
+            )
+
+    batch_results_list = await asyncio.gather(*(_scored(b) for b in batches))
     analysis_results = [r for results in batch_results_list for r in results]
 
-    _apply_individual_analysis_results(candidates, analysis_results, profile)
+    _apply_individual_analysis_results(candidates, analysis_results, profile, scoring_ctx)
     _annotate_candidate_feed_roles(candidates, user_profile_v2 or {})
     candidates.sort(
         key=lambda article: (article.get("_score", 0.0), article.get("published_at") or ""),
@@ -948,10 +952,16 @@ def _prefilter_candidates(
 
 
 # Module-level closures set per scoring call — avoids threading these through every function
-_behavior_signals: dict = {}
-_entity_pins: list[str] = []
-_entity_patterns: dict = {}
-_source_quality: dict = {}
+from dataclasses import dataclass, field
+
+
+@dataclass
+class ScoringContext:
+    """Per-user scoring context. Passed explicitly to avoid module-global races."""
+    behavior_signals: dict = field(default_factory=dict)
+    entity_pins: list[str] = field(default_factory=list)
+    entity_patterns: dict = field(default_factory=dict)
+    source_quality: dict = field(default_factory=dict)
 
 
 def _extract_domain(source_name: str) -> str:
@@ -1009,16 +1019,23 @@ def _build_entity_patterns(pins: list[str]) -> dict:
     return patterns
 
 
-def _prepare_scoring_context(conn, user_id: str) -> None:
-    """Load all scoring context (behavior, entities, source quality) into module-level state."""
-    global _behavior_signals, _entity_pins, _entity_patterns, _source_quality
-    _behavior_signals = _load_behavior_signals(conn, user_id)
-    _entity_pins = _load_entity_pins(conn, user_id)
-    _entity_patterns = _build_entity_patterns(_entity_pins)
-    _source_quality = _load_source_quality(conn)
+def _prepare_scoring_context(conn, user_id: str) -> ScoringContext:
+    """Load all scoring context (behavior, entities, source quality) for a single user."""
+    pins = _load_entity_pins(conn, user_id)
+    return ScoringContext(
+        behavior_signals=_load_behavior_signals(conn, user_id),
+        entity_pins=pins,
+        entity_patterns=_build_entity_patterns(pins),
+        source_quality=_load_source_quality(conn),
+    )
 
 
-def _apply_individual_analysis_results(candidates: list[dict], results: list[dict], profile: PreferenceProfile) -> None:
+def _apply_individual_analysis_results(
+    candidates: list[dict],
+    results: list[dict],
+    profile: PreferenceProfile,
+    scoring_ctx: ScoringContext,
+) -> None:
     normalized_results = []
     for index, candidate in enumerate(candidates):
         if index < len(results):
@@ -1051,7 +1068,7 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
         blended_score = 0.65 * model_score + 0.35 * deterministic_score
 
         # Behavioral boost from cached reading signals (ENG-5)
-        behavior = _behavior_signals or {}
+        behavior = scoring_ctx.behavior_signals or {}
         if behavior:
             category = candidate.get("category", "")
             source = candidate.get("source") or candidate.get("source_name", "")
@@ -1060,21 +1077,21 @@ def _apply_individual_analysis_results(candidates: list[dict], results: list[dic
             blended_score = min(blended_score + min(cat_boost + src_boost, 0.15), 1.0)
 
         # Entity boost from pinned entities
-        if _entity_pins:
+        if scoring_ctx.entity_pins:
             title_lower = candidate.get("title", "").lower()
             summary_lower = (candidate.get("summary") or "").lower()
             searchable = title_lower + " " + summary_lower
-            for pin_name in _entity_pins:
-                pattern = _entity_patterns.get(pin_name)
+            for pin_name in scoring_ctx.entity_pins:
+                pattern = scoring_ctx.entity_patterns.get(pin_name)
                 if pattern and pattern.search(searchable):
                     blended_score = min(blended_score + 0.2, 1.0)
                     model_relevant = True
                     break
 
         # Source quality adjustment
-        if _source_quality:
+        if scoring_ctx.source_quality:
             domain = _extract_domain(candidate.get("source_name", ""))
-            sq = _source_quality.get(domain)
+            sq = scoring_ctx.source_quality.get(domain)
             if sq is not None:
                 if sq > 0.6:
                     blended_score = min(blended_score + 0.10, 1.0)

@@ -601,7 +601,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
              "url": "https://localnews.com/zoning", "content": ""},
         ]
         results = [{"relevant": True, "score": 0.9, "reason": "Tangentially related"}]
-        feed_service._apply_individual_analysis_results(candidates, results, profile)
+        feed_service._apply_individual_analysis_results(candidates, results, profile, feed_service.ScoringContext())
         # Blended should be < 0.9 (pulled down by low deterministic)
         self.assertLess(candidates[0]["_score"], 0.9)
         # But still relevant if blend >= 0.35
@@ -619,7 +619,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         ]
         # LLM says barely relevant with low score
         results = [{"relevant": True, "score": 0.3, "reason": "Tangentially related"}]
-        feed_service._apply_individual_analysis_results(candidates, results, profile)
+        feed_service._apply_individual_analysis_results(candidates, results, profile, feed_service.ScoringContext())
         # Blended should be below threshold since deterministic is ~0
         self.assertFalse(candidates[0]["_relevant"])
 
@@ -653,7 +653,7 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
              "url": "https://techcrunch.com/ai", "content": "AI breakthrough details"},
         ]
         results = [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"}]
-        feed_service._apply_individual_analysis_results(candidates, results, profile)
+        feed_service._apply_individual_analysis_results(candidates, results, profile, feed_service.ScoringContext())
         # Should use deterministic score, not the 0.0 from LLM
         self.assertGreater(candidates[0]["_score"], 0.0)
 

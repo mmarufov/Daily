@@ -606,11 +606,14 @@ Optimization goals:
             {"role": "user", "content": user_prompt},
         ]
 
-        for attempt in range(2):
+        import random as _random
+        for attempt in range(3):
             try:
                 if attempt > 0:
-                    await asyncio.sleep(2)
-                    logger.info("Retrying batch scoring for %d articles (attempt %d)", len(articles), attempt + 1)
+                    # Exponential backoff with jitter: 1s, 2s, 4s ± 0..1s
+                    delay = (2 ** (attempt - 1)) + _random.random()
+                    await asyncio.sleep(delay)
+                    logger.info("Retrying batch scoring for %d articles (attempt %d, delay %.1fs)", len(articles), attempt + 1, delay)
 
                 response = await asyncio.wait_for(
                     asyncio.to_thread(
