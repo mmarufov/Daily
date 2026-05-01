@@ -436,7 +436,9 @@ struct FeaturedArticleCard: View {
                         .frame(width: 6, height: 6)
                 }
 
-                Text(article.displaySource.uppercased())
+                Text(article.displaySource)
+                    .textCase(.uppercase)
+                    .accessibilityLabel(article.displaySource)
                     .font(AppTypography.sourceLabel)
                     .foregroundColor(BrandColors.sourceText)
 
@@ -498,7 +500,9 @@ struct FeaturedArticleCard: View {
                     .font(AppTypography.iconLarge)
                     .foregroundColor(Color(.systemGray2))
 
-                Text(article.displaySource.uppercased())
+                Text(article.displaySource)
+                    .textCase(.uppercase)
+                    .accessibilityLabel(article.displaySource)
                     .font(AppTypography.metaLabel)
                     .foregroundColor(Color(.systemGray2))
                     .lineLimit(1)

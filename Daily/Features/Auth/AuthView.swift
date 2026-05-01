@@ -51,7 +51,9 @@ struct AuthView: View {
             let idToken = try await GoogleSignInHelper.signIn()
             try await auth.authenticateWithGoogle(idToken: idToken)
         } catch {
+            #if DEBUG
             print("Google sign-in error: \(error)")
+            #endif
             errorMessage = "Sign-in failed. Please try again."
         }
     }

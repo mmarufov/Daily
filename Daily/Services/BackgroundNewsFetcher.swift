@@ -37,7 +37,7 @@ final class BackgroundNewsFetcher: NSObject, ObservableObject {
     }()
 
     private var backgroundCompletionHandler: (() -> Void)?
-    private let baseURL = URL(string: "https://daily-backend.fly.dev")!
+    private let baseURL = AppConfig.backendURL
 
     // MARK: - Initialization
 
@@ -88,8 +88,19 @@ final class BackgroundNewsFetcher: NSObject, ObservableObject {
             let articles = try decoder.decode([NewsArticle].self, from: data)
             lastFeedArticles = articles
         } catch {
+            #if DEBUG
             print("BackgroundNewsFetcher: Failed to decode cached articles: \(error)")
+            #endif
         }
+    }
+
+    /// Wipe locally cached background-fetched articles. Called from
+    /// AuthService on sign-out so a new user doesn't see stale headlines.
+    func clearCache() {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: StorageKeys.feedArticles)
+        defaults.removeObject(forKey: StorageKeys.lastFetchDate)
+        lastFeedArticles = []
     }
 
     // MARK: - Private helpers
@@ -139,7 +150,9 @@ final class BackgroundNewsFetcher: NSObject, ObservableObject {
                 NotificationCenter.default.post(name: .feedReady, object: nil)
             }
         } catch {
+            #if DEBUG
             print("BackgroundNewsFetcher: Failed to decode feed: \(error)")
+            #endif
             DispatchQueue.main.async {
                 self.lastErrorMessage = "Failed to parse response: \(error.localizedDescription)"
                 self.isFetching = false
@@ -156,7 +169,9 @@ extension BackgroundNewsFetcher: URLSessionDelegate, URLSessionDownloadDelegate 
             let data = try Data(contentsOf: location)
             handleCompletedData(data, response: downloadTask.response)
         } catch {
+            #if DEBUG
             print("BackgroundNewsFetcher: Failed to read downloaded data: \(error)")
+            #endif
             DispatchQueue.main.async {
                 self.lastErrorMessage = "Failed to read downloaded data: \(error.localizedDescription)"
                 self.isFetching = false
@@ -166,7 +181,9 @@ extension BackgroundNewsFetcher: URLSessionDelegate, URLSessionDownloadDelegate 
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
+            #if DEBUG
             print("BackgroundNewsFetcher: Background task failed: \(error)")
+            #endif
             DispatchQueue.main.async {
                 self.lastErrorMessage = error.localizedDescription
                 self.isFetching = false

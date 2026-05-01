@@ -4,10 +4,12 @@ import asyncio
 import logging
 import time
 import uuid as _uuid
+from datetime import datetime, timezone
 
 import httpx
 
-from app.services.feed_service import (
+from app.services.feed_service import (  # noqa: I100
+    FEED_CACHE_TTL_MINUTES,
     _canonicalize_url,
     _load_cached_feed,
     _load_user_preferences,
@@ -36,7 +38,8 @@ def _load_active_user_sources(conn, user_id: str) -> list[dict]:
             SELECT id, source_url, source_name, category, discovery_method,
                    source_kind, scope, matched_targets, discovery_score, selection_rank,
                    coverage_role, selection_reason, matched_topics, matched_entities,
-                   precision_score, breadth_score, last_article_yield, last_relevant_yield
+                   precision_score, breadth_score, last_article_yield, last_relevant_yield,
+                   last_fetched_at
             FROM public.user_sources
             WHERE user_id = %s AND active = true
             ORDER BY selection_rank ASC, discovery_score DESC, source_name ASC
@@ -44,6 +47,26 @@ def _load_active_user_sources(conn, user_id: str) -> list[dict]:
             (user_id,),
         )
         return cur.fetchall()
+
+
+# Skip outbound source refetch if every source was fetched within this window.
+_SOURCE_REFETCH_WINDOW_SECONDS = 15 * 60
+
+
+def _all_sources_fresh(sources: list[dict]) -> bool:
+    """True if every source has a recent last_fetched_at."""
+    if not sources:
+        return False
+    now = datetime.now(timezone.utc)
+    for src in sources:
+        last = src.get("last_fetched_at")
+        if last is None:
+            return False
+        if last.tzinfo is None:
+            last = last.replace(tzinfo=timezone.utc)
+        if (now - last).total_seconds() > _SOURCE_REFETCH_WINDOW_SECONDS:
+            return False
+    return True
 
 
 def _update_source_fetch_outcomes(conn, source_results: list[dict]) -> None:
@@ -274,7 +297,7 @@ def get_feed_state(conn, user_id: str, limit: int = 50) -> dict:
         conn,
         user_uuid,
         preferences_updated_at=preferences_updated_at,
-        max_age_minutes=None,
+        max_age_minutes=FEED_CACHE_TTL_MINUTES,
     )
     if not cached:
         return {"status": "needs_build", "articles": []}
@@ -298,7 +321,10 @@ async def build_feed_for_user(conn, user_id: str, limit: int = 50) -> dict:
         }
 
     started = time.perf_counter()
-    await _fetch_from_user_sources(conn, sources)
+    if not _all_sources_fresh(sources):
+        await _fetch_from_user_sources(conn, sources)
+    else:
+        logger.info("Skipping source refetch for user %s — all sources fresh", user_id[:8])
 
     articles = await get_personalized_feed(user_id, conn, limit=limit, force_refresh=True)
     _update_source_relevance_yield(conn, user_id, articles)

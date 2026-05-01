@@ -554,7 +554,9 @@ private struct AssistantBlockView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             if let heading = block.heading, !heading.isEmpty {
-                Text(heading.uppercased())
+                Text(heading)
+                    .textCase(.uppercase)
+                    .accessibilityLabel(heading)
                     .font(AppTypography.metaLabel)
                     .tracking(0.8)
                     .foregroundColor(BrandColors.sourceText)
@@ -651,7 +653,9 @@ private struct SourceRailView: View {
                             onOpen(source)
                         } label: {
                             VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                                Text((source.source ?? "Daily").uppercased())
+                                Text(source.source ?? "Daily")
+                                    .textCase(.uppercase)
+                                    .accessibilityLabel(source.source ?? "Daily")
                                     .font(AppTypography.caption2)
                                     .foregroundColor(BrandColors.sourceText)
                                 Text(source.title)

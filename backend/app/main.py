@@ -3,6 +3,7 @@ import hashlib
 import base64
 import time
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Optional
@@ -11,8 +12,11 @@ from urllib.parse import urlparse
 import jwt
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Header, Depends, Query
+from fastapi import FastAPI, HTTPException, Header, Depends, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+
+logger = logging.getLogger(__name__)
 import psycopg
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
@@ -45,7 +49,7 @@ async def _ingestion_loop():
 
     # Wait a few seconds for the app to fully start
     await asyncio.sleep(5)
-    print("Ingestion worker started")
+    logger.info("Ingestion worker started")
 
     while True:
         try:
@@ -55,7 +59,7 @@ async def _ingestion_loop():
                 await populate_seed_sources(conn)
                 new_count = await fetch_rss_feeds(conn)
                 topic_count = await fetch_topic_feeds(conn)
-                print(f"Ingestion: {new_count} from RSS, {topic_count} from topics")
+                logger.info(f"Ingestion: {new_count} from RSS, {topic_count} from topics")
 
                 # 2. Extract content for articles that don't have it yet (batch of 20, 6 concurrent)
                 with conn.cursor() as cur:
@@ -101,7 +105,7 @@ async def _ingestion_loop():
                                         (row["id"],),
                                     )
                         except Exception as e:
-                            print(f"Ingestion: Error extracting content for {row['url'][:60]}: {e}")
+                            logger.error(f"Ingestion: Error extracting content for {row['url'][:60]}: {e}")
 
                 if pending:
                     await asyncio.gather(*[_extract_one(row) for row in pending], return_exceptions=True)
@@ -150,7 +154,7 @@ async def _ingestion_loop():
                                             (row["id"],),
                                         )
                             except Exception as e:
-                                print(f"Re-extraction error for {row['url'][:60]}: {e}")
+                                logger.error(f"Re-extraction error for {row['url'][:60]}: {e}")
 
                     await asyncio.gather(*[_reextract_one(r) for r in reextract_pending], return_exceptions=True)
 
@@ -179,15 +183,16 @@ async def _ingestion_loop():
                                     )
 
                     await asyncio.gather(*[_embed_one(r) for r in embed_pending], return_exceptions=True)
-                    print(f"Ingestion: Generated embeddings for {len(embed_pending)} articles")
+                    logger.info(f"Ingestion: Generated embeddings for {len(embed_pending)} articles")
 
                 # 3. Enrich articles (expand thin content, find/generate images)
                 enrichment_stats = await enrich_articles(conn)
                 if any(enrichment_stats.get(k, 0) for k in ("content_enriched", "images_found", "images_generated")):
-                    print(
-                        f"Ingestion: Enriched {enrichment_stats['content_enriched']} articles, "
-                        f"found {enrichment_stats['images_found']} images, "
-                        f"generated {enrichment_stats.get('images_generated', 0)} images"
+                    logger.info(
+                        "Ingestion: Enriched %s articles, found %s images, generated %s images",
+                        enrichment_stats['content_enriched'],
+                        enrichment_stats['images_found'],
+                        enrichment_stats.get('images_generated', 0),
                     )
 
                 # 4. Clean up articles older than 14 days (extended for behavioral learning)
@@ -196,12 +201,11 @@ async def _ingestion_loop():
                         "DELETE FROM public.articles WHERE ingested_at < now() - interval '14 days'"
                     )
                     if cur.rowcount > 0:
-                        print(f"Ingestion: Cleaned up {cur.rowcount} old articles")
+                        logger.info(f"Ingestion: Cleaned up {cur.rowcount} old articles")
 
         except Exception as e:
-            print(f"Ingestion loop error: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"Ingestion loop error: {e}")
+            logger.exception("Unhandled error in handler")
 
         # Wait 3 minutes before next cycle
         await asyncio.sleep(180)
@@ -219,7 +223,7 @@ async def _source_quality_loop():
             with pool.connection() as conn:
                 await update_source_quality(conn)
         except Exception as e:
-            print(f"Source quality loop error: {e}")
+            logger.error(f"Source quality loop error: {e}")
         await asyncio.sleep(1800)  # 30 minutes
 
 
@@ -232,7 +236,7 @@ async def _interest_evolution_loop():
             with pool.connection() as conn:
                 await check_interest_evolution(conn)
         except Exception as e:
-            print(f"Interest evolution loop error: {e}")
+            logger.error(f"Interest evolution loop error: {e}")
         await asyncio.sleep(21600)  # 6 hours
 
 
@@ -241,7 +245,7 @@ async def _per_user_refresh_loop():
     from app.services.user_source_pipeline import build_feed_for_user
 
     await asyncio.sleep(120)  # Let startup settle
-    print("Per-user refresh loop started")
+    logger.info("Per-user refresh loop started")
 
     user_semaphore = asyncio.Semaphore(3)  # Max 3 users refreshed concurrently
 
@@ -269,16 +273,16 @@ async def _per_user_refresh_loop():
                             with pool.connection() as conn:
                                 await build_feed_for_user(conn, uid, limit=50)
                         except Exception as e:
-                            print(f"Per-user refresh error for {uid[:8]}...: {e}")
+                            logger.error(f"Per-user refresh error for {uid[:8]}...: {e}")
 
                 await asyncio.gather(
                     *[_refresh_one(uid) for uid in active_users],
                     return_exceptions=True,
                 )
-                print(f"Per-user refresh: processed {len(active_users)} users")
+                logger.info(f"Per-user refresh: processed {len(active_users)} users")
 
         except Exception as e:
-            print(f"Per-user refresh loop error: {e}")
+            logger.error(f"Per-user refresh loop error: {e}")
 
         await asyncio.sleep(1800)  # 30 minutes
 
@@ -307,8 +311,126 @@ async def lifespan(app):
     pool.close()
 
 
-app = FastAPI(title="Daily API", version="0.2.0", lifespan=lifespan)
+_ENV = os.getenv("ENVIRONMENT", "production").lower()
+_DOCS_ENABLED = _ENV != "production"
+
+app = FastAPI(
+    title="Daily API",
+    version="0.2.0",
+    lifespan=lifespan,
+    redirect_slashes=False,
+    docs_url="/docs" if _DOCS_ENABLED else None,
+    redoc_url="/redoc" if _DOCS_ENABLED else None,
+    openapi_url="/openapi.json" if _DOCS_ENABLED else None,
+)
 chat_service = ChatService()
+
+# CORS — only set if explicit origins are configured. Default: no web clients.
+_cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+if _cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type"],
+    )
+
+
+@app.middleware("http")
+async def _security_headers(request: Request, call_next):
+    """Apply security headers and bound request body size on every response."""
+    # 1MB body cap (auth tokens are <8KB; nothing legitimate sends megabytes)
+    cl = request.headers.get("content-length")
+    if cl and cl.isdigit() and int(cl) > 1_048_576:
+        return JSONResponse(status_code=413, content={"detail": "Request body too large"})
+    response = await call_next(request)
+    response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.pop("Server", None)
+    return response
+
+
+# Simple per-IP token-bucket rate limiter. Avoids slowapi dep in requirements.txt.
+_RL_BUCKETS: dict[tuple[str, str], list[float]] = {}
+_RL_RULES: tuple[tuple[str, int, int], ...] = (
+    # (path-prefix, max_requests, window_seconds)
+    ("/auth/", 30, 60),
+    ("/chat", 60, 60),
+    ("/search/", 60, 60),
+    ("/sources/discover", 10, 60),
+    ("/feed", 120, 60),
+)
+
+
+def _rate_limit_rule(path: str) -> tuple[int, int] | None:
+    for prefix, limit, window in _RL_RULES:
+        if path.startswith(prefix):
+            return limit, window
+    return None
+
+
+@app.middleware("http")
+async def _rate_limit(request: Request, call_next):
+    rule = _rate_limit_rule(request.url.path)
+    if rule is not None:
+        limit, window = rule
+        client_ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
+            request.client.host if request.client else "unknown"
+        )
+        key = (client_ip, request.url.path)
+        now = time.monotonic()
+        bucket = _RL_BUCKETS.setdefault(key, [])
+        cutoff = now - window
+        # Drop expired entries
+        while bucket and bucket[0] < cutoff:
+            bucket.pop(0)
+        if len(bucket) >= limit:
+            retry_after = max(1, int(window - (now - bucket[0])))
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Too Many Requests"},
+                headers={"Retry-After": str(retry_after)},
+            )
+        bucket.append(now)
+        # Cheap GC: bound the global dict size
+        if len(_RL_BUCKETS) > 50_000:
+            _RL_BUCKETS.clear()
+    return await call_next(request)
+
+
+@app.exception_handler(Exception)
+async def _global_exception_handler(request: Request, exc: Exception):
+    """Catch-all handler that logs the trace and returns a generic 500.
+
+    Prevents leaking internal error messages (DB column names, SQL fragments,
+    OpenAI error details) to clients. HTTPException is handled by FastAPI's
+    default and not caught here.
+    """
+    logger.exception("Unhandled error on %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
+
+@app.get("/healthz")
+async def healthz():
+    """Liveness probe. Cheap: no DB, no external calls."""
+    return {"status": "ok"}
+
+
+@app.get("/readyz")
+async def readyz():
+    """Readiness probe. Confirms the DB pool answers."""
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT 1")
+                cur.fetchone()
+        return {"status": "ready"}
+    except Exception:
+        logger.exception("Readiness check failed")
+        return JSONResponse(status_code=503, content={"status": "unready"})
 
 
 def get_db():
@@ -736,7 +858,9 @@ async def auth_google(payload: dict, conn=Depends(get_db)):
         id_token = payload.get("id_token")
         if not id_token:
             raise HTTPException(status_code=400, detail="id_token is required")
-        
+        if not isinstance(id_token, str) or len(id_token) > 8192:
+            raise HTTPException(status_code=400, detail="invalid id_token")
+
         # Verify Google token and get user info
         oauth_data = await _verify_google_id_token(id_token)
         
@@ -766,9 +890,7 @@ async def auth_google(payload: dict, conn=Depends(get_db)):
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        logger.exception("Internal server error"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.post("/auth/apple")
@@ -778,7 +900,9 @@ async def auth_apple(payload: dict, conn=Depends(get_db)):
         identity_token = payload.get("identity_token")
         if not identity_token:
             raise HTTPException(status_code=400, detail="identity_token is required")
-        
+        if not isinstance(identity_token, str) or len(identity_token) > 8192:
+            raise HTTPException(status_code=400, detail="invalid identity_token")
+
         # Verify Apple token and get user info
         oauth_data = await _verify_apple_identity_token(identity_token)
         
@@ -808,9 +932,7 @@ async def auth_apple(payload: dict, conn=Depends(get_db)):
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        logger.exception("Internal server error"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 def _format_datetime_iso(dt) -> str | None:
@@ -1072,13 +1194,18 @@ async def me(Authorization: str | None = Header(default=None), conn=Depends(get_
 
 
 @app.post("/chat")
-async def chat(payload: dict, Authorization: str | None = Header(default=None)):
+async def chat(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
     """
     General chat with AI - requires authentication.
     Supports optional conversation history and article context for the
     "Discuss Article" feature.
     """
     token = _require_auth(Authorization)
+    _get_user_id_from_token(conn, token)
 
     message = payload.get("message")
     if not message:
@@ -1172,9 +1299,7 @@ async def chat(payload: dict, Authorization: str | None = Header(default=None)):
             "model": openai_service.model,
         }
     except Exception as e:
-        import traceback
-
-        traceback.print_exc()
+        logger.exception("Unhandled error in handler")
         raise HTTPException(status_code=500, detail="Something went wrong — please try again.")
 
 
@@ -1330,10 +1455,17 @@ async def complete_user_preferences(
 
     try:
         openai_service = get_openai_service()
-        summary = await openai_service.build_complete_user_preferences(
-            history,
-            explicit_context=explicit_context if isinstance(explicit_context, dict) else None,
-        )
+        try:
+            summary = await asyncio.wait_for(
+                openai_service.build_complete_user_preferences(
+                    history,
+                    explicit_context=explicit_context if isinstance(explicit_context, dict) else None,
+                ),
+                timeout=60.0,
+            )
+        except asyncio.TimeoutError:
+            logger.warning("complete_user_preferences timed out after 60s")
+            raise HTTPException(status_code=504, detail="Preference build timed out — please retry")
 
         ai_profile = summary.get("ai_profile")
         interests = summary.get("interests")
@@ -1415,14 +1547,15 @@ async def complete_user_preferences(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error completing user preferences: {str(e)}")
+        logger.exception("Error completing user preferences"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.post("/chat/interests")
-async def chat_interests(payload: dict, Authorization: str | None = Header(default=None)):
+async def chat_interests(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
     """
     Onboarding chat specifically about user's news interests.
 
@@ -1430,6 +1563,7 @@ async def chat_interests(payload: dict, Authorization: str | None = Header(defau
     /user/preferences with the final summary when user taps Save.
     """
     token = _require_auth(Authorization)
+    _get_user_id_from_token(conn, token)
 
     message = payload.get("message")
     history = payload.get("history") or []
@@ -1495,9 +1629,7 @@ IMPORTANT:
             "model": openai_service.model,
         }
     except Exception as e:
-        import traceback
-
-        traceback.print_exc()
+        logger.exception("Unhandled error in handler")
         raise HTTPException(
             status_code=500, detail="Something went wrong — please try again."
         )
@@ -1581,9 +1713,7 @@ async def discover_sources(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error discovering sources: {str(e)}")
+        logger.exception("Error discovering sources"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.get("/sources")
@@ -1619,9 +1749,7 @@ async def build_feed(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error building feed: {str(e)}")
+        logger.exception("Error building feed"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.get("/feed")
@@ -1646,9 +1774,7 @@ async def get_feed(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error loading feed: {str(e)}")
+        logger.exception("Error loading feed"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.get("/feed/{article_id}")
@@ -1670,9 +1796,7 @@ async def get_feed_article(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error loading article: {str(e)}")
+        logger.exception("Error loading article"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.post("/feed/refresh")
@@ -1697,9 +1821,7 @@ async def refresh_feed(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Error refreshing feed: {str(e)}")
+        logger.exception("Error refreshing feed"); raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # ---------------------------------------------------------------------------
@@ -1714,7 +1836,8 @@ async def semantic_search(
     conn=Depends(get_db),
 ):
     """Search articles by semantic similarity using pgvector embeddings."""
-    _require_auth(Authorization)
+    token = _require_auth(Authorization)
+    _get_user_id_from_token(conn, token)
 
     query = (payload.get("query") or "").strip()
     if not query:
@@ -1764,8 +1887,7 @@ async def semantic_search(
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        logger.exception("Unhandled error in handler")
         raise HTTPException(status_code=500, detail="Search failed — please try again.")
 
 
@@ -1775,7 +1897,8 @@ async def get_categories(
     conn=Depends(get_db),
 ):
     """Return article categories with counts from the last 24 hours."""
-    _require_auth(Authorization)
+    token = _require_auth(Authorization)
+    _get_user_id_from_token(conn, token)
 
     with conn.cursor() as cur:
         cur.execute("""
