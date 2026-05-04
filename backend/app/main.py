@@ -1,5 +1,6 @@
 import os
 import hashlib
+import hmac
 import base64
 import time
 import asyncio
@@ -44,6 +45,7 @@ async def _ingestion_loop():
     """Background task: fetch RSS feeds, extract content, clean up old articles."""
     from app.services.news_ingestion import fetch_rss_feeds, fetch_topic_feeds
     from app.services.content_extractor import extract_article_content
+    from app.services.extraction_telemetry import record_extraction
     from app.services.article_enrichment import enrich_articles
     from app.services.source_discovery import populate_seed_sources
 
@@ -104,6 +106,7 @@ async def _ingestion_loop():
                                         "UPDATE public.articles SET content_extracted = true, content_extractor_version = 2 WHERE id = %s",
                                         (row["id"],),
                                     )
+                            record_extraction(conn, row["id"], row["url"], extracted)
                         except Exception as e:
                             logger.error(f"Ingestion: Error extracting content for {row['url'][:60]}: {e}")
 
@@ -153,6 +156,7 @@ async def _ingestion_loop():
                                             "UPDATE public.articles SET content_extractor_version = 2 WHERE id = %s",
                                             (row["id"],),
                                         )
+                                record_extraction(conn, row["id"], row["url"], extracted)
                             except Exception as e:
                                 logger.error(f"Re-extraction error for {row['url'][:60]}: {e}")
 
@@ -202,6 +206,11 @@ async def _ingestion_loop():
                     )
                     if cur.rowcount > 0:
                         logger.info(f"Ingestion: Cleaned up {cur.rowcount} old articles")
+                    # Trim extraction_attempts history to 30 days (orphans only;
+                    # ON DELETE CASCADE already removes rows for deleted articles).
+                    cur.execute(
+                        "DELETE FROM public.extraction_attempts WHERE created_at < now() - interval '30 days'"
+                    )
 
         except Exception as e:
             logger.error(f"Ingestion loop error: {e}")
@@ -433,6 +442,91 @@ async def readyz():
         return JSONResponse(status_code=503, content={"status": "unready"})
 
 
+def _require_admin(request: Request) -> None:
+    """Gate admin endpoints on a shared secret in `ADMIN_API_KEY`.
+
+    If the env var is unset, the endpoint is treated as disabled (503) so
+    a misconfigured deploy can't accidentally expose internals.
+    """
+    expected = os.getenv("ADMIN_API_KEY")
+    if not expected:
+        raise HTTPException(status_code=503, detail="Admin endpoints disabled")
+    provided = request.headers.get("x-admin-key", "")
+    if not provided or not hmac.compare_digest(provided, expected):
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+@app.get("/admin/extraction-stats")
+async def admin_extraction_stats(request: Request, days: int = 7):
+    """Per-domain extraction outcome rollup over the last N days (default 7).
+
+    Surfaces the long-tail of domains where the static cascade is failing,
+    so we can route them to a stronger extractor (browser fallback) without
+    paying for browser time on every URL.
+    """
+    _require_admin(request)
+    days = max(1, min(int(days or 7), 30))
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    domain,
+                    COUNT(*)::int                                              AS attempts,
+                    COUNT(*) FILTER (WHERE char_count < 400)::int              AS thin_count,
+                    COUNT(*) FILTER (WHERE error IS NOT NULL)::int             AS error_count,
+                    ROUND(AVG(char_count)::numeric, 0)::int                    AS avg_chars,
+                    ROUND(AVG(duration_ms)::numeric, 0)::int                   AS avg_duration_ms
+                FROM public.extraction_attempts
+                WHERE created_at >= now() - (%s * interval '1 day')
+                  AND domain <> ''
+                GROUP BY domain
+                HAVING COUNT(*) >= 3
+                ORDER BY (COUNT(*) FILTER (WHERE char_count < 400))::float / NULLIF(COUNT(*), 0) DESC,
+                         COUNT(*) DESC
+                LIMIT 20
+                """,
+                (days,),
+            )
+            worst = [dict(r) for r in cur.fetchall()]
+
+            cur.execute(
+                """
+                SELECT
+                    method,
+                    COUNT(*)::int                                              AS attempts,
+                    ROUND(AVG(char_count)::numeric, 0)::int                    AS avg_chars,
+                    COUNT(*) FILTER (WHERE error IS NOT NULL)::int             AS error_count
+                FROM public.extraction_attempts
+                WHERE created_at >= now() - (%s * interval '1 day')
+                GROUP BY method
+                ORDER BY attempts DESC
+                """,
+                (days,),
+            )
+            by_method = [dict(r) for r in cur.fetchall()]
+
+            cur.execute(
+                """
+                SELECT
+                    COUNT(*)::int                                              AS total_attempts,
+                    COUNT(DISTINCT article_id)::int                            AS unique_articles,
+                    COUNT(DISTINCT domain) FILTER (WHERE domain <> '')::int    AS unique_domains
+                FROM public.extraction_attempts
+                WHERE created_at >= now() - (%s * interval '1 day')
+                """,
+                (days,),
+            )
+            totals = dict(cur.fetchone() or {})
+
+    return {
+        "window_days": days,
+        "totals": totals,
+        "by_method": by_method,
+        "worst_domains": worst,
+    }
+
+
 def get_db():
     with pool.connection() as conn:
         yield conn
@@ -545,6 +639,34 @@ def _ensure_tables(conn) -> None:
 
         # Migration: content quality score for feed ranking
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_quality float DEFAULT 0.0;")
+
+        # Migration: per-article extraction outcome (Phase 1 telemetry)
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_method text;")
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_attempt_count smallint DEFAULT 0;")
+        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_domain text;")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_extraction_domain ON public.articles (extraction_domain);")
+
+        # Per-attempt extraction history (Phase 1 telemetry)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.extraction_attempts (
+                id bigserial PRIMARY KEY,
+                article_id uuid REFERENCES public.articles(id) ON DELETE CASCADE,
+                domain text NOT NULL,
+                method text NOT NULL,
+                char_count integer NOT NULL DEFAULT 0,
+                duration_ms integer,
+                error text,
+                created_at timestamptz NOT NULL DEFAULT now()
+            );
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_extraction_attempts_domain_created
+            ON public.extraction_attempts (domain, created_at DESC);
+        """)
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_extraction_attempts_created
+            ON public.extraction_attempts (created_at DESC);
+        """)
 
         # Migration: pgvector for semantic search
         cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
