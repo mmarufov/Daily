@@ -1479,6 +1479,8 @@ async def get_article_by_id(article_id: str, conn) -> dict | None:
 
     # If content not yet extracted and we have a URL, extract now
     if not row.get("content_extracted") and row.get("url"):
+        from app.services.extraction_telemetry import record_extraction
+
         extracted = await extract_article_content(row["url"])
         if extracted.get("content"):
             with conn.cursor() as cur:
@@ -1507,6 +1509,7 @@ async def get_article_by_id(article_id: str, conn) -> dict | None:
             if not row.get("image_url"):
                 row["image_url"] = extracted.get("image_url")
             row["content_extracted"] = True
+        record_extraction(conn, article_uuid, row["url"], extracted)
 
     published_at = row.get("published_at")
     if isinstance(published_at, datetime):

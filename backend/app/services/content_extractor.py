@@ -5,6 +5,7 @@ Extracts clean article text from news pages — zero AI cost, pure HTML parsing.
 import ipaddress
 import re
 import socket
+import time
 from urllib.parse import urlparse
 
 import httpx
@@ -12,6 +13,16 @@ import trafilatura
 from bs4 import BeautifulSoup
 
 from app.services.image_extraction import extract_best_image_url
+
+
+def _domain_of(url: str) -> str:
+    try:
+        host = (urlparse(url).hostname or "").lower()
+    except Exception:
+        return ""
+    if host.startswith("www."):
+        host = host[4:]
+    return host
 
 
 def _is_safe_public_url(url: str) -> bool:
@@ -81,10 +92,28 @@ async def extract_article_content(url: str) -> dict:
     Fetch a URL and extract the main article content.
 
     Uses trafilatura for high-quality extraction with BeautifulSoup fallback.
-    Returns dict with: title, summary, content, image_url, source_name
+    Returns dict with:
+        title, summary, content, image_url, source_name,
+        extraction_method ('trafilatura' | 'bs4' | None on failure),
+        domain (normalized hostname),
+        attempts (list of {method, char_count, duration_ms, error}).
     """
+    domain = _domain_of(url)
+    attempts: list[dict] = []
+
     if not _is_safe_public_url(url):
-        return {"error": "unsafe_url", "title": "", "content": "", "image_url": "", "source_name": ""}
+        return {
+            "error": "unsafe_url",
+            "title": "",
+            "content": "",
+            "image_url": "",
+            "source_name": "",
+            "extraction_method": None,
+            "domain": domain,
+            "attempts": [{"method": "fetch", "char_count": 0, "duration_ms": 0, "error": "unsafe_url"}],
+        }
+
+    fetch_start = time.monotonic()
     try:
         async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
             response = await client.get(
@@ -96,10 +125,40 @@ async def extract_article_content(url: str) -> dict:
             # redirect-to-private-IP)
             final = str(response.url)
             if final != url and not _is_safe_public_url(final):
-                return {"error": "unsafe_redirect", "title": "", "content": "", "image_url": "", "source_name": ""}
+                attempts.append({
+                    "method": "fetch",
+                    "char_count": 0,
+                    "duration_ms": int((time.monotonic() - fetch_start) * 1000),
+                    "error": "unsafe_redirect",
+                })
+                return {
+                    "error": "unsafe_redirect",
+                    "title": "",
+                    "content": "",
+                    "image_url": "",
+                    "source_name": "",
+                    "extraction_method": None,
+                    "domain": domain,
+                    "attempts": attempts,
+                }
             html = response.text
     except Exception as e:
-        return {"error": str(e), "title": "", "content": "", "image_url": "", "source_name": ""}
+        attempts.append({
+            "method": "fetch",
+            "char_count": 0,
+            "duration_ms": int((time.monotonic() - fetch_start) * 1000),
+            "error": str(e)[:500],
+        })
+        return {
+            "error": str(e),
+            "title": "",
+            "content": "",
+            "image_url": "",
+            "source_name": "",
+            "extraction_method": None,
+            "domain": domain,
+            "attempts": attempts,
+        }
 
     soup = BeautifulSoup(html, "html.parser")
 
@@ -117,17 +176,14 @@ async def extract_article_content(url: str) -> dict:
     if og_desc and og_desc.get("content"):
         summary = og_desc["content"].strip()
 
-    source_name = ""
-    try:
-        domain = urlparse(url).netloc
-        source_name = domain.replace("www.", "")
-    except Exception:
-        pass
+    source_name = domain or ""
 
     # --- Content extraction ---
+    extraction_method: str | None = None
 
     # Primary: trafilatura
-    content = trafilatura.extract(
+    traf_start = time.monotonic()
+    traf_content = trafilatura.extract(
         html,
         url=url,
         include_comments=False,
@@ -135,10 +191,31 @@ async def extract_article_content(url: str) -> dict:
         favor_precision=True,
         deduplicate=True,
     )
+    traf_len = len(traf_content.strip()) if traf_content else 0
+    attempts.append({
+        "method": "trafilatura",
+        "char_count": traf_len,
+        "duration_ms": int((time.monotonic() - traf_start) * 1000),
+        "error": None,
+    })
 
-    # Fallback: improved BeautifulSoup if trafilatura returns nothing useful
-    if not content or len(content.strip()) < 100:
-        content = _fallback_bs4_extract(soup)
+    if traf_content and traf_len >= 100:
+        content = traf_content
+        extraction_method = "trafilatura"
+    else:
+        # Fallback: improved BeautifulSoup
+        bs4_start = time.monotonic()
+        bs4_content = _fallback_bs4_extract(soup)
+        bs4_len = len(bs4_content.strip()) if bs4_content else 0
+        attempts.append({
+            "method": "bs4",
+            "char_count": bs4_len,
+            "duration_ms": int((time.monotonic() - bs4_start) * 1000),
+            "error": None,
+        })
+        content = bs4_content
+        if bs4_len > 0:
+            extraction_method = "bs4"
 
     # Safety cap with sentence-boundary truncation
     if content and len(content) > _MAX_CONTENT_CHARS:
@@ -154,6 +231,9 @@ async def extract_article_content(url: str) -> dict:
         "content": content or "",
         "image_url": image_url,
         "source_name": source_name,
+        "extraction_method": extraction_method,
+        "domain": domain,
+        "attempts": attempts,
     }
 
 
