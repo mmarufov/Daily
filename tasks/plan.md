@@ -4,75 +4,57 @@ This file tracks the **current phase** of the whole-app redesign. The full desig
 
 ---
 
-## Phase 1 — Tokens & Components Scaffolding
+## Phase 2 — Feed surface (NewsView)
 
 **Status:** in progress
-**Goal:** Add the new visual primitives (color tokens, typography tokens, six new SwiftUI components) without changing any user-visible behavior.
 
-After Phase 1, the app builds and runs **identically** to today. Phase 2+ can swap `FeaturedArticleCard.style=.hero` → `HeroStory` (etc.) with one-line view replacements.
+Phase 2 wires the Phase 1 components into `NewsView`. Substitution is mechanical (one component swap per existing card) but the visible result is large: card chrome disappears from the feed, the hero is full-bleed, the edition signature replaces the wordmark+date treatment, and long-press on any row surfaces the "Why this story?" sheet.
 
-### Codebase facts that shape this phase
+### Substitution map
 
-- `Daily/Theme/AppTheme.swift` (327 lines) is the single theme file. It exposes `BrandColors`, `AppTypography`, `AppSpacing`, `AppCornerRadius`, `AppShadows`, `AppGradients`, `GlassCardModifier` and a private `dynamicColor(light:dark:)` helper at `AppTheme.swift:10` (returns SwiftUI `Color`).
-- `FeaturedArticleCard` is inline in `Daily/Features/News/Views/NewsView.swift:357+`, not a separate file. `CardStyle` enum has `.standard`, `.feed`, `.hero`.
-- `Daily/Features/Chat/` exists; **no `Tune/` or `Onboarding/` folder yet**.
-- `Daily.xcodeproj` uses `PBXFileSystemSynchronizedRootGroup` (Xcode 16+). New files under `Daily/` are auto-discovered — **no pbxproj edits needed**.
-- `CategoryFilterBar.swift` is currently wired up in NewsView despite the briefing claiming "already unused". Phase 9 must un-wire before deletion.
-- Image loading uses `AsyncImage(url:)` with phase switching; `URLCache.shared` is configured by `ImageCacheService` (`Daily/Services/ImageCacheService.swift:35`) so AsyncImage benefits from a 50MB/200MB cache transparently.
-- News article model is `NewsArticle` (not `Article`) at `Daily/Features/News/Models/NewsArticle.swift`.
+| File / Lines | Today | After Phase 2 |
+|---|---|---|
+| `NewsView.swift:22` | `heroHeader` | `editionHeader` (delegates to `EditionHeader` component) |
+| `NewsView.swift:63` | `Color(.systemBackground)` | `EditionPalette.paper` |
+| Hero card | `FeaturedArticleCard(style: .hero)` + `.contextMenu` | `HeroStory(article:, provenance: featured.whyThisStory, isRead:)` + `.onLongPressGesture` |
+| Feed rows | `FeaturedArticleCard(style: .feed)` + `.contextMenu` + `HairlineDivider` | `StoryRow(article:, isRead:)` + `.onLongPressGesture` + sepia `Rectangle` hairlines |
+| `sectionLabel` helper | serif `sectionHeroTitle`/`headline`, `BrandColors.textPrimary` | small-caps `metaCaps`, `inkBlue`, tracked 0.8 |
+| Profile button | 34×34pt | 44×44pt, embedded in `EditionHeader` avatar slot |
+| Removed | `articleContextMenu`, `heroHeader`, `dateHeader`, `profileButton`, `formattedHeroDate`, `SectionLabelStyle` | — |
+| `BriefingCard.swift` | `BrandColors.*` | `EditionPalette.ink` / `ink60` / `inkBlue` |
+| `SkeletonViews.swift` | `Color(.tertiarySystemFill)`, `Color(UIColor.label).opacity(0.15)` | `EditionPalette.paperSecondary`, `EditionPalette.ink.opacity(0.10)` |
 
-### Three judgment calls (deviating from briefing's literal text)
+### Three judgment calls (approved before execution)
 
-1. **DiffToast placement.** Briefing puts all six new components under `News/Views/Components/`, but DiffToast is a Tune-surface component per `DESIGN.md` and `design-redesign-plan.md`. Placing it at `Daily/Features/Tune/Views/Components/DiffToast.swift` — also creates the new Tune feature folder.
-2. **Empty `Onboarding/` folder.** Briefing wants it created in Phase 1, but no Onboarding files are in scope until Phase 8 and empty folders don't survive `git`. Deferred to Phase 8.
-3. **`AppTypography.heroHeadline` collision.** Existing `heroHeadline = .system(.largeTitle, design: .serif, weight: .bold)` already matches DESIGN.md spec semantically (serif bold, scales via Dynamic Type). Reusing the existing token; not adding a parallel `editionHeroHeadline`. New `brandWordmark` is a semantically-named alias.
-
-All three confirmed before execution.
+1. **Long-press swap.** `.onLongPressGesture` → `WhyThisStorySheet` (3 corrective actions). The 4 other contextMenu actions are dropped from the feed: Bookmark/Share/Discuss reachable from `ArticleDetailView`; **More Like This is lost** in Phase 2 — Phase 4 (Tune) re-introduces it. Captured in `tasks/lessons.md`.
+2. **Provenance gating.** `HeroStory.provenance = article.whyThisStory` (nil → no line). Cold/Warming/Earned state machine deferred until taste-model exposes confidence. Today's behavior: hero shows provenance only when backend populates it.
+3. **Section label restyle scope.** `sectionLabel` helper restyled (affects "Top Story" + "For You"). Welcome banner / error banner / loading subtitle keep their current `BrandColors` references — Phase 9 cleanup migrates them globally.
 
 ### Checklist
 
-- [ ] **1a.** Create `Daily/Theme/EditionPalette.swift` — 9 ink+ochre tokens + `hairlineWidth`. Reuses existing `dynamicColor()` helper.
-- [ ] **1b.** Append new editorial-scale tokens to `AppTypography` in `Daily/Theme/AppTheme.swift`: `brandWordmark`, `signatureCaps`, `dek`, `rowHeadline`, `metaCaps`, `bodyReading`, `composer`. Additive only; no existing token mutated.
-- [ ] **1c.** Create five new components in `Daily/Features/News/Views/Components/`: `EditionHeader.swift`, `HeroStory.swift`, `StoryRow.swift`, `ProvenanceLine.swift`, `WhyThisStorySheet.swift`. Each pure presentation with `#Preview` blocks.
-- [ ] **1d.** Create `Daily/Features/Tune/Views/Components/DiffToast.swift` — pure presentation, two-line diff + Undo (caller owns visibility).
-- [ ] **1e.** Verify build — `xcodebuild -project Daily.xcodeproj -scheme Daily -destination 'platform=iOS Simulator,name=iPhone 15 Pro' build` clean (no warnings, no errors).
-- [ ] **1f.** Confirm `Daily.xcodeproj/project.pbxproj` is unchanged in `git diff`.
-- [ ] **1g.** Single commit: `feat: add edition palette and scaffold redesign components`.
+- [x] **2a.** `editionHeader` calls `EditionHeader(dateLabel: editionDateLabel, editionName: editionName) { profileAvatar }`. Helpers compute "MAY 7" and "SARAH".
+- [x] **2b.** `ScrollView.background = EditionPalette.paper`.
+- [x] **2c.** `sectionLabel` simplified to one style: `metaCaps`, tracking 0.8, `EditionPalette.inkBlue`, `.textCase(.uppercase)`.
+- [x] **2d.** Hero swap: `HeroStory` + `.onLongPressGesture`. Horizontal padding dropped (full-bleed).
+- [x] **2e.** Feed rows swap: `StoryRow` + `.onLongPressGesture` + sepia hairline `Rectangle` between rows.
+- [x] **2f.** `@State private var selectedFeedbackArticle: NewsArticle?` + `.sheet(item:)` presenting `WhyThisStorySheet` wired to `viewModel.submitFeedback`.
+- [x] **2g.** Removed dead helpers: `heroHeader`, `dateHeader`, `profileButton`, `articleContextMenu`, `formattedHeroDate`, `SectionLabelStyle` enum.
+- [x] **2h.** BriefingCard palette swap (8 token replacements).
+- [x] **2i.** SkeletonViews palette swap (2 token replacements).
+- [ ] **2j.** Build clean (`xcodebuild ... iPhone 17 Pro`).
+- [ ] **2k.** Simulator boot: tap-through Feed → ArticleDetail → back; long-press a row → WhyThisStorySheet appears with three actions; tap profile (44pt) → ProfileView.
+- [x] **2l.** `tasks/lessons.md` updated with the contextMenu-loss note for Phase 4.
+- [ ] **2m.** Single commit: `feat: replace feed surface with edition header + hero + story rows`.
 
-### Token specifications
+### Out of scope
 
-#### EditionPalette (1a)
+- `welcomeBanner`, `errorBanner`, "Loading your personalized feed..." text — Phase 9 global migration.
+- `FeaturedArticleCard` struct stays as dead code; Phase 9 deletes it.
+- Re-introducing "More Like This" affordance — Phase 4 (Tune) takes ownership.
 
-| Token | Light | Dark | Usage |
-|---|---|---|---|
-| `paper` | `#FCFAF7` | `#15120E` | Primary background |
-| `paperSecondary` | `#F4EFE6` | `#1C1916` | Subtle surface |
-| `ink` | `#1F1B17` | `#F0EDE6` | Headlines, body, primary text |
-| `ink60` | rgba(31,27,23,0.60) | rgba(240,237,230,0.65) | Secondary text, dek |
-| `inkBlue` | `#2D3F5F` | `#7E92B5` | Source labels, brand wordmark, tab tint |
-| `ochre` | `#C97D2E` | `#E0985A` | Edition stamp + hero provenance ONLY |
-| `sepia` | `#D9CFBF` | `#2A2520` | Hairlines |
-| `error` | `#B23B2E` | `#D6614F` | Errors |
-| `success` | `#6E8B5F` | `#88A57A` | Save toasts |
+---
 
-#### Typography additions (1b)
+## Previously shipped
 
-| Token | Definition | Use site |
-|---|---|---|
-| `brandWordmark` | `.system(.largeTitle, design: .serif, weight: .bold)` | "Daily" logo |
-| `signatureCaps` | `.system(.caption2, design: .default, weight: .bold)` | Edition stamp + provenance |
-| `dek` | `.system(.body, design: .serif, weight: .regular)` | Lead-in below headlines (italicized at use site) |
-| `rowHeadline` | `.system(.body, design: .serif, weight: .semibold)` | Earlier-today rows |
-| `metaCaps` | `.system(.caption2, design: .default, weight: .bold)` | Source labels, section anchors |
-| `bodyReading` | `.system(.body, design: .serif, weight: .regular)` | Article body |
-| `composer` | `.system(.body, design: .default, weight: .regular)` | Tune composer |
-
-Tracking, italic, line spacing, and `.textCase(.uppercase)` are applied at the use site, not baked into the token.
-
-### Out of scope for Phase 1
-
-Phases 2–10 cover: NewsView wiring; Article reader restyle; Tune (Chat → Tune rename + composer-on-top + DiffToast wiring + LiveFeedPeek + backend diff payload); Profile rebuild; Saved grouping; Search trending; Onboarding (5 screens); cleanup (delete unused, migrate from `BrandColors`/`AppGradients`/`glassEffect`/`sparkles`); verification sweep.
-
-### Lessons captured
-
-See `tasks/lessons.md` (created on first user correction).
+- **Phase 1** — Tokens & Components Scaffolding. Commit `38b83ef`. Added `EditionPalette`, 7 typography tokens, 6 components (`EditionHeader`, `HeroStory`, `StoryRow`, `ProvenanceLine`, `WhyThisStorySheet`, `DiffToast`).
+- **Foundation** — DESIGN.md and 10-phase plan. Commit `1df9f6b`.

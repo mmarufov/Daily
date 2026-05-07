@@ -14,12 +14,13 @@ struct NewsView: View {
     @State private var showingProfile = false
     @State private var showWelcomeBanner = false
     @State private var briefingContent: String?
+    @State private var selectedFeedbackArticle: NewsArticle?
 
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    heroHeader
+                    editionHeader
 
                     if showWelcomeBanner {
                         welcomeBanner
@@ -60,12 +61,20 @@ struct NewsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, AppSpacing.xxl)
             }
-            .background(Color(.systemBackground))
+            .background(EditionPalette.paper)
             .refreshable {
                 await viewModel.refreshFeed()
             }
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
+            }
+            .sheet(item: $selectedFeedbackArticle) { article in
+                WhyThisStorySheet(
+                    reason: feedbackReason(for: article),
+                    onLessOfThis: { Task { await viewModel.submitFeedback(for: article, action: "less_like_this") } },
+                    onWrongReason: { Task { await viewModel.submitFeedback(for: article, action: "not_relevant") } },
+                    onHide: { Task { await viewModel.submitFeedback(for: article, action: "hide_source") } }
+                )
             }
             .overlay {
                 if viewModel.isSettingUp, let phase = viewModel.setupPhase {
@@ -99,31 +108,54 @@ struct NewsView: View {
 // MARK: - Private builders
 
 private extension NewsView {
-    var heroHeader: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                Text("Daily")
-                    .font(AppTypography.brandTitle)
-                    .foregroundColor(BrandColors.textPrimary)
-                    .tracking(-0.5)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                dateHeader
-            }
-
-            profileButton
+    var editionHeader: some View {
+        EditionHeader(dateLabel: editionDateLabel, editionName: editionName) {
+            profileAvatar
         }
-        .padding(.horizontal, AppSpacing.lg)
-        .padding(.top, AppSpacing.sm)
-        .padding(.bottom, AppSpacing.lg)
     }
 
-    var dateHeader: some View {
-        Text(formattedHeroDate)
-            .font(AppTypography.brandSubtitle)
-            .foregroundColor(BrandColors.textPrimary.opacity(0.92))
-            .tracking(-0.3)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    @ViewBuilder
+    var profileAvatar: some View {
+        Button(action: { showingProfile = true }) {
+            ZStack {
+                if let photoURL = auth.currentUser?.photo_url,
+                   let url = URL(string: photoURL) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        default:
+                            Image(systemName: "person.crop.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundStyle(EditionPalette.ink60)
+                        }
+                    }
+                } else {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundStyle(EditionPalette.ink60)
+                }
+            }
+            .frame(width: 44, height: 44)
+            .clipShape(Circle())
+        }
+        .accessibilityLabel("Open profile")
+    }
+
+    var editionDateLabel: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: Date()).uppercased()
+    }
+
+    var editionName: String {
+        auth.currentUser?.display_name?
+            .split(separator: " ")
+            .first
+            .map(String.init)?
+            .uppercased() ?? "YOU"
     }
 
     // MARK: - Skeleton Loading
@@ -156,28 +188,32 @@ private extension NewsView {
                     .padding(.bottom, AppSpacing.md)
             }
 
-            // Top Story
+            // Top Story (hero — full bleed)
             if let featured = articles.first {
-                sectionLabel("Top Story", style: .hero)
+                sectionLabel("Top Story")
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.md)
 
                 NavigationLink(destination: ArticleDetailView(article: featured)) {
-                    FeaturedArticleCard(article: featured, isRead: bookmarks.isRead(featured.id), style: .hero)
+                    HeroStory(
+                        article: featured,
+                        provenance: featured.whyThisStory,
+                        isRead: bookmarks.isRead(featured.id)
+                    )
                 }
                 .buttonStyle(PressableButtonStyle())
-                .padding(.horizontal, AppSpacing.lg)
-                .contextMenu {
-                    articleContextMenu(for: featured)
+                .onLongPressGesture {
+                    HapticService.impact(.medium)
+                    selectedFeedbackArticle = featured
                 }
                 .onAppear {
                     ReadingEventTracker.shared.logImpression(articleId: featured.id, position: 0)
                 }
             }
 
-            // For You
+            // For You — uniform story rows, hairline-separated
             if articles.count > 1 {
-                HairlineDivider()
+                sepiaHairline
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.vertical, AppSpacing.lg)
 
@@ -188,78 +224,39 @@ private extension NewsView {
                 VStack(spacing: 0) {
                     ForEach(Array(articles.dropFirst().enumerated()), id: \.element.id) { index, article in
                         NavigationLink(destination: ArticleDetailView(article: article)) {
-                            FeaturedArticleCard(
+                            StoryRow(
                                 article: article,
-                                isRead: bookmarks.isRead(article.id),
-                                style: .feed
+                                isRead: bookmarks.isRead(article.id)
                             )
                         }
                         .buttonStyle(PressableButtonStyle())
-                        .padding(.horizontal, AppSpacing.lg)
-                        .contextMenu {
-                            articleContextMenu(for: article)
+                        .onLongPressGesture {
+                            HapticService.impact(.medium)
+                            selectedFeedbackArticle = article
                         }
                         .onAppear {
                             ReadingEventTracker.shared.logImpression(articleId: article.id, position: index + 1)
                         }
 
-                        HairlineDivider()
+                        sepiaHairline
                             .padding(.horizontal, AppSpacing.lg)
-                            .padding(.vertical, AppSpacing.md)
                     }
                 }
             }
         }
     }
 
-    @ViewBuilder
-    func articleContextMenu(for article: NewsArticle) -> some View {
-        Button {
-            Task { await viewModel.submitFeedback(for: article, action: "more_like_this") }
-        } label: {
-            Label("More Like This", systemImage: "hand.thumbsup")
-        }
+    var sepiaHairline: some View {
+        Rectangle()
+            .fill(EditionPalette.sepia)
+            .frame(height: EditionPalette.hairlineWidth)
+    }
 
-        Button {
-            Task { await viewModel.submitFeedback(for: article, action: "less_like_this") }
-        } label: {
-            Label("Less Like This", systemImage: "hand.thumbsdown")
+    func feedbackReason(for article: NewsArticle) -> String {
+        if let reason = article.whyThisStory, !reason.isEmpty {
+            return reason
         }
-
-        Button {
-            Task { await viewModel.submitFeedback(for: article, action: "not_relevant") }
-        } label: {
-            Label("Not Relevant", systemImage: "eye.slash")
-        }
-
-        Button {
-            Task { await viewModel.submitFeedback(for: article, action: "hide_source") }
-        } label: {
-            Label("Hide This Source", systemImage: "nosign")
-        }
-
-        Button {
-            HapticService.impact(.medium)
-            bookmarks.toggleBookmark(article)
-        } label: {
-            Label(
-                bookmarks.isBookmarked(article.id) ? "Remove Bookmark" : "Bookmark",
-                systemImage: bookmarks.isBookmarked(article.id) ? "bookmark.slash" : "bookmark"
-            )
-        }
-
-        if let urlString = article.url, let url = URL(string: urlString) {
-            ShareLink(item: url) {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
-        }
-
-        Button {
-            HapticService.impact(.medium)
-            NotificationCenter.default.post(name: .discussArticle, object: article)
-        } label: {
-            Label("Discuss with AI", systemImage: "sparkles")
-        }
+        return "I'm not sure why I picked this — tell me if it's off."
     }
 
     var welcomeBanner: some View {
@@ -279,16 +276,12 @@ private extension NewsView {
         .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
     }
 
-    enum SectionLabelStyle {
-        case standard
-        case hero
-    }
-
-    func sectionLabel(_ title: String, style: SectionLabelStyle = .standard) -> some View {
+    func sectionLabel(_ title: String) -> some View {
         Text(title)
-            .font(style == .hero ? AppTypography.sectionHeroTitle : AppTypography.headline)
-            .foregroundColor(BrandColors.textPrimary.opacity(style == .hero ? 0.96 : 1))
-            .tracking(style == .hero ? -0.35 : -0.2)
+            .font(AppTypography.metaCaps)
+            .tracking(0.8)
+            .textCase(.uppercase)
+            .foregroundStyle(EditionPalette.inkBlue)
     }
 
     func errorBanner(_ message: String) -> some View {
@@ -317,42 +310,9 @@ private extension NewsView {
         .background(BrandColors.warning.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
     }
-
-    var profileButton: some View {
-        Button(action: { showingProfile = true }) {
-            if let photoURL = auth.currentUser?.photo_url,
-               let url = URL(string: photoURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().aspectRatio(contentMode: .fill)
-                    default:
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .foregroundColor(BrandColors.textTertiary)
-                    }
-                }
-                .frame(width: 34, height: 34)
-                .clipShape(Circle())
-            } else {
-                Image(systemName: "person.crop.circle.fill")
-                    .font(AppTypography.profileIcon)
-                    .foregroundColor(BrandColors.textTertiary)
-            }
-        }
-        .frame(width: 34, height: 34)
-        .padding(.top, AppSpacing.xs)
-        .accessibilityLabel("Open profile")
-    }
-
-    var formattedHeroDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d"
-        return formatter.string(from: Date())
-    }
 }
 
-// MARK: - Featured Article Card
+// MARK: - Featured Article Card (legacy — removed in Phase 9 cleanup)
 
 struct FeaturedArticleCard: View {
     let article: NewsArticle
