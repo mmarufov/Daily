@@ -150,6 +150,19 @@ struct AppTypography {
     static let displaySmall = Font.system(.title2, design: .default, weight: .bold)
     static let headlineLarge = Font.system(.title3, design: .default, weight: .semibold)
     static let bodyLarge = Font.system(.body, design: .default, weight: .regular)
+
+    // MARK: - Edition redesign typography (DESIGN.md scale)
+    // Each token uses a Dynamic Type text-style base for accessibility scaling.
+    // Tracking, italic, line spacing, and .textCase(.uppercase) are applied at the use site.
+    // Existing `heroHeadline` already matches the DESIGN.md hero spec semantically (serif bold,
+    // scales via Dynamic Type) and is reused as-is.
+    static let brandWordmark = Font.system(.largeTitle, design: .serif, weight: .bold)
+    static let signatureCaps = Font.system(.caption2, design: .default, weight: .bold)
+    static let dek = Font.system(.body, design: .serif, weight: .regular)
+    static let rowHeadline = Font.system(.body, design: .serif, weight: .semibold)
+    static let metaCaps = Font.system(.caption2, design: .default, weight: .bold)
+    static let bodyReading = Font.system(.body, design: .serif, weight: .regular)
+    static let composer = Font.system(.body, design: .default, weight: .regular)
 }
 
 // MARK: - Spacing
