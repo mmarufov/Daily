@@ -22,7 +22,7 @@ struct ArticleDetailView: View {
     @State private var articleOpenTime = Date()
 
     @ObservedObject private var bookmarks = BookmarkService.shared
-    @StateObject private var chatViewModel = ChatViewModel()
+    @StateObject private var tuneViewModel = TuneViewModel()
 
     private var fontSizeMultiplier: CGFloat {
         [0.8, 0.9, 1.0, 1.15, 1.3][fontSizeIndex]
@@ -183,7 +183,7 @@ struct ArticleDetailView: View {
                     HapticService.impact(.medium)
                     if let full = fullArticle {
                         Task {
-                            await chatViewModel.startArticleDiscussion(full)
+                            await tuneViewModel.startArticleDiscussion(full)
                             showingChat = true
                         }
                     }
@@ -247,9 +247,9 @@ struct ArticleDetailView: View {
             }
         }
         .sheet(isPresented: $showingChat) {
-            ChatView(
-                viewModel: chatViewModel,
-                selectedTab: .constant(.chat),
+            TuneView(
+                viewModel: tuneViewModel,
+                selectedTab: .constant(.tune),
                 presentedAsSheet: true
             )
         }
@@ -334,7 +334,7 @@ struct ArticleDetailView: View {
         Button {
             HapticService.impact(.medium)
             Task {
-                await chatViewModel.startArticleDiscussion(article)
+                await tuneViewModel.startArticleDiscussion(article)
                 showingChat = true
             }
         } label: {
