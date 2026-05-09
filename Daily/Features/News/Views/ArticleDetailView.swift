@@ -22,7 +22,7 @@ struct ArticleDetailView: View {
     @State private var articleOpenTime = Date()
 
     @ObservedObject private var bookmarks = BookmarkService.shared
-    @StateObject private var chatViewModel = ChatViewModel()
+    @StateObject private var tuneViewModel = TuneViewModel()
 
     private var fontSizeMultiplier: CGFloat {
         [0.8, 0.9, 1.0, 1.15, 1.3][fontSizeIndex]
@@ -38,17 +38,17 @@ struct ArticleDetailView: View {
                         .scaleEffect(1.1)
                     Text("Loading article...")
                         .font(AppTypography.subheadline)
-                        .foregroundColor(BrandColors.textSecondary)
+                        .foregroundStyle(EditionPalette.ink60)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let error = loadErrorMessage, fullArticle == nil {
                 VStack(spacing: AppSpacing.md) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(AppTypography.iconMedium)
-                        .foregroundColor(BrandColors.textTertiary)
+                        .foregroundStyle(EditionPalette.ink60)
                     Text(error)
                         .font(AppTypography.subheadline)
-                        .foregroundColor(BrandColors.error)
+                        .foregroundStyle(EditionPalette.error)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AppSpacing.xxl)
                 }
@@ -71,25 +71,25 @@ struct ArticleDetailView: View {
                                         .accessibilityLabel(full.displaySource)
                                         .font(AppTypography.sourceLabel)
                                         .tracking(0.8)
-                                        .foregroundColor(BrandColors.sourceText)
+                                        .foregroundStyle(EditionPalette.inkBlue)
 
                                     if let category = full.category, !category.isEmpty {
                                         Circle()
-                                            .fill(BrandColors.textQuaternary)
+                                            .fill(EditionPalette.ink60)
                                             .frame(width: 3, height: 3)
                                         Text(category)
                                             .textCase(.uppercase)
                                             .accessibilityLabel(category)
                                             .font(AppTypography.chipIcon)
                                             .tracking(0.6)
-                                            .foregroundColor(BrandColors.textTertiary)
+                                            .foregroundStyle(EditionPalette.ink60)
                                     }
                                 }
 
                                 // Title
                                 Text(full.title)
                                     .font(AppTypography.articleTitle)
-                                    .foregroundColor(BrandColors.textPrimary)
+                                    .foregroundStyle(EditionPalette.ink)
                                     .fixedSize(horizontal: false, vertical: true)
                                     .lineSpacing(4)
 
@@ -98,20 +98,20 @@ struct ArticleDetailView: View {
                                     if let author = full.author, !author.isEmpty {
                                         Text("By \(author)")
                                             .font(AppTypography.articleAuthor)
-                                            .foregroundColor(BrandColors.textSecondary)
+                                            .foregroundStyle(EditionPalette.ink60)
                                     }
                                     HStack(spacing: AppSpacing.xs) {
                                         if let publishedAt = full.publishedAt {
                                             Text(formattedFullDate(publishedAt))
                                                 .font(AppTypography.caption1)
-                                                .foregroundColor(BrandColors.textTertiary)
+                                                .foregroundStyle(EditionPalette.ink60)
                                         }
                                         Circle()
-                                            .fill(BrandColors.textQuaternary)
+                                            .fill(EditionPalette.ink60)
                                             .frame(width: 3, height: 3)
                                         Text("\(full.estimatedReadingTime) min read")
                                             .font(AppTypography.caption1)
-                                            .foregroundColor(BrandColors.textTertiary)
+                                            .foregroundStyle(EditionPalette.ink60)
                                     }
                                 }
 
@@ -123,7 +123,7 @@ struct ArticleDetailView: View {
                                    !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                     Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
                                         .font(AppTypography.articleLeadIn)
-                                        .foregroundColor(BrandColors.textPrimary)
+                                        .foregroundStyle(EditionPalette.ink)
                                         .lineSpacing(4)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -144,14 +144,23 @@ struct ArticleDetailView: View {
 
                                     Text("MORE LIKE THIS")
                                         .font(AppTypography.sectionTitle)
-                                        .foregroundColor(BrandColors.sectionHeader)
+                                        .foregroundStyle(EditionPalette.inkBlue)
                                         .tracking(0.8)
 
-                                    ForEach(relatedArticles.prefix(4)) { related in
-                                        NavigationLink(destination: ArticleDetailView(article: related)) {
-                                            FeaturedArticleCard(article: related, style: .feed)
+                                    VStack(spacing: 0) {
+                                        let related = Array(relatedArticles.prefix(4))
+                                        ForEach(Array(related.enumerated()), id: \.element.id) { index, item in
+                                            NavigationLink(destination: ArticleDetailView(article: item)) {
+                                                StoryRow(article: item)
+                                            }
+                                            .buttonStyle(PressableButtonStyle())
+
+                                            if index < related.count - 1 {
+                                                Rectangle()
+                                                    .fill(EditionPalette.sepia)
+                                                    .frame(height: EditionPalette.hairlineWidth)
+                                            }
                                         }
-                                        .buttonStyle(PressableButtonStyle())
                                     }
                                 }
                             }
@@ -165,7 +174,7 @@ struct ArticleDetailView: View {
                 }
             }
         }
-        .background(Color(.systemBackground))
+        .background(EditionPalette.paper)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -174,15 +183,15 @@ struct ArticleDetailView: View {
                     HapticService.impact(.medium)
                     if let full = fullArticle {
                         Task {
-                            await chatViewModel.startArticleDiscussion(full)
+                            await tuneViewModel.startArticleDiscussion(full)
                             showingChat = true
                         }
                     }
                 } label: {
-                    Image(systemName: "sparkles")
+                    Image(systemName: "slider.horizontal.3")
                         .font(AppTypography.toolbarIcon)
                 }
-                .tint(BrandColors.primary)
+                .tint(EditionPalette.inkBlue)
                 .accessibilityLabel("Discuss with AI")
 
                 // Bookmark
@@ -195,7 +204,7 @@ struct ArticleDetailView: View {
                     Image(systemName: bookmarks.isBookmarked(article.id) ? "bookmark.fill" : "bookmark")
                         .font(AppTypography.toolbarIcon)
                 }
-                .tint(BrandColors.primary)
+                .tint(EditionPalette.inkBlue)
                 .accessibilityLabel(bookmarks.isBookmarked(article.id) ? "Remove bookmark" : "Add bookmark")
 
                 // Share
@@ -204,7 +213,7 @@ struct ArticleDetailView: View {
                         Image(systemName: "square.and.arrow.up")
                             .font(AppTypography.toolbarIcon)
                     }
-                    .tint(BrandColors.primary)
+                    .tint(EditionPalette.inkBlue)
                     .accessibilityLabel("Share article")
                 }
 
@@ -227,7 +236,7 @@ struct ArticleDetailView: View {
                     Image(systemName: "textformat.size")
                         .font(AppTypography.toolbarIcon)
                 }
-                .tint(BrandColors.primary)
+                .tint(EditionPalette.inkBlue)
                 .accessibilityLabel("Change text size")
             }
         }
@@ -238,9 +247,9 @@ struct ArticleDetailView: View {
             }
         }
         .sheet(isPresented: $showingChat) {
-            ChatView(
-                viewModel: chatViewModel,
-                selectedTab: .constant(.chat),
+            TuneView(
+                viewModel: tuneViewModel,
+                selectedTab: .constant(.tune),
                 presentedAsSheet: true
             )
         }
@@ -278,12 +287,12 @@ struct ArticleDetailView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 260)
+                        .frame(height: 220)
                         .clipped()
                 default:
                     Rectangle()
-                        .fill(Color(.tertiarySystemFill))
-                        .frame(height: 200)
+                        .fill(EditionPalette.paperSecondary)
+                        .frame(height: 220)
                 }
             }
         }
@@ -308,12 +317,12 @@ struct ArticleDetailView: View {
             VStack(spacing: AppSpacing.sm) {
                 Text("Full article content is not available.")
                     .font(AppTypography.subheadline)
-                    .foregroundColor(BrandColors.textTertiary)
+                    .foregroundStyle(EditionPalette.ink60)
 
                 if article.url != nil {
                     Text("Read the full article at the source below.")
                         .font(AppTypography.caption1)
-                        .foregroundColor(BrandColors.textQuaternary)
+                        .foregroundStyle(EditionPalette.ink60)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -325,26 +334,22 @@ struct ArticleDetailView: View {
         Button {
             HapticService.impact(.medium)
             Task {
-                await chatViewModel.startArticleDiscussion(article)
+                await tuneViewModel.startArticleDiscussion(article)
                 showingChat = true
             }
         } label: {
             HStack(spacing: AppSpacing.sm) {
-                Image(systemName: "sparkles")
+                Image(systemName: "slider.horizontal.3")
                     .font(AppTypography.actionIcon)
                 Text("Discuss with Daily AI")
                     .font(AppTypography.actionLabel)
             }
-            .foregroundColor(BrandColors.primary)
+            .foregroundStyle(EditionPalette.inkBlue)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                    .fill(BrandColors.primary.opacity(0.1))
-            )
             .overlay(
-                RoundedRectangle(cornerRadius: AppCornerRadius.large)
-                    .stroke(BrandColors.primary.opacity(0.25), lineWidth: 1)
+                RoundedRectangle(cornerRadius: AppCornerRadius.button)
+                    .stroke(EditionPalette.inkBlue, lineWidth: 1)
             )
         }
         .padding(.top, AppSpacing.md)
@@ -362,7 +367,7 @@ struct ArticleDetailView: View {
                     Image(systemName: "arrow.up.right")
                         .font(AppTypography.sourceLabel)
                 }
-                .foregroundColor(BrandColors.primary)
+                .foregroundStyle(EditionPalette.inkBlue)
             }
             .padding(.top, AppSpacing.md)
         }

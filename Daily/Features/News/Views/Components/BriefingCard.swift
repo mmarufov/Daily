@@ -66,28 +66,28 @@ private extension BriefingCard {
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Text("MORNING BRIEFING")
                     .font(AppTypography.sectionTitle)
-                    .foregroundColor(BrandColors.sectionHeader)
+                    .foregroundStyle(EditionPalette.inkBlue)
                     .tracking(0.8)
 
                 Text("What matters today")
                     .font(AppTypography.headline)
-                    .foregroundColor(BrandColors.textPrimary)
+                    .foregroundStyle(EditionPalette.ink)
 
                 Text(teaserLine)
                     .font(AppTypography.articleLeadIn)
-                    .foregroundColor(BrandColors.textPrimary)
+                    .foregroundStyle(EditionPalette.ink)
                     .lineSpacing(2)
                     .multilineTextAlignment(.leading)
             }
 
             HStack(spacing: AppSpacing.sm) {
                 Circle()
-                    .fill(BrandColors.primary.opacity(0.85))
+                    .fill(EditionPalette.inkBlue)
                     .frame(width: 6, height: 6)
 
                 Text("\(bulletPoints.count) key updates")
                     .font(AppTypography.caption1)
-                    .foregroundColor(BrandColors.textSecondary)
+                    .foregroundStyle(EditionPalette.ink60)
 
                 Spacer()
 
@@ -97,7 +97,7 @@ private extension BriefingCard {
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.system(size: 8, weight: .semibold))
                 }
-                .foregroundColor(BrandColors.textTertiary)
+                .foregroundStyle(EditionPalette.ink60)
             }
 
             HairlineDivider()
@@ -110,13 +110,13 @@ private extension BriefingCard {
                 HStack(alignment: .top, spacing: AppSpacing.smLg) {
                     Text("\(index + 1)")
                         .font(AppTypography.metaLabel)
-                        .foregroundStyle(BrandColors.primary)
+                        .foregroundStyle(EditionPalette.ink)
                         .frame(width: 18, alignment: .leading)
                         .padding(.top, 2)
 
                     Text(markdownAttributed(point))
                         .font(AppTypography.bodyMedium)
-                        .foregroundColor(BrandColors.textPrimary)
+                        .foregroundStyle(EditionPalette.ink)
                         .lineSpacing(3)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)

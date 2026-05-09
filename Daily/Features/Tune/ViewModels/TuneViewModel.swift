@@ -1,13 +1,22 @@
 //
-//  ChatViewModel.swift
+//  TuneViewModel.swift
 //  Daily
+//
+//  Renamed from ChatViewModel. Drives the Tune surface: streaming turn
+//  orchestration + a live feed below the composer + DiffToast/Undo state.
+//
+//  Per DESIGN.md, no conversation bubbles are rendered — the streaming
+//  pipeline still runs (the backend produces a turn), but the UI consumes
+//  only `streamStatus`, `pendingDiff`, and the refreshed `articles` list.
 //
 
 import Foundation
 import Combine
 
 @MainActor
-final class ChatViewModel: ObservableObject {
+final class TuneViewModel: ObservableObject {
+    // MARK: Existing chat state (preserved from ChatViewModel)
+
     @Published var threads: [ChatThread] = []
     @Published var currentThread: ChatThread?
     @Published var turns: [ChatTurn] = []
@@ -18,9 +27,37 @@ final class ChatViewModel: ObservableObject {
     @Published var streamStatus: String?
     @Published var errorMessage: String?
 
+    // MARK: New Tune state (Phase 4)
+
+    /// Live feed shown below the composer. Populated by `loadInitialFeed()`
+    /// and refreshed after every streaming turn completes.
+    @Published var articles: [NewsArticle] = []
+
+    /// Set when a `.weightDiff` event arrives. Drives `DiffToast`. Auto-cleared
+    /// after 2.3s (slide 200ms + hold 2000ms + fade 300ms).
+    @Published var pendingDiff: WeightDiffPayload?
+
+    /// Held for 10 minutes after a diff toast clears. Drives the UndoPill.
+    /// Tapping invokes `tapUndo()` which is a no-op until the backend ships
+    /// an Undo endpoint.
+    @Published var persistedUndo: PersistedUndo?
+
+    /// Hides the suggested-prompt chips after the first turn.
+    @Published var showSuggestedChips: Bool = true
+
+    @Published var isLoadingFeed: Bool = false
+
+    // MARK: Private
+
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
     private var hasLoadedHome = false
+    private var hasLoadedInitialFeed = false
+    private var diffToastTask: Task<Void, Never>?
+    private var undoExpiryTask: Task<Void, Never>?
+
+    private static let diffToastDurationSeconds: Double = 2.3
+    private static let undoPillDurationSeconds: Double = 600  // 10 minutes
 
     var todayThread: ChatThread? {
         threads.first(where: { $0.kind == .today })
@@ -38,10 +75,26 @@ final class ChatViewModel: ObservableObject {
         currentThread?.kind == .article ? ChatIntent.articleIntents : []
     }
 
+    /// Default streaming label when the backend hasn't pushed a `.status` yet.
+    var displayedStreamStatus: String {
+        if let streamStatus, !streamStatus.isEmpty {
+            return streamStatus
+        }
+        return "Reading your feed…"
+    }
+
+    // MARK: - Loading
+
     func loadHomeIfNeeded() async {
         guard !hasLoadedHome else { return }
         await refreshHome()
         hasLoadedHome = true
+    }
+
+    func loadInitialFeed() async {
+        guard !hasLoadedInitialFeed else { return }
+        await refreshLiveFeed()
+        hasLoadedInitialFeed = true
     }
 
     func refreshHome() async {
@@ -62,6 +115,20 @@ final class ChatViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+
+    private func refreshLiveFeed() async {
+        guard let token = authService.getAccessToken() else { return }
+        isLoadingFeed = true
+        defer { isLoadingFeed = false }
+        do {
+            let response = try await backendService.refreshFeedStatus(accessToken: token, limit: 20)
+            articles = response.articles
+        } catch {
+            // Silent — leave the existing list in place. The composer remains usable.
+        }
+    }
+
+    // MARK: - Threads
 
     func openThread(_ thread: ChatThread) async {
         guard let token = authService.getAccessToken() else {
@@ -118,15 +185,19 @@ final class ChatViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Sending
+
     func sendComposerMessage() async {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
         inputText = ""
+        showSuggestedChips = false
         await sendMessage(content: text, intent: nil)
     }
 
     func sendIntent(_ intent: ChatIntent) async {
+        showSuggestedChips = false
         await sendMessage(content: intent.requestText, intent: intent)
     }
 
@@ -140,6 +211,54 @@ final class ChatViewModel: ObservableObject {
         guard let lastUser = turns.last(where: { $0.isUser }) else { return }
         await sendMessage(content: lastUser.plainText, intent: nil)
     }
+
+    // MARK: - DiffToast / Undo
+
+    func dismissDiffToast() {
+        guard let diff = pendingDiff else { return }
+        pendingDiff = nil
+        let undo = PersistedUndo(
+            id: UUID(),
+            label: "Undo",
+            diff: diff,
+            expiresAt: Date().addingTimeInterval(Self.undoPillDurationSeconds)
+        )
+        persistedUndo = undo
+        scheduleUndoExpiry(for: undo)
+    }
+
+    func tapUndo() async {
+        // TODO(backend): call a real "reverse last weight-diff" endpoint here.
+        // For now, just clear the pill so the user feels the action.
+        persistedUndo = nil
+        undoExpiryTask?.cancel()
+    }
+
+    private func scheduleDiffToastDismiss() {
+        diffToastTask?.cancel()
+        diffToastTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(Self.diffToastDurationSeconds))
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                self?.dismissDiffToast()
+            }
+        }
+    }
+
+    private func scheduleUndoExpiry(for undo: PersistedUndo) {
+        undoExpiryTask?.cancel()
+        undoExpiryTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(Self.undoPillDurationSeconds))
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                if self?.persistedUndo?.id == undo.id {
+                    self?.persistedUndo = nil
+                }
+            }
+        }
+    }
+
+    // MARK: - Streaming
 
     private func sendMessage(content: String, intent: ChatIntent?) async {
         guard let token = authService.getAccessToken() else {
@@ -157,7 +276,7 @@ final class ChatViewModel: ObservableObject {
             turns.append(optimisticAssistant)
 
             isStreaming = true
-            streamStatus = "Scanning your feed"
+            streamStatus = nil  // displayedStreamStatus falls back to "Reading your feed…"
             errorMessage = nil
 
             let stream = try await backendService.streamChatMessage(
@@ -174,6 +293,10 @@ final class ChatViewModel: ObservableObject {
             streamStatus = nil
             try await refreshCurrentThread(accessToken: token)
             threads = try await backendService.fetchChatThreads(accessToken: token)
+
+            // Tune surface: refresh the live feed so the user sees the new edition
+            // immediately, regardless of whether a weight-diff event arrived.
+            await refreshLiveFeed()
         } catch {
             isStreaming = false
             streamStatus = nil
@@ -276,6 +399,9 @@ final class ChatViewModel: ObservableObject {
             }
         case .error(let payload):
             errorMessage = payload.detail
+        case .weightDiff(let payload):
+            pendingDiff = payload
+            scheduleDiffToastDismiss()
         }
     }
 

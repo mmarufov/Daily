@@ -17,7 +17,7 @@ struct ShimmerModifier: ViewModifier {
                 LinearGradient(
                     colors: [
                         Color.clear,
-                        Color(UIColor.label).opacity(0.15),
+                        EditionPalette.ink.opacity(0.10),
                         Color.clear
                     ],
                     startPoint: .leading,
@@ -50,7 +50,7 @@ private struct SkeletonRect: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(Color(.tertiarySystemFill))
+            .fill(EditionPalette.paperSecondary)
             .frame(width: width, height: height)
             .shimmer()
     }

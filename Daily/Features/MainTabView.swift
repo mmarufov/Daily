@@ -10,11 +10,11 @@ import SwiftUI
 struct MainTabView: View {
     @State private var selectedTab: AppTab = .news
     @State private var showOnboarding = false
-    @StateObject private var chatViewModel = ChatViewModel()
+    @StateObject private var tuneViewModel = TuneViewModel()
     @StateObject private var newsViewModel = NewsViewModel()
 
     enum AppTab: Hashable {
-        case news, saved, chat, search
+        case news, saved, tune, search
     }
 
     var body: some View {
@@ -27,8 +27,8 @@ struct MainTabView: View {
                 BookmarksView()
             }
 
-            Tab("Chat", systemImage: "bubble.left.and.bubble.right", value: .chat) {
-                ChatView(viewModel: chatViewModel, selectedTab: $selectedTab)
+            Tab("Tune", systemImage: "slider.horizontal.3", value: .tune) {
+                TuneView(viewModel: tuneViewModel, selectedTab: $selectedTab)
             }
 
             Tab("Search", systemImage: "magnifyingglass", value: .search, role: .search) {
@@ -50,9 +50,9 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .discussArticle)) { notification in
             if let article = notification.object as? NewsArticle {
                 Task {
-                    await chatViewModel.startArticleDiscussion(article)
+                    await tuneViewModel.startArticleDiscussion(article)
                     withAnimation {
-                        selectedTab = .chat
+                        selectedTab = .tune
                     }
                 }
             }

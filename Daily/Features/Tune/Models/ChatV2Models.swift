@@ -2,6 +2,11 @@
 //  ChatV2Models.swift
 //  Daily
 //
+//  Domain primitives for the Tune surface (and the streaming pipeline shared
+//  with BackendService). Struct names retain the `Chat` prefix because they're
+//  shared with onboarding and BackendService — the surface is renamed to
+//  Tune but the wire format and domain language stay.
+//
 
 import Foundation
 
@@ -280,6 +285,41 @@ enum ChatIntent: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Tune-specific payloads (Phase 4 scaffold)
+
+/// Weight-diff emitted by the backend when a tuning turn changes the user's
+/// taste signals. Drives DiffToast.
+///
+/// TODO(backend): backend doesn't emit `weight_diff` events yet. Once it does,
+/// the iOS-side decoder below will route them to TuneViewModel.pendingDiff.
+struct WeightDiffPayload: Codable, Equatable {
+    let summary: String
+    let topicDeltas: [TopicDelta]
+    let timestamp: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case summary
+        case topicDeltas = "topic_deltas"
+        case timestamp
+    }
+}
+
+struct TopicDelta: Codable, Equatable {
+    let topic: String
+    let direction: String   // "up" | "down" | "added" | "removed"
+    let magnitude: Double
+}
+
+/// Held in TuneViewModel for 10 minutes after a diff toast clears. Drives the
+/// UndoPill in the top corner. Real Undo requires a backend endpoint that
+/// reverses the last weight-diff (TODO).
+struct PersistedUndo: Identifiable, Equatable {
+    let id: UUID
+    let label: String
+    let diff: WeightDiffPayload
+    let expiresAt: Date
+}
+
 enum StreamingEvent {
     struct MetaPayload: Codable, Equatable {
         let thread: ChatThread
@@ -339,6 +379,7 @@ enum StreamingEvent {
     case followUps(FollowUpsPayload)
     case done(DonePayload)
     case error(ErrorPayload)
+    case weightDiff(WeightDiffPayload)
 
     static func decode(event: String, data: Data) throws -> StreamingEvent {
         let decoder = JSONDecoder.dailyChatDecoder
@@ -359,6 +400,8 @@ enum StreamingEvent {
             return .done(try decoder.decode(DonePayload.self, from: data))
         case "error":
             return .error(try decoder.decode(ErrorPayload.self, from: data))
+        case "weight_diff":
+            return .weightDiff(try decoder.decode(WeightDiffPayload.self, from: data))
         default:
             throw NSError(domain: "StreamingEvent", code: -1, userInfo: [
                 NSLocalizedDescriptionKey: "Unknown streaming event: \(event)"
