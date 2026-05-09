@@ -53,12 +53,14 @@ struct StoryRow: View {
             thumbnail
                 .frame(width: 80, height: 80)
                 .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .accessibilityHidden(true)
         }
         .padding(.vertical, AppSpacing.smLg)
         .padding(.horizontal, AppSpacing.md)
         .opacity(isRead ? 0.6 : 1.0)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isRead ? [.isButton, .isSelected] : .isButton)
     }
 
     @ViewBuilder
