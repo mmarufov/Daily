@@ -40,6 +40,7 @@ struct HeroStory: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: Self.imageHeight)
                 .clipped()
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
                 HStack(spacing: AppSpacing.xs) {
@@ -84,6 +85,7 @@ struct HeroStory: View {
         .padding(.bottom, AppSpacing.md)
         .background(EditionPalette.paper)
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isRead ? [.isButton, .isSelected] : .isButton)
     }
 
     @ViewBuilder
