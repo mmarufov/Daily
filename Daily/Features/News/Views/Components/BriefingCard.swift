@@ -55,6 +55,9 @@ struct BriefingCard: View {
             .clipped()
         }
         .buttonStyle(BriefingCardButtonStyle())
+        .accessibilityLabel("Morning briefing — \(bulletPoints.count) key updates")
+        .accessibilityHint(isExpanded ? "Tap to collapse" : "Tap to expand")
+        .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
     }
 }
 
