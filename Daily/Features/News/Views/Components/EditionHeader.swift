@@ -37,6 +37,9 @@ struct EditionHeader<Avatar: View>: View {
                         .textCase(.uppercase)
                         .foregroundStyle(EditionPalette.ochre)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Daily, \(dateLabel), \(editionName) edition")
+                .accessibilityAddTraits(.isHeader)
                 Spacer(minLength: AppSpacing.md)
                 avatar()
                     .frame(width: 44, height: 44)
@@ -49,6 +52,7 @@ struct EditionHeader<Avatar: View>: View {
             Rectangle()
                 .fill(EditionPalette.sepia)
                 .frame(height: EditionPalette.hairlineWidth)
+                .accessibilityHidden(true)
         }
         .background(EditionPalette.paper)
     }
