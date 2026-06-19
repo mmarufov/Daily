@@ -70,7 +70,7 @@ final class ReadingEventTracker {
             try await BackendService.shared.submitReadingEvents(events, accessToken: token)
         } catch {
             // Re-queue failed events for next flush (max 500 to prevent unbounded growth)
-            pendingEvents = (events + pendingEvents).suffix(500).map { $0 }
+            pendingEvents = Array((events + pendingEvents).suffix(500))
         }
     }
 
