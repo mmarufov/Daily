@@ -35,6 +35,7 @@ final class NewsPersonalizationViewModel: ObservableObject {
 
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false }
 
         do {
             let prefs = try await backendService.fetchUserPreferences(accessToken: token)
@@ -66,10 +67,8 @@ final class NewsPersonalizationViewModel: ObservableObject {
             if let context = profile["life_context"] as? String {
                 lifeContext = context
             }
-            isLoading = false
         } catch {
             errorMessage = error.localizedDescription
-            isLoading = false
         }
     }
     
@@ -85,7 +84,8 @@ final class NewsPersonalizationViewModel: ObservableObject {
         
         isSaving = true
         errorMessage = nil
-        
+        defer { isSaving = false }
+
         do {
             let existingPreferences = try await backendService.fetchUserPreferences(accessToken: token)
             let profileV2 = buildUserProfileV2()
@@ -97,11 +97,9 @@ final class NewsPersonalizationViewModel: ObservableObject {
                 userProfileV2: profileV2,
                 completed: true
             )
-            isSaving = false
             return true
         } catch {
             errorMessage = error.localizedDescription
-            isSaving = false
             return false
         }
     }
