@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2bacdfe71bc65b00e264456b688aef821834fd1b106466e6eb82915c352b5995",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00112\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"South Korean housing policy irrelevant to Singapore mother.\"}, {\"id\": \"a00114\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Okinawa election unrelated to Singapore local interests.\"}, {\"id\": \"a00120\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Uzbekistan reading culture project not relevant to Singapore reader.\"}, {\"id\": \"a00121\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sri Lanka civil war cases unrelated to Singapore reader's interests.\"}, {\"id\": \"a00124\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"China supply chain rules irrelevant to Singapore mother.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1109,
+  "completion_tokens": 231
+ }
+}

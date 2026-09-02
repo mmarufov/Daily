@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "c680a2ace4438a8212bb599e1844045569be019a7a3d79ae1ebfd54a45e3fc5f",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about college football history, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses AI search technology, which does not intersect with the user's focus on trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a rabid fox in New York, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is a concert review, which falls under the excluded category of entertainment.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NASA and President Trump, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about an Apple product prototype, which does not relate to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a sports trade, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a TV series, which falls under the excluded category of entertainment.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a sports event, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a sports ruling, which does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a business strategy framework, which is not relevant to the user's focus on trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses environmental ethics in AI, which does not relate to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about USDA research, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a comedian and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a cultural topic in Singapore, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a celebrity's opinion, which falls under the excluded category of entertainment.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political issues in Germany, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article provides tips for AirPods, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about social casino games, which falls under the excluded category of entertainment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2749,
+  "completion_tokens": 600
+ }
+}

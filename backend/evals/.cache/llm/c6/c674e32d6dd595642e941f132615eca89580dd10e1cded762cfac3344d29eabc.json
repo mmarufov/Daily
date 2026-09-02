@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8933038e7f0266289a9477619efbd5f4a0bfe3a8d85f87953832cd97f5b75692",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00091\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Pacific Islands Forum and great power rivalry unrelated to Uzbekistan or reader interests.\"}, {\"id\": \"a00092\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Flood in Tibet and CCP media control unrelated to Uzbek politics or sports.\"}, {\"id\": \"a00094\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Kazakhstan politics is regionally relevant but not primary for reader.\"}, {\"id\": \"a00102\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"South Asia disaster response unrelated to Uzbekistan or reader interests.\"}, {\"id\": \"a00104\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"India youth unemployment unrelated to Uzbek politics or sports.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1207,
+  "completion_tokens": 242
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "e534849ee04df89b717111e63d8604e7560309ce3435abc9e86c8e9da66d1be2",
+  "preview": "User Profile:\nFree-form profile:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a legal matter unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Philadelphia Eagles, which is not a primary interest for the user.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article focuses on personal finance and investment, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a tragic event but does not relate to local politics or the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses USDA research, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a hospital in Singapore, which does not pertain to the user's interests.\"},{\"relevant\":true,\"score\":0.8,\"reason\":\"This article covers severe weather in New Jersey, which directly affects the user's daily life.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses an international issue unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about diplomatic relations, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses Manchester United, which is not a primary interest for the user.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a music festival, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a music festival, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about college football history, which is not a primary interest for the user.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses gaming, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses open source technology, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a music festival, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a casino game, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a political figure in the UK, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a shooting incident in Switzerland, which is not relevant to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1992,
+  "completion_tokens": 584
+ }
+}

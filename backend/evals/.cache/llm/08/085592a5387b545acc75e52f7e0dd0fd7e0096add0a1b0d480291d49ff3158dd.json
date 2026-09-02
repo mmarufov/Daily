@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "09fcde3cbb1196527aa983c5932848332f6a806c2ad33d0fcc404d803a130226",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00212\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech security issue unrelated to Uzbek politics or sports.\"}, {\"id\": \"a00217\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Microsoft service outage irrelevant to reader's interests.\"}, {\"id\": \"a00218\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"ChatGPT outage unrelated to Uzbek local news or sports.\"}, {\"id\": \"a00224\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment news about American film unrelated to reader.\"}, {\"id\": \"a00252\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Foreign TV drama and politics not relevant to Uzbek local interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1345,
+  "completion_tokens": 230
+ }
+}

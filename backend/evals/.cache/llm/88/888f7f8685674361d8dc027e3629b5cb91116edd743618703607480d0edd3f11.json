@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e9dc04bc0d3cec89d4a8e3922d4d737bda92c2194176cfd54d253295c89e97f7",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01004\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Space launch news unrelated to energy or geopolitical issues.\"}, {\"id\": \"a01005\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI hardware standard unrelated to energy markets or geopolitics.\"}, {\"id\": \"a01006\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Child pornography lawsuit unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01007\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US election ad pricing legal case unrelated to energy or geopolitics.\"}, {\"id\": \"a01013\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Space telescope launch unrelated to energy or geopolitical developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2367,
+  "completion_tokens": 235
+ }
+}

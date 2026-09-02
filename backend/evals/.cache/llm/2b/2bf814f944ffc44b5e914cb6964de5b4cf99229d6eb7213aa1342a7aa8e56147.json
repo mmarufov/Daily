@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4c78e82b2570bcfd43291bf75d10088d112f511b1ab79705c2a57108477782a0",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01077\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content, no general news value.\"}, {\"id\": \"a01078\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content, no general news value.\"}, {\"id\": \"a01079\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content, no general news value.\"}, {\"id\": \"a01080\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content, no general news value.\"}, {\"id\": \"a01081\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content, no general news value.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 942,
+  "completion_tokens": 219
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7d0c9adcf89941d5f78817ee92402942bb14b2c3e81e0fc39ef7ca31f83c497f",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00958\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Hockey unrelated to tennis, horse racing, or solar energy interests.\"}, {\"id\": \"a00959\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Fantasy hockey and betting content excluded.\"}, {\"id\": \"a00961\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NFL news unrelated to reader's sports or environmental interests.\"}, {\"id\": \"a00962\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NFL legal case unrelated to reader's interests.\"}, {\"id\": \"a00963\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NFL player recovery unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1084,
+  "completion_tokens": 234
+ }
+}

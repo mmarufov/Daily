@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5d8ef7eca14857167011e9fdaabe0e50f9c8f500bc27caf71e07d8eec2017822",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00484\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"money\"], \"confidence\": 0.9, \"rationale\": \"Property tax rise in Jersey City relevant but not Newark-specific or urgent.\"}, {\"id\": \"a00486\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"public_transit\"], \"confidence\": 0.8, \"rationale\": \"Mentions NJ Transit but mainly sports unrelated to Devils or Giants.\"}, {\"id\": \"a00487\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Severe weather near NYC may affect commute, worth noting but not urgent.\"}, {\"id\": \"a00488\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NYC library events unrelated to reader's interests or location.\"}, {\"id\": \"a00491\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Brooklyn bar lawsuit unrelated to Newark or NJ interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1250,
+  "completion_tokens": 270
+ }
+}

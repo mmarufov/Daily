@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "26b2503c4ce6331a83f87344c34836da034fdaa4551e092bc2f221582f0294f0",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00696\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General news updates, no specific focus on reader's interests.\"}, {\"id\": \"a00699\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Science research success relevant but Singapore focused, not UK or consumer impact.\"}, {\"id\": \"a00703\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"No clear relevance to reader's interests or topics.\"}, {\"id\": \"a00704\", \"label\": \"fine\", \"tags\": [\"need_to_know\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Heatwave preparedness relevant to consumer safety but Singapore focused.\"}, {\"id\": \"a00711\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Human interest story unrelated to reader's interests or location.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 993,
+  "completion_tokens": 249
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7e0ada5f5512fec2a34eb03121f0326b1f2c7d8f185daf2eaea2300c4c1a001b",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00305\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Video game industry layoffs and AI unrelated to NJ or reader interests.\"}, {\"id\": \"a00315\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"World of Warcraft game updates unrelated to NJ or reader interests.\"}, {\"id\": \"a00319\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Horror RPG game review unrelated to NJ or reader interests.\"}, {\"id\": \"a00329\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Death of a writer unrelated to NJ or reader interests.\"}, {\"id\": \"a00350\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Autonomous crop-spraying planes unrelated to NJ or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2768,
+  "completion_tokens": 241
+ }
+}

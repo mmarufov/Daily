@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "db939dcfd818c286362fadb80603bdd3fb8ee355437730ab71666719bda3ffb0",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00419\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"US girls soccer, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00435\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"US girls volleyball, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00437\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US political family legal case, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00447\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"US girls soccer, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00451\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US House candidates debate, unrelated to Singapore or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1126,
+  "completion_tokens": 252
+ }
+}

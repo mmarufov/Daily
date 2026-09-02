@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3e7b5e6d3ff275d76b89ea2ebc1e5df71ee54291637e875433829ef404acee83",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01147\", \"label\": \"fine\", \"tags\": [\"healthcare\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Healthcare cyberattack affects devices but no local Singapore impact or urgent advisory.\"}, {\"id\": \"a01152\", \"label\": \"never\", \"tags\": [\"off_topic\", \"tech industry news\"], \"confidence\": 0.9, \"rationale\": \"Tech industry open source security, unrelated to reader's interests or location.\"}, {\"id\": \"a01159\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"UK political polling on encryption unrelated to Singapore or reader's priorities.\"}, {\"id\": \"a01165\", \"label\": \"never\", \"tags\": [\"off_topic\", \"tech industry news\"], \"confidence\": 0.9, \"rationale\": \"AWS DNS service satire unrelated to reader's interests or location.\"}, {\"id\": \"a01167\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"UK Green Party datacenter policy unrelated to Singapore or reader's priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3490,
+  "completion_tokens": 271
+ }
+}

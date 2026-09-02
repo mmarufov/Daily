@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6741c5924cca0801a78e3f71c83a3dcfe4e107f435298d8c07d045197fd41285",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01272\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"company use of AI\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major hire at Anthropic, a primary interest; relevant to AI industry developments.\"\n    },\n    {\n      \"id\": \"a01288\",\n      \"label\": \"must_see\",\n      \"tags\": [\"AI regulation\", \"major_event\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Key regulatory development at G20; directly impacts AI industry and Tom's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 905,
+  "completion_tokens": 147
+ }
+}

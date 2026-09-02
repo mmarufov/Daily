@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "56dfc884533b71c191407966e9703337f84e8a1336c19b2fdb6cc8f92388c2bb",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00222\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"celebrity\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity fundraising event; not relevant to user's interests or priorities.\"\n    },\n    {\n      \"id\": \"a00243\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"celebrity\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity profile; not aligned with user's interests or news priorities.\"\n    },\n    {\n      \"id\": \"a00297\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Covers new AI tech in gaming; relevant to tech interest, but not essential.\"\n    },\n    {\n      \"id\": \"a00302\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming mod story; not relevant to user's tech, science, or consumer focus.\"\n    },\n    {\n      \"id\": \"a00334\",\n      \"label\": \"fine\",\n      \"tags\": [\"London\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"London arts/culture story; locally relevant but not a primary or must-see topic.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2278,
+  "completion_tokens": 311
+ }
+}

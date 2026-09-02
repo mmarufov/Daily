@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ff1fe52b2a38fc4e25263b127447d13b6d3fcc23748e2ccab6c8d39195b1a660",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00551\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"General hiring post, relevant but routine for engineer.\"}, {\"id\": \"a00553\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Technical AI topic, interesting but not Singapore or fintech specific.\"}, {\"id\": \"a00555\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Job post for fullstack SWE, not backend or fintech focused.\"}, {\"id\": \"a00557\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Certification program preview, somewhat relevant to software engineering.\"}, {\"id\": \"a00558\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.95, \"rationale\": \"Deep technical insight on telemetry visualization for large-scale systems.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1146,
+  "completion_tokens": 239
+ }
+}

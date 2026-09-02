@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7db924879fd5670ca1eb9fb2c2c41d95c78db181a24416f90f26f47a02f2ae4c",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00033\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"Strait of Hormuz\", \"oil and gas prices\", \"European energy security\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major update on Iran, Hormuz, and oil flows—core to reader's job and interests.\"\n    },\n    {\n      \"id\": \"a00034\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"Strait of Hormuz\", \"oil and gas prices\", \"major_event\", \"followup\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Directly impacts energy security and oil flows; military escalation in Hormuz is critical.\"\n    },\n    {\n      \"id\": \"a00037\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"Iran situation\", \"oil and gas prices\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Sanctions news is relevant background but not urgent or game-changing today.\"\n    },\n    {\n      \"id\": \"a00039\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"oil and gas prices\", \"geopolitical developments\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Venezuela oil deal is relevant to global oil markets but less urgent for European security.\"\n    },\n    {\n      \"id\": \"a00040\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Unrelated to energy, economics, or reader's interests; about teaching jobs abroad.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3222,
+  "completion_tokens": 383
+ }
+}

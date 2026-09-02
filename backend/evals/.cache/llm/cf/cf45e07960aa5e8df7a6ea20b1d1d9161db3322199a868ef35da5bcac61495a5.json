@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1329013d26855277f549c00d9ca227b2f8860d1f2adc813a0d452606454a3690",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00821\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Directly relevant cloud infrastructure disaster affecting regional fintech operations.\"}, {\"id\": \"a00822\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.7, \"rationale\": \"Southeast Asia manufacturing network relevant but not primary fintech or AI focus.\"}, {\"id\": \"a00823\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.7, \"rationale\": \"Southeast Asia manufacturing ecosystem context, secondary interest.\"}, {\"id\": \"a00825\", \"label\": \"fine\", \"tags\": [\"direct\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"AI impact on jobs relevant to AI engineering interest but not Singapore-specific.\"}, {\"id\": \"a00826\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Singapore fintech product launch with regulatory and financial implications.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3765,
+  "completion_tokens": 264
+ }
+}

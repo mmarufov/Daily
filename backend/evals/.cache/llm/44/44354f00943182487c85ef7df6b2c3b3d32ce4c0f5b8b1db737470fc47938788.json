@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6a3fc372348d2010dcc1d9e52042d893f5cab262ec82b09aa6360b9c8e86c82b",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00161\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy\", \"geopolitical_developments\"], \"confidence\": 0.9, \"rationale\": \"Relevant to energy emissions but no direct impact on European energy security or immediate job/money concerns.\"}, {\"id\": \"a00162\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy_markets\", \"economics\"], \"confidence\": 0.85, \"rationale\": \"Financial news on KazMunayGas bond issuance; relevant but not primary interest or urgent.\"}, {\"id\": \"a00164\", \"label\": \"fine\", \"tags\": [\"geopolitical_developments\"], \"confidence\": 0.8, \"rationale\": \"SCO call on Afghanistan government is geopolitical but not directly linked to energy security or Europe.\"}, {\"id\": \"a00165\", \"label\": \"fine\", \"tags\": [\"geopolitical_developments\", \"energy\"], \"confidence\": 0.8, \"rationale\": \"Russia-Tajikistan relations include energy cooperation but no direct impact on European energy security.\"}, {\"id\": \"a00166\", \"label\": \"fine\", \"tags\": [\"economics\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Economic data on Tajikistan's GNI per capita; interesting but not primary or urgent for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3703,
+  "completion_tokens": 311
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "559ca7e0b0292a1a97d92bbac2b52f59b592cf5333158fc512eb4b73c4a62e27",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00691\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Health and aging research unrelated to trade or regional interests.\"}, {\"id\": \"a00692\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Geological science about Antarctica unrelated to Central Asia or trade.\"}, {\"id\": \"a00693\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Child development and screen time unrelated to business or regional news.\"}, {\"id\": \"a00696\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General news updates may contain relevant info but not guaranteed.\"}, {\"id\": \"a00697\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cultural festival unrelated to business or regional trade interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1298,
+  "completion_tokens": 237
+ }
+}

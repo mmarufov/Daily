@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5689bf23bb6ca460563b49b984c27597121185b7d683079b770028b1d15fa3a0",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00051\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Southeast Asia startup-related but not fintech or tech infrastructure focused.\"}, {\"id\": \"a00056\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI cybersecurity is relevant but stock movement is routine financial news.\"}, {\"id\": \"a00057\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Personal finance Social Security topic unrelated to reader's interests.\"}, {\"id\": \"a00060\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI adoption at work is relevant but general and shallow coverage.\"}, {\"id\": \"a00076\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Maritime security in Indonesia unrelated to reader's tech or fintech focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1233,
+  "completion_tokens": 245
+ }
+}

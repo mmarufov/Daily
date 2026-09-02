@@ -630,6 +630,29 @@ def _ensure_tables(conn) -> None:
         cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS importance_score float DEFAULT 0.0;")
         cur.execute("CREATE INDEX IF NOT EXISTS idx_user_feed_cache_user_created ON public.user_feed_cache (user_id, created_at DESC);")
 
+        # One row per feed build: the funnel counts, what was shown, what it cost.
+        # This is the production half of evaluation — it turns real usage into
+        # labels later and makes a post-deploy regression visible.
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.feed_build_log (
+                id bigserial PRIMARY KEY,
+                user_id uuid NOT NULL,
+                git_sha text,
+                model text,
+                candidates_loaded integer,
+                prefiltered integer,
+                scored integer,
+                kept integer,
+                dropped_by_stage jsonb DEFAULT '{}'::jsonb,
+                feed_ids jsonb DEFAULT '[]'::jsonb,
+                calls integer DEFAULT 0,
+                cost_usd_est float,
+                latency_ms integer,
+                created_at timestamptz NOT NULL DEFAULT now()
+            );
+        """)
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_feed_build_log_user_created ON public.feed_build_log (user_id, created_at DESC);")
+
         # Migration: add enrichment tracking columns
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_attempts integer DEFAULT 0;")

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fd7b7cab7eed5461998458b00650f13cb28c9e3fffb663b72cf1ae544061a2d0",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00031\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Fashion IPO unrelated to energy, geopolitics, or economic security.\"}, {\"id\": \"a00033\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Iran economic woes and Strait of Hormuz trade impact energy security.\"}, {\"id\": \"a00034\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"US military action in Strait of Hormuz affects energy security and geopolitics.\"}, {\"id\": \"a00036\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Media polling and Trump attacks unrelated to energy or economic security.\"}, {\"id\": \"a00037\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"followup\"], \"confidence\": 0.85, \"rationale\": \"US sanctions on Iran and global response impact energy markets and geopolitics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3678,
+  "completion_tokens": 282
+ }
+}

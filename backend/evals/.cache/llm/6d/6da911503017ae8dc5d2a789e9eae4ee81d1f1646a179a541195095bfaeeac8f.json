@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "d8eff93ca788aeba655498caf68a49808712ddf6fa36b317ec2ffcc58d11cd9c",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a geographical naming change in the US, unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses LNG prices in Europe, which does not directly relate to the user's primary focus on Central Asian economies or trade.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a political figure's deportation, which is not relevant to the user's interests in trade or Central Asian politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is focused on tennis predictions, which is outside the user's interest in business and trade.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NFL player transactions, which are unrelated to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article also focuses on NFL trades, which do not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the US-Canada trade war but does not touch on Central Asia or the user's specific trade interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a sports team's performance, which is irrelevant to the user's business focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses personal finance and investment, which does not align with the user's interests in trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses electric motorcycles in Singapore, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the Turkish central bank's credibility, which is not directly related to the user's primary focus on Central Asia.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a celebrity hinting at music involvement, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a historical college football trip, which is irrelevant to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses AI search technology, which does not relate to the user's interests in trade and logistics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a rabid fox in New York, which is unrelated to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a music festival, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NASA and a political figure's involvement, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Apple's product development, which is not relevant to the user's business focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NFL trades, which are unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2401,
+  "completion_tokens": 638
+ }
+}

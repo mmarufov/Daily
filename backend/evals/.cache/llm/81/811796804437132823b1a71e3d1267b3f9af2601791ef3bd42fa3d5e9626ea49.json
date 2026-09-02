@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ea40fe96c29ef3ac27e091d15d2cff8113b3cfb02320fa0f030c315b5b94f3c9",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00145\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Kazakhstan international cooperation, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00146\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Fiscal transparency report about Central Asian countries, no relevance to Singapore or reader.\"}, {\"id\": \"a00147\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Coverage of World Nomad Games in Kyrgyzstan, unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00149\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Kazakhstan's security council changes, no connection to Singapore or reader's priorities.\"}, {\"id\": \"a00150\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Education reforms in Kazakhstan, unrelated to Singapore or reader's focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3864,
+  "completion_tokens": 255
+ }
+}

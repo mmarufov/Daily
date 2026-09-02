@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9ae6d3a09785d76abfe2cd324fbaada97013d62506756b5c59b3181e86539bd6",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00152\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Regional economic news; relevant as background for a reader interested in Central Asian politics/economy.\"\n    },\n    {\n      \"id\": \"a00156\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Kazakh political reform is relevant as regional context, but not a primary interest for this reader.\"\n    },\n    {\n      \"id\": \"a00157\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly about Mirziyoyev and Uzbek national affairs; touches on reforms and national history.\"\n    },\n    {\n      \"id\": \"a00158\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.5,\n      \"rationale\": \"Kazakhstan science/education news; regional context, but not a primary or secondary interest.\"\n    },\n    {\n      \"id\": \"a00159\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.5,\n      \"rationale\": \"Regional economic development; relevant as background, but not directly tied to reader's main interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3735,
+  "completion_tokens": 322
+ }
+}

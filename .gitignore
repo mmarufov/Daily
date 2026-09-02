@@ -28,3 +28,4 @@ venv/
 *.tmp
 *.temp
 .enc.temp
+backend/evals/.cache/emb_*.pkl

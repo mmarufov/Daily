@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7cb82da60c9a569c9fe9969df516b24a082b74b333cd556ea390dd256efc7767",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00830\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Focus on Taiwan-Thailand tech, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00832\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"EV startup funding in SEA is secondary interest, missable for reader.\"}, {\"id\": \"a00835\", \"label\": \"never\", \"tags\": [\"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Crypto topic excluded by reader preferences.\"}, {\"id\": \"a00843\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space exploration unrelated to reader's local and parenting interests.\"}, {\"id\": \"a00849\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope launch unrelated to reader's local or parenting concerns.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3962,
+  "completion_tokens": 239
+ }
+}

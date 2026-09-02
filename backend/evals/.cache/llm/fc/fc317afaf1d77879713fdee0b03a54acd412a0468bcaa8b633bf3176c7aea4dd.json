@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fa017edfb1629de6563b735c57d8168007b1c28718343d9267be9f263c060d33",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00896\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting space history but not major or urgent news for general reader.\"}, {\"id\": \"a00902\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Notable space event but no immediate impact or major global importance.\"}, {\"id\": \"a00904\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"NASA telescope launch is solid general news, not a major event.\"}, {\"id\": \"a00906\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Historical space mission anniversary; interesting but not urgent news.\"}, {\"id\": \"a00907\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Sports celebrity legal news is off-topic for general news feed.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3246,
+  "completion_tokens": 237
+ }
+}

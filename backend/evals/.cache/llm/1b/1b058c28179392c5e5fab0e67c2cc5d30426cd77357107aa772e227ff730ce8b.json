@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9bfaeedfa358db196a980581a304c483148c7ced198ec8bf841a0d712d005052",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00879\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space astronomy unrelated to NJ or reader interests.\"}, {\"id\": \"a00881\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope launch unrelated to NJ or reader interests.\"}, {\"id\": \"a00883\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Lunar eclipse astronomy unrelated to NJ or reader interests.\"}, {\"id\": \"a00884\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Historical space mission unrelated to NJ or reader interests.\"}, {\"id\": \"a00892\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"TV show interview unrelated to NJ or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4011,
+  "completion_tokens": 229
+ }
+}

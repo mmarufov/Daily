@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d08d33dd87f84937025f4df5b3b1928746e79a3943ae36333999696182239a7f",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00366\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Marmot contest unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00368\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US-Canada dispute irrelevant to Singapore reader.\"}, {\"id\": \"a00373\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"US chemical safety issue; health-related but not local or urgent.\"}, {\"id\": \"a00374\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US political leak story unrelated to reader's interests.\"}, {\"id\": \"a00377\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Rare earth supply chain issue unrelated to Singapore or reader's priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1693,
+  "completion_tokens": 237
+ }
+}

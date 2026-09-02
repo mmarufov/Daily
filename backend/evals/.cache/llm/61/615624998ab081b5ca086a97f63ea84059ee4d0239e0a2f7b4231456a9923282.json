@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "29c8d6ecb0d7b76e9b80d87477afd954e0ef4df31387cd544c36fe80ca815be5",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00168\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"General international news, relevant but not major event.\"}, {\"id\": \"a00169\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Economic analysis, interesting but routine financial news.\"}, {\"id\": \"a00174\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Energy supply update, relevant but not urgent for general audience.\"}, {\"id\": \"a00177\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Crypto market activity, niche but plausible general interest.\"}, {\"id\": \"a00178\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Crypto security incident, niche but potentially interesting.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 887,
+  "completion_tokens": 214
+ }
+}

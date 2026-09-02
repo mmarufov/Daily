@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "96b137a70d427a554e2043ac0ad5e2e818738c5f0c14c8ae9efc896722d0fcbb",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00509\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US wildlife policy, no Singapore relevance or parenting/health angle.\"\n    },\n    {\n      \"id\": \"a00534\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Technical algorithm discussion, not relevant to reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00553\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"crypto\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto/tech industry topic, explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a00570\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Russian crime news, no relevance to Singapore or reader's interests.\"\n    },\n    {\n      \"id\": \"a00571\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Foreign crime/violence, not relevant to reader's life or interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1650,
+  "completion_tokens": 292
+ }
+}

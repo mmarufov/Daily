@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d6f53af7a798d86c9da5791cbe8ad8728d3c17189112a4b500ba84b5dfe7ba82",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00849\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope launch unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00856\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope launch coverage irrelevant to reader's focus.\"}, {\"id\": \"a00867\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Astronomy photo unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00868\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"TV show review unrelated to reader's interests.\"}, {\"id\": \"a00882\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Lunar eclipse livestream irrelevant to reader's tech and fintech focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3947,
+  "completion_tokens": 235
+ }
+}

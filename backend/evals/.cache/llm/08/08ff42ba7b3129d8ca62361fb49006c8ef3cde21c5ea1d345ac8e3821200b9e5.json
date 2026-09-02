@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b3709bd2f1fc163075e44d7593dc5b3983ff22b2e934ae11eec5779dc7ca1ecc",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00155\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant regional political podcast but not urgent or directly impacting trade.\"}, {\"id\": \"a00156\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Medical transplant news unrelated to trade, economy, or politics.\"}, {\"id\": \"a00157\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Cultural ballet topic unrelated to business or trade interests.\"}, {\"id\": \"a00158\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Potentially dangerous lake outbursts could affect infrastructure and trade routes.\"}, {\"id\": \"a00159\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"School adjustment advice irrelevant to business or trade.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3372,
+  "completion_tokens": 242
+ }
+}

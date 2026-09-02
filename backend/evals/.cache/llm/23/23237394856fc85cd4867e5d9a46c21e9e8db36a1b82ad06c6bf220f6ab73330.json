@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "642a302dd3abef4c13cc8d1a1de7c1594089ba7e139bee847e48174889a7b97b",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00588\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Regional Russian election news irrelevant to trade or Central Asia.\"}, {\"id\": \"a00589\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Wikipedia outage in Russia unrelated to trade or economy.\"}, {\"id\": \"a00596\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Diplomatic expulsions affect Russia relations but no direct trade impact.\"}, {\"id\": \"a00605\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Significant cash holding increase in Russia affects currency and trade environment.\"}, {\"id\": \"a00606\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"CIA visit to Russia is geopolitical but no direct trade or economic impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1240,
+  "completion_tokens": 246
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "38caeb1946f82118636c0ec2038097677da951515550b0f9a6cc052a72f84f1b",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00716\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI images issue related to Singaporeans but not technical or fintech regulation.\"}, {\"id\": \"a00717\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming event unrelated to tech, fintech, or Singapore tech scene.\"}, {\"id\": \"a00719\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.6, \"rationale\": \"Haze advisory affects Singapore daily life, but not primary tech interest.\"}, {\"id\": \"a00723\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Traffic accident unrelated to reader's interests.\"}, {\"id\": \"a00724\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"MAS fintech regulation on stablecoins directly impacts reader's work and region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1145,
+  "completion_tokens": 256
+ }
+}

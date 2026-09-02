@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "efca02d912e4183d9d3c42ba38d55ef83b383ad7d25e5cf951232c2b778fb45d",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01299\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Significant Mideast conflict news, but not a major global event for all readers today.\"\n    },\n    {\n      \"id\": \"a01303\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"US-Iran military clash in Strait of Hormuz is a major global event all should know.\"\n    },\n    {\n      \"id\": \"a01305\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"International security incident, notable but not a must-know for all adults.\"\n    },\n    {\n      \"id\": \"a01342\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Death of a war criminal is notable history, but not urgent for all readers.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 902,
+  "completion_tokens": 257
+ }
+}

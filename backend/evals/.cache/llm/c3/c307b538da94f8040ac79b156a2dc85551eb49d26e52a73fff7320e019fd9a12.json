@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "19773b7346c7bb3ed08f85384b901e9c342f99bb34b2718afd9aca5349ca4845",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00090\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment topic unrelated to trade or Central Asia.\"}, {\"id\": \"a00091\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to China and trade routes but indirect for reader's business.\"}, {\"id\": \"a00093\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan politics directly affects trade environment.\"}, {\"id\": \"a00095\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"China trade news relevant but not urgent for reader.\"}, {\"id\": \"a00097\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tourism industry news unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1248,
+  "completion_tokens": 232
+ }
+}

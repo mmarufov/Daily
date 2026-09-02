@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "8538e1b7221b0f3187f8ae2a92f13d3d6fe36430925d91086c1bf6afd93b23cf",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about an NFL trade and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"While it discusses LNG exports, it does not connect to the user's primary interests in Central Asia or Russia.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article discusses the Taliban's authority challenges in provinces bordering Central Asia, which is relevant to Central Asia politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a sports figure's retirement and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a baseball game and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a legal dispute in college sports and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about business strategy frameworks and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses electric motorcycles in Singapore, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses science research in Singapore and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a celebrity's opinion on a film and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses political issues in Germany and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article provides tips for audio settings and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses social casino games and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a celebrity's health and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses pollution issues related to gas turbines and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses funding for surveillance cameras in Texas and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses ancient human footprints and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a theoretical physics concept and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses AI deployment in mining and does not relate to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2577,
+  "completion_tokens": 597
+ }
+}

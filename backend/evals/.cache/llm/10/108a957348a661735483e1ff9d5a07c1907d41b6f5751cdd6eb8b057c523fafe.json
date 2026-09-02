@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "307463219114d03a546561d850a0af01bc8986159cfaa4a208ce7c0143b5f0f1",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01197\", \"label\": \"fine\", \"tags\": [\"world news\", \"UK news\", \"consumer impact\"], \"confidence\": 0.8, \"rationale\": \"Relevant UK/world crime with consumer impact, but not primary tech/science.\"}, {\"id\": \"a01203\", \"label\": \"fine\", \"tags\": [\"world news\", \"consumer impact\"], \"confidence\": 0.7, \"rationale\": \"Tariffs affect consumers and business, relevant but not UK focused.\"}, {\"id\": \"a01212\", \"label\": \"fine\", \"tags\": [\"UK news\", \"world news\"], \"confidence\": 0.6, \"rationale\": \"UK citizen detained abroad is relevant UK/world news, no tech/science.\"}, {\"id\": \"a01223\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Australia news unrelated to UK, tech, science, or marketing interests.\"}, {\"id\": \"a01243\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"UK prison policy story not related to reader's interests or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1340,
+  "completion_tokens": 266
+ }
+}

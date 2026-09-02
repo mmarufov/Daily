@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "316c83c34046537c28a6911996aa649e65d0daefd5f63a092180ba303d926694",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00377\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US domestic politics unrelated to Central Asia or trade.\"}, {\"id\": \"a00384\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.95, \"rationale\": \"Entertainment and celebrity news excluded by reader.\"}, {\"id\": \"a00390\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US foreign aid agency story unrelated to Central Asia or trade.\"}, {\"id\": \"a00399\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US-Canada lake naming dispute irrelevant to reader's interests.\"}, {\"id\": \"a00402\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sports news unrelated to reader's business or region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1749,
+  "completion_tokens": 234
+ }
+}

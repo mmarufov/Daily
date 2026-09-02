@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7c2ba24d6f0d4550d9e7b922b57280f5badfa1fe6905e939e7289f150ec5daf1",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00504\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.8, \"rationale\": \"Relevant NJ legal issue but no direct impact on Newark or NJ Transit or Devils/Giants.\"}, {\"id\": \"a00505\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Private equity healthcare deals not relevant to reader's interests or location.\"}, {\"id\": \"a00507\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Bellmawr protest citations unrelated to Newark or reader's priorities.\"}, {\"id\": \"a00508\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.7, \"rationale\": \"Voting rights legal battle affects NJ but no immediate local impact.\"}, {\"id\": \"a00509\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.7, \"rationale\": \"Conservation in NJ relevant but no direct effect on reader's daily life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3571,
+  "completion_tokens": 263
+ }
+}

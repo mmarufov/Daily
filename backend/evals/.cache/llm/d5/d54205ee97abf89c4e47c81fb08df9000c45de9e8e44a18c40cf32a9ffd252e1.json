@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3352922df0abfe42d148f0d82afbe5f3393c7541a4a0c31e97a13d6d46a01a78",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00696\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Daily news updates are essential for any informed adult.\"}, {\"id\": \"a00697\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.8, \"rationale\": \"Cultural festival coverage is interesting but not essential.\"}, {\"id\": \"a00698\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.85, \"rationale\": \"New hospital affects public health infrastructure broadly.\"}, {\"id\": \"a00699\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.75, \"rationale\": \"Science research success is informative but not urgent.\"}, {\"id\": \"a00700\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.7, \"rationale\": \"Cultural rituals coverage is interesting but not essential.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 868,
+  "completion_tokens": 248
+ }
+}

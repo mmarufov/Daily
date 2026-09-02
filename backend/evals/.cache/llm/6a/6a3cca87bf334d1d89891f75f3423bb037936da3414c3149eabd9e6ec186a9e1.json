@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f38c87998cae6a6721567bd2c35b95d5e93b8c4068dedf170458cbcbaa3a2b41",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00905\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"College football unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00906\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"College football in Ireland unrelated to reader's interests.\"}, {\"id\": \"a00907\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Man United football unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00908\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Chelsea football and Enzo Fernández unrelated to tennis or Canadian players.\"}, {\"id\": \"a00909\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Messi and soccer unrelated to tennis, horse racing, or solar energy.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1124,
+  "completion_tokens": 244
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3669de6e65a09ccfaee538799be64be98072830698a2f7cdbe1835c1af3a9c78",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00015\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US stock market news unrelated to Uzbekistan or reader's interests.\"}, {\"id\": \"a00016\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US-Canada trade war and metals market irrelevant to reader's focus.\"}, {\"id\": \"a00017\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US-Venezuela oil deal unrelated to Uzbek politics or sports.\"}, {\"id\": \"a00018\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Chinese wealth migration to Singapore unrelated to reader's interests.\"}, {\"id\": \"a00019\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Wall Street dividend stock advice irrelevant to reader's context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1152,
+  "completion_tokens": 240
+ }
+}

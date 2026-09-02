@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9aa9e9e8afb83e23b3491e0bb05e85872887aebcec49bcfdf61148dded3cc0d6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00581\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"World news, but not a major event or directly relevant to reader's life or interests.\"\n    },\n    {\n      \"id\": \"a00643\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Interesting science update, fits primary interest but not essential or urgent.\"\n    },\n    {\n      \"id\": \"a00653\",\n      \"label\": \"must_see\",\n      \"tags\": [\"science\", \"need_to_know\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Potential health impact for consumers; relevant to daily life and consumer interests.\"\n    },\n    {\n      \"id\": \"a00658\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant science news, but not immediately actionable or urgent for reader.\"\n    },\n    {\n      \"id\": \"a00665\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"technology\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Interesting tech/science discovery, fits primary interest but not must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1210,
+  "completion_tokens": 324
+ }
+}

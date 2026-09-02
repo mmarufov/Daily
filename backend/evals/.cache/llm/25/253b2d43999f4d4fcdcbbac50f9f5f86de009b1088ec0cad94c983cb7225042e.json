@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b6b1898aff29a80c6c2a64f1ce77e4d4753a2b4e7f7a7caaf2059dfa48525cca",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01009\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"NHL sports article, excluded topic for reader.\"}, {\"id\": \"a01018\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"NHL sports contract story, excluded topic for reader.\"}, {\"id\": \"a01022\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Sports ownership news, excluded topic for reader.\"}, {\"id\": \"a01026\", \"label\": \"fine\", \"tags\": [\"technology\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"New electric vehicle tech relevant to tech interest, but routine product news.\"}, {\"id\": \"a01027\", \"label\": \"must_see\", \"tags\": [\"science\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Unique scientific discovery with broad interest and real news value.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3163,
+  "completion_tokens": 252
+ }
+}

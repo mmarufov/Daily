@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0b971fbdc83a66159583c5b626e51fb633e9948b2ef83a3ed8809bb50a84f138",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00514\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US law, not relevant to Singapore or reader's interests; New Jersey lookalike.\"\n    },\n    {\n      \"id\": \"a00534\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"tech industry news\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Tech setup article; not relevant to parenting, health, or Singapore local news.\"\n    },\n    {\n      \"id\": \"a00573\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Foreign incident, no Singapore relevance or impact on reader's life.\"\n    },\n    {\n      \"id\": \"a00594\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Russian legal news, no connection to reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00595\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Foreign crime story, not relevant to Singapore or reader's priorities.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1576,
+  "completion_tokens": 307
+ }
+}

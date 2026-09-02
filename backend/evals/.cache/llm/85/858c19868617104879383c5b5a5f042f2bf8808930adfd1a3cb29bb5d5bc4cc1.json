@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "756142d0fbb8a4e80fc06ae0e460ea1f02e1efa9463224c6d90f6ce355cec68c",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01086\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pure promotional content, not general news.\"\n    },\n    {\n      \"id\": \"a01087\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Promotional/advertising content, not newsworthy.\"\n    },\n    {\n      \"id\": \"a01127\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Solid general news about a major cybercrime disruption, but not a must_see global event.\"\n    },\n    {\n      \"id\": \"a01159\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"General interest polling on privacy; relevant but not a major event.\"\n    },\n    {\n      \"id\": \"a01172\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Important tech/government news, but not a must_see for all informed adults.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2335,
+  "completion_tokens": 292
+ }
+}

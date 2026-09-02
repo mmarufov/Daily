@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f083d19341f96057988e4192a4cb884bae9cbe0129af2ba35030120b67ea2e90",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00388\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tragic, but local college sports death is not major_event for general audience.\"\n    },\n    {\n      \"id\": \"a00396\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"SEC legal dispute is notable but not a must_see major_event for all readers.\"\n    },\n    {\n      \"id\": \"a00400\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Grand Canyon evacuation is significant but not a global major_event.\"\n    },\n    {\n      \"id\": \"a00405\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local boating tragedy is newsworthy but not must_see for general audience.\"\n    },\n    {\n      \"id\": \"a00409\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Severe weather in NJ is important locally, but not a must_see major_event.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 991,
+  "completion_tokens": 291
+ }
+}

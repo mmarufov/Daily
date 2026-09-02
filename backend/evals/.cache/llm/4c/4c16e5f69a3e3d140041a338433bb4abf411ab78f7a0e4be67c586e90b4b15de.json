@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8910f8e120f033f7fed012095cecd0c277d4911c4aeb8650f113f62eef383e30",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01080\", \"label\": \"fine\", \"tags\": [\"AI engineering\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI engineering topic but not Singapore or fintech specific.\"}, {\"id\": \"a01082\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"developer tools\"], \"confidence\": 0.8, \"rationale\": \"AI agent development relevant but no Singapore or fintech context.\"}, {\"id\": \"a01083\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"Gaming monitor review unrelated to reader interests.\"}, {\"id\": \"a01085\", \"label\": \"fine\", \"tags\": [\"cloud infrastructure\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Data center discussion relevant but routine and not Singapore-specific.\"}, {\"id\": \"a01086\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"developer tools\"], \"confidence\": 0.7, \"rationale\": \"AI-powered input device interesting but not critical or regional.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1156,
+  "completion_tokens": 249
+ }
+}

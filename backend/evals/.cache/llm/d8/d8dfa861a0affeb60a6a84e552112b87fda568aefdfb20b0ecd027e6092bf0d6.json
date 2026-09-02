@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4e7fb4265a01559475de1aea289f9756f7b67fa7268dd906983bff2a0d90cc8e",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00832\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia startups\"], \"confidence\": 0.8, \"rationale\": \"Relevant to SEA startups but not fintech or deep tech focus.\"}, {\"id\": \"a00833\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"fintech regulation\", \"Southeast Asia\", \"primary\"], \"confidence\": 0.95, \"rationale\": \"Important fintech regulation and stablecoin impact in SEA, relevant to MAS and fintech.\"}, {\"id\": \"a00834\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Agritech in SEA not related to fintech, cloud, AI, or MAS.\"}, {\"id\": \"a00836\", \"label\": \"fine\", \"tags\": [\"developer tools\", \"secondary\"], \"confidence\": 0.85, \"rationale\": \"Relevant to software engineering and tooling but general and missable.\"}, {\"id\": \"a00837\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"work\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"AI use at work relevant but focused on Malaysia and general workforce trends.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3997,
+  "completion_tokens": 287
+ }
+}

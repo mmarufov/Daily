@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a4474d66f9effaa0f596222e68636c076546fc4ce062b15d98e5e213fa4d0293",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01056\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Flying car CEO change is interesting but off primary AI focus.\"}, {\"id\": \"a01058\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Name change of a lake unrelated to AI or reader interests.\"}, {\"id\": \"a01059\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"AI startup AfterQuery's rapid unicorn status is major AI industry news.\"}, {\"id\": \"a01060\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"OpenAI's new Astra model release with cybersecurity implications is critical.\"}, {\"id\": \"a01061\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Google Android update relevant but routine, less critical for AI product manager.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1110,
+  "completion_tokens": 254
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d0cf423588719ab1e15f461f3361a30a47f3caa15a38321d6f6af7246cd109b4",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00219\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech security unrelated to NJ or reader interests.\"}, {\"id\": \"a00236\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Celebrity gossip, explicitly excluded.\"}, {\"id\": \"a00242\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment review unrelated to reader interests.\"}, {\"id\": \"a00245\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Literary translation news unrelated to NJ or reader interests.\"}, {\"id\": \"a00248\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"9/11 documentary has general US interest but no direct NJ/local impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1634,
+  "completion_tokens": 233
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6dedb8ccb01c7898a0a1628d8d1b002e5c438df4f628b3b005686c48f61cd952",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00845\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"About AI expansion in Japan, unrelated to Central Asia or trade.\"}, {\"id\": \"a00846\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Bitcoin buying by BlackRock is global finance news, secondary interest only.\"}, {\"id\": \"a00852\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Focus on AI adoption in Southeast Asia, no relevance to Central Asia or trade.\"}, {\"id\": \"a00853\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Warehouse safety in Singapore unrelated to reader's interests.\"}, {\"id\": \"a00854\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Startup branding in Southeast Asia not relevant to reader's trade interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3898,
+  "completion_tokens": 246
+ }
+}

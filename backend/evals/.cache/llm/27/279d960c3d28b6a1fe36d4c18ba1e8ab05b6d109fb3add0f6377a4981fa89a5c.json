@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fd6631c054291171ad359b5743f79928576e2e753259d712665ec7605b2ed96b",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00015\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant business and market news but routine, not urgent or tech/science focused.\"}, {\"id\": \"a00016\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"world_news\", \"business\"], \"confidence\": 0.9, \"rationale\": \"Trade war tariffs impact economy and consumers, important for staying informed.\"}, {\"id\": \"a00017\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Significant geopolitical deal but less direct consumer or tech impact.\"}, {\"id\": \"a00018\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Wealth movement story relevant to global business but less direct impact.\"}, {\"id\": \"a00019\", \"label\": \"fine\", \"tags\": [\"business\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Investment advice relevant but routine and not primary interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1032,
+  "completion_tokens": 265
+ }
+}

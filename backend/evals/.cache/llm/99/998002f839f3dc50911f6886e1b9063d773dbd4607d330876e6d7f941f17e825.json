@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dd9a75f63ad4b538d505ab0f617b34b9c35948de67d6f0bf57f84c006bd39a91",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01218\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Nepal-Tibet floods unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01221\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.7, \"rationale\": \"US carrier operations near Iran relevant but not primary news for energy security.\"}, {\"id\": \"a01222\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Flood rescue efforts unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01223\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Australian prisoner news unrelated to energy or economic topics.\"}, {\"id\": \"a01224\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Death of Australian boxer unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1682,
+  "completion_tokens": 238
+ }
+}

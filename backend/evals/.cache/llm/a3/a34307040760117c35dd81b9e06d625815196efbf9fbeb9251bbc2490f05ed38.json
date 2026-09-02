@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2c80b98ed86a859c817603328e365ca7a29635d8427913d9f461408bf2089e79",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00617\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"No AI or tech industry relevance; geopolitical finance news off-topic.\"}, {\"id\": \"a00618\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Military conflict and drone warfare unrelated to AI or industry interests.\"}, {\"id\": \"a00619\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Political conflict news unrelated to AI or tech industry.\"}, {\"id\": \"a00620\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Russian business legal case unrelated to AI or tech industry.\"}, {\"id\": \"a00621\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Diplomatic meeting unrelated to AI or tech industry.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4030,
+  "completion_tokens": 235
+ }
+}

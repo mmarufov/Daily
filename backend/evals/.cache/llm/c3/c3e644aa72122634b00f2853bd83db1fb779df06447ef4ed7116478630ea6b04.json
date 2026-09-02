@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "39e7af2810279648b3fe7d869267a9c91d5b43b49f743bae2eb2a167c33ededb",
+  "preview": "EVENTS:\n19. \"Monday briefing: Nepal and Tibet’s floods are a warning for the future\"\n   covered by 11 outlets across 6 sections / 8 regions: BBC, BBC World, DW, Gothamist, Guardian US, Guardian World\n"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"events\": [\n    {\n      \"id\": 0,\n      \"tier\": \"world_critical\",\n      \"what\": \"Trump says US will ‘hit Iran hard’\"\n    },\n    {\n      \"id\": 76,\n      \"tier\": \"world_critical\",\n      \"what\": \"Russia targets Ukraine’s rail network\"\n    },\n    {\n      \"id\": 19,\n      \"tier\": \"major\",\n      \"what\": \"Nepal and Tibet’s floods are a warning\"\n    },\n    {\n      \"id\": 24,\n      \"tier\": \"major\",\n      \"what\": \"Thailand’s AI startup push gets OpenAI backing\"\n    },\n    {\n      \"id\": 27,\n      \"tier\": \"major\",\n      \"what\": \"US officials defend Venezuela oil deal\"\n    },\n    {\n      \"id\": 82,\n      \"tier\": \"major\",\n      \"what\": \"Germany blames Russia for drone attack\"\n    },\n    {\n      \"id\": 57,\n      \"tier\": \"major\",\n      \"what\": \"Joshua Wong pleads guilty in security case\"\n    },\n    {\n      \"id\": 4,\n      \"tier\": \"routine\",\n      \"what\": \"U.S. House votes to avoid government shutdown\"\n    },\n    {\n      \"id\": 67,\n      \"tier\": \"routine\",\n      \"what\": \"Times Square stabbing leaves 1 dead\"\n    },\n    {\n      \"id\": 1,\n      \"tier\": \"routine\",\n      \"what\": \"Trump's plan for economic D-day for Iran\"\n    },\n    {\n      \"id\": 7,\n      \"tier\": \"routine\",\n      \"what\": \"Global oil prices surge after U.S. strikes\"\n    },\n    {\n      \"id\": 8,\n      \"tier\": \"routine\",\n      \"what\": \"Stan Kroenke to buy MLB’s Angels for $4bn\"\n    },\n    {\n      \"id\": 13,\n      \"tier\": \"routine\",\n      \"what\": \"Waymo goes on offense ahead of Tesla launch\"\n    },\n    {\n      \"id\": 26,\n      \"tier\": \"routine\",\n      \"what\": \"Putin meets Pashinyan after Armenia election\"\n    },\n    {\n      \"id\": 50,\n      \"tier\": \"routine\",\n      \"what\": \"What to do with Trump’s architectural legacy?\"\n    },\n    {\n      \"id\": 53,\n      \"tier\": \"routine\",\n      \"what\": \"Tiger Woods set for plea change in DUI case\"\n    },\n    {\n      \"id\": 59,\n      \"tier\": \"routine\",\n      \"what\": \"The Range Rover Electric: Specs and Price\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1411,
+  "completion_tokens": 566
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "e9ebd4c873277088fda088fdd7fcc5dcf2d9768af426844fff3746c7121f6e72",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3142,
+  "completion_tokens": 409
+ }
+}

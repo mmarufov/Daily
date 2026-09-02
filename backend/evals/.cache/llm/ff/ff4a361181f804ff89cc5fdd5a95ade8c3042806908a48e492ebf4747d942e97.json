@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "49f09eb418233b86292f5fc68a1fb3e9daf6f47c1352a64a8ff89ad1fa3cb21d",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00877\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Tech/science launch news, interesting but not urgent or consumer-impacting.\"}, {\"id\": \"a00878\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Detailed tech launch coverage, relevant but routine science update.\"}, {\"id\": \"a00886\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Background on science figure, interesting but not urgent or impactful.\"}, {\"id\": \"a00887\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Biographical science content, relevant but missable.\"}, {\"id\": \"a00890\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Science explanation and astronomy interest, no urgent impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3718,
+  "completion_tokens": 261
+ }
+}

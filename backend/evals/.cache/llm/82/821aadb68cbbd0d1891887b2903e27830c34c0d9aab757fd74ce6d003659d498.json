@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d526262a1079e24fb1533880103d2228b46051d4c9b0320e65d8559723910f27",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00759\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine update on Singapore National Service awards, general interest only.\"}, {\"id\": \"a00762\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Local crime news with fatality, relevant but not major event globally.\"}, {\"id\": \"a00769\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Significant financial crime case, interesting but not major global news.\"}, {\"id\": \"a00770\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.9, \"rationale\": \"Economic forecast update, solid general news for informed adults.\"}, {\"id\": \"a00784\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Market performance analysis, routine business news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 950,
+  "completion_tokens": 230
+ }
+}

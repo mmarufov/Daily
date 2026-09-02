@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e49fcaa22ab78c78fc8fa44296de76ce9b6a8a4681e90318e23ff3f9e8112b93",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00453\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news is irrelevant to Toronto-based reader; no sports or climate relevance.\"\n    },\n    {\n      \"id\": \"a00456\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news, not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00459\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news, not related to reader's sports or climate interests.\"\n    },\n    {\n      \"id\": \"a00515\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Canadian tariffs may affect economy; tangentially relevant due to Canada focus, but not must_see.\"\n    },\n    {\n      \"id\": \"a00806\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore energy supply and data centres are not relevant to reader's interests or location.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1629,
+  "completion_tokens": 320
+ }
+}

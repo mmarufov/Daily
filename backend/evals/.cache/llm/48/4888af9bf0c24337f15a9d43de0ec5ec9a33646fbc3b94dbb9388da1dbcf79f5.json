@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "28c94bb18d9f92a2b989802a979d62dbcdf93370b3d58e687faa5b210dc0dac8",
+  "preview": "User Profile:\nFree-form profile:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nStructured inter"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is a general news update without specific content relevant to the user's interests.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"The article discusses significant economic issues in Iran, which is relevant to world news and has implications for global markets.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"This article covers the detention of a British activist, which intersects with UK news and human rights issues.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is focused on sports and does not align with the user's interests.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article discusses Japan's initiative in the Indo-Pacific, which is relevant to world news and international relations.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a celebrity tribute and does not align with the user's interests.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article reports on Ukrainian strikes, which is significant world news with potential implications for international relations.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a celebrity and does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is a job listing and does not provide relevant news content.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"The article discusses the backlash against datacenters, highlighting consumer and environmental concerns, which is relevant to the user's interests.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"This opinion piece discusses New Jersey's energy policy shift, which is relevant to business and technology interests.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article discusses stock market trends and interest rates, which are relevant to business news affecting consumers.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about entertainment and does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about entertainment and does not align with the user's interests.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article discusses the shelving of important agricultural research, which has implications for public health and consumer safety.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article discusses aid efforts for flood survivors in Nepal, which is relevant to world news and humanitarian issues.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a celebrity and does not align with the user's interests.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article discusses legal actions against a Turkish citizen linked to a terrorist organization, which is relevant to world news.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"The article addresses the impact of technology on education, which intersects with the user's interests in technology and consumer implications.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2412,
+  "completion_tokens": 619
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "630cb378804b55e755fdfb6bfa74ecc80d0ae3faf5a8ec1651b3c141c1407e03",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01207\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"International flood rescue story unrelated to Singapore or reader interests.\"}, {\"id\": \"a01209\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sudan civil war refugee crisis unrelated to Singapore or reader interests.\"}, {\"id\": \"a01212\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"UK-Egypt political arrest unrelated to Singapore or reader interests.\"}, {\"id\": \"a01214\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Venezuelan oil deal unrelated to Singapore or reader interests.\"}, {\"id\": \"a01215\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Colombian guerrilla peace story unrelated to Singapore or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1544,
+  "completion_tokens": 242
+ }
+}

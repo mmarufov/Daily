@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d0246280079e07139e7a29f38d3938315506edc36e77f9d8257e5c1e9e65db69",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01075\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Gaming news is general interest but not major or urgent.\"}, {\"id\": \"a01076\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"AI and US-China relations are interesting but not urgent major news.\"}, {\"id\": \"a01080\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"AI research and risks are relevant but not urgent or major.\"}, {\"id\": \"a01085\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Event promotion, not news content.\"}, {\"id\": \"a01086\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"New tech product announcement, interesting but not essential.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 934,
+  "completion_tokens": 223
+ }
+}

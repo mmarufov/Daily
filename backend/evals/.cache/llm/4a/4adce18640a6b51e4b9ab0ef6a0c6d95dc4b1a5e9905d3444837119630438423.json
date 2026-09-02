@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "49b94573547437d3a6150883578fc41536da5752d976b8df1835bee4cc688274",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01049\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cybersecurity apocalypse not related to NJ or reader interests.\"}, {\"id\": \"a01051\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Psychedelic brain study unrelated to reader's interests or location.\"}, {\"id\": \"a01052\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Motorola coupon code is promotional content, not relevant.\"}, {\"id\": \"a01057\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI doctor article unrelated to NJ or reader's interests.\"}, {\"id\": \"a01064\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Data deletion notices story unrelated to NJ or reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1143,
+  "completion_tokens": 237
+ }
+}

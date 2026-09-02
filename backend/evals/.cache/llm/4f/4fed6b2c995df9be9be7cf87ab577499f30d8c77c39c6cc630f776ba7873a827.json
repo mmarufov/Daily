@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6a42d0234944af0f91e3d3c97a66669ad6e4486116489ffc7a108e5cf2e84d20",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00081\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"About Tajikistan tourism tax, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00094\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Kazakhstan parliament news irrelevant to Singapore or reader's focus.\"}, {\"id\": \"a00096\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"China maritime strategy unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00098\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Australian social issues not relevant to Singapore or reader's needs.\"}, {\"id\": \"a00103\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sri Lanka anti-terrorism law unrelated to Singapore or reader's concerns.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1142,
+  "completion_tokens": 243
+ }
+}

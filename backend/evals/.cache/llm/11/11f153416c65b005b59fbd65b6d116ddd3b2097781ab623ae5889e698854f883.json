@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1a624279caf1756ece79ae3c906eecf669650590bef833ba668719735b75dea4",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00797\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Strong fintech/regulation relevance for SEA, but not Singapore-specific or directly actionable for reader.\"\n    },\n    {\n      \"id\": \"a00800\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep dive on AI adoption in SEA, with technical/operational focus; squarely on reader's primary interests.\"\n    },\n    {\n      \"id\": \"a00801\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore-specific, AI in production, regulatory/workplace impact; highly relevant to reader's work and context.\"\n    },\n    {\n      \"id\": \"a00804\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major update on Singapore fintech funding; essential for fintech/regulation and local tech scene tracking.\"\n    },\n    {\n      \"id\": \"a00805\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Singapore AI/tech hiring trend; relevant but not critical or directly actionable for reader's daily work.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3971,
+  "completion_tokens": 337
+ }
+}

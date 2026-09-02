@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "09b796b0af35fa712e9e24c82a1f51b4b92ff3a94866aef142e216eb11e514b7",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00209\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"cybersecurity\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"AI in vulnerability discovery is relevant to engineering and security, but not urgent or Singapore-specific.\"\n    },\n    {\n      \"id\": \"a00265\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Game development and Zelda Maker are not relevant to reader's interests or work.\"\n    },\n    {\n      \"id\": \"a00362\",\n      \"label\": \"never\",\n      \"tags\": [\"sports\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports coverage is explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a00536\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Geography trivia is not relevant to reader's interests or work.\"\n    },\n    {\n      \"id\": \"a00545\",\n      \"label\": \"fine\",\n      \"tags\": [\"cloud infrastructure\", \"AI engineering\", \"developer tools\", \"background_routine\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Cloudflare AI Search is relevant to cloud, AI, and developer tooling, but not must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1189,
+  "completion_tokens": 325
+ }
+}

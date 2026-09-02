@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b8e0b6bb328f6d077e494d8ab669a48561435a11cfcc474309a65d934cd1d279",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00804\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore fintech funding is not relevant to Central Asia or reader's business interests.\"\n    },\n    {\n      \"id\": \"a00818\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"ASEAN battery industry is tangentially relevant for regional trade context, but not directly impactful.\"\n    },\n    {\n      \"id\": \"a00819\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Agritech business models in emerging markets are broadly relevant to trade, but not specific to Central Asia.\"\n    },\n    {\n      \"id\": \"a00834\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Agritech logistics and investment in emerging markets is background context, not directly actionable for reader.\"\n    },\n    {\n      \"id\": \"a01055\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Scams on Microsoft Teams in China are unrelated to Central Asian trade or reader's business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3427,
+  "completion_tokens": 317
+ }
+}

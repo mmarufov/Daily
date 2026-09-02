@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e468e3f5601a9f1da6ca408b9fe9bd2b324499c6e6ed2955de8531cf3e51a09d",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00324\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Gaming industry AI use irrelevant to Singapore fintech engineer.\"}, {\"id\": \"a00344\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Medical test news unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00345\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.95, \"rationale\": \"US politics and map renaming irrelevant and excluded topic.\"}, {\"id\": \"a00353\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"UK political news unrelated to reader's interests.\"}, {\"id\": \"a00358\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Nepal flood rescue unrelated to reader's tech and fintech focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1665,
+  "completion_tokens": 239
+ }
+}

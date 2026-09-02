@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4ac384fe021d9c7a3e0a5d8861515c8cdeb321a1b40eaf637f15e2b4ca40adc6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01110\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional content, not news or relevant to reader's interests.\"}, {\"id\": \"a01111\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional content, no news value or relevance.\"}, {\"id\": \"a01112\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Purely promotional, no news or consumer impact info.\"}, {\"id\": \"a01113\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional discounts, no news or tech/science content.\"}, {\"id\": \"a01114\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional sales content, not news or relevant to interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1077,
+  "completion_tokens": 232
+ }
+}

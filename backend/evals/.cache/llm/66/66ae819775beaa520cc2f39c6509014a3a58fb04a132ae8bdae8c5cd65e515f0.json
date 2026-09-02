@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "904972888a0c93459c50c8f52c7003027bf0073d69312cc255f0c701de65715a",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00928\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"About Rams and Myles Garrett, not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00937\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Detroit Pistons contract news is not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00938\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Washington Wizards preview is not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00941\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"General player movement; no indication of NJ, Devils, or Giants relevance.\"\n    },\n    {\n      \"id\": \"a00952\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Breaking news about Devils roster; primary interest for reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1127,
+  "completion_tokens": 295
+ }
+}

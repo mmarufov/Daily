@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "07fce94f86594d68fd6eeca8869805ba9cbd42071a5a57f0fbf2bd11a5ecf188",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00086\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"India-China border talks unrelated to Central Asia or trade.\"}, {\"id\": \"a00092\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Flood in Tibet unrelated to Tajikistan or trade interests.\"}, {\"id\": \"a00094\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.95, \"rationale\": \"Kazakhstan parliament appointment directly affects regional politics and trade.\"}, {\"id\": \"a00096\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"China maritime strategy historical analysis not relevant to reader.\"}, {\"id\": \"a00102\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.85, \"rationale\": \"South Asia disaster institutions not relevant to Central Asia trade or politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1277,
+  "completion_tokens": 237
+ }
+}

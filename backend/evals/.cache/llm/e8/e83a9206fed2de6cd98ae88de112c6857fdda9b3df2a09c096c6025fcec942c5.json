@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "79be985adad068f12be1bf4c0236bffa14b16b965fa105ce0649656cd6d24679",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00807\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Southeast Asia startups, unrelated to Central Asia or trade.\"}, {\"id\": \"a00808\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Bitcoin and energy markets are global finance topics, secondary interest only.\"}, {\"id\": \"a00812\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Creator economy and marketing in Southeast Asia irrelevant to reader's interests.\"}, {\"id\": \"a00813\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Hiring and AI in tech unrelated to Central Asia or trade.\"}, {\"id\": \"a00814\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Vietnam economic growth is regional business news, secondary interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4089,
+  "completion_tokens": 243
+ }
+}

@@ -1,0 +1,344 @@
+{
+ "snapshot": "2026-08-31",
+ "threshold": 0.55,
+ "clusters": [
+  {
+   "id": "ev-01",
+   "title": "US strikes Iranian launchers in strait of Hormuz, sparking reprisal attack on airbases in Jordan",
+   "what": "US and Iran trade attacks around the Strait of Hormuz",
+   "tier": "world_critical",
+   "spread": 20,
+   "sources": [
+    "Al Jazeera",
+    "BBC",
+    "CNBC",
+    "DW",
+    "Fortune",
+    "Guardian World"
+   ],
+   "article_ids": [
+    "a00001",
+    "a00006",
+    "a00034",
+    "a00333",
+    "a01233",
+    "a01250",
+    "a01258",
+    "a01272"
+   ],
+   "source": "agent",
+   "rationale": "Keep world_critical. This is a fresh interstate exchange of attacks involving US strikes on Iranian territory, Iranian retaliation against US-used bases in Jordan, and risk to a globally critical shipping route. Add a00006, which directly reports the same exchange."
+  },
+  {
+   "id": "ev-02",
+   "title": "At least 93,000 'in great need' after Nepal-Tibet flash floods, says Red Cross",
+   "what": "Nearly 800 dead, 3,000 missing in Nepal-Tibet floods",
+   "tier": "world_critical",
+   "spread": 40,
+   "sources": [
+    "Al Jazeera",
+    "BBC",
+    "BBC World",
+    "DW",
+    "Gothamist",
+    "Guardian World",
+    "Moscow Times",
+    "NJ.com",
+    "NPR",
+    "NPR World",
+    "Straits Times",
+    "The Diplomat"
+   ],
+   "article_ids": [
+    "a00100",
+    "a00101",
+    "a00104",
+    "a00321",
+    "a00329",
+    "a00348",
+    "a00436",
+    "a00463",
+    "a00579",
+    "a00706",
+    "a01181",
+    "a01201",
+    "a01204",
+    "a01205",
+    "a01207",
+    "a01218",
+    "a01219",
+    "a01220",
+    "a01222",
+    "a01227",
+    "a01238",
+    "a01239",
+    "a01240",
+    "a01241",
+    "a01242",
+    "a01264",
+    "a01268",
+    "a01284",
+    "a01301"
+   ],
+   "source": "agent",
+   "rationale": "Upgrade major to world_critical. Snapshot reports converge on nearly 800 dead, roughly 3,000 missing, 93,000 needing aid, destroyed villages, and an international rescue effort. This is the README's explicit mass-casualty-disaster case. Remove a00167 because its main event is Tajikistan's separate glacial-lake monitoring program; add direct flood response/rescue reports a00706 and a01207."
+  },
+  {
+   "id": "ev-03",
+   "title": "At least 37 killed after Russian strike hits an ammunition depot near Kyiv",
+   "what": "Russian strike triggers deadly Kyiv ammunition-depot explosions",
+   "tier": "major",
+   "spread": 10,
+   "sources": [
+    "BBC World",
+    "Meduza EN"
+   ],
+   "article_ids": [
+    "a00604",
+    "a00607",
+    "a01191",
+    "a01206"
+   ],
+   "source": "agent",
+   "rationale": "Keep major, but prune the cluster to the four reports about the same Kyiv-area depot strike and detonation. The removed Moscow Times stories and two Meduza stories concern separate Ukrainian attacks inside Russia, refineries, warehouses, Crimea, drone policy, and Russia's fuel crisis. The event is a grave but bounded episode within the continuing war, not a new global phase."
+  },
+  {
+   "id": "ev-04",
+   "title": "US country music legend Dolly Parton dies aged 80",
+   "what": "Dolly Parton dies at 80",
+   "tier": "major",
+   "spread": 33,
+   "sources": [
+    "BBC World",
+    "CNBC",
+    "DW",
+    "Gothamist",
+    "Guardian Culture",
+    "Guardian US",
+    "Hollywood Reporter",
+    "NJ Monitor",
+    "NJ.com",
+    "NPR",
+    "Wired"
+   ],
+   "article_ids": [
+    "a00026",
+    "a00228",
+    "a00230",
+    "a00240",
+    "a00248",
+    "a00328",
+    "a00382",
+    "a00422",
+    "a00428",
+    "a00470",
+    "a00506",
+    "a01065",
+    "a01200",
+    "a01316",
+    "a01317"
+   ],
+   "source": "agent",
+   "rationale": "Upgrade routine to major and retitle around the actual shared event: the death of an internationally known cultural figure, followed by tributes, retrospectives, public commemorations, and misinformation. Remove a00356 because its main headline/event is Canada and it only bundles a Dolly segment; add direct memorial coverage a00228, a00230, and a00422. This is major cultural news, not world_critical."
+  },
+  {
+   "id": "ev-06",
+   "title": "The Nancy Grace Roman Space Telescope launches to study dark matter and dark energy",
+   "what": "NASA launches flagship Roman Space Telescope",
+   "tier": "major",
+   "spread": 29,
+   "sources": [
+    "Al Jazeera",
+    "BBC",
+    "DW",
+    "Engadget",
+    "NPR",
+    "ScienceDaily",
+    "Space.com",
+    "The Verge",
+    "Wired"
+   ],
+   "article_ids": [
+    "a00326",
+    "a00349",
+    "a00648",
+    "a00678",
+    "a00838",
+    "a00839",
+    "a00841",
+    "a00842",
+    "a00848",
+    "a00849",
+    "a00856",
+    "a00865",
+    "a00871",
+    "a00881",
+    "a00887",
+    "a01013",
+    "a01048",
+    "a01148",
+    "a01269",
+    "a01275"
+   ],
+   "source": "agent",
+   "rationale": "Upgrade routine to major. The successful launch of NASA's $4.3bn flagship observatory is a large, bounded science event, matching the README example of a major product launch or notable scientific development. Remove a00863 because it is about the unrelated Swift telescope's failed rescue and re-entry; add direct Roman context/launch reports a00848 and a01275."
+  },
+  {
+   "id": "ev-07",
+   "title": "Trump says NBC's Kristen Welker should face punishment from FCC",
+   "what": "Trump calls for FCC punishment of NBC reporter",
+   "tier": "routine",
+   "spread": 23,
+   "sources": [
+    "Al Jazeera",
+    "Fortune",
+    "Guardian US",
+    "NJ.com",
+    "Variety"
+   ],
+   "article_ids": [
+    "a00036",
+    "a00221",
+    "a00370",
+    "a00395",
+    "a01270"
+   ],
+   "source": "agent",
+   "rationale": "Keep routine and keep all members. The reports consistently cover the same presidential threat against Kristen Welker, but no FCC action or broader policy change occurred in the snapshot. It is consequential political rhetoric, not yet a major event under the strict rubric."
+  },
+  {
+   "id": "ev-08",
+   "title": "At least 15 people may be missing after flash flood in Arizona's Grand Canyon",
+   "what": "Up to 20 missing after Grand Canyon flash flood",
+   "tier": "major",
+   "spread": 18,
+   "sources": [
+    "Al Jazeera",
+    "BBC World",
+    "Guardian US",
+    "NJ.com"
+   ],
+   "article_ids": [
+    "a00364",
+    "a00400",
+    "a01188",
+    "a01248",
+    "a01249"
+   ],
+   "source": "agent",
+   "rationale": "Upgrade routine to major. A sudden disaster at a major national park left 15-20 people missing and forced more than 60 evacuations. It is serious regional safety news corroborated across four outlets, but the snapshot does not establish the mass-casualty scale required for world_critical. Membership is coherent."
+  },
+  {
+   "id": "ev-10",
+   "title": "Trump announces new US oil agreement with Venezuela",
+   "what": "US-Venezuela deal covers control of 65bn barrels",
+   "tier": "major",
+   "spread": 16,
+   "sources": [
+    "Al Jazeera",
+    "BBC World",
+    "CNBC",
+    "Fortune",
+    "Guardian World",
+    "NPR World"
+   ],
+   "article_ids": [
+    "a00017",
+    "a00039",
+    "a01185",
+    "a01195",
+    "a01214",
+    "a01216",
+    "a01217",
+    "a01247"
+   ],
+   "source": "agent",
+   "rationale": "Upgrade routine to major and retitle around the agreement rather than one reaction. The announced US majority control over development of 65bn barrels of Venezuelan reserves is a significant bilateral energy and sovereignty development with industry and regional consequences. It is not universal enough for world_critical. Membership is coherent."
+  },
+  {
+   "id": "ev-11",
+   "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+   "what": "One killed, five injured in Swiss rave shooting",
+   "tier": "routine",
+   "spread": 16,
+   "sources": [
+    "BBC",
+    "DW",
+    "Guardian World",
+    "NJ.com"
+   ],
+   "article_ids": [
+    "a00350",
+    "a00411",
+    "a01231",
+    "a01283"
+   ],
+   "source": "agent",
+   "rationale": "Keep routine and keep all members. This is one coherent local crime story with one death, five injuries, and an active manhunt. It is serious to those affected but does not reach the rubric's regional-major or mass-casualty thresholds."
+  },
+  {
+   "id": "ev-12",
+   "title": "Far-right media provocateur Milo Yiannopoulos deported by ICE from US to UK",
+   "what": "Milo Yiannopoulos deported from US to UK",
+   "tier": "routine",
+   "spread": 16,
+   "sources": [
+    "BBC World",
+    "Guardian US",
+    "The Verge",
+    "Wired"
+   ],
+   "article_ids": [
+    "a00367",
+    "a00369",
+    "a00375",
+    "a01019",
+    "a01054",
+    "a01192"
+   ],
+   "source": "agent",
+   "rationale": "Keep routine and keep all members. Arrest, deportation, and immediate aftermath all concern the same public figure and immigration case, but it has no broader government, policy, or international consequence in the snapshot."
+  },
+  {
+   "id": "ev-13",
+   "title": "Iceland rejects EU accession talks after divisive referendum campaign",
+   "what": "Iceland rejects reopening EU accession talks",
+   "tier": "major",
+   "spread": 15,
+   "sources": [
+    "BBC World",
+    "CNBC",
+    "DW",
+    "Guardian World",
+    "NPR World"
+   ],
+   "article_ids": [
+    "a00012",
+    "a01186",
+    "a01187",
+    "a01232",
+    "a01280"
+   ],
+   "source": "agent",
+   "rationale": "Upgrade routine to major. A nationwide referendum rejecting renewed EU membership talks is a significant, bounded national and European political event, exactly the type of national vote the major tier is meant to cover. It is not world_critical. Membership is coherent."
+  }
+ ],
+ "review": {
+  "source": "agent",
+  "reviewer": "codex",
+  "rationale": "independent editorial audit against frozen article titles and summaries",
+  "rejected_clusters": [
+   {
+    "id": "ev-05",
+    "source": "agent",
+    "rationale": "Reject the cluster. Its 35 members share only the broad topic AI and cover unrelated newsroom policy, information warfare, education, data centres, jobs, healthcare, security, hardware, and enterprise adoption. It is not one news event and must not count toward event delivery or major-story ground truth."
+   },
+   {
+    "id": "ev-09",
+    "source": "agent",
+    "rationale": "Reject the cluster. The four members are unrelated US Open coverage: day-one match results, a Williams doubles item, tournament predictions, and a Venus Williams wildcard analysis. No single event is corroborated across the articles."
+   }
+  ],
+  "reviewed_at": "2026-09-01T22:19:17"
+ }
+}

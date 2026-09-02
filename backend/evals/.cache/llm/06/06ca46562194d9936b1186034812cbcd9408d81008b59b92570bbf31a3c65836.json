@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0d4e8c0a538363890f2800aa0c62f851a407b8bc42f6623bfee73eb169620203",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00005\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.8, \"rationale\": \"Economic growth data relevant but not directly about European energy or OPEC.\"}, {\"id\": \"a00006\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Apple CEO and AI challenges unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00007\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\", \"geopolitical_developments\"], \"confidence\": 0.95, \"rationale\": \"Middle East turmoil impacts energy security and inflation, key for energy markets analyst.\"}, {\"id\": \"a00008\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Used car market unrelated to energy or economic policies relevant to reader.\"}, {\"id\": \"a00009\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Robot sales and Chinese chips unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1133,
+  "completion_tokens": 270
+ }
+}

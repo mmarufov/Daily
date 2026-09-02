@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "634ba1243d127cbeed8cb5995accc4f9adcc41bb38222e92ee63e12da48bd4ca",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01218\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US ad market lawsuit unrelated to Central Asia or trade interests.\"}, {\"id\": \"a01223\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Global oil deal may affect commodity prices but no direct regional impact.\"}, {\"id\": \"a01224\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Flood at Nepal-China trade crossing may impact regional trade routes.\"}, {\"id\": \"a01228\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Japan-India trade shift relevant to regional trade dynamics, secondary interest.\"}, {\"id\": \"a01231\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"US-Canada trade war is global trade news but no direct Central Asia impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1220,
+  "completion_tokens": 251
+ }
+}

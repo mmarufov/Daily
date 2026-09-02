@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "08b041bd9593ff5c2a2ab796dff76244963f7119fcab8544c7b474512aaf1533",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00716\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Community program info relevant but not urgent or primary interest.\"}, {\"id\": \"a00717\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Local fire incident affects safety and housing, critical for resident awareness.\"}, {\"id\": \"a00718\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Foreign metro news unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00720\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Environmental topic interesting but not directly impacting daily life.\"}, {\"id\": \"a00722\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Housing development relevant but long-term and not immediate need to know.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1115,
+  "completion_tokens": 244
+ }
+}

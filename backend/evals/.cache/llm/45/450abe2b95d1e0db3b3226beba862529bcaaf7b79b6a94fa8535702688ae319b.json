@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a7628515cd3b080dbc31d1a945d06811c825a32c7e51c9a333c69337044cc6b2",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00946\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL prospect news is not relevant to tennis, horse racing, or environmental interests.\"\n    },\n    {\n      \"id\": \"a00948\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL video game ratings are unrelated to reader's sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a00949\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL video game ratings are not relevant to tennis, horse racing, or environmental topics.\"\n    },\n    {\n      \"id\": \"a00950\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL player ratings are not of interest to this reader's stated preferences.\"\n    },\n    {\n      \"id\": \"a00951\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"General NHL news and player contracts are not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2625,
+  "completion_tokens": 303
+ }
+}

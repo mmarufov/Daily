@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "09ce3cf185da92fdd79794a22310ff8b1d9eb4f5cb848d708864f970ded65f02",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00578\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Geopolitical development affecting energy security; relevant but not urgent or primary must_see.\"\n    },\n    {\n      \"id\": \"a00617\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"G20 finance meeting is background context for economic stability, but not directly about energy or ECB.\"\n    },\n    {\n      \"id\": \"a00629\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Berlin-Russia tensions impact European security; relevant but not a must_see for energy analyst.\"\n    },\n    {\n      \"id\": \"a00784\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore mid-cap equities are unrelated to reader's interests or region.\"\n    },\n    {\n      \"id\": \"a00828\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Startup fundraising in Southeast Asia is not relevant to energy markets or European context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2812,
+  "completion_tokens": 307
+ }
+}

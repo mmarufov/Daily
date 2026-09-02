@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9ed9a989d86ef5f7785459c4e1b2cce1478021a3751ad60fe6f01ffd4cfaca3b",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00778\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"General daily summary, useful but not critical for Maya.\"}, {\"id\": \"a00779\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Regional currency framework, relevant to world/business but not primary for Maya.\"}, {\"id\": \"a00780\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Significant fintech investment affecting tech innovation and talent, relevant to Maya's tech and consumer interest.\"}, {\"id\": \"a00781\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Board appointment in Singapore business, less relevant to Maya's focus on UK/London and tech/science.\"}, {\"id\": \"a00782\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Financial fraud story, relevant to consumer impact but regional and less urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1008,
+  "completion_tokens": 269
+ }
+}

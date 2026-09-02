@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "71fd837e759df2c0ffcba643c9fbc66813d755b311a7e05a6a8310a6aab706a0",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01213\", \"label\": \"fine\", \"tags\": [\"world_news\", \"UK_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant UK/world news but no direct consumer or tech impact.\"}, {\"id\": \"a01215\", \"label\": \"fine\", \"tags\": [\"world_news\", \"major_event\"], \"confidence\": 0.7, \"rationale\": \"Important world event but no direct consumer or tech relevance.\"}, {\"id\": \"a01227\", \"label\": \"must_see\", \"tags\": [\"technology\", \"consumer_impact\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"AI surveillance tech with consumer privacy implications.\"}, {\"id\": \"a01230\", \"label\": \"never\", \"tags\": [\"off_topic\", \"celebrity\"], \"confidence\": 1.0, \"rationale\": \"Celebrity/sports content excluded by user.\"}, {\"id\": \"a01236\", \"label\": \"fine\", \"tags\": [\"world_news\", \"major_event\"], \"confidence\": 0.7, \"rationale\": \"Human interest world news, no direct tech or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1030,
+  "completion_tokens": 259
+ }
+}

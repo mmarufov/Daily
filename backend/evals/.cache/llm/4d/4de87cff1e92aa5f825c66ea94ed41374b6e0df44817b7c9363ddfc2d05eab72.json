@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "629cabee9cf5b4dc395464a5839767b7d5c08bff934ff80b0afc447cd17eb618",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00772\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Singapore AI, unrelated to Uzbekistan or reader interests.\"}, {\"id\": \"a00773\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"General news debrief unrelated to reader's geographic or topical interests.\"}, {\"id\": \"a00774\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Singapore PM visit to Thailand irrelevant to Uzbek reader.\"}, {\"id\": \"a00775\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Singapore financial regulation unrelated to reader's interests.\"}, {\"id\": \"a00776\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Singapore company payment delays irrelevant to reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1116,
+  "completion_tokens": 231
+ }
+}

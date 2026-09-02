@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dd517a762615f1401e0fb772b0fe830973055634960aa152d49ee414222b7cf8",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00947\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Soccer sports news unrelated to AI or reader interests.\"}, {\"id\": \"a00976\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Hockey broadcast details unrelated to AI or reader interests.\"}, {\"id\": \"a00978\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Hockey player history unrelated to AI or reader interests.\"}, {\"id\": \"a00981\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Hockey team management unrelated to AI or reader interests.\"}, {\"id\": \"a00983\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Hockey team roster news unrelated to AI or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3272,
+  "completion_tokens": 235
+ }
+}

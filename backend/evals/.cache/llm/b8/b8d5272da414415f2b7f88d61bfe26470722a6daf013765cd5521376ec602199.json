@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8fcb4dc0ee9a4720db3a42aab97189685c1329982fa6cd8c652f3dde885b6bdd",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00204\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"New privacy tech in browser impacts consumer data protection.\"}, {\"id\": \"a00206\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"Urgent security patch affects widely used software, consumer safety.\"}, {\"id\": \"a00210\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Critical security flaw in software impacts internet safety broadly.\"}, {\"id\": \"a00222\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Celebrity fundraising event irrelevant to reader interests.\"}, {\"id\": \"a00243\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Celebrity profile unrelated to reader's preferred topics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1344,
+  "completion_tokens": 263
+ }
+}

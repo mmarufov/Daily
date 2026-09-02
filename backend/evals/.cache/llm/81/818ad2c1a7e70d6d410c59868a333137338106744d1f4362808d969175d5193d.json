@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "de495380a9503e25ab1b1d2e21a205e9df736cebd6adc84d16cc2b84f2e931a8",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00540\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Encryption backdoors in EU unrelated to Central Asia trade or Russia sanctions.\"}, {\"id\": \"a00557\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Google Cloud AI database tools irrelevant to reader's trade business.\"}, {\"id\": \"a00561\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Russia-Ukraine conflict relevant to Russia but not directly to trade or sanctions.\"}, {\"id\": \"a00564\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Russian regional election candidate ban unrelated to reader's interests.\"}, {\"id\": \"a00565\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Wikipedia outage in Russia irrelevant to trade or sanctions.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1240,
+  "completion_tokens": 242
+ }
+}

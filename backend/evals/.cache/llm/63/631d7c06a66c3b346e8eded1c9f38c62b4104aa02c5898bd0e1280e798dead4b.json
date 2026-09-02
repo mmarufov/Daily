@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d4d31198e805687702315feaf8ba5fb6276074e2718fa9b0306bdabfc51737ee",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00048\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tariffs news relevant to trade but focused on US-Canada, not Central Asia.\"}, {\"id\": \"a00049\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"US sanctions and tariffs coverage relevant but not directly about Russia or Central Asia.\"}, {\"id\": \"a00050\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI business advice unrelated to reader's trade or regional interests.\"}, {\"id\": \"a00051\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"UK railway heat issues unrelated to Central Asia or trade.\"}, {\"id\": \"a00052\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"EU gas storage affects energy prices, indirectly relevant to trade and commodities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1800,
+  "completion_tokens": 251
+ }
+}

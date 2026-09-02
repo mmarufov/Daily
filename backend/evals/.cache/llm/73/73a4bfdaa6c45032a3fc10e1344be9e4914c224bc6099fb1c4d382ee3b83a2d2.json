@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7b91025d483a613edf05c064f47c091f036e20c8553f76c02dd54d307284812f",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00000\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"US-Iran military strikes are major international news relevant to any informed adult.\"\n    },\n    {\n      \"id\": \"a00004\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"US government shutdowns are major events with global and national significance.\"\n    },\n    {\n      \"id\": \"a00080\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"China-Taiwan relations are important but not a must_see for all general readers today.\"\n    },\n    {\n      \"id\": \"a00171\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"UN AI day is notable but not essential for all; more background than urgent.\"\n    },\n    {\n      \"id\": \"a00254\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Obituary of a notable author is general interest but not must_see for all.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1226,
+  "completion_tokens": 316
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a207054a192fdf42470510dd8e4ad1a77acf786187938cb00972737910decbc1",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01015\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL contract news is not relevant to tennis, horse racing, or environmental interests.\"\n    },\n    {\n      \"id\": \"a01019\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL goaltending analysis is unrelated to reader's sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a01043\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major climate news; El Niño strength is highly relevant to environmental and climate interests.\"\n    },\n    {\n      \"id\": \"a01075\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Family logistics AI is not relevant to sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a01164\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Innovative, sustainable cooling tech is relevant to clean energy and environmental impact interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3019,
+  "completion_tokens": 301
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5c10829df02ba894c658df4a0261696fee391e4b287fa159d786ce1f6a2b4ae6",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00740\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Shorter BTO wait times directly impact housing for new parents in Singapore.\"}, {\"id\": \"a00741\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Architecture interest is secondary; not urgent or directly impactful.\"}, {\"id\": \"a00742\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Environmental changes relevant but not immediate or critical for daily life.\"}, {\"id\": \"a00743\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Local fire near Seletar Link may affect safety or air quality, worth noting.\"}, {\"id\": \"a00744\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Legal case unrelated to reader's interests or daily life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1156,
+  "completion_tokens": 253
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "23efeab1c38a2e1d527274afb6b503d7f168eb694d7f1c4072536699c0ce4bac",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00801\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About tourism branding, unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00802\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focuses on investment dispute center, unrelated to energy or geopolitical issues.\"}, {\"id\": \"a00806\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy\"], \"confidence\": 0.8, \"rationale\": \"Energy supply pressure relevant but Singapore-focused, not primary for Berlin energy security.\"}, {\"id\": \"a00808\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy\", \"geopolitical_developments\"], \"confidence\": 0.7, \"rationale\": \"Mentions US-Iran tensions and oil prices, relevant but indirect and financial focus.\"}, {\"id\": \"a00815\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About AI-driven corporate reorganizations, unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2232,
+  "completion_tokens": 266
+ }
+}

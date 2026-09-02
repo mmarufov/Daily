@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "0eb21edd89d06475c57aaf160a631bb365e5a82cab69cabecab4916bc51977d9",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"results\": [\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses prison issues in the UK, which is unrelated to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article focuses on a political campaign in London, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article is about a name change on Google Maps, which is not relevant to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article covers home insurance issues in Australia, which is not related to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article reports on a shooting incident in Switzerland, which does not align with the user's interests.\"},\n    {\"relevant\": true, \"score\": 0.8, \"reason\": \"The article discusses Debian's decision to allow AI in coding, which intersects with the user's interest in AI engineering and developer tools.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article focuses on a controversial figure's return to the UK, which is unrelated to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article is about a video game, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses a music tour and personal health, which is irrelevant to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article covers Xbox birthday gifts, which is unrelated to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses EU regulations on drones, which does not align with the user's primary interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article reports on China's manufacturing activity, which is not directly relevant to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses Nvidia's stock performance, which is not relevant to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article covers a young football player's performance, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article reports on a military incident in Gaza, which is unrelated to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses diplomatic relations, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article covers the death of a sports figure, which is irrelevant to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses a political event in Israel, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article reports on a ferry disaster, which is unrelated to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses stock market trends, which does not align with the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article covers a business's financial struggles, which is not relevant to the user's interests.\"}\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4063,
+  "completion_tokens": 811
+ }
+}

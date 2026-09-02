@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fb8f17aadf4662d670dda026aea85c690ab95ad3eb0733aaf6795af3f4ef2e2f",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00433\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Boys soccer in NJ unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00435\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Girls volleyball in NJ unrelated to reader's interests.\"}, {\"id\": \"a00436\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Boys soccer in NJ unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00441\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Girls soccer in NJ unrelated to reader's interests.\"}, {\"id\": \"a00443\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Girls soccer in NJ unrelated to tennis, horse racing, or solar energy.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1105,
+  "completion_tokens": 246
+ }
+}

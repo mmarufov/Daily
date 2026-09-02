@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "b4d4247c5cf8e8d0272c813c716eef90419e21581a3fea611161e220fdb5bc45",
+  "preview": "READER PROFILE:\nREADER: Import-export business owner in Dushanbe trading with Russia, China and Kazakhstan.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Tajikistan  (entity)\n  [PRIMARY] Kazakhstan  (entity)\n  "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 125,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 126,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 127,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 128,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 129,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 130,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 131,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 132,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 133,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1135,
+  "completion_tokens": 470
+ }
+}

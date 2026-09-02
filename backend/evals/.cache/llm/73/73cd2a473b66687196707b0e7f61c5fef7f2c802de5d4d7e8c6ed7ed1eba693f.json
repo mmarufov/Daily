@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9518f1e8a41d4370f50a68f6f0edbd914eb260647a52db77b3444c7ecec55284",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00947\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Buffalo Sabres prospects are irrelevant to Ray's interests; no NJ/Devils/Giants/NJ Transit/local angle.\"\n    },\n    {\n      \"id\": \"a00951\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"League-wide NHL news, no Devils, Giants, NJ, or local relevance for Ray.\"\n    },\n    {\n      \"id\": \"a00954\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Islanders news and general NHL salary talk; no Devils, Giants, NJ, or local angle.\"\n    },\n    {\n      \"id\": \"a00955\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Detroit Red Wings history; no connection to Ray's teams or local interests.\"\n    },\n    {\n      \"id\": \"a00965\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Devils goalie situation and trade rumors are directly relevant to Ray's primary Devils interest.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3309,
+  "completion_tokens": 319
+ }
+}

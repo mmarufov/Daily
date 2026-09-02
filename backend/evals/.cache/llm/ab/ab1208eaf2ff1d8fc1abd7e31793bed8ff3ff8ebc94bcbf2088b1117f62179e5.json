@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cb93980bebfccfd696311aa3d0c1a4d7bdea58f4ee9743f17f710a429dee1b42",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01049\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech deal but not critical or impactful for consumer broadly.\"}, {\"id\": \"a01050\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Major AI security incident affecting tech industry and consumer trust.\"}, {\"id\": \"a01051\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Audio hardware review; no tech/science news or consumer impact.\"}, {\"id\": \"a01052\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.85, \"rationale\": \"Tech leadership and environment; relevant but not urgent.\"}, {\"id\": \"a01053\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"Follow-up on AI security incident with corporate responsibility implications.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2207,
+  "completion_tokens": 261
+ }
+}

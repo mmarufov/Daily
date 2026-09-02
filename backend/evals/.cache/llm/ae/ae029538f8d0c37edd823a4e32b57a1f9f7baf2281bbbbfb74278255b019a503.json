@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7ecdb77a6a8f4c9eb24083aadb9db348d274cfbb8ac13ab1299197a16015997e",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00778\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"General news roundup; may include relevant stories but lacks direct focus on reader's priorities.\"\n    },\n    {\n      \"id\": \"a00779\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Economic/financial news; not directly impacting daily life or primary interests but locally relevant.\"\n    },\n    {\n      \"id\": \"a00834\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Thailand AI startup news; not relevant to Singapore, parenting, or daily life.\"\n    },\n    {\n      \"id\": \"a00837\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.65,\n      \"rationale\": \"Singapore's AI ecosystem is locally relevant but not directly tied to reader's daily concerns.\"\n    },\n    {\n      \"id\": \"a00853\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Warehouse safety in Singapore is local and health-related, but not directly relevant to reader's life context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2682,
+  "completion_tokens": 315
+ }
+}

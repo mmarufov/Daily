@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "80dee8956c996eab267f728af6118dcf842dac62b40d9d37a9cdddd2faf35ec1",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"US strikes on Iran impact geopolitical energy security and Iran situation.\"}, {\"id\": \"a00001\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Iran sanctions plan relevant but routine geopolitical economic policy.\"}, {\"id\": \"a00002\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Political insults unrelated to energy or economic security.\"}, {\"id\": \"a00003\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Corporate AI server forecast unrelated to energy markets or geopolitics.\"}, {\"id\": \"a00004\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"US government shutdown vote relevant to economics but not primary interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1121,
+  "completion_tokens": 251
+ }
+}

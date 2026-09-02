@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "dbd5dd30736281b0df79c217b1f6d1d86ee3246157183a130ece1b0e706bf783",
+  "preview": "READER PROFILE:\nREADER: Product manager at an AI startup, interested in industry developments.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] OpenAI  (entity)\n  [PRIMARY] Anthropic  (entity)\n  [PRIMARY] Google  "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\"id\": 0, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 1, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 2, \"keep\": true, \"score\": 0.9, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Concerns OpenAI's model and cybersecurity features.\"},\n    {\"id\": 3, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 4, \"keep\": true, \"score\": 0.8, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Discusses OpenAI's model development delays.\"},\n    {\"id\": 5, \"keep\": true, \"score\": 0.9, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Focuses on OpenAI's upcoming model release.\"},\n    {\"id\": 6, \"keep\": true, \"score\": 0.9, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Details OpenAI's new model with critical capabilities.\"},\n    {\"id\": 7, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 8, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 9, \"keep\": true, \"score\": 0.7, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Involves legal issues concerning OpenAI.\"},\n    {\"id\": 10, \"keep\": true, \"score\": 0.8, \"matched\": \"Anthropic\", \"kind\": \"direct\", \"why\": \"Discusses Anthropic's policy changes.\"},\n    {\"id\": 11, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 12, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 13, \"keep\": true, \"score\": 0.9, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Focuses on OpenAI's cybersecurity capabilities.\"},\n    {\"id\": 14, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 15, \"keep\": true, \"score\": 0.9, \"matched\": \"Anthropic\", \"kind\": \"direct\", \"why\": \"Covers Anthropic's new model release.\"},\n    {\"id\": 16, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 17, \"keep\": true, \"score\": 0.7, \"matched\": \"Anthropic\", \"kind\": \"direct\", \"why\": \"Discusses Anthropic's security measures.\"},\n    {\"id\": 18, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 19, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 20, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 21, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 22, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Does not relate to AI or industry developments.\"},\n    {\"id\": 23, \"keep\": true, \"score\": 0.7, \"matched\": \"Anthropic\", \"kind\": \"direct\", \"why\": \"Involves security issues related to Anthropic.\"},\n    {\"id\": 24, \"keep\": true, \"score\": 0.8, \"matched\": \"OpenAI\", \"kind\": \"direct\", \"why\": \"Discusses OpenAI's involvement in Thailand's AI initiatives.\"}\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1882,
+  "completion_tokens": 1163
+ }
+}

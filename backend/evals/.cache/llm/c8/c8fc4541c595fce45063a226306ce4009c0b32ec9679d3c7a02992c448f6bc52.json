@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8a7af9d021c20ee36ae2c6688ea2d833c82303c24c73db1cf46ccfe164508641",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00551\",\n      \"label\": \"fine\",\n      \"tags\": [\"job\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Routine monthly hiring thread; relevant for job utility but not must_see.\"\n    },\n    {\n      \"id\": \"a00565\",\n      \"label\": \"must_see\",\n      \"tags\": [\"model releases\", \"company use of AI\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major update on AI model pool, includes OpenAI/Anthropic models; core to reader's interests.\"\n    },\n    {\n      \"id\": \"a00796\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"job\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Macro view on AI's impact on jobs; relevant but not urgent or directly actionable.\"\n    },\n    {\n      \"id\": \"a00813\",\n      \"label\": \"must_see\",\n      \"tags\": [\"company use of AI\", \"job\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Detailed, firsthand account of AI replacing jobs; highly relevant to product manager in AI.\"\n    },\n    {\n      \"id\": \"a00815\",\n      \"label\": \"must_see\",\n      \"tags\": [\"company use of AI\", \"AI industry\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"In-depth analysis of AI-driven reorgs and their pitfalls; essential for AI industry product manager.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2309,
+  "completion_tokens": 358
+ }
+}

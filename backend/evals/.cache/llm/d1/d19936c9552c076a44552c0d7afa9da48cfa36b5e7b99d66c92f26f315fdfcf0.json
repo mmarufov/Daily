@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fd742880c4f71ac9f7c018e9bb42a81fca7d4b1adc7c3c6b730a6753dab2ea72",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00385\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Tennis event coverage, no mention of Canadian players or Leylah/Bianca.\"}, {\"id\": \"a00389\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Political donor and military industry, unrelated to sports or environment.\"}, {\"id\": \"a00390\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Local political stunt about Lake Ontario name, minor relevance to Toronto.\"}, {\"id\": \"a00392\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US political order unrelated to reader interests.\"}, {\"id\": \"a00406\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Local NJ charity race unrelated to reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1399,
+  "completion_tokens": 249
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d52ff1d243d55b44cdf8d820aeac4802d22459432760a53fc98e56db06a4649e",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00236\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment topic unrelated to energy or geopolitics.\"}, {\"id\": \"a00245\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Literature and culture topic unrelated to energy or geopolitics.\"}, {\"id\": \"a00252\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.7, \"rationale\": \"Berlin-related cultural topic, secondary interest only.\"}, {\"id\": \"a00258\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sports and entertainment topic excluded by reader preferences.\"}, {\"id\": \"a00265\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming content excluded by reader preferences.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1508,
+  "completion_tokens": 231
+ }
+}

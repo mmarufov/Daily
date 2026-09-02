@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ccd9dd30508bd1b5f69945ff3af31a881c83ac8c02ba764c26010520cd5d4f29",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00769\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Singapore luxury apartments unrelated to NJ or reader interests.\"}, {\"id\": \"a00779\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Singapore-Indonesia currency framework unrelated to NJ or reader interests.\"}, {\"id\": \"a00786\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Copenhagen Metro unrelated to NJ or reader interests.\"}, {\"id\": \"a00790\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Singapore bus services unrelated to NJ or reader interests.\"}, {\"id\": \"a00805\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Asia electronics supply chain unrelated to NJ or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1127,
+  "completion_tokens": 241
+ }
+}

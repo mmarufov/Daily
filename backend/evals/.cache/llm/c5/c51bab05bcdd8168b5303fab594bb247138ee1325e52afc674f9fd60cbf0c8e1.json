@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4c8fe4dae518c1a566bac106fde5c66e14819434a0bfbc1ea93ee9d79b0b21e5",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00547\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Technical AI data architecture, relevant but not primary focus on model releases or companies.\"}, {\"id\": \"a00552\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Netflix commerce architecture unrelated to AI or primary interests.\"}, {\"id\": \"a00555\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Alibaba audio fingerprinting unrelated to AI industry or companies wanted.\"}, {\"id\": \"a00556\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Spring ecosystem releases are software industry relevant but not AI primary interest.\"}, {\"id\": \"a00557\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Google Cloud AI agents launch directly relevant to AI products and industry developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1327,
+  "completion_tokens": 253
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9c8a7eac0d22384cd4a50125c7a9eacee5b52a3b872c9abc15c79c6c7154dedc",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00349\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Significant scientific advancement with broad interest for informed adults.\"}, {\"id\": \"a00350\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.85, \"rationale\": \"Serious violent incident with fatalities and injuries in Europe.\"}, {\"id\": \"a00351\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Local crime follow-up, less broadly impactful for general audience.\"}, {\"id\": \"a00353\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Entertainment news, plausible general interest but missable.\"}, {\"id\": \"a00357\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Sports news, general interest but not essential for all readers.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 925,
+  "completion_tokens": 238
+ }
+}

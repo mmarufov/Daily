@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0685bfbb77d537c72059b020711bf32451e6e3bfa0e20604f97d0ffaa1344d70",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00197\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"UK stock onchain news is interesting but not primary for Singapore fintech engineer.\"}, {\"id\": \"a00205\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Ireland crypto tax news is secondary fintech interest, missable.\"}, {\"id\": \"a00207\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Data breach affects many but no direct Singapore or fintech link.\"}, {\"id\": \"a00214\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"cybersecurity\"], \"confidence\": 0.8, \"rationale\": \"Security vulnerabilities relevant to software engineering but not Singapore-specific.\"}, {\"id\": \"a00216\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"cybersecurity\"], \"confidence\": 0.8, \"rationale\": \"Microsoft TerminalFix attack is relevant to cybersecurity interest, missable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1120,
+  "completion_tokens": 257
+ }
+}

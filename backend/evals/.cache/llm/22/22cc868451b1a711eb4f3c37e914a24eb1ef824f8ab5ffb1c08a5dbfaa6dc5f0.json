@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8acb8ff75d9c887ce301415ba4f59bbded859cde1f374947407ddfd20989680b",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01120\", \"label\": \"fine\", \"tags\": [\"technology\", \"work_impact\"], \"confidence\": 0.8, \"rationale\": \"AI impact on insurance claims relevant to tech and consumer work context.\"}, {\"id\": \"a01121\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\", \"consumer_impact\"], \"confidence\": 0.9, \"rationale\": \"Security flaws in ATM software affect consumer safety and money.\"}, {\"id\": \"a01122\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Product recommendation, not relevant to primary interests or consumer impact.\"}, {\"id\": \"a01123\", \"label\": \"never\", \"tags\": [\"off_topic\", \"world_news\"], \"confidence\": 0.85, \"rationale\": \"Political map name change unrelated to UK, tech, or consumer impact.\"}, {\"id\": \"a01124\", \"label\": \"fine\", \"tags\": [\"technology\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech product review, interesting but missable for this reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1058,
+  "completion_tokens": 268
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "390deae5eabbb3f88209a326a433741b2c5c2631bcfd4f28558a04a563a7171f",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00407\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Soccer sports news, off-topic and excluded for reader.\"}, {\"id\": \"a00408\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Field hockey sports news, off-topic and excluded for reader.\"}, {\"id\": \"a00433\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Boys soccer sports preview, off-topic and excluded.\"}, {\"id\": \"a00448\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Girls soccer sports news, off-topic and excluded.\"}, {\"id\": \"a00453\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General NJ news summary, possibly relevant but routine and local only.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1044,
+  "completion_tokens": 250
+ }
+}

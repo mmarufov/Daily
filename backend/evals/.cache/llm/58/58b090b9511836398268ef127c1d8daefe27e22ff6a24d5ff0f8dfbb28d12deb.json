@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8d0e92b3c7f7af12189677fa4acd11f8466fddfb62651e311fa34f8c3a7201c2",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00145\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.8, \"rationale\": \"SCO cooperation is geopolitical but not directly about energy security or primary interests.\"}, {\"id\": \"a00149\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.7, \"rationale\": \"Kazakhstan security council changes are geopolitical but not directly about energy or primary interests.\"}, {\"id\": \"a00153\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy\", \"geopolitical developments\"], \"confidence\": 0.85, \"rationale\": \"South Korea-Central Asia summit includes energy infrastructure, relevant but secondary.\"}, {\"id\": \"a00156\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Political appointment in Kazakhstan unrelated to energy or primary interests.\"}, {\"id\": \"a00158\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.75, \"rationale\": \"Kazakh scientists at CERN is science/education, not energy security or primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3745,
+  "completion_tokens": 277
+ }
+}

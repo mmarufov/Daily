@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8da1118cc16e1c3e82d7f9471c485dc9c213a492065bcf5720ad9caa9c84d430",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01139\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Windows update issues not related to AI or primary interests.\"}, {\"id\": \"a01140\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI token budget limits at Red Hat relevant to AI industry but not primary.\"}, {\"id\": \"a01141\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"AWS acquisition relevant to AI industry and products but not primary news.\"}, {\"id\": \"a01142\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Public transport Windows Defender issue unrelated to AI or primary interests.\"}, {\"id\": \"a01143\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Bill Gates on AI risks and education impacts directly relevant to AI industry and regulation.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3410,
+  "completion_tokens": 256
+ }
+}

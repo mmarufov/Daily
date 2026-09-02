@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "efb40b908dde66dc825ed7867583d058ea3331b774703a459d806089cdaf9e15",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00745\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Child safety measures relevant to children, important but not urgent news.\"}, {\"id\": \"a00746\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Personal lawsuit unrelated to reader's interests or local impact.\"}, {\"id\": \"a00747\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Money laundering auction unrelated to reader's interests or daily life.\"}, {\"id\": \"a00748\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Business R&D spending not relevant to reader's priorities.\"}, {\"id\": \"a00750\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Property portfolio revamp unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1128,
+  "completion_tokens": 238
+ }
+}

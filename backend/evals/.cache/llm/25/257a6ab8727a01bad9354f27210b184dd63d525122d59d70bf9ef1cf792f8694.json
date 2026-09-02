@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d94f946498902201c8c23ed87d35f876b4b5615acadafce35dc4e5ae8054bcb9",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01253\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Australian politics and crime, no relevance to Singapore or reader's interests.\"\n    },\n    {\n      \"id\": \"a01271\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major disaster news, but not directly relevant to Singapore or reader's daily life.\"\n    },\n    {\n      \"id\": \"a01319\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"tech industry news\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Tech industry news, explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a01338\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"gaming\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming and German military, both off-topic and excluded.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1408,
+  "completion_tokens": 240
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0567883f1cbcce0e40083ce271f6047dd36ece00c2d2c666afbbb1c2c92d9a61",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00030\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Business profile story, interesting but not urgent or primary interest.\"}, {\"id\": \"a00040\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Education abroad story unrelated to reader's interests.\"}, {\"id\": \"a00041\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Consumer impact angle but focused on Canada, less relevant to UK reader.\"}, {\"id\": \"a00042\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"US Fed inflation and interest rate policy affects global markets and consumers.\"}, {\"id\": \"a00043\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Celebrity/sex scandal topic excluded by reader preferences.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1956,
+  "completion_tokens": 252
+ }
+}

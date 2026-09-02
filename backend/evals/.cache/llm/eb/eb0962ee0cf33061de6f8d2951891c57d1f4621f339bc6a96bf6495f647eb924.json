@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8e0d110d1aca85daebad5acd0a6ef3a1db3e1a1c7fdef5c50c5585d56ef9f817",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00783\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Energy hub development unrelated to parenting, healthcare, or local living conditions.\"}, {\"id\": \"a00784\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General daily news summary, may contain some relevant info but mostly missable.\"}, {\"id\": \"a00785\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Tech adoption policy not directly relevant to reader's primary interests.\"}, {\"id\": \"a00786\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Inflation and electricity price rise impact cost of living directly.\"}, {\"id\": \"a00787\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"AI trust and regulation interesting but not critical for reader's daily life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1087,
+  "completion_tokens": 253
+ }
+}

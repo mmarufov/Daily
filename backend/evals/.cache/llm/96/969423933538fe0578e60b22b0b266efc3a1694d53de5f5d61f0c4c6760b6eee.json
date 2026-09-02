@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f7913431cbcd2d0ce6521e50f5dde61596df99fb218c2bf98c28b1ac5cc14bee",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00156\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Kazakhstan political reform is relevant but not urgent for daily business; background on regional leadership.\"\n    },\n    {\n      \"id\": \"a00160\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Kazakhstan grain harvest affects regional trade; useful context but not urgent or directly actionable.\"\n    },\n    {\n      \"id\": \"a00162\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"KazMunayGas bond issue shows regional financial trends; relevant for business climate, not must_see.\"\n    },\n    {\n      \"id\": \"a00163\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Uzbek migration law is relevant for regional labor flows; informative but not directly impactful for trade.\"\n    },\n    {\n      \"id\": \"a00165\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly covers Tajikistan-Russia trade, investment, and currency ties; crucial for business decisions.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3802,
+  "completion_tokens": 325
+ }
+}

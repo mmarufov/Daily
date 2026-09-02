@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "eda6edd24356ca42f011d4a8fc0f13992bc7164456ed4ea0164c47829798a4e8",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01014\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.8, \"rationale\": \"AI surveillance cameras not directly relevant to AI product management or industry.\"}, {\"id\": \"a01015\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Chess.com poker site unrelated to AI or reader interests.\"}, {\"id\": \"a01016\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.7, \"rationale\": \"Robotics event interesting but not primary AI model or company news.\"}, {\"id\": \"a01017\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Mac hardware news unrelated to AI or reader's focus.\"}, {\"id\": \"a01020\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Lawsuit against Anthropic impacts AI industry and company use of AI.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2050,
+  "completion_tokens": 259
+ }
+}

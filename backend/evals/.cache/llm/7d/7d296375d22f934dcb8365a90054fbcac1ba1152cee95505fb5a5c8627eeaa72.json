@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cdca762c10d6721e4b6e7d64ba85879e1bf44e2f7a407e4c9ffc27ed3f928861",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00807\", \"label\": \"must_see\", \"tags\": [\"direct\", \"primary\", \"Southeast Asia startups\", \"Singapore\"], \"confidence\": 0.9, \"rationale\": \"Important update on Southeast Asia startup funding, including Singapore unicorns.\"}, {\"id\": \"a00809\", \"label\": \"fine\", \"tags\": [\"direct\", \"AI engineering\", \"software engineering\"], \"confidence\": 0.7, \"rationale\": \"Insightful on AI and domain expertise but more general career advice.\"}, {\"id\": \"a00810\", \"label\": \"must_see\", \"tags\": [\"direct\", \"AI engineering\", \"Southeast Asia startups\", \"Singapore\", \"cloud infrastructure\"], \"confidence\": 0.85, \"rationale\": \"Tech deep dive on AI chip packaging by a Southeast Asia startup.\"}, {\"id\": \"a00811\", \"label\": \"fine\", \"tags\": [\"direct\", \"software engineering\", \"developer tools\"], \"confidence\": 0.6, \"rationale\": \"Technical discussion on marketing mix modeling with AI, relevant but niche.\"}, {\"id\": \"a00812\", \"label\": \"fine\", \"tags\": [\"direct\", \"Southeast Asia startups\", \"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Analysis of creator economy in Southeast Asia, interesting but not core.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3988,
+  "completion_tokens": 302
+ }
+}

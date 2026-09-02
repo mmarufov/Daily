@@ -7,7 +7,9 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import re
+import time
 import uuid as _uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
@@ -42,6 +44,9 @@ DETERMINISTIC_STRONG_MATCH = 3.0
 DETERMINISTIC_SCORE_NORMALIZER = 8.0
 FALLBACK_SCORE_NORMALIZER = 5.0
 _FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
+# Rough per-call cost of one 40-article scoring batch on gpt-4o-mini. An
+# estimate for the build log, not a bill — usage is not returned by the batch scorer.
+EST_COST_PER_SCORING_CALL_USD = 0.002
 _DEDUPE_TRACKING_PARAMS = {"fbclid", "gclid", "ocid", "cmpid", "taid"}
 _DEDUPE_STOPWORDS = {
     "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
@@ -174,7 +179,9 @@ async def get_personalized_feed(
 
     profile = _build_preference_profile(ai_profile or "", interests, user_profile_v2=user_profile_v2)
 
-    candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid)
+    build_started = time.perf_counter()
+    build_stats: dict[str, Any] = {}
+    candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid, stats=build_stats)
     if not candidates:
         return []
 
@@ -217,11 +224,62 @@ async def get_personalized_feed(
     _save_feed_cache(conn, user_uuid, candidates)
     finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
     relevant = [article for article in finalized if article.get("relevant", False)]
+    n_relevant = len(relevant)
     relevant = _enforce_diversity(relevant)
+    n_diverse = len(relevant)
     relevant = _balance_feed_roles(relevant)
+    n_balanced = len(relevant)
     relevant = relevant[:limit]
     await _hydrate_missing_feed_images(conn, relevant)
+
+    build_stats.update({
+        "prefiltered": len(candidates),
+        "scored": sum(1 for r in analysis_results if str(r.get("reason", "")).strip() not in _FALLBACK_REASONS),
+        "kept": len(relevant),
+        "calls": len(batches),
+        "model": getattr(openai_service, "scoring_model", None),
+        "dropped_by_stage": {
+            "not_relevant": len(candidates) - n_relevant,
+            "dedup": len(candidates) - len(finalized),
+            "diversity": n_relevant - n_diverse,
+            "roles": n_diverse - n_balanced,
+            "limit": n_balanced - len(relevant),
+        },
+        "feed_ids": [a.get("id") for a in relevant],
+        "latency_ms": int((time.perf_counter() - build_started) * 1000),
+    })
+    _record_feed_build(conn, user_uuid, build_stats)
     return relevant
+
+
+def _record_feed_build(conn, user_uuid, stats: dict[str, Any]) -> None:
+    """Append one row to `feed_build_log`. Never allowed to break a feed build."""
+    if conn is None or not hasattr(conn, "cursor"):
+        return
+    try:
+        git_sha = (os.getenv("GIT_SHA") or os.getenv("RAILWAY_GIT_COMMIT_SHA")
+                   or os.getenv("SOURCE_VERSION") or "unknown")[:40]
+        calls = int(stats.get("calls") or 0)
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.feed_build_log (
+                    user_id, git_sha, model, candidates_loaded, prefiltered, scored, kept,
+                    dropped_by_stage, feed_ids, calls, cost_usd_est, latency_ms
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s, %s, %s)
+                """,
+                (
+                    user_uuid, git_sha, stats.get("model"),
+                    stats.get("candidates_loaded"), stats.get("prefiltered"),
+                    stats.get("scored"), stats.get("kept"),
+                    json.dumps(stats.get("dropped_by_stage") or {}),
+                    json.dumps(stats.get("feed_ids") or []),
+                    calls, calls * EST_COST_PER_SCORING_CALL_USD, stats.get("latency_ms"),
+                ),
+            )
+    except Exception:
+        logger.exception("Failed to record feed build for user %s", user_uuid)
 
 
 def _log_score_distribution(results: list[dict], context: str) -> None:
@@ -295,10 +353,16 @@ async def _load_candidates_for_profile(
     profile: PreferenceProfile,
     limit: int,
     user_uuid=None,
+    stats: dict[str, Any] | None = None,
 ) -> list[dict]:
-    """Load and widen candidate windows until we have enough strong matches."""
+    """Load and widen candidate windows until we have enough strong matches.
+
+    `stats`, when given, receives `candidates_loaded` (rows seen before the
+    prefilter) for the build log."""
     seen_ids: set[str] = set()
     gathered: list[dict] = []
+    if stats is not None:
+        stats["candidates_loaded"] = 0
     desired_shortlist = min(max(max(limit, 10) * 2, MIN_SHORTLIST_SIZE), MAX_LLM_CANDIDATES)
 
     for lookback_hours, row_limit in CANDIDATE_EXPANSION_STEPS:
@@ -312,6 +376,8 @@ async def _load_candidates_for_profile(
             window_candidates.append(candidate)
 
         gathered.extend(window_candidates)
+        if stats is not None:
+            stats["candidates_loaded"] = len(gathered)
         logger.info(
             "Loaded %d candidates for %dh/%d window (total=%d)",
             len(window_candidates),

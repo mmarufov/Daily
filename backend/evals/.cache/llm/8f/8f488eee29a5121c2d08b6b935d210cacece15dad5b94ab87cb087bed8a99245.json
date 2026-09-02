@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "738c740f47f7fbd702e28c578fac9500d130e67a3d542248ecd1260cc86da525",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00815\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Relevant AI trust topic but focused on Asia, less direct UK/consumer impact.\"}, {\"id\": \"a00818\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Battery industry development relevant to tech/business but Southeast Asia focused.\"}, {\"id\": \"a00820\", \"label\": \"fine\", \"tags\": [\"business\", \"consumer impact\"], \"confidence\": 0.85, \"rationale\": \"Digital wealth platform acquisition relevant to consumer finance, but Southeast Asia focused.\"}, {\"id\": \"a00826\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Lifestyle article about wine, unrelated to tech, science, UK, or marketing.\"}, {\"id\": \"a00828\", \"label\": \"must_see\", \"tags\": [\"technology\", \"marketing\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"AI's impact on marketing and consumer behavior directly relevant to reader's work and interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3883,
+  "completion_tokens": 285
+ }
+}

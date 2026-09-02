@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8cbee6f3bd21ea7c7dbb5be3a2ffa81aa0c289d9c76d1a46d9ea90143e78410d",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00210\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US cancer patient data breach unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00215\", \"label\": \"never\", \"tags\": [\"off_topic\", \"crypto\"], \"confidence\": 1.0, \"rationale\": \"Cryptocurrency exploit unrelated to reader's interests or location.\"}, {\"id\": \"a00217\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Microsoft 365 outage not impacting Singapore or reader's daily life.\"}, {\"id\": \"a00221\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Movie review unrelated to reader's interests or local news.\"}, {\"id\": \"a00227\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Streaming service launch in Singapore is mildly interesting but not critical.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1272,
+  "completion_tokens": 246
+ }
+}

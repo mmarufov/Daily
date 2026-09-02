@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b5c5fcd9773a3719a7eea85e9c2de0a4fb5b25e1576ad1b17d9e52f1ac027183",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01164\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Interesting tech for datacenters, but not directly about AI industry or Tom's primary interests.\"\n    },\n    {\n      \"id\": \"a01165\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Cloud/infra news with AI mentions, but mainly a satirical take on AWS services, not core to Tom's focus.\"\n    },\n    {\n      \"id\": \"a01172\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major development for Anthropic, a primary interest, with regulatory and industry implications.\"\n    },\n    {\n      \"id\": \"a01175\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"OpenAI, Anthropic, Google warn on AI security; primary entities and major industry event.\"\n    },\n    {\n      \"id\": \"a01227\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"AI surveillance is relevant, but not a primary company or regulatory development for Tom.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2893,
+  "completion_tokens": 332
+ }
+}

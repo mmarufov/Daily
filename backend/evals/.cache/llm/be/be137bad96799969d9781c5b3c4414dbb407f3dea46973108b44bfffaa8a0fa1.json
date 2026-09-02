@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ddd0a05d06850efe7fbf8237068265e3275254c3284aae2366c18a426f576faa",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01039\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Political rant unrelated to tech, science, UK, or consumer impact.\"}, {\"id\": \"a01040\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Major AI piracy lawsuit impacts tech industry and consumer trust.\"}, {\"id\": \"a01041\", \"label\": \"must_see\", \"tags\": [\"science\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"New scientific finding on corrosion affects consumers and product durability.\"}, {\"id\": \"a01042\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Security threat from streaming devices impacts consumers' internet safety.\"}, {\"id\": \"a01043\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Climate study relevant but not urgent or directly impacting consumer life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2296,
+  "completion_tokens": 263
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b3d7ec3e0529dc01a5f653ece06819aa3fa9bb3eb1fb6bcc497081c400020619",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00368\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US-Canada trade spat irrelevant to Central Asia or reader's trade interests.\"}, {\"id\": \"a00370\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US political media dispute unrelated to reader's interests.\"}, {\"id\": \"a00371\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US local opposition to datacenters unrelated to Central Asia trade.\"}, {\"id\": \"a00373\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US EPA chemical safety issue irrelevant to reader's trade/business context.\"}, {\"id\": \"a00377\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Rare earth supply chain issues relevant to global trade, indirectly relevant to reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1891,
+  "completion_tokens": 246
+ }
+}

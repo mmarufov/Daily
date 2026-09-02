@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "c93ac1260ca0cbe2c42db99fe28391ad22363de43b6765c5b3b24b99a760e3f8",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nStructured interests:\n- Topics: Uzbek footbal"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is focused on Australian local news and does not relate to the user's interests in Uzbek football or politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses UK political dynamics and does not intersect with the user's interests in Uzbek politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The content is about a court case involving a broadcaster in Australia, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a family court case in Italy, which does not relate to the user's focus on Uzbek affairs.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a Hong Kong activist's legal situation, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article addresses global climate issues and does not connect to the user's specific interests in Uzbek sports or politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is a film review and falls under the excluded category of entertainment.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses traffic regulations in Singapore, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The content is about a reality TV show and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses marketing mix modeling, which is unrelated to the user's interests in sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses AI restrictions in NYC schools, which does not connect to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article previews a girls' soccer team in the US, which is not relevant to the user's focus on Uzbek football.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses US military nominations and does not relate to the user's interests in Uzbek politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the gaming industry and does not connect to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses Dell's earnings and AI servers, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses US-Venezuela oil deals, which does not intersect with the user's interests in Uzbek affairs.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses union contracts in the entertainment industry, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a personal finance issue unrelated to the user's interests in sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses UK tax policy and defense spending, which does not relate to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2833,
+  "completion_tokens": 631
+ }
+}

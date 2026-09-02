@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e45f52c27c2c27d4fd094a7e9a9f1af6511ae3d0f20aa95040d8ebe7f8d4211d",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01182\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting obituary but niche and not major news for general audience.\"}, {\"id\": \"a01183\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"General interest science and culture story, plausible for general news.\"}, {\"id\": \"a01184\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.9, \"rationale\": \"Important human rights topic but not a major event for all readers.\"}, {\"id\": \"a01188\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Potentially life-threatening event with missing hikers is major news.\"}, {\"id\": \"a01189\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Political news of regional interest, not a global major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 956,
+  "completion_tokens": 238
+ }
+}

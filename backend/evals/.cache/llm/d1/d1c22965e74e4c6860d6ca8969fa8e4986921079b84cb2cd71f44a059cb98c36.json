@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8314749a2e56b90566c3d48f98946c57e86ba7216c3d459ad116c93947d57f79",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01326\",\n      \"label\": \"fine\",\n      \"tags\": [\"tennis\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major tennis news, but not about reader's primary interests or Canadian players.\"\n    },\n    {\n      \"id\": \"a01327\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Climate-related, but not directly relevant to reader's life or region.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 902,
+  "completion_tokens": 134
+ }
+}

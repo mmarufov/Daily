@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "7920fb8255442491b2f237ceed63489c8918b9d14b2875492dd0148c64dc3eb3",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about NFL player injuries, which is unrelated to the user's interests.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article discusses the SCO's call for an inclusive government in Afghanistan, which is relevant to Central Asian politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is a film review, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on human rights in Tunisia, which is outside the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is another entertainment piece, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a K-drama, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Singapore's economic forecast, which is not directly related to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about Tiger Woods' legal issues, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NFL rules, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about reality TV stars, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a marketing topic unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about marketing mix modeling, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a basketball contract situation, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a hockey GM, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political primary in Massachusetts, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a legal case involving trans athletes, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a navy secretary nomination, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a Venezuela oil deal, which is not directly relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a criminal trial, which is unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3146,
+  "completion_tokens": 592
+ }
+}

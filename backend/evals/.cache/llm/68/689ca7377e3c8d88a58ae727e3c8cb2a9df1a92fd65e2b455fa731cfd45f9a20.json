@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f02b1a974918e147ed50a2ba17117691cd9bce8d195f37c1c45d13e03da99c3a",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00013\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"MLB Angels purchase unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00020\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Economic news relevant to energy prices but not directly about solar or environment.\"}, {\"id\": \"a00021\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Job creation news unrelated to reader's interests.\"}, {\"id\": \"a00024\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"SB Energy IPO relevant to solar industry but no direct impact or major update.\"}, {\"id\": \"a00030\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environmental impact\"], \"confidence\": 0.85, \"rationale\": \"Climate change impact on fisheries relevant to environmental interest but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1671,
+  "completion_tokens": 253
+ }
+}

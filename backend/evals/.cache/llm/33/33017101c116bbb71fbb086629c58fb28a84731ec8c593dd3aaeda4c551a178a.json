@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "fac139836f77deafc5663629d842aee365acc023d5b93c8fa2aae14fb6ecb6f1",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses UK politics and weather, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a high school soccer game, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a police shooting incident, which is unrelated to the user's focus areas.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses AI compliance and data retention, which is not relevant to the user's interests in trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a new electric vehicle, which does not intersect with the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Google's AI strategies in Hollywood, which is unrelated to the user's focus on trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a browser extension for YouTube, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers an NFL player's injury, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses UK parliamentary politics, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a film review, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses human rights in Tunisia, which is not relevant to the user's focus on Central Asia.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about an actor's career, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a TV show, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Singapore's economic forecast, which is not directly relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about Tiger Woods' legal issues, which do not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses college football rules, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a reality TV show, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses AI chip packaging, which is not relevant to the user's focus on trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NBA contract negotiations, which do not align with the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2837,
+  "completion_tokens": 615
+ }
+}

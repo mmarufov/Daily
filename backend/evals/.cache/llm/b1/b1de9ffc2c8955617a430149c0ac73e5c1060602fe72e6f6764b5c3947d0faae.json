@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "82ce353a2b5976d34b71e3361aa367e81d0a93060f63162ba36f59cbd336da9c",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00453\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news is irrelevant to Singapore-based reader; not local or related to interests.\"\n    },\n    {\n      \"id\": \"a00454\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article about New Jersey tax policy; not relevant to Singapore or reader's context.\"\n    },\n    {\n      \"id\": \"a00456\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news roundup; not related to Singapore or reader's interests.\"\n    },\n    {\n      \"id\": \"a00459\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news; not relevant to Singapore-based reader.\"\n    },\n    {\n      \"id\": \"a00471\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article about New York cost of living; not relevant to Singapore or reader's daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1215,
+  "completion_tokens": 320
+ }
+}

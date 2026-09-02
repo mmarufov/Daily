@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cb3afc1546a740d2bb9c53c874654541dd12ef7f76b7ea3b0b264c9227d00804",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00984\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"NFL sports news unrelated to Singapore or reader interests.\"}, {\"id\": \"a00986\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"US NFL preseason game, no relevance to reader's context.\"}, {\"id\": \"a00991\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"PC gaming leak unrelated to reader's interests or location.\"}, {\"id\": \"a00995\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"US court ruling on gambling unrelated to reader's interests.\"}, {\"id\": \"a00999\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US space academy announcement irrelevant to reader's context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2786,
+  "completion_tokens": 253
+ }
+}

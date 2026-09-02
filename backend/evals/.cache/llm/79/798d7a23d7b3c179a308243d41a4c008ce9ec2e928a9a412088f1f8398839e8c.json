@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "faf68e23cf27451ce9157a6377fc4ae326048265db5e10223ea6cab81e5666d7",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00452\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"Focused on New Jersey news, not relevant to London or reader interests.\"}, {\"id\": \"a00456\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Interesting urban nature story but off primary topics and no consumer impact.\"}, {\"id\": \"a00464\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Crime news in NYC unrelated to reader's location or interests.\"}, {\"id\": \"a00466\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Transit financials in New Jersey unrelated to London or reader's interests.\"}, {\"id\": \"a00467\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.85, \"rationale\": \"Local NYC cultural and wildlife news irrelevant to reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1177,
+  "completion_tokens": 248
+ }
+}

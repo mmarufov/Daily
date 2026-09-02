@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4b301937496a7d4aa1a68678836939d9f24c39f30dc0922f572bc542f25080f5",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01082\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content with no general news value.\"}, {\"id\": \"a01083\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional discount codes, no news content.\"}, {\"id\": \"a01084\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promo codes for office furniture, purely advertising.\"}, {\"id\": \"a01085\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Verizon gift card promo, no news value.\"}, {\"id\": \"a01086\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Shoe discount promo, no general news interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 982,
+  "completion_tokens": 221
+ }
+}

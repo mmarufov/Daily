@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d75b2548cd1a753b9e8afa649721f51d8bcf3e715ff37c5853e7b7f3f3fda242",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00761\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"AI engineering\", \"work\"], \"confidence\": 0.8, \"rationale\": \"Relevant to Singapore and AI impact on jobs, but general economic outlook, not deep tech.\"}, {\"id\": \"a00762\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Local club dispute unrelated to tech, fintech, or work.\"}, {\"id\": \"a00765\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"fintech\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Singapore fintech company under investigation; relevant but no deep tech details.\"}, {\"id\": \"a00766\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tourism board partnerships unrelated to reader's interests.\"}, {\"id\": \"a00767\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"work\"], \"confidence\": 0.6, \"rationale\": \"World Bank office in Singapore relevant to finance but not deep tech or fintech regulation.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1140,
+  "completion_tokens": 265
+ }
+}

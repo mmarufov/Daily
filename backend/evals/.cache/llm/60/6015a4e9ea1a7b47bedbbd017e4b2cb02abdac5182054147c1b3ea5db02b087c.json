@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "701de74a61ea1c22dcf56be27a03d0c84be53cbaf9b98694f9ed9013cd98d18e",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00745\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Crime news unrelated to AI or reader interests.\"}, {\"id\": \"a00756\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Local Singapore tenant news unrelated to AI or reader interests.\"}, {\"id\": \"a00762\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Traffic accident unrelated to AI or reader interests.\"}, {\"id\": \"a00767\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Retail defamation suit unrelated to AI or reader interests.\"}, {\"id\": \"a00768\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI\", \"company_use_of_AI\"], \"confidence\": 0.8, \"rationale\": \"AI adoption in firms relevant but not primary or urgent for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1081,
+  "completion_tokens": 242
+ }
+}

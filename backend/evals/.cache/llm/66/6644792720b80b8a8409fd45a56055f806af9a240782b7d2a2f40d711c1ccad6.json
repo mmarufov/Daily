@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a2d1cf80b5311eac1f08d3bd896072f1110bbd0313cf7ffab8758376739ae42c",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01287\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"US strikes on Iran impact geopolitical energy security and Iran situation.\"}, {\"id\": \"a01288\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"AI regulation unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01289\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"US strikes causing civilian casualties in Iran affect geopolitical stability.\"}, {\"id\": \"a01290\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\", \"followup\"], \"confidence\": 0.95, \"rationale\": \"Iran retaliation claims escalate conflict impacting energy security.\"}, {\"id\": \"a01291\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Sports transfer unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1093,
+  "completion_tokens": 248
+ }
+}

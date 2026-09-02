@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "36460cdb022730480159cd293c83b47d1d0ee1029aaf211ebe56025517493b29",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00381\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Far-right pundit deportation unrelated to AI or reader interests.\"}, {\"id\": \"a00383\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Pentagon AI official's stock sales impact AI industry and ethics, relevant to AI product manager.\"}, {\"id\": \"a00385\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Trump architectural legacy unrelated to AI or reader interests.\"}, {\"id\": \"a00424\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Police shooting in NJ unrelated to AI or reader interests.\"}, {\"id\": \"a00429\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Tornado warnings in NJ may affect safety but less relevant to Boston reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1525,
+  "completion_tokens": 261
+ }
+}

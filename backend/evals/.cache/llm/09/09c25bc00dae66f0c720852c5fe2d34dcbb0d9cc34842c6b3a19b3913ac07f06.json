@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "720b94ef8fe51a0bdd75e1da93b494589e1f47a58ccc323536635eb92bc35a4a",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01154\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Windows XP anniversary, unrelated to reader interests.\"}, {\"id\": \"a01159\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about UK privacy polling, unrelated to reader interests.\"}, {\"id\": \"a01160\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environmental_impact\"], \"confidence\": 0.8, \"rationale\": \"AWS datacenter energy efficiency relevant to solar/environmental interest but not primary.\"}, {\"id\": \"a01162\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Xbox and IKEA furniture, unrelated to reader interests.\"}, {\"id\": \"a01164\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"environmental_impact\"], \"confidence\": 0.95, \"rationale\": \"New electricity-free cooling tech for datacenters relevant to environmental impact and solar industry.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3500,
+  "completion_tokens": 262
+ }
+}

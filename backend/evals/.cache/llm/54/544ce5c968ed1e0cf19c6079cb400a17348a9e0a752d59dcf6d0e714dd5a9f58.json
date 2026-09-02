@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "39f2e36336b941e17b4c02f5d60ba1c973576bd679f1c905a8380a1249c3a78c",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00438\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Soccer sports news unrelated to reader's interests or region.\"}, {\"id\": \"a00439\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Boys soccer preview irrelevant to reader's tech and fintech focus.\"}, {\"id\": \"a00453\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"New Jersey local news unrelated to Singapore or Southeast Asia tech.\"}, {\"id\": \"a00454\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US state tax news irrelevant to reader's region and interests.\"}, {\"id\": \"a00456\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"New Jersey news unrelated to reader's tech or fintech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1220,
+  "completion_tokens": 246
+ }
+}

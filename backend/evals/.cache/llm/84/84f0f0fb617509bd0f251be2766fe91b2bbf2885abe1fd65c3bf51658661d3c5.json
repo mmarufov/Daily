@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6cf068a6d1d870bba3ecf65a8581d21112b0cece8292409375d56427fb0b2bc9",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00330\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major US political and military leadership news; not a global must_see but solid general news.\"\n    },\n    {\n      \"id\": \"a00335\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major escalation between Iran and US; significant international event all informed adults should know.\"\n    },\n    {\n      \"id\": \"a00342\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Ongoing Ukraine conflict update; important but not a singular global must_see today.\"\n    },\n    {\n      \"id\": \"a00343\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Notable military/naval news, but not globally urgent or must_see for all readers.\"\n    },\n    {\n      \"id\": \"a00344\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Promising medical advance; interesting general news but not urgent for all adults today.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 951,
+  "completion_tokens": 322
+ }
+}

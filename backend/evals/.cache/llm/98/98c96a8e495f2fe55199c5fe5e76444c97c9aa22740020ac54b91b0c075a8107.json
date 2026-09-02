@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "14106b583802d6b42923857035fbf74c14ef8a5dc8484b74c1921bb923331843",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01049\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Laptop deal unrelated to trade, economy, or region.\"}, {\"id\": \"a01075\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI family assistant unrelated to business or regional news.\"}, {\"id\": \"a01077\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Travel promo codes irrelevant to trade or economy.\"}, {\"id\": \"a01103\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Dell coupons unrelated to reader's interests.\"}, {\"id\": \"a01111\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AT&T promo unrelated to trade or regional news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1629,
+  "completion_tokens": 239
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "08cdeba2d9bc61d9a691adf49fbd5b7b86f3dfa59b92ec365c72ba1475741d30",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00321\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Nepal floods are not relevant to Ray's interests or location.\"\n    },\n    {\n      \"id\": \"a00344\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Notting Hill Carnival in London is unrelated to Ray's interests or location.\"\n    },\n    {\n      \"id\": \"a00399\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Giants roster moves are directly relevant but not essential daily news.\"\n    },\n    {\n      \"id\": \"a00407\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Giants roster update is on-topic but not must_see unless major event.\"\n    },\n    {\n      \"id\": \"a00409\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Severe weather and flooding directly affect Ray's daily life and safety.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1106,
+  "completion_tokens": 297
+ }
+}

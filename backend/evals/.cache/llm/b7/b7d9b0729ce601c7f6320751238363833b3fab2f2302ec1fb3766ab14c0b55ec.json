@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "35933587a7733fa65185be8e089c3be7ddbef782b7f7ee8161e36faca636aab9",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00150\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Kazakhstan politics unrelated to reader's interests or location.\"}, {\"id\": \"a00154\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Kazakhstan Olympic delegation rules irrelevant to reader's sports and environment focus.\"}, {\"id\": \"a00157\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tajik ballet unrelated to reader's sports or environmental interests.\"}, {\"id\": \"a00158\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Climate change impact on glacial lakes relevant to environmental concern, but not urgent.\"}, {\"id\": \"a00164\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tajik-Afghan border security unrelated to reader's interests or location.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3439,
+  "completion_tokens": 251
+ }
+}

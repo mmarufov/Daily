@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cb898d10e63597a508c5a7bde3ce151ba66874461be91c6addb96e1818bb2365",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00740\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"BTO flat news is relevant to living conditions but not urgent or directly impactful today.\"\n    },\n    {\n      \"id\": \"a00742\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"El Nino effects on pests and wildlife are relevant for parenting/health but not urgent or actionable.\"\n    },\n    {\n      \"id\": \"a00743\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local fire news is routine; no injuries or direct impact on reader's area or safety.\"\n    },\n    {\n      \"id\": \"a00745\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"New child safety measures at mosques are highly relevant for a parent; direct impact on community safety.\"\n    },\n    {\n      \"id\": \"a00746\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Legal follow-up on turbulence incident is local news but not directly relevant to reader's priorities.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1139,
+  "completion_tokens": 328
+ }
+}

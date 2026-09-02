@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d871952c7ef4401a55b86249c7d0a10118e368d433add69c7b04cded2d86d491",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01257\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Critical climate report impacts solar industry and environmental concerns.\"}, {\"id\": \"a01258\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Not relevant to sports, climate, or solar energy interests.\"}, {\"id\": \"a01260\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Crime news unrelated to reader's interests.\"}, {\"id\": \"a01266\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Economic sanctions story unrelated to reader's interests.\"}, {\"id\": \"a01269\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Climate disaster with environmental impact relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1582,
+  "completion_tokens": 247
+ }
+}

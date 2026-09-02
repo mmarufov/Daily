@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "78c7d7c05c6a2b00a6f758e10e367b5ecde4e1bbdf0d8f4dce650c9406143715",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00879\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Space launch spectacle is not relevant to reader's interests or local context.\"\n    },\n    {\n      \"id\": \"a00892\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Yankees/Red Sox baseball is not a stated interest; not relevant to reader.\"\n    },\n    {\n      \"id\": \"a00894\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major roster news for Giants, a primary interest; breaking and relevant.\"\n    },\n    {\n      \"id\": \"a00915\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Little League/9-11 legacy story is not relevant to reader's interests or local context.\"\n    },\n    {\n      \"id\": \"a00946\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Flyers prospect news is not relevant; reader follows Devils, not Flyers.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2345,
+  "completion_tokens": 305
+ }
+}

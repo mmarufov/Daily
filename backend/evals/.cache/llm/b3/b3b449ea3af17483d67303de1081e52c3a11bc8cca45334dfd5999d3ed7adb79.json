@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9464ee58f5b881bbcef68b18d12d2a7a14670b30f1b8302ed1fdaceaa666a2d0",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00020\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news but no direct consumer impact or UK/London focus.\"}, {\"id\": \"a00021\", \"label\": \"fine\", \"tags\": [\"business\", \"economy\"], \"confidence\": 0.85, \"rationale\": \"Economic analysis relevant to business and consumer context, but not urgent.\"}, {\"id\": \"a00022\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Relationship advice off-topic and no relevance to reader interests.\"}, {\"id\": \"a00023\", \"label\": \"must_see\", \"tags\": [\"technology\", \"business\", \"consumer_impact\"], \"confidence\": 0.9, \"rationale\": \"Important AI market insight affecting tech and business sectors.\"}, {\"id\": \"a00024\", \"label\": \"fine\", \"tags\": [\"business\"], \"confidence\": 0.75, \"rationale\": \"Business turnaround story relevant but routine and no direct consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1059,
+  "completion_tokens": 250
+ }
+}

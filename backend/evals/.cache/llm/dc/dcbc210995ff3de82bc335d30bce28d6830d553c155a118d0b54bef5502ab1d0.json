@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "450aba658dd508e316efc3eb30df51ecde88942812d74a940ba37d713ffaa0e9",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00145\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Relevant to Central Asia logistics and fuel costs but not urgent or directly impactful.\"}, {\"id\": \"a00146\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"primary\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan legislative reforms affect trade, governance, and business environment.\"}, {\"id\": \"a00147\", \"label\": \"fine\", \"tags\": [\"primary\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Important regional political event but no direct trade or sanctions impact.\"}, {\"id\": \"a00148\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Fashion news unrelated to trade or business interests.\"}, {\"id\": \"a00149\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"primary\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan political modernization impacts economic and trade environment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3603,
+  "completion_tokens": 271
+ }
+}

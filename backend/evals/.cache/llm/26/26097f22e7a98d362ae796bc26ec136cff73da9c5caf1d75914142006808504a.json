@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ea3ef8105f69c26660900a5c253a127b792ac32be808c0d07cedfbea155a7e11",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00489\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Fox rabies in Staten Island irrelevant to Newark NJ reader.\"}, {\"id\": \"a00491\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"direct\"], \"confidence\": 1.0, \"rationale\": \"Mass shooting in Trenton NJ affects local safety and news.\"}, {\"id\": \"a00493\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Astronomy report unrelated to reader's interests or location.\"}, {\"id\": \"a00497\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Bronx foreclosures relevant to nearby NY area but not primary for Newark.\"}, {\"id\": \"a00498\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Legionnaires' outbreak in NYC unrelated to Newark NJ reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1198,
+  "completion_tokens": 257
+ }
+}

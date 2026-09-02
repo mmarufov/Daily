@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "00cb9b52a172d8f4587c4bb9168c13e863d72501e980b1cfc2f6be9a7b8bd4a6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01090\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Critical AI cyber abilities impact tech security and consumer safety.\"}, {\"id\": \"a01091\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Promotional content about deals, not news or analysis.\"}, {\"id\": \"a01092\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech product update, interesting but routine and missable.\"}, {\"id\": \"a01093\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Military tech news, relevant but not primary or urgent.\"}, {\"id\": \"a01094\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Tech gadget review, relevant but routine and missable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1067,
+  "completion_tokens": 252
+ }
+}

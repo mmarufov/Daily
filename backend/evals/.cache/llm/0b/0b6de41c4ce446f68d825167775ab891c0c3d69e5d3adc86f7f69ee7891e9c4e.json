@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c0f53836c9a5263bed6c0b97098d3ec5c41031b4abd3128ff95aa6dafd4a4fcc",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00238\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine film franchise news, no major event or broad interest.\"}, {\"id\": \"a00240\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Cultural commentary on Dolly Parton, broadly interesting but not major event.\"}, {\"id\": \"a00250\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Music festival coverage, niche but general culture interest.\"}, {\"id\": \"a00261\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"TV show update on DC Universe, entertainment news.\"}, {\"id\": \"a00262\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"TV show retcon news, entertainment niche but general culture.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1513,
+  "completion_tokens": 239
+ }
+}

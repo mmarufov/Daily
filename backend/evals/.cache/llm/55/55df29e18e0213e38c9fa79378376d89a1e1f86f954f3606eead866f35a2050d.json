@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f0de9a0b0295873f406343ac7767e6e5f57bca467cde83152f901da769f8d978",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01204\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Floods in Nepal unrelated to reader's sports or solar interests.\"}, {\"id\": \"a01210\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Jewelry theft unrelated to reader's interests.\"}, {\"id\": \"a01213\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.7, \"rationale\": \"Wildlife trafficking story somewhat related to environment but not primary interest.\"}, {\"id\": \"a01220\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.7, \"rationale\": \"Nepal flood missing persons story not relevant to reader's interests.\"}, {\"id\": \"a01221\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US Navy ship visit unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1480,
+  "completion_tokens": 237
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ce206cb6eb0796b1043c72127003c636bded4b4d7e4aa34e39b54e0ef357a66e",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01104\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Pure promotional content, not general news.\"}, {\"id\": \"a01114\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional sales content, not general news.\"}, {\"id\": \"a01115\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional sales content, not general news.\"}, {\"id\": \"a01121\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Security vulnerabilities have general interest but not major event.\"}, {\"id\": \"a01124\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Tech product reviews are general interest but routine.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 948,
+  "completion_tokens": 224
+ }
+}

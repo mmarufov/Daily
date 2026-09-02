@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "556cd053a43d7ddf8697505ecb00389abaf2213d3bffe85b3e9c7f7e43ba90ed",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00137\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about paddleboarding in Kazakhstan, unrelated to reader's interests or priorities.\"\n    },\n    {\n      \"id\": \"a00138\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on Kazakh cinema and international film, not relevant to reader's sports or political interests.\"\n    },\n    {\n      \"id\": \"a00142\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Covers Kazakhstan's foreign relations and economy, not relevant to Uzbek or Tashkent affairs.\"\n    },\n    {\n      \"id\": \"a00143\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Kazakhstan's legislative developments are not relevant to Uzbek politics or reader's interests.\"\n    },\n    {\n      \"id\": \"a00146\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Covers Kazakhstan's legislative reforms, not related to Uzbekistan or reader's focus areas.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4061,
+  "completion_tokens": 312
+ }
+}

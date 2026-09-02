@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3781a34675178faaeeda47f3254a2aca63e01e55ac8a6b1f2d0530642ca68a2a",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00796\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Economic growth and jobs relevant but not immediate for new mother.\"}, {\"id\": \"a00797\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Recreation Club dispute unrelated to reader's interests.\"}, {\"id\": \"a00798\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General daily news summary, possibly useful but not critical.\"}, {\"id\": \"a00799\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Car rental fraud case unrelated to reader's interests.\"}, {\"id\": \"a00800\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.9, \"rationale\": \"Police raid on company linked to crypto, excluded topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1101,
+  "completion_tokens": 238
+ }
+}

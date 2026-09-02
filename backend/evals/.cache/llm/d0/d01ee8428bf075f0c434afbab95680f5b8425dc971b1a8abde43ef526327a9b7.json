@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "252f2aa08b6d1f5b1802e8785b2d2e25cfd8eed4824b13c47358f40485dbc5f8",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: Honestly I just want to stay informed. Big world news, UK news, some tech and science when it's interesting. I work in marke"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"User wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\",\n  \"interests\": {\n    \"topics\": [\"world news\", \"UK news\", \"technology\", \"science\", \"business\"],\n    \"people\": [],\n    \"locations\": [\"London\"],\n    \"industries\": [\"marketing\"],\n    \"excluded_topics\": [\"sports\", \"celebrity\"],\n    \"notes\": \"User works in marketing and is interested in business news that affects consumers.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [\"world news\", \"UK news\", \"business\"],\n    \"current_interests\": [\"technology\", \"science\"],\n    \"people\": [],\n    \"locations\": [\"London\"],\n    \"industries\": [\"marketing\"],\n    \"excluded_topics\": [\"sports\", \"celebrity\"],\n    \"utility_priorities\": [\"staying informed\", \"consumer impact\"],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [\"informative\", \"concise\"],\n    \"life_context\": \"User works in marketing in London and is interested in news that affects consumers.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [\"world news\", \"UK news\", \"business\"],\n      \"must_cover_entities\": [],\n      \"must_avoid_topics\": [\"sports\", \"celebrity\"],\n      \"preferred_source_types\": [\"headlines\", \"long reads\"],\n      \"coverage_targets\": [\"consumer impact\"],\n      \"specificity_level\": \"mixed\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 463,
+  "completion_tokens": 328
+ }
+}

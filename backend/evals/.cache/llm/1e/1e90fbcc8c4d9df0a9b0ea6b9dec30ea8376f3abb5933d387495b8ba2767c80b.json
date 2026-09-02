@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "20d6257b96e7624d020bafd28b749c014c81068d997228e46c73d65d16266ad3",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"results\": [\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a robot from Hugging Face, which is not relevant to the user's technical interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"This article pertains to G20 politics and does not intersect with the user's interests in technology or fintech.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article covers a sports transfer, which is excluded from the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"This article is about US domestic politics and does not align with the user's interests.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.7,\n      \"reason\": \"The article discusses the improved sentiment towards Thai banks, which is relevant to the fintech landscape in Southeast Asia.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article covers a meeting between leaders of Tajikistan and Russia, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"This article is about an actor and does not relate to the user's technical or fintech interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article is a review of a TV show, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.6,\n      \"reason\": \"The article discusses open-source marketing mix modeling and AI, which intersects with the user's interest in AI engineering.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a US aircraft carrier, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"This article is about an actor's career and does not align with the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses AI restrictions in NYC schools, which is not relevant to the user's professional context.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a consumer group's criticism of Booking.com, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"This article discusses a celebrity and is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses US-Iran tensions, which is outside the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a murder case involving a celebrity, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article previews a boys soccer team, which is excluded from the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a political nomination in the US, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses pet licensing in Singapore, which is not relevant to the user's technical interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2621,
+  "completion_tokens": 831
+ }
+}

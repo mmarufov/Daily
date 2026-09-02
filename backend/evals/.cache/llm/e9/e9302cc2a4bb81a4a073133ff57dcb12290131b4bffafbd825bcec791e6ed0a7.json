@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2291295bd4d70adc282d383fd1374ec8eac87ab96e5507ae2e96fcf986a735cf",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01262\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"War in Ukraine unrelated to energy markets or reader's interests.\"}, {\"id\": \"a01263\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"UK policy on Israel unrelated to energy or economic security.\"}, {\"id\": \"a01264\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"US-Iran hostilities impact energy security and geopolitical stability.\"}, {\"id\": \"a01265\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Conflict in Strait of Hormuz directly affects energy supply routes.\"}, {\"id\": \"a01266\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Iran economic crisis affects oil markets and geopolitical risk.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1571,
+  "completion_tokens": 265
+ }
+}

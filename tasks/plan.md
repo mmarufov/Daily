@@ -1,5 +1,37 @@
 # Daily Redesign — Active Plan
 
+## S0 — Evaluation system (approved 2026-09-01)
+
+Plan: `~/.claude/plans/create-a-plan-to-adaptive-cray.md`. Decisions: labeler = OpenAI gpt-4.1-mini pass 1 / gpt-4.1 pass 2 with a hard $30 cap; snapshots + LLM cache committed; prod build log included; GitHub Actions CI.
+
+- [x] P0 track `backend/evals`, lazy OpenAI client, `requirements-dev.txt`, drop duplicate `scorecard.py`
+- [x] P1 `evals/snapshot.py` + frozen `snapshots/2026-08-31.json.gz` + manifest
+- [x] P2 `evals/llm_cache.py` caching client (chat + embeddings), meter, offline mode
+- [x] P3 personas built via `build_complete_user_preferences`, 10 persona files
+- [x] P4 `evals/fake_db.py` + `evals/runners.py` (ProductionRunner llm/fallback, PrototypeRunner) with stage traces
+- [x] P5 `evals/label.py` pooling bootstrap + review CLI; `labels/<snapshot>/{persona.jsonl,events.json,needles.json}`
+- [x] P6 `evals/metrics.py`, `evals/run.py`, scorecards, `compare.py` rewrite, README rewrite
+- [x] P7 `tests/test_eval_gate.py` + `.github/workflows/backend-tests.yml`
+- [x] P8 `feed_build_log` table + `_record_feed_build` in `get_personalized_feed`
+
+### S0 completion pass (2026-09-01)
+
+- [x] Apply an independently reasoned Codex editorial pass to every queued `must_see` and
+      contested label for all ten personas with honest `source=agent` provenance; retain the
+      interactive `source=human` pass as a separate product-owner gate.
+- [x] Re-run production and prototype scorers fully offline against the reviewed labels.
+- [x] Refresh `baseline-prod-llm.json` and `baseline-proto.json` from those reviewed runs,
+      with per-snapshot delta summaries for the live and quiet corpora.
+- [x] Run the complete backend suite, snapshot integrity checks, and offline eval gate.
+- [x] Commit only the S0 evaluation slice; keep unrelated dirty-worktree changes uncommitted.
+- [x] Make quiet derivation clone/prune ground truth and measure must-see `followup` recall.
+- [x] Freeze and agent-review the second live corpus (`2026-09-02`, 50+ hours after the first).
+- [x] Derive `2026-08-31-quiet` after agent-reviewing event tiers and memberships.
+- [ ] Time-based follow-up: freeze the third live corpus on or after 2026-09-04 UTC, then
+      bootstrap/review it and refresh both per-snapshot baselines.
+
+---
+
 This file tracks the **current phase** of the whole-app redesign. The full design system is in `DESIGN.md`; the per-surface execution roadmap (Phases 1–10) is in `tasks/design-redesign-plan.md`. This file is the focused checklist for what's being built right now.
 
 ---

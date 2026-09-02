@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ee41c4cad05b79f3832be9c6e11e6747ec508f2b6a77b12ffe0f0964353b7857",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00753\",\n      \"label\": \"fine\",\n      \"tags\": [\"government_schemes_for_parents\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"On-topic for parenting/government schemes, but commentary not urgent or actionable.\"\n    },\n    {\n      \"id\": \"a00758\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"local_news\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Fatal HDB fire is urgent local safety news for a mother in public housing.\"\n    },\n    {\n      \"id\": \"a00760\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Beauty product launch is off-topic promo, not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00765\",\n      \"label\": \"must_see\",\n      \"tags\": [\"healthcare_advisories\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Influenza advisory is directly relevant to health, parenting, and daily life.\"\n    },\n    {\n      \"id\": \"a00772\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"AI/tech industry news is excluded and not relevant to reader's priorities.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1141,
+  "completion_tokens": 328
+ }
+}

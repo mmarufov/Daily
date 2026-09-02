@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a699fc18448e5b808fbf117a4d11b5f0e7f2abefa6953925942f81f94fd510db",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01259\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"International security news; notable but not a global must_see for all adults.\"\n    },\n    {\n      \"id\": \"a01268\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major disaster with high death toll; significant global event.\"\n    },\n    {\n      \"id\": \"a01271\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Contextual analysis of major floods; background, not breaking must_see.\"\n    },\n    {\n      \"id\": \"a01272\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Notable tech/policy career move; not globally essential.\"\n    },\n    {\n      \"id\": \"a01276\",\n      \"label\": \"fine\",\n      \"tags\": [\"followup\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Followup on hybrid attacks; important but not must_see for all.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1440,
+  "completion_tokens": 294
+ }
+}

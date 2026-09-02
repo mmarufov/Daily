@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9112c38755dd4f28e3d014228fa607de2cb7b77b29a3218391859916e76a2bc1",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00756\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Local retail closure unrelated to tech, fintech, or engineering.\"}, {\"id\": \"a00757\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Mall closure news irrelevant to reader's tech and fintech interests.\"}, {\"id\": \"a00758\", \"label\": \"never\", \"tags\": [\"off_topic\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Fire incident is local news but not related to reader's tech or fintech focus.\"}, {\"id\": \"a00759\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"National Service awards unrelated to reader's professional interests.\"}, {\"id\": \"a00760\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.95, \"rationale\": \"Beauty product launch irrelevant and promotional content.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1215,
+  "completion_tokens": 246
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aced78e60146854a0a7007a1c8c5947e78514989f3f2e1ece46519cf9a36fd9f",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00383\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"business\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant tech/business ethics story, but not urgent or directly impactful for UK consumer or daily life.\"\n    },\n    {\n      \"id\": \"a00389\",\n      \"label\": \"never\",\n      \"tags\": [\"sports\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Primarily sports/culture war commentary; user wants to avoid sports and celebrity news.\"\n    },\n    {\n      \"id\": \"a00391\",\n      \"label\": \"never\",\n      \"tags\": [\"sports\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports-adjacent scam story; not relevant to user's interests, falls under sports/celebrity exclusion.\"\n    },\n    {\n      \"id\": \"a00456\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey local news; not relevant to UK/London/world/tech/science focus.\"\n    },\n    {\n      \"id\": \"a00459\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey local news; not relevant to user's interests or location.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1608,
+  "completion_tokens": 336
+ }
+}

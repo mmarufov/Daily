@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1cf240d4cde4196f3d36f486f1eca3f4c623a827fb18ff02fef396387e4a2203",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00792\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Routine daily summary, may contain some relevant news but mostly missable.\"}, {\"id\": \"a00798\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Another routine daily summary, similar to a00792, missable.\"}, {\"id\": \"a00800\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"International legal probe on a company, relevant for world news and business interest.\"}, {\"id\": \"a00801\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Singapore tourism branding, not relevant to London or primary interests.\"}, {\"id\": \"a00802\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.8, \"rationale\": \"World Bank dispute center opening is relevant world and business news, but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 996,
+  "completion_tokens": 257
+ }
+}

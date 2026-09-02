@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9e3f93057230e75b8adeb56e7e9c032f228eb4707a4d10b133161f2a264f0fcc",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00431\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Girls volleyball in NJ unrelated to AI or reader interests.\"}, {\"id\": \"a00435\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Girls volleyball in NJ unrelated to AI or reader interests.\"}, {\"id\": \"a00445\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Girls soccer in NJ unrelated to AI or reader interests.\"}, {\"id\": \"a00453\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"General NJ news not related to AI or reader interests.\"}, {\"id\": \"a00454\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Tax bracket creep affects money, a utility priority for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1115,
+  "completion_tokens": 237
+ }
+}

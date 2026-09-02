@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8aa6a76e71c6d07001bb8e64709e097984529872513f1a6b6429f3d6cd7e67ed",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00801\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about Singapore's tourism branding, irrelevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00907\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Covers Tiger Woods and US legal news; not relevant to reader's interests or region.\"\n    },\n    {\n      \"id\": \"a00908\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about a US striker and English football; not related to Uzbek or local football.\"\n    },\n    {\n      \"id\": \"a00909\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Covers US baseball and team ownership; not relevant to reader's interests or region.\"\n    },\n    {\n      \"id\": \"a00910\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about US college football and NFL rules; not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1196,
+  "completion_tokens": 322
+ }
+}

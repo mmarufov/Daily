@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fd53af02e81395aba59bc6ef7d4563a51d910c9eec39fabd56d55110debd7add",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00258\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Breakdancer Netflix film unrelated to Uzbek sports or politics.\"}, {\"id\": \"a00266\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Old Twilight Zone episode unrelated to reader's interests.\"}, {\"id\": \"a00287\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"GTA modding unrelated to Uzbek sports or politics.\"}, {\"id\": \"a00302\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Nvidia DLSS tech unrelated to reader's interests.\"}, {\"id\": \"a00314\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Arena shooter game studio news unrelated to Uzbek sports or politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3021,
+  "completion_tokens": 238
+ }
+}

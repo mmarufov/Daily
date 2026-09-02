@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b9b1c2fbf171d5629b53a862fbf3d8f1dbb351e85bbd6e27b35bf2f78fec89a2",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00771\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI transformation unrelated to energy or geopolitical developments.\"}, {\"id\": \"a00772\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Singapore AI future, unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00773\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General daily news summary, may contain relevant info but not focused.\"}, {\"id\": \"a00774\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Singapore PM visit to Bangkok unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00775\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Stablecoin regulation unrelated to energy markets or geopolitical developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1049,
+  "completion_tokens": 238
+ }
+}

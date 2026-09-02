@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bacde62b8ecce87710a6aa8267032cce5323cb5f7d480dd1fb0a91b1ccf4d5ed",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00842\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI engineering product decisions but not urgent or Singapore-specific.\"}, {\"id\": \"a00843\", \"label\": \"must_see\", \"tags\": [\"Southeast Asia startups\", \"fintech\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Major fintech funding news in Southeast Asia, relevant to Singapore fintech scene.\"}, {\"id\": \"a00844\", \"label\": \"must_see\", \"tags\": [\"Southeast Asia startups\", \"fintech\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Same major funding event as a00843, important for regional fintech context.\"}, {\"id\": \"a00845\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"Singapore\", \"Southeast Asia startups\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Singapore-based AI startup expansion, relevant but routine update.\"}, {\"id\": \"a00847\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Personal story unrelated to reader's tech or fintech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3964,
+  "completion_tokens": 292
+ }
+}

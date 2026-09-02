@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "66195d855ea3dc23c4a257ff2ba2858e0a8819a6fe966d2c2ffdf35397206cb8",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00595\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Russian oil refinery shutdown may affect regional trade, but not directly tied to reader's core interests today.\"\n    },\n    {\n      \"id\": \"a00600\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major disruption to Russian grain exports impacts regional trade routes and business; directly relevant to import-export.\"\n    },\n    {\n      \"id\": \"a00612\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Russian aluminum plant closures affect commodities, but not urgent for reader's daily business decisions.\"\n    },\n    {\n      \"id\": \"a00629\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Launch of digital ruble is a major change in Russian payments, crucial for cross-border business operations.\"\n    },\n    {\n      \"id\": \"a00786\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore inflation and electricity prices are irrelevant to Central Asian import-export business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2492,
+  "completion_tokens": 324
+ }
+}

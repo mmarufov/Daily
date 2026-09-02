@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "675838dc9f4358adeccd0918ceab6595e84994ade5ee682e20c3337c0a967193",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00753\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Business news relevant to consumer impact but not UK or tech focused.\"}, {\"id\": \"a00754\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Corporate governance insight relevant to marketing/business but not urgent or UK-specific.\"}, {\"id\": \"a00755\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"technology\"], \"confidence\": 0.9, \"rationale\": \"New AI tech improving public transport safety and reliability is relevant and impactful.\"}, {\"id\": \"a00756\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Leadership change in insurance firm is business news but not directly impactful or UK-based.\"}, {\"id\": \"a00757\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General daily news summary, useful but not must-see.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1021,
+  "completion_tokens": 258
+ }
+}

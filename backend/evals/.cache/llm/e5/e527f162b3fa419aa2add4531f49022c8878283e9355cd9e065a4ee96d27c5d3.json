@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ddc8afa248e298033ad88bc22c771813f51f06796f2c7ec1e51bfada254428e3",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00124\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to global supply chains but not focused on Singapore or fintech AI.\"}, {\"id\": \"a00125\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Conflict news in Myanmar unrelated to reader's interests.\"}, {\"id\": \"a00136\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Singapore political diversity not related to tech or fintech regulation.\"}, {\"id\": \"a00140\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI integration news in Hong Kong arts is interesting but not core to reader's deep AI engineering focus.\"}, {\"id\": \"a00142\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Singapore-Kazakhstan ties relevant regionally but not core fintech or AI engineering news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2265,
+  "completion_tokens": 254
+ }
+}

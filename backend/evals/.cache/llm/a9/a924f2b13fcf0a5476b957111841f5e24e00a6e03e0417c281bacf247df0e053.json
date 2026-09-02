@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ee50931da8d0d4677bbea21568cc04274d14027bce2eb23c53c9daa4ac7615ba",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00598\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Russian aviation news is secondary interest, no direct trade impact.\"}, {\"id\": \"a00599\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Prisoner exchange unrelated to trade or regional economy.\"}, {\"id\": \"a00600\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Russian grain export disruptions affect regional trade and commodity flows.\"}, {\"id\": \"a00602\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tax relief for Russian sellers is relevant but not urgent for reader.\"}, {\"id\": \"a00603\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Drone attacks on retailer hubs unrelated to reader's trade interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1262,
+  "completion_tokens": 244
+ }
+}

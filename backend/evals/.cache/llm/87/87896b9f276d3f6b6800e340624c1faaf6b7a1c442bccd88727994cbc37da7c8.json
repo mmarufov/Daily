@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6042b030ed5b5686452715b812f6e0dd935bb86651d058887f472657d8795b33",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01075\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Related to family logistics but not local or urgent news.\"}, {\"id\": \"a01076\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Promotional content unrelated to reader's interests.\"}, {\"id\": \"a01078\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Promotional travel deals irrelevant to reader.\"}, {\"id\": \"a01085\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Promotional telecom offer, off-topic.\"}, {\"id\": \"a01089\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Astronomy event unrelated to reader's priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1131,
+  "completion_tokens": 234
+ }
+}

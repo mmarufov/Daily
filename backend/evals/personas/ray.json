@@ -1,0 +1,146 @@
+{
+ "key": "ray",
+ "name": "Ray — Newark, New Jersey",
+ "axis": "hyper-local + named entities; tests local recall and entity precision",
+ "transcript": null,
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "I live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening in Essex County. I'm a big Devils fan and I follow the Giants. I don't care about celebrity gossip or crypto.",
+  "interests": {
+   "topics": [
+    "New Jersey politics",
+    "NJ Transit",
+    "property taxes",
+    "public schools",
+    "New Jersey Devils",
+    "New York Giants",
+    "NHL"
+   ],
+   "people": [
+    "Mikal Bridges"
+   ],
+   "locations": [
+    "New Jersey",
+    "Newark",
+    "Essex County"
+   ],
+   "industries": [
+    "local government",
+    "public transit"
+   ],
+   "excluded_topics": [
+    "celebrity gossip",
+    "cryptocurrency",
+    "entertainment"
+   ],
+   "notes": "Commutes on NJ Transit, kids in public school."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "New Jersey politics",
+    "New Jersey Devils",
+    "New York Giants",
+    "NJ Transit",
+    "public schools"
+   ],
+   "current_interests": [
+    "New Jersey politics",
+    "NJ Transit",
+    "New Jersey Devils"
+   ],
+   "people": [
+    "Mikal Bridges"
+   ],
+   "locations": [
+    "New Jersey",
+    "Newark",
+    "Essex County"
+   ],
+   "industries": [
+    "local government",
+    "public transit"
+   ],
+   "excluded_topics": [
+    "celebrity gossip",
+    "cryptocurrency",
+    "entertainment"
+   ],
+   "expanded_exclusions": [
+    "red carpet",
+    "box office",
+    "bitcoin",
+    "token sale"
+   ],
+   "utility_priorities": [
+    "local",
+    "money",
+    "family"
+   ],
+   "content_depth": "breaking",
+   "tone_preferences": [
+    "neutral"
+   ],
+   "life_context": "Lives in Newark NJ, commutes on NJ Transit, two kids in public school.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "New Jersey politics",
+     "NJ Transit",
+     "New Jersey Devils"
+    ],
+    "must_cover_entities": [
+     "New Jersey Devils",
+     "New York Giants",
+     "NJ Transit"
+    ],
+    "must_avoid_topics": [
+     "celebrity gossip",
+     "cryptocurrency"
+    ],
+    "preferred_source_types": [
+     "publisher",
+     "breadth"
+    ],
+    "coverage_targets": [
+     "New Jersey",
+     "Newark",
+     "Essex County"
+    ],
+    "specificity_level": "specific"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "New Jersey politics",
+    "NJ Transit",
+    "New Jersey Devils"
+   ],
+   "must_cover_entities": [
+    "New Jersey Devils",
+    "New York Giants",
+    "NJ Transit"
+   ],
+   "must_avoid_topics": [
+    "celebrity gossip",
+    "cryptocurrency"
+   ],
+   "preferred_source_types": [
+    "publisher",
+    "breadth"
+   ],
+   "coverage_targets": [
+    "New Jersey",
+    "Newark",
+    "Essex County"
+   ],
+   "specificity_level": "specific"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "hand-written",
+  "cache_key": null,
+  "date": "2026-08-30"
+ }
+}

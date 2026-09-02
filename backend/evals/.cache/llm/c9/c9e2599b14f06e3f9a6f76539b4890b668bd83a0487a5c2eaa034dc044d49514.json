@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fe8c54247a22917027ef0dab99682eecbcb201fa589b6b619ef6303615e89b9f",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00572\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Russia's oil revenue affects economy but not directly trade or sanctions.\"}, {\"id\": \"a00574\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"School bomb threats unrelated to trade, economy, or sanctions.\"}, {\"id\": \"a00577\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"Economic lifelines tied to Ukraine war impact Russia's economy and sanctions.\"}, {\"id\": \"a00579\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Weather record in Russia unrelated to trade or sanctions.\"}, {\"id\": \"a00585\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Military strike news relevant to regional stability but not directly trade or sanctions.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1225,
+  "completion_tokens": 252
+ }
+}

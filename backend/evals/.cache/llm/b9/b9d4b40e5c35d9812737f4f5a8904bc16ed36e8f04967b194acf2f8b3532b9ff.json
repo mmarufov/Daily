@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f7cb170961e7052f05e92d5233e5b91ce287cfbb8d5cc36db46a7ab897850ac1",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00749\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine business news on SGX mid-caps, general interest but missable.\"}, {\"id\": \"a00751\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Transport contract news, interesting but not major for general audience.\"}, {\"id\": \"a00752\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Auction of luxury items from money laundering case, notable but niche.\"}, {\"id\": \"a00758\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Feature on retail empire origins, general interest but not urgent.\"}, {\"id\": \"a00759\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Corporate governance discussion, relevant but routine business news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 958,
+  "completion_tokens": 247
+ }
+}

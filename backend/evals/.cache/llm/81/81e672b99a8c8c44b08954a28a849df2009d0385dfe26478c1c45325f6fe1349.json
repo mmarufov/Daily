@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2125f1012cbe3fc3c2ae879c94c3bc6218fdbfd94b65fdcc19dae238a687be1b",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00010\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Business news on Japanese stocks; relevant but not primary or urgent.\"}, {\"id\": \"a00011\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"AI demand impacts tech sector and marketing security tools; important for tech and consumer impact.\"}, {\"id\": \"a00012\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"US political news; world news but less relevant to reader's focus and no consumer impact.\"}, {\"id\": \"a00014\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"OpenAI cybersecurity AI model is major tech/science news with consumer safety implications.\"}, {\"id\": \"a00015\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"GoPro AI pivot relevant to tech interest but less urgent or impactful.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1030,
+  "completion_tokens": 277
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "117de02d9c92d9b304b9a7648319275edcaec07395e395b0b5ff3332832f6757",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00964\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"About Winnipeg Jets goalie, no NJ or Devils relevance.\"}, {\"id\": \"a00965\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Devils goalie situation with Hellebuyck trade request affects team and fan interest.\"}, {\"id\": \"a00966\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Buffalo Sabres prospects, no NJ or Devils relevance.\"}, {\"id\": \"a00967\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Columbus Blue Jackets scouting staff, unrelated to NJ or Devils.\"}, {\"id\": \"a00968\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Detroit Red Wings GM search, no NJ or Devils relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3868,
+  "completion_tokens": 251
+ }
+}

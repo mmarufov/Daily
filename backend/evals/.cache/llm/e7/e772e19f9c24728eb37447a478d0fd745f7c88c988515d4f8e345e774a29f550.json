@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1e4567cc8654a680ab0b86e7c1a67f302cc6937516fc9a00906286e1ae753926",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00892\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"American baseball irrelevant to Uzbek sports and politics interests.\"}, {\"id\": \"a00893\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"SEC legal dispute unrelated to Uzbek topics or interests.\"}, {\"id\": \"a00894\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"NFL roster news irrelevant to Uzbek sports or politics.\"}, {\"id\": \"a00895\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"Little League World Series unrelated to Uzbek sports or politics.\"}, {\"id\": \"a00896\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"Fantasy football predictions irrelevant to Uzbek interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1195,
+  "completion_tokens": 248
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a75c6723e82dd0d7e7ad0665c33403902f31285082e99d050f121b17b0795939",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to Central Asia, trade, or business interests.\"}, {\"id\": \"a00002\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"China's economic data is secondary but relevant to regional trade context.\"}, {\"id\": \"a00004\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"K-beauty retail expansion unrelated to reader's interests.\"}, {\"id\": \"a00005\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"U.S. political media disputes irrelevant to reader.\"}, {\"id\": \"a00006\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"U.S.-Iran hostilities do not affect reader's trade or region.}]}  Note: last rationale missing closing quote, fix it. Corrected version: {\" \n  }]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1252,
+  "completion_tokens": 266
+ }
+}

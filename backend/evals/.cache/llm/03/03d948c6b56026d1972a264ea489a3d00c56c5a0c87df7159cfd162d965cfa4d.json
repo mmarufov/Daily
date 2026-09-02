@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "75e288bc10ebf7dbd43024be9246429c0d772db7147426fdc34d755007ae1e40",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00786\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Electricity price rise impacts European energy security and inflation.\"}, {\"id\": \"a00788\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"China tax reform affects Southeast Asia, less relevant to European energy security.\"}, {\"id\": \"a00793\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Enterprise AI expansion in Japan unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00796\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Southeast Asian agritech investment not relevant to energy security or Europe.\"}, {\"id\": \"a00797\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Philippines fintech market compliance unrelated to energy or European geopolitics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3209,
+  "completion_tokens": 250
+ }
+}

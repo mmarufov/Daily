@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f8bb6b696b68529f46d3cf31e159d283452883fb90d75eaa46597a2908466356",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01306\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"US strikes near Strait of Hormuz directly impact energy security and geopolitical risk.\"}, {\"id\": \"a01308\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Berlin local political move, relevant but not critical for energy security.\"}, {\"id\": \"a01309\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Iran fuel crisis affects oil markets and geopolitical stability.\"}, {\"id\": \"a01312\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Bangladesh defense alliance unrelated to energy or economic security.\"}, {\"id\": \"a01316\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"G20 meeting with Iran war context relevant but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1128,
+  "completion_tokens": 266
+ }
+}

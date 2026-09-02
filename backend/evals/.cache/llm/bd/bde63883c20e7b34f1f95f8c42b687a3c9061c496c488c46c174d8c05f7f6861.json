@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "2399d658b47691a8edb843a47f9610f7396818d318f315c1a47a91551a85d82a",
+  "preview": "READER PROFILE:\nREADER: Lives in Newark NJ, commutes on NJ Transit, two kids in public school.\nDEPTH: breaking\n\nWANTS:\n  [PRIMARY] New Jersey Devils  (entity)\n  [PRIMARY] New York Giants  (entity)\n  ["
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 50,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 51,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"NJ Transit\",\n      \"kind\": \"direct\",\n      \"why\": \"Relevant to commuting and safety at Penn Station.\"\n    },\n    {\n      \"id\": 52,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 53,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 54,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"public schools\",\n      \"kind\": \"contextual\",\n      \"why\": \"Affordable housing impacts local community and schools.\"\n    },\n    {\n      \"id\": 55,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"New Jersey politics\",\n      \"kind\": \"direct\",\n      \"why\": \"Political developments in New Jersey are relevant.\"\n    },\n    {\n      \"id\": 56,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"New Jersey politics\",\n      \"kind\": \"direct\",\n      \"why\": \"Gateway tunnel funding affects regional transit.\"\n    },\n    {\n      \"id\": 57,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 58,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"public schools\",\n      \"kind\": \"contextual\",\n      \"why\": \"Attendance issues in NYC schools affect local education.\"\n    },\n    {\n      \"id\": 59,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 60,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 61,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 62,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 63,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 64,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"public schools\",\n      \"kind\": \"contextual\",\n      \"why\": \"Study on public school benefits is relevant.\"\n    },\n    {\n      \"id\": 65,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"public schools\",\n      \"kind\": \"contextual\",\n      \"why\": \"Discussion on summer slide impacts local education.\"\n    },\n    {\n      \"id\": 66,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 67,\n      \"keep\": true,\n      \"score\": 0.5,\n      \"matched\": \"family\",\n      \"kind\": \"serendipity\",\n      \"why\": \"Community event honoring a local tragedy.\"\n    },\n    {\n      \"id\": 68,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 69,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 70,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 71,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1688,
+  "completion_tokens": 1165
+ }
+}

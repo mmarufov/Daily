@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fe50abaaaa75c9ec144922e5c94ba4d94d92ba668d86634396e09696ff14276e",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01254\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Legal trial news, relevant but not major event or urgent.\"}, {\"id\": \"a01255\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Court case involving media figures, interesting but not major.\"}, {\"id\": \"a01256\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Human interest/legal case, notable but not urgent or major.\"}, {\"id\": \"a01257\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"UN climate report with global impact and major news value.\"}, {\"id\": \"a01258\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Brexit-related deportation story, notable but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1440,
+  "completion_tokens": 247
+ }
+}

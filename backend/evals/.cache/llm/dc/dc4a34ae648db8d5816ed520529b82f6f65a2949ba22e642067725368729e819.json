@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0b9250c0e724ae0c74f8822fc0f8f9c95231310b292fac215d93e5b69e7b7f83",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01020\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.9, \"rationale\": \"Tech legal battle relevant to AI and business, but no direct consumer impact.\"}, {\"id\": \"a01021\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Focus on Grindr app and LGBTQ+ niche, not aligned with reader's interests.\"}, {\"id\": \"a01022\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.8, \"rationale\": \"Sustainable microcar tech relevant but secondary interest, missable.\"}, {\"id\": \"a01023\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.85, \"rationale\": \"Tech and pollution issue relevant but no direct consumer impact or UK focus.\"}, {\"id\": \"a01024\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.8, \"rationale\": \"AI and robotaxis topic relevant to tech interest, but routine coverage.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1335,
+  "completion_tokens": 257
+ }
+}

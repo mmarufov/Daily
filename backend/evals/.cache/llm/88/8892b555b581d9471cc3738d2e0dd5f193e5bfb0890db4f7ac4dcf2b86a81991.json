@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "24d7aed525563cdd5a3787a4a1ed544112a735f5f4039e09fabe822a46e31100",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00773\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Relevant fintech hiring in Singapore but routine, no deep technical or regulatory news.\"}, {\"id\": \"a00774\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Political dialogue unrelated to tech, fintech, or Singapore's tech scene.\"}, {\"id\": \"a00775\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Workplace policies not related to fintech or tech engineering interests.\"}, {\"id\": \"a00777\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Singapore-China AI collaboration relevant but lacks deep technical or regulatory detail.\"}, {\"id\": \"a00778\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Sanctions on Singapore entities relevant to fintech regulation and compliance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1154,
+  "completion_tokens": 249
+ }
+}

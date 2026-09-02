@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a9d48e3d7f89c5230d7d89d7da5a3930555f64e224ed158ef8ae502145e49f23",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00811\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Marketing mix modeling unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00812\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Creator economy in Asia unrelated to reader's interests.\"}, {\"id\": \"a00822\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Southeast Asia manufacturing unrelated to reader's sports or solar interests.\"}, {\"id\": \"a00823\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Manufacturing ecosystem in Southeast Asia unrelated to reader's interests.\"}, {\"id\": \"a00825\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI impact on jobs in India unrelated to reader's sports or solar focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3709,
+  "completion_tokens": 244
+ }
+}

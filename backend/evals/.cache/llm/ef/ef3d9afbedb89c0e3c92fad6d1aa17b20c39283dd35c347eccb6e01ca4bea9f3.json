@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "525330bc6cbf93a1d5a6a83552b308a5ae8a95315aa16e703124e6b75e026a5a",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00566\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"Geopolitical but not directly about energy or economic impact.\"}, {\"id\": \"a00573\", \"label\": \"must_see\", \"tags\": [\"energy\", \"oil and gas prices\", \"geopolitical developments\"], \"confidence\": 0.95, \"rationale\": \"Energy company exit affects energy markets and security.\"}, {\"id\": \"a00579\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Humanitarian disaster unrelated to energy or economics.\"}, {\"id\": \"a00585\", \"label\": \"must_see\", \"tags\": [\"energy\", \"oil and gas prices\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Major accident at key energy complex impacts supply and safety.\"}, {\"id\": \"a00593\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment event unrelated to energy or economics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1101,
+  "completion_tokens": 256
+ }
+}

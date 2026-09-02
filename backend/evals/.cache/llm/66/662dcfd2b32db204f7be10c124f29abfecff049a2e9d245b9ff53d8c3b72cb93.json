@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "76f394307d9f273a6286d1eb4be3039ede4da22900508b604413bf201ad54af2",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00349\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major scientific achievement, but not a must_see for all; strong general interest.\"\n    },\n    {\n      \"id\": \"a00350\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"International crime news; tragic but not a major_event for all readers.\"\n    },\n    {\n      \"id\": \"a00353\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Niche music event; not general news or of broad relevance.\"\n    },\n    {\n      \"id\": \"a00357\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports commentary; too narrow for a general audience with no preferences.\"\n    },\n    {\n      \"id\": \"a00364\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major natural disaster with missing persons; significant event for general awareness.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1004,
+  "completion_tokens": 294
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2b38bc3a27ce4a7fc53e671cff6c66c5a02a0f635ab02d112e07d04136b858f7",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00777\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Healthcare and AI collaboration relevant but not urgent or directly impactful.\"}, {\"id\": \"a00778\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Singapore\"], \"confidence\": 0.6, \"rationale\": \"Sanctions mention Singapore entities but no direct local impact on reader.\"}, {\"id\": \"a00779\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.5, \"rationale\": \"General daily news summary, may contain relevant info but not focused.\"}, {\"id\": \"a00780\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"International tribunal bid is background government news, no direct impact.\"}, {\"id\": \"a00782\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"government schemes for parents\", \"cost of living\"], \"confidence\": 0.95, \"rationale\": \"Childcare leave salary caps affect parental leave benefits and finances directly.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1097,
+  "completion_tokens": 264
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e370a8edaf374093d3500739219ec0fba4bc3171315854ed2531b24c260009ef",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00132\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to reader's interests or context.\"}, {\"id\": \"a00138\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Kazakh cinema unrelated to reader's sports or environmental interests.\"}, {\"id\": \"a00140\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI in arts and entertainment unrelated to reader's interests.\"}, {\"id\": \"a00145\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environmental impact\"], \"confidence\": 0.8, \"rationale\": \"Relevant to environmental impact and energy efficiency but not primary interest.\"}, {\"id\": \"a00147\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environmental impact\"], \"confidence\": 0.7, \"rationale\": \"Nuclear disarmament and energy use relevant to environmental concerns but not primary.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3258,
+  "completion_tokens": 251
+ }
+}

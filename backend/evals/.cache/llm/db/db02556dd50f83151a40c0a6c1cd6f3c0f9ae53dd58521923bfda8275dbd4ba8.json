@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e98b1998f552fb0d8a1a628f8c698b0646be638fc864fe63df1d77269998b370",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00635\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"New Kazakhstan entry permits affect cross-border travel and trade logistics.\"}, {\"id\": \"a00636\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Latvian import ban on Russian goods unlikely to impact Tajikistan trade directly.\"}, {\"id\": \"a00638\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"US sanctions policy on Russia affects trade and economic relations relevant to reader.\"}, {\"id\": \"a00640\", \"label\": \"fine\", \"tags\": [\"off_topic\", \"major_event\"], \"confidence\": 0.7, \"rationale\": \"Major event but less directly relevant to reader's trade interests in Central Asia.\"}, {\"id\": \"a00641\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.75, \"rationale\": \"Russian grain export shifts affect regional trade routes, but indirect for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3681,
+  "completion_tokens": 277
+ }
+}

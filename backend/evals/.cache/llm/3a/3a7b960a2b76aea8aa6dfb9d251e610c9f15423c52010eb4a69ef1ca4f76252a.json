@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "2f589e223cbeb451b7865b3e4713fcf4b6990fec93149d8751f211853752a3e3",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: fantasy sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4458,
+  "completion_tokens": 1012
+ }
+}

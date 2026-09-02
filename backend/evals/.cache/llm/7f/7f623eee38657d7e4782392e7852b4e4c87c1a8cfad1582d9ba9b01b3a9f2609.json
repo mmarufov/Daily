@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "c480956f0d87366463bf72805fd4b178581ff4c053556337cf0de713270267bf",
+  "preview": "READER PROFILE:\nREADER: Senior backend engineer at a Singapore fintech; evaluates tools for production use.\nDEPTH: deep\n\nWANTS:\n  [PRIMARY] Singapore  (entity)\n  [PRIMARY] MAS  (entity)\n  [PRIMARY] AI"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 100,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 101,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 102,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 103,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"cybersecurity\",\n      \"kind\": \"direct\",\n      \"why\": \"Relevant to cybersecurity and AI engineering.\"\n    },\n    {\n      \"id\": 104,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 831,
+  "completion_tokens": 269
+ }
+}

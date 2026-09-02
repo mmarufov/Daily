@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "67ff166a08a8a3a12b8e9d6d4fc8010cbfe78ccdd1726c214a812845cbece854",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00032\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.95, \"rationale\": \"Article about fake ads on Meta unrelated to Central Asia or trade.\"}, {\"id\": \"a00039\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"US trade regulator lawsuit on Amazon; relevant to trade but not Central Asia focused.\"}, {\"id\": \"a00040\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"US-Canada trade tensions; peripheral interest for reader's trade context.\"}, {\"id\": \"a00043\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Bank of England AI economic risk; global economy relevant but indirect.\"}, {\"id\": \"a00044\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Canadian consumer boycott of US goods; unrelated to Central Asia or reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2177,
+  "completion_tokens": 257
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "319427613b168b05424bc71b623766ecd5216be3ee677b9e0eaf0b58b9992698",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00786\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Inflation and electricity prices are relevant to energy markets but not directly about primary interests.\"\n    },\n    {\n      \"id\": \"a00815\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"AI trustworthiness in Asia is unrelated to energy markets, security, or Lena's core interests.\"\n    },\n    {\n      \"id\": \"a00871\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.98,\n      \"rationale\": \"NASA telescope origins are unrelated to energy, economics, or geopolitical developments.\"\n    },\n    {\n      \"id\": \"a00968\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL management news is excluded as sports content, not relevant to Lena's interests.\"\n    },\n    {\n      \"id\": \"a01104\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"China's rare earth curbs directly impact energy security, supply chains, and economic stability.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3215,
+  "completion_tokens": 320
+ }
+}

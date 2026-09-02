@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2463f8e41a042dce4db67754384f6e141c3411e025de4bad5785af74a56c6bbd",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01050\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.9, \"rationale\": \"Relevant tech topic, useful but not urgent or major news.\"}, {\"id\": \"a01051\", \"label\": \"fine\", \"tags\": [\"science\"], \"confidence\": 0.8, \"rationale\": \"Interesting science update, aligns with interests but not urgent.\"}, {\"id\": \"a01052\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional content, excluded as advertising.\"}, {\"id\": \"a01053\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Tech/business news, mildly interesting but not critical.\"}, {\"id\": \"a01054\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Celebrity/political troll news, off-topic and excluded.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1042,
+  "completion_tokens": 235
+ }
+}

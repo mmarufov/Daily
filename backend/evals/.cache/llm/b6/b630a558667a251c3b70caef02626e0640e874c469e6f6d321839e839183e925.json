@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "afdb8f25723181d86af2d164fcc89549ecfe34ba90c4b71d3cb53a6c96ce23ec",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00021\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"General economic analysis, interesting but not urgent or major news.\"}, {\"id\": \"a00023\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Opinion piece on AI market, relevant but not major event.\"}, {\"id\": \"a00030\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Business profile story, interesting but not urgent or major.\"}, {\"id\": \"a00031\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"IPO and wealth story, general business news, not major event.\"}, {\"id\": \"a00032\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Entertainment industry news, notable but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2654,
+  "completion_tokens": 242
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6443bcf87bbb0a63f9cff96c00c23721575ab7e10f9627b77a606b49c4f4ce83",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00155\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Regional podcast on Central Asia politics; interesting but not primary for reader.\"}, {\"id\": \"a00156\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Medical advance in Uzbekistan; relevant local news but not primary interest.\"}, {\"id\": \"a00162\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tajik MMA fight unrelated to Uzbek sports or politics.\"}, {\"id\": \"a00163\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tajikistan agricultural genetics; off-topic for Uzbek-focused reader.\"}, {\"id\": \"a00164\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Regional security news relevant but secondary to Uzbek politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3140,
+  "completion_tokens": 246
+ }
+}

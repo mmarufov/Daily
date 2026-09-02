@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3ab973ded427467470367b195c38f39cd1e5b82bde74a5b0b654f2dcc786c2a1",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01064\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech industry news unrelated to reader's interests.\"}, {\"id\": \"a01068\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Health tech news, but not local or directly impacting reader.\"}, {\"id\": \"a01071\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech industry news unrelated to reader's interests.\"}, {\"id\": \"a01072\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional tech product news, off-topic.\"}, {\"id\": \"a01074\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech service outage unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1108,
+  "completion_tokens": 231
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3141fb0a6d5fa9399ce8071a46f3f7d0a55750f6f8a622a5fba7d6662834d52b",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00158\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to Tajikistan and regional infrastructure risk, but not urgent for business operations.\"\n    },\n    {\n      \"id\": \"a00164\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major security and border policy update affecting Tajikistan's trade and logistics.\"\n    },\n    {\n      \"id\": \"a00166\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Background on civil society in Tajikistan; relevant but not essential for business.\"\n    },\n    {\n      \"id\": \"a00167\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Similar to a00158; regional disaster risk, informative but not critical for daily business.\"\n    },\n    {\n      \"id\": \"a00181\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Speculative global finance article, not relevant to Central Asia or reader's business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2570,
+  "completion_tokens": 314
+ }
+}

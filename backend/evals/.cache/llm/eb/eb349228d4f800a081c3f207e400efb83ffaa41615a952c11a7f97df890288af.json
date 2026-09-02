@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "897dc0bba09b9b1cb84de043a3d900b65ae8f20ba4c92f40d6a7a14c06c878a4",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00053\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Australian inflation and rate hikes not directly relevant to European energy security.\"}, {\"id\": \"a00055\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tech earnings unrelated to energy markets or geopolitical developments.\"}, {\"id\": \"a00056\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Cybersecurity stock news unrelated to energy or geopolitics.\"}, {\"id\": \"a00057\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Personal finance advice unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00062\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 1.0, \"rationale\": \"US strike on Iran in Strait of Hormuz directly impacts oil prices and energy security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1237,
+  "completion_tokens": 257
+ }
+}

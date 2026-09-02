@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "559dcee46d501e66c467193d214af0861b48da0526f3c114f65b3d27902fb6ef",
+  "preview": "User Profile:\nFree-form profile:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses video game adaptations, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article focuses on an NFL player returning to a team, which does not intersect with the user's primary interests in local New Jersey news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a film being available for streaming, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers college football, which is a background interest but not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a social media incident involving the Yankees, which does not pertain to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a tragedy in England, which is not relevant to the user's local interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a new microdrama label, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Trump and the FCC, which is not relevant to the user's local interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers international issues in Singapore, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a tennis match, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a cultural event in London, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses international politics in Iran, which does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the Eagles' roster decisions, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses high school football rankings, which is a background interest but not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the Eagles' roster moves, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Eagles waiving rookies, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the Eagles' roster decisions, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Eagles' roster, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the Eagles' roster moves, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the Eagles' roster decisions, which is not relevant to the user's primary focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1930,
+  "completion_tokens": 662
+ }
+}

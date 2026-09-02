@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "321e9cd86faf91278a19e17506d0f8a6060761454aa25c6a0615dfe1e5c7384a",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01248\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Significant US event, but not major_event for a global general reader.\"\n    },\n    {\n      \"id\": \"a01249\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Serious US incident, but not a global must_see; similar to a01248.\"\n    },\n    {\n      \"id\": \"a01250\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Direct military conflict between US and Iran is major global news.\"\n    },\n    {\n      \"id\": \"a01254\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tragic, but part of ongoing conflict; not a major_event for all readers.\"\n    },\n    {\n      \"id\": \"a01258\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Escalation between US and Iran is major global news, followup to a01250.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 925,
+  "completion_tokens": 317
+ }
+}

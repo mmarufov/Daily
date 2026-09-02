@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "07ed0eb94ee9ce5edb22e1c351e5d88b90a47c494de14be4be101b3e29bb9ec2",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00640\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting science breakthrough but niche and not urgent for general audience.\"}, {\"id\": \"a00652\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Scientific discovery with potential future impact, not immediate major news.\"}, {\"id\": \"a00656\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Health research with possible early warning implications, not urgent.\"}, {\"id\": \"a00657\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Food safety study relevant but no immediate health advisory or recall.\"}, {\"id\": \"a00663\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Materials science advance interesting but not urgent or broadly impactful.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1095,
+  "completion_tokens": 242
+ }
+}

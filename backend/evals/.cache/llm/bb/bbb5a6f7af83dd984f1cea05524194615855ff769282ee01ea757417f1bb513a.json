@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "58d5fffa287d594562686c3ff3e7a937304d219223e71633e4262bef960e3abc",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00459\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news is irrelevant to Tashkent-based reader focused on Uzbek sports and politics.\"\n    },\n    {\n      \"id\": \"a00534\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Technical discussion about Mac Mini setup is unrelated to reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00624\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Russian celebrity news; not relevant to Uzbek politics, sports, or local affairs.\"\n    },\n    {\n      \"id\": \"a00635\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Regional border policy update; relevant as background for Uzbek reader, but not must_see.\"\n    },\n    {\n      \"id\": \"a00796\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore economic policy and AI jobs are not relevant to Uzbek or local interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2360,
+  "completion_tokens": 312
+ }
+}

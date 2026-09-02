@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ac25b555a865e4c85d2e4052ddccb2af358388ed321dd4c1f6c89d9f1b239a12",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00771\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"work\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI implementation insights but general, not deeply technical or urgent.\"}, {\"id\": \"a00772\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"Singapore\", \"work\"], \"confidence\": 0.7, \"rationale\": \"Discusses Singapore AI future, relevant but more policy/social than technical.\"}, {\"id\": \"a00774\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Political visit, no tech or fintech relevance, excludes US politics but also irrelevant here.\"}, {\"id\": \"a00775\", \"label\": \"must_see\", \"tags\": [\"MAS\", \"fintech regulation\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"MAS stablecoin regulation feedback affects fintech work and compliance in Singapore.\"}, {\"id\": \"a00776\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"money\"], \"confidence\": 0.75, \"rationale\": \"Payment delays impact Singapore firms financially, relevant but not urgent or technical.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1111,
+  "completion_tokens": 273
+ }
+}

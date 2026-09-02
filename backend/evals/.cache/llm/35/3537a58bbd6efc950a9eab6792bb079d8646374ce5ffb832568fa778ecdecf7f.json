@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8af01138bf04ecda9788d512b40ba5a8bfcd860b869305e6a45067568900aaae",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00200\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major airport data breach is notable general news, but not a global must_see event.\"\n    },\n    {\n      \"id\": \"a00205\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Large healthcare data breach is significant, but not a must_see for all informed adults.\"\n    },\n    {\n      \"id\": \"a00215\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"TV show episode recap is niche entertainment, not general news.\"\n    },\n    {\n      \"id\": \"a00228\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Death of Dolly Parton is a major global cultural event.\"\n    },\n    {\n      \"id\": \"a00232\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Large philanthropic donation is notable, but not essential for all readers.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1097,
+  "completion_tokens": 290
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5f3d9a2bb5b1ab2c17637d8065f5699cd9f491c932c9907c30c7b8a52b73c1db",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01270\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"climate\"], \"confidence\": 0.8, \"rationale\": \"Relevant climate summit, interesting but not urgent for reader.\"}, {\"id\": \"a01271\", \"label\": \"fine\", \"tags\": [\"major_event\", \"climate\"], \"confidence\": 0.7, \"rationale\": \"Major climate disaster, relevant but not directly affecting reader.\"}, {\"id\": \"a01274\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Crime funding in UK unrelated to reader interests.\"}, {\"id\": \"a01281\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.95, \"rationale\": \"Map name change unrelated to Toronto or reader interests.\"}, {\"id\": \"a01291\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Football transfer unrelated to tennis or horse racing interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1470,
+  "completion_tokens": 244
+ }
+}

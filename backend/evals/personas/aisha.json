@@ -1,0 +1,151 @@
+{
+ "key": "aisha",
+ "name": "Aisha — Singapore",
+ "axis": "life-context / need-to-know reader; contextual relevance and utility news",
+ "transcript": [
+  {
+   "role": "assistant",
+   "content": "Hi! Tell me what kind of news you want to see."
+  },
+  {
+   "role": "user",
+   "content": "I'm a new mum in Singapore, on maternity leave from a job in HR. I rent an HDB flat in Tampines. I have asthma so haze and air quality alerts matter to me. I want news that affects my daily life: government schemes for parents and childcare, healthcare and MOH advisories, cost of living, rental rules, public transport changes, and general Singapore news."
+  },
+  {
+   "role": "assistant",
+   "content": "Anything you'd rather not see?"
+  },
+  {
+   "role": "user",
+   "content": "No sports, no gaming, no crypto. I'm not interested in tech industry news unless it's about a service I'd actually use."
+  }
+ ],
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "New mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.",
+  "interests": {
+   "topics": [
+    "government schemes for parents",
+    "childcare",
+    "healthcare",
+    "cost of living",
+    "rental rules",
+    "public transport changes",
+    "Singapore news"
+   ],
+   "people": [],
+   "locations": [
+    "Singapore",
+    "Tampines"
+   ],
+   "industries": [
+    "healthcare",
+    "public services"
+   ],
+   "excluded_topics": [
+    "sports",
+    "gaming",
+    "crypto",
+    "tech industry news"
+   ],
+   "notes": "User is a new mum with asthma, concerned about air quality."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "parenting",
+    "healthcare",
+    "local news"
+   ],
+   "current_interests": [
+    "government schemes for parents",
+    "childcare",
+    "healthcare advisories",
+    "cost of living",
+    "public transport changes"
+   ],
+   "people": [],
+   "locations": [
+    "Singapore",
+    "Tampines"
+   ],
+   "industries": [
+    "healthcare",
+    "public services"
+   ],
+   "excluded_topics": [
+    "sports",
+    "gaming",
+    "crypto",
+    "tech industry news"
+   ],
+   "expanded_exclusions": [],
+   "utility_priorities": [
+    "health",
+    "family",
+    "cost of living"
+   ],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "informative",
+    "concise"
+   ],
+   "life_context": "New mother on maternity leave, managing asthma, living in a rented HDB flat.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "government schemes for parents",
+     "healthcare",
+     "cost of living"
+    ],
+    "must_cover_entities": [
+     "Ministry of Health",
+     "local government"
+    ],
+    "must_avoid_topics": [
+     "sports",
+     "gaming",
+     "crypto"
+    ],
+    "preferred_source_types": [
+     "local news outlets",
+     "government announcements"
+    ],
+    "coverage_targets": [
+     "Singapore"
+    ],
+    "specificity_level": "specific"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "government schemes for parents",
+    "healthcare",
+    "cost of living"
+   ],
+   "must_cover_entities": [
+    "Ministry of Health",
+    "local government"
+   ],
+   "must_avoid_topics": [
+    "sports",
+    "gaming",
+    "crypto"
+   ],
+   "preferred_source_types": [
+    "local news outlets",
+    "government announcements"
+   ],
+   "coverage_targets": [
+    "Singapore"
+   ],
+   "specificity_level": "specific"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "gpt-4o-mini",
+  "cache_key": "9b393b281a09e40a3d6dc7a6bda0dbc4fdb2f2573c9c8f02d29cf04e4e25f8e1",
+  "date": "2026-09-01"
+ }
+}

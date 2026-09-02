@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e24d2f6ba3ca23a7c1b6ce21d9188e5e0241eab9214b499de3730b57bc972640",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00058\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"General personal finance dispute, not major news for all adults.\"}, {\"id\": \"a00080\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Important geopolitical tension involving China and Taiwan.\"}, {\"id\": \"a00081\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Specific tax policy in Tajikistan, niche interest.\"}, {\"id\": \"a00084\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Economic policy affecting Indian households, interesting but not global major.\"}, {\"id\": \"a00097\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Real estate regulation issue in Sri Lanka, background economic news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 933,
+  "completion_tokens": 224
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "58fa06e964d89953195f7caf9f262981e982333ea9b282196ba690d39aaea8fc",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00770\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Economic forecast for Singapore unrelated to reader's interests.\"}, {\"id\": \"a00776\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Singapore company payment delays irrelevant to reader's interests.\"}, {\"id\": \"a00787\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Money laundering auction unrelated to sports or environment.\"}, {\"id\": \"a00806\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Energy supply pressure relevant to solar industry work, but routine survey.\"}, {\"id\": \"a00809\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"AI and work education article unrelated to sports or environment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1625,
+  "completion_tokens": 239
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8eb88108765f6b286112a86e01801000e02607008fa61578526ebfc277d17bed",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01041\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US map naming, no relevance to Singapore, parenting, or daily life.\"\n    },\n    {\n      \"id\": \"a01100\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"UK datacenter policy, not relevant to Singapore or reader's interests.\"\n    },\n    {\n      \"id\": \"a01111\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"tech industry news\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"UK tech industry/AI policy, explicitly excluded and off-topic.\"\n    },\n    {\n      \"id\": \"a01115\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Australian cybercrime arrests, no Singapore or parenting relevance.\"\n    },\n    {\n      \"id\": \"a01129\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"UK airport data breach, not relevant to Singapore or reader's daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3042,
+  "completion_tokens": 297
+ }
+}

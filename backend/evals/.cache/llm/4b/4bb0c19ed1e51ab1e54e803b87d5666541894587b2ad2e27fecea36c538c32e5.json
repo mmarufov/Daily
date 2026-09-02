@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b1ea0867d5ac3d03addc597d7d6a4ab9b63686ee8c3367fd6359d9acc4e96727",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00713\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Interesting infrastructure study but not urgent or major news.\"}, {\"id\": \"a00717\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Event news, niche interest but notable for general awareness.\"}, {\"id\": \"a00728\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.75, \"rationale\": \"Crime sentencing is general news but not major event.\"}, {\"id\": \"a00730\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Personal journalist story, human interest but not major.\"}, {\"id\": \"a00741\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Health research collaboration is solid general news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 933,
+  "completion_tokens": 213
+ }
+}

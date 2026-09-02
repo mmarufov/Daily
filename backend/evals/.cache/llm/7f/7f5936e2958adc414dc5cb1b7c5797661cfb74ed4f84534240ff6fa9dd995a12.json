@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "4bf90bb722b124ebb5825264f06b3147714b442fa7c95a6e76fb942ffd051f51",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nStructured interests:\n- Topics: Uzbek footbal"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in Uzbek politics or sports.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2453,
+  "completion_tokens": 499
+ }
+}

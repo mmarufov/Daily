@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d0c387ad891cb444061cc60a3cf3e826d2fc0f7e2d6154b3e3a0d272927c349e",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00384\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity charity event and US politics; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00385\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"partisan_politics\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US political commentary; not related to reader's sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a00388\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\", \"environmental impact\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Climate disaster analysis aligns with reader's environmental focus, but not must_see.\"\n    },\n    {\n      \"id\": \"a00392\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"partisan_politics\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US immigration policy; not relevant to reader's stated interests.\"\n    },\n    {\n      \"id\": \"a00393\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Golf legal news; not related to tennis, horse racing, or environmental topics.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1887,
+  "completion_tokens": 315
+ }
+}

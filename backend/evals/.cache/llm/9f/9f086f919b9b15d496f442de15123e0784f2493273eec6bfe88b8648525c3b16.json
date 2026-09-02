@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "affc18e270c54a57ee9c6ce84e25174169c5ac6f00b9170dca5a84e6dcb15851",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00364\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Major natural disaster with missing people in a famous US location.\"}, {\"id\": \"a00365\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Government research cuts on foodborne parasite, relevant but niche.\"}, {\"id\": \"a00366\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Niche animal contest, no broad news value for general reader.\"}, {\"id\": \"a00367\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Political news about deportation, plausible general interest.\"}, {\"id\": \"a00368\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Political trade spat with humorous element, general news interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1408,
+  "completion_tokens": 234
+ }
+}

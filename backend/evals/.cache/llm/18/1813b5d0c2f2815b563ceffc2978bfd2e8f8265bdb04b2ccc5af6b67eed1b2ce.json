@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8e646560d81527ad9b36c0d5b8cdd9203cf02f62793fa6df291976f7c6b67a8d",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00827\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia\"], \"confidence\": 0.8, \"rationale\": \"Interesting regional AI use but not deep technical or Singapore/MAS focused.\"}, {\"id\": \"a00828\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia\", \"AI engineering\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI marketing insight in Southeast Asia but not deep technical or Singapore/MAS focused.\"}, {\"id\": \"a00829\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"AI engineering\", \"cloud infrastructure\"], \"confidence\": 0.95, \"rationale\": \"Critical AI infrastructure memory shortage impacts tech hardware supply chain.\"}, {\"id\": \"a00830\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia startups\"], \"confidence\": 0.7, \"rationale\": \"Taiwan-Thailand startup collaboration interesting but not Singapore or MAS focused.\"}, {\"id\": \"a00831\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia startups\"], \"confidence\": 0.7, \"rationale\": \"Insight on Asian startup investment environment but no Singapore or MAS focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4004,
+  "completion_tokens": 309
+ }
+}

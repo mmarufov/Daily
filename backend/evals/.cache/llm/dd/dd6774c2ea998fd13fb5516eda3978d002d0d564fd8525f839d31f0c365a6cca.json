@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c626d335e45926add1489c337704a805ea824f3a8077ad0503eccac7b78dbe75",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00429\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Weather alert for NJ, not relevant to Boston or AI interests.\"\n    },\n    {\n      \"id\": \"a00454\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Tax policy in NJ, not relevant to Boston or AI industry focus.\"\n    },\n    {\n      \"id\": \"a00514\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Data center regulation is tangentially relevant to AI infrastructure, but NJ focus makes it background.\"\n    },\n    {\n      \"id\": \"a00538\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"OpenAI's ChatGPT/Codex app detail is on-topic for AI product interest, but not must_see.\"\n    },\n    {\n      \"id\": \"a00540\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"HN job-matching tool is not relevant to AI industry or Boston context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1546,
+  "completion_tokens": 311
+ }
+}

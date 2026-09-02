@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "91636e10f6a9ac8ade02555515f87ca45bb855b40053aab9dd690a2f602a9582",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00388\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"Sports news about US college football, off-topic and sports excluded.\"}, {\"id\": \"a00389\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"UK political donor story with some business and world news relevance, but not primary.\"}, {\"id\": \"a00390\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\"], \"confidence\": 0.7, \"rationale\": \"International political dispute relevant to world news, missable.\"}, {\"id\": \"a00391\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\"], \"confidence\": 0.7, \"rationale\": \"World news photo summary, general interest but not primary.\"}, {\"id\": \"a00401\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"US NFL roster sports news, off-topic and sports excluded.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1375,
+  "completion_tokens": 261
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "54ab27aa7caca50999c256fca46bc6f48d4a6214808096c859eab1c78ffebb29",
+  "preview": "READER PROFILE:\nREADER: Working as an analyst in energy markets, focusing on developments that impact energy security and economic stability.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] OPEC  (entity)\n  [PRIM"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 75,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to energy or economic interests.\"\n    },\n    {\n      \"id\": 76,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focuses on wearables, not energy or economics.\"\n    },\n    {\n      \"id\": 77,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"oil and gas prices\",\n      \"kind\": \"contextual\",\n      \"why\": \"Disruptions in grain and oil exports affect markets.\"\n    },\n    {\n      \"id\": 78,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Political fact-checking not relevant to interests.\"\n    },\n    {\n      \"id\": 79,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Bankruptcy of gurus unrelated to energy or economics.\"\n    },\n    {\n      \"id\": 80,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focus on teaching jobs, not energy or economics.\"\n    },\n    {\n      \"id\": 81,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Local news not relevant to energy or economic interests.\"\n    },\n    {\n      \"id\": 82,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Political commentary not relevant to interests.\"\n    },\n    {\n      \"id\": 83,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Military defense article unrelated to energy or economics.\"\n    },\n    {\n      \"id\": 84,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Sports news not relevant to interests.\"\n    },\n    {\n      \"id\": 85,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Sports season preview unrelated to energy or economics.\"\n    },\n    {\n      \"id\": 86,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Gaming focus not relevant to energy or economics.\"\n    },\n    {\n      \"id\": 87,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Crime news unrelated to energy or economic interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1260,
+  "completion_tokens": 707
+ }
+}

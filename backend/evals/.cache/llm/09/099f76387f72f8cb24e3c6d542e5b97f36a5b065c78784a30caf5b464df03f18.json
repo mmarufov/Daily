@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cb5c3031cb147a8c4bd3c71965979445ab0f090f6a7f96d0d18aa196d2b535d2",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01142\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting tech story but niche and not major news for general audience.\"}, {\"id\": \"a01150\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech update on AI tool; relevant but not urgent or broadly impactful.\"}, {\"id\": \"a01159\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Poll on privacy and government surveillance is major societal issue for informed adults.\"}, {\"id\": \"a01161\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Defense tech funding news is interesting but niche and not urgent for general audience.\"}, {\"id\": \"a01162\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Gaming merchandise story is light interest, not major news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3269,
+  "completion_tokens": 255
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2218f0296f3bc9a70ede356aa97b9bf7bdc338f2bd3f16e7a7561f122eb2abb0",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00986\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US NFL preseason sports, unrelated to reader's interests or region.\"}, {\"id\": \"a01016\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.7, \"rationale\": \"China tech event, secondary interest but no direct trade or economic impact.\"}, {\"id\": \"a01020\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US music copyright lawsuit unrelated to reader's business or region.\"}, {\"id\": \"a01047\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Earbuds review irrelevant to reader's interests.\"}, {\"id\": \"a01055\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.6, \"rationale\": \"China fraud via Teams may affect business environment, but indirect and missable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2229,
+  "completion_tokens": 250
+ }
+}

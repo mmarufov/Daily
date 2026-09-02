@@ -660,3 +660,40 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestFeedBuildLog(unittest.TestCase):
+    """The build log is observability, never a failure mode."""
+
+    def test_record_feed_build_swallows_db_errors(self):
+        class _Boom:
+            def cursor(self):
+                raise RuntimeError("db down")
+
+        feed_service._record_feed_build(_Boom(), "00000000-0000-0000-0000-000000000001",
+                                        {"calls": 2, "kept": 3, "feed_ids": ["a"]})
+
+    def test_record_feed_build_writes_one_row(self):
+        executed = []
+
+        class _Cur:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def execute(self, q, params=None): executed.append((" ".join(q.split()), params))
+
+        class _Conn:
+            def cursor(self): return _Cur()
+
+        feed_service._record_feed_build(_Conn(), "u", {
+            "calls": 3, "kept": 12, "prefiltered": 100, "scored": 60, "candidates_loaded": 300,
+            "dropped_by_stage": {"not_relevant": 40}, "feed_ids": ["a", "b"], "latency_ms": 1234, "model": "m",
+        })
+        self.assertEqual(len(executed), 1)
+        q, params = executed[0]
+        self.assertTrue(q.startswith("INSERT INTO public.feed_build_log"))
+        self.assertEqual(params[3:7], (300, 100, 60, 12))
+        self.assertEqual(params[9], 3)
+        self.assertAlmostEqual(params[10], 3 * feed_service.EST_COST_PER_SCORING_CALL_USD)
+
+    def test_skipped_without_cursor(self):
+        feed_service._record_feed_build(None, "u", {})

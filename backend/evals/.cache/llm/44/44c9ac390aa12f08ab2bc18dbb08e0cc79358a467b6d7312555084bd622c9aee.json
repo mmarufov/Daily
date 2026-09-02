@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4d65fe8f0a1d3d50fc7cfeb284cd60d294a1f9cb13d4cdeda844fd6031576cc5",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00914\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Sports boxing article, excluded topic for reader.\"}, {\"id\": \"a00915\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Sports youth baseball, excluded topic for reader.\"}, {\"id\": \"a00939\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"NFL rookie report, sports topic excluded.\"}, {\"id\": \"a00944\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"NHL contract and player value, sports topic excluded.\"}, {\"id\": \"a00946\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Hockey prospect highlights, sports topic excluded.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2228,
+  "completion_tokens": 240
+ }
+}

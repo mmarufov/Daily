@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bdea6327f1583ac09cc3bfddf0dfe8e5d5ffb4f70409a76b1b4e0d7aee5472b1",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01140\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\", \"AI engineering\", \"cybersecurity\"], \"confidence\": 0.95, \"rationale\": \"Critical AI security incident with deep technical details relevant to AI engineering.\"}, {\"id\": \"a01142\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Audio quality tips for Apple CarPlay unrelated to reader's interests.\"}, {\"id\": \"a01143\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"iPhone reset instructions irrelevant to reader's tech focus.\"}, {\"id\": \"a01150\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"YouTube recommendation fixes unrelated to reader's interests.\"}, {\"id\": \"a01160\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"TV 4K content check irrelevant to reader's tech and fintech focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1615,
+  "completion_tokens": 255
+ }
+}

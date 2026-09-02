@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "5c92fe9329d861126a4bfbcfbb41e1f9f32280bf6de672b63388e509d4661cbf",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"results\": [\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article is about a flying car company and its CEO, which does not align with the user's interests in fintech or software engineering.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses political dissent in China, which is unrelated to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article focuses on a luxury vehicle launch, which does not pertain to the user's interests in technology or fintech.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article is about a political name change related to the Trump administration, which is outside the user's interest in technical topics.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses police funding in the UK, which is unrelated to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article covers US energy policy and international relations, which do not align with the user's technical focus.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses human rights issues in Tunisia, which is not relevant to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article is about an actor and entertainment, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses a marketing concept that does not directly relate to the user's primary interests in fintech or software engineering.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses hiring practices and AI's impact on employment, which is not directly relevant to the user's technical interests.\"},\n    {\"relevant\": true, \"score\": 0.7, \"reason\": \"The article discusses Vietnam's economic growth and its implications for startups, which aligns with the user's interest in Southeast Asia startups.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses a local container park in Singapore, which does not relate to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article is about the launch of a luxury vehicle, which is not relevant to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses geopolitical issues related to Ukraine, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses a political situation in Latvia, which is unrelated to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses a deportation case in Sweden, which does not pertain to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article is about a high-profile activist's legal issues, which is outside the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses a civil society crackdown in Tunisia, which is not relevant to the user's technical focus.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses a military ship's deployment, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses a tragic event in Iran, which is unrelated to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article is about a political name change in the US, which does not align with the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses economic data from Australia, which is not relevant to the user's technical interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses a legal case in Honduras, which does not pertain to the user's interests.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"The article discusses stock performance in Japan, which is unrelated to the user's technical focus.\"},\n    {\"relevant\": false, \"score\": 0.0, \"reason\": \"This article discusses a drone attack in Germany, which does not align with the user's interests.\"}\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3991,
+  "completion_tokens": 1005
+ }
+}

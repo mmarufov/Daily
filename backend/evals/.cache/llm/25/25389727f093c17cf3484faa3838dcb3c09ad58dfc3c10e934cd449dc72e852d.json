@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aed06c320fd3f54604de77947dfc9371de0fcf6ad43ee72013ae2c871b1f4ab1",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00741\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"No relevance to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00751\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Economic forecast unrelated to reader's interests.\"}, {\"id\": \"a00756\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Local Singapore container park closure irrelevant to reader.\"}, {\"id\": \"a00760\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Beauty product launch unrelated to reader's interests.\"}, {\"id\": \"a00764\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Political visit unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1133,
+  "completion_tokens": 228
+ }
+}

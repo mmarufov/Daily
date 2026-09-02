@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e7e0e7ec8c45486aab042aec81289a1f560aeffb445bb9c791302517d2569f6f",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00483\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about New York parking, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00484\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Jersey City property taxes irrelevant to Singapore reader.\"}, {\"id\": \"a00493\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US civil rights march unrelated to reader's local interests.\"}, {\"id\": \"a00497\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"New Jersey data center law unrelated to Singapore or reader's priorities.\"}, {\"id\": \"a00499\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"health\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Measles deaths near NJ with health advisory relevant to reader's health concerns.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2691,
+  "completion_tokens": 252
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "54d1e45e653884ad6af14330c98ca913171b6a8284b79784d959e7568774b0ae",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01010\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.8, \"rationale\": \"Tech/science interest but no direct consumer impact or major news.\"}, {\"id\": \"a01011\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Music/celebrity content excluded by user preferences.\"}, {\"id\": \"a01012\", \"label\": \"fine\", \"tags\": [\"technology\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech news but gaming focus less relevant to user interests.\"}, {\"id\": \"a01013\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Major space telescope launch with broad science and tech impact.\"}, {\"id\": \"a01014\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer impact\"], \"confidence\": 0.85, \"rationale\": \"Tech and consumer impact in US, less direct UK relevance but notable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2033,
+  "completion_tokens": 261
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "737f4c0769ac4da709a4e4044f57d73322682244c12681db5309bd332442a24e",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00849\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Strong regional fintech/regulation relevance, but not Singapore-specific or directly impacting reader's work.\"\n    },\n    {\n      \"id\": \"a00851\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI in fintech is a primary interest, but Indonesia microfinance is secondary context, not must_see.\"\n    },\n    {\n      \"id\": \"a00852\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep dive on AI adoption in SEA, directly relevant to reader's AI engineering and regional focus.\"\n    },\n    {\n      \"id\": \"a00853\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore AI adoption in logistics, regulatory and tech implications; impacts local tech and safety landscape.\"\n    },\n    {\n      \"id\": \"a00856\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore fintech funding trends, essential for fintech/regulation focus and local industry context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3963,
+  "completion_tokens": 333
+ }
+}

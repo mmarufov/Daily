@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c080b8ff0ca4f7a88bf42f452fbad2a226649dbae9464b8d544d837822b2a928",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01046\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI model training deals interesting but not directly relevant to Singapore fintech or engineering.\"}, {\"id\": \"a01047\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"New AI model improvements impact production AI engineering and cost efficiency.\"}, {\"id\": \"a01049\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Laptop sale unrelated to reader's deep technical or regional interests.\"}, {\"id\": \"a01052\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Apple CEO environmental legacy is off focus but somewhat tech-related.\"}, {\"id\": \"a01053\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI safety and cybersecurity incident relevant but not primary or urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2294,
+  "completion_tokens": 255
+ }
+}

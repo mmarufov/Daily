@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e14534110db8402a42fb1a55710ea0319a010405f148c75d37e3d2bf7b23184c",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00585\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news but not directly impacting reader's life or primary interests.\"}, {\"id\": \"a00589\", \"label\": \"fine\", \"tags\": [\"technology\", \"world_news\"], \"confidence\": 0.7, \"rationale\": \"Tech platform outage is interesting but minor and missable.\"}, {\"id\": \"a00619\", \"label\": \"fine\", \"tags\": [\"world_news\", \"UK_news\"], \"confidence\": 0.7, \"rationale\": \"Important geopolitical news but no direct consumer or tech impact.\"}, {\"id\": \"a00625\", \"label\": \"fine\", \"tags\": [\"business\", \"consumer_impact\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Business news with consumer payment impact, relevant but not urgent.\"}, {\"id\": \"a00629\", \"label\": \"fine\", \"tags\": [\"world_news\", \"UK_news\"], \"confidence\": 0.75, \"rationale\": \"Major diplomatic event, relevant world news but no direct consumer or tech impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2664,
+  "completion_tokens": 261
+ }
+}

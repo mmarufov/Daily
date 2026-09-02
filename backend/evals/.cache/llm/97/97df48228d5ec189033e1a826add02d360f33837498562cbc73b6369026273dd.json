@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bc90576930fb9fdd72b781db7daf9f0fffa836f2aff6cde578a439da10e4a888",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00811\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focuses on Southeast Asia climate tech, unrelated to Central Asia or trade.\"}, {\"id\": \"a00812\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Southeast Asia economic growth and infrastructure, no Central Asia or trade relevance.\"}, {\"id\": \"a00813\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Discusses ASEAN digital energy infrastructure, unrelated to Central Asia or trade.\"}, {\"id\": \"a00818\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Southeast Asia battery industry, no direct relevance to Central Asia or trade.\"}, {\"id\": \"a00819\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Agritech business models in emerging markets, unrelated to Central Asia or trade.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3948,
+  "completion_tokens": 254
+ }
+}

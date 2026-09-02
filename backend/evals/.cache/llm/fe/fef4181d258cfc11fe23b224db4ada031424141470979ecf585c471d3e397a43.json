@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "46e810d4cc960c05117e278520c72538e01af3b0fae73ac24a3d052c33eecbca",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00146\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Covers Kazakhstan's political reforms; relevant but not urgent for daily business decisions.\"\n    },\n    {\n      \"id\": \"a00148\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Fashion event in Paris is unrelated to reader's business or interests.\"\n    },\n    {\n      \"id\": \"a00149\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Political modernization in Kazakhstan is relevant context but not essential for daily operations.\"\n    },\n    {\n      \"id\": \"a00150\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Covers Kazakhstan's parliamentary changes; useful context, not urgent for business.\"\n    },\n    {\n      \"id\": \"a00151\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly impacts trade routes and logistics; crucial for import-export business decisions.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3567,
+  "completion_tokens": 316
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "70a944fe361afb1075f5a72a55f784335f0f2c08c37bb1e18b8ff7221fe3472e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00075\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news with geopolitical trade impact, but not urgent or consumer-specific.\"}, {\"id\": \"a00080\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer_impact\"], \"confidence\": 0.9, \"rationale\": \"Tech leadership and labor issues relevant to consumer awareness, but not urgent.\"}, {\"id\": \"a00088\", \"label\": \"fine\", \"tags\": [\"technology\", \"world_news\"], \"confidence\": 0.85, \"rationale\": \"AI in newsrooms is tech-related and globally relevant, but not urgent.\"}, {\"id\": \"a00096\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Political justice story, relevant world news but less relevant to reader's interests.\"}, {\"id\": \"a00104\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\", \"world_news\"], \"confidence\": 0.95, \"rationale\": \"Major natural disaster with high casualties, important global news to know.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1011,
+  "completion_tokens": 270
+ }
+}

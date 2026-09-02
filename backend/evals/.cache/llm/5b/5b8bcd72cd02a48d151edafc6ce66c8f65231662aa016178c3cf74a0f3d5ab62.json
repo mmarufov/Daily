@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "59957037666fd51f44b754a2627146bba5eb52fd829a0c0514d9673272245aa4",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01172\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US military AI dispute unrelated to Singapore, fintech, or SE Asia tech.\"}, {\"id\": \"a01174\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Security vulnerabilities topic relevant to software engineering but routine and US-centric.\"}, {\"id\": \"a01175\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"AI cybersecurity warning relevant to AI engineering but general and US-focused.\"}, {\"id\": \"a01180\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"iPhone UI tips irrelevant to reader's interests.\"}, {\"id\": \"a01182\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Meta AI transcription model interesting but not primary interest or regional.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2557,
+  "completion_tokens": 245
+ }
+}

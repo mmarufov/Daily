@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3d20241fec9fcd37e2442bfff0c6576baa0beb5d5f60e2aa1da7ab80cf56bad8",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00842\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI products\", \"company use of AI\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Thoughtful discussion on AI product decisions; relevant but not urgent or directly about primary entities.\"\n    },\n    {\n      \"id\": \"a00846\",\n      \"label\": \"never\",\n      \"tags\": [\"crypto\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto/Bitcoin market analysis is explicitly excluded by reader preferences.\"\n    },\n    {\n      \"id\": \"a00851\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI products\", \"company use of AI\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Interesting AI application in microfinance; not a primary interest or major industry development.\"\n    },\n    {\n      \"id\": \"a00852\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI products\", \"AI industry\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Covers AI adoption and localization; relevant to industry trends but not must-see.\"\n    },\n    {\n      \"id\": \"a01040\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"AI regulation\", \"major_event\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major lawsuit involving Anthropic, a primary interest, with regulatory and industry impact.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3347,
+  "completion_tokens": 349
+ }
+}

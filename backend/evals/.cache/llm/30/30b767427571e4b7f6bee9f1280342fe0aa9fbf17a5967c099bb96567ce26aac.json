@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bdca07cfdfd81f353a6c834de5ba04070e57586992a0fff675f1cb60f6e4c898",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01245\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"London\", \"UK news\"], \"confidence\": 0.8, \"rationale\": \"London mayoral race relevant but routine political coverage.\"}, {\"id\": \"a01248\", \"label\": \"fine\", \"tags\": [\"major_event\", \"world news\"], \"confidence\": 0.7, \"rationale\": \"Major flood event but outside UK, no direct consumer impact.\"}, {\"id\": \"a01251\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Cultural event with no relevance to reader's interests.\"}, {\"id\": \"a01262\", \"label\": \"fine\", \"tags\": [\"world news\"], \"confidence\": 0.7, \"rationale\": \"International political deception story, plausible interest.\"}, {\"id\": \"a01264\", \"label\": \"fine\", \"tags\": [\"major_event\", \"world news\"], \"confidence\": 0.7, \"rationale\": \"Major disaster but no direct UK or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1110,
+  "completion_tokens": 246
+ }
+}

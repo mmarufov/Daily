@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cca83ed337e4f587bbcf0b27a7c746d88937b5a0a10d56598c7712ec7f2f49c9",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00014\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major tech development with consumer and security implications; primary interest in technology.\"\n    },\n    {\n      \"id\": \"a00022\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Relevant to world/business news and consumer impact, but not a primary or urgent development.\"\n    },\n    {\n      \"id\": \"a00024\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech/business angle is relevant, but the IPO is early-stage and not directly impactful yet.\"\n    },\n    {\n      \"id\": \"a00029\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Focus on US student housing investment; not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00039\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major consumer impact; lawsuit against Amazon affects advertising, pricing, and essential goods.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1094,
+  "completion_tokens": 315
+ }
+}

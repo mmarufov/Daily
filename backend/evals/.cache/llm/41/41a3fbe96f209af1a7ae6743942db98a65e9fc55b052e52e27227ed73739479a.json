@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b252d3fc015b5cec5bcfeca733f6c7ebeb9b6347ec12ef5ddcda66bd2019f2c2",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00571\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"Important world news but no direct consumer or UK impact.\"}, {\"id\": \"a00585\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Major industrial accident with business implications, but not UK or tech/science focused.\"}, {\"id\": \"a00591\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Relevant world news but no direct UK or consumer impact.\"}, {\"id\": \"a00593\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Concert cancellation, entertainment and sports related, excluded topic.\"}, {\"id\": \"a00594\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Political news relevant to world affairs but no direct UK or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1055,
+  "completion_tokens": 245
+ }
+}

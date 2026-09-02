@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "092072e9e7a64f9255b9109bfd28e51a2c7774a189657844852d995372322445",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00267\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming/entertainment update, not relevant to business, trade, or Central Asia.\"\n    },\n    {\n      \"id\": \"a00268\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Entertainment/gaming news, not relevant to reader's business or interests.\"\n    },\n    {\n      \"id\": \"a00281\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Video game preview, unrelated to business, trade, or Central Asia.\"\n    },\n    {\n      \"id\": \"a00282\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Movie/gaming news, not relevant to reader's business or regional interests.\"\n    },\n    {\n      \"id\": \"a00285\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Game release delay, unrelated to business, trade, or Central Asia.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2761,
+  "completion_tokens": 314
+ }
+}

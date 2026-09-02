@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1a08a06da8a23481b43e7a881d72a0305fff847ec23f05ecaba881a349129e88",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01163\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech gadget deal unrelated to reader's interests or location.\"}, {\"id\": \"a01172\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI cost-management story unrelated to reader's interests or location.\"}, {\"id\": \"a01177\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Retail laptop and TV deal irrelevant to reader's interests.\"}, {\"id\": \"a01178\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Apple AI and data privacy story unrelated to Uzbek politics or sports.\"}, {\"id\": \"a01207\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Nepal flood rescue story unrelated to reader's local or primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1205,
+  "completion_tokens": 246
+ }
+}

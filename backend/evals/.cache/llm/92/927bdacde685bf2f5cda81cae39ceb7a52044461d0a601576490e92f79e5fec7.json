@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cc4996af8465462a1c463c60d38c572ff1eae2a1a1245abfbd45f02fe498cb06",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01034\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI chip financing relevant to AI infrastructure but not Singapore or fintech regulation.\"}, {\"id\": \"a01035\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Deep AI engineering news on self-improving AI relevant to production engineering.\"}, {\"id\": \"a01037\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI company acquisitions interesting but US-centric and less relevant to Singapore fintech.\"}, {\"id\": \"a01038\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Swedish startup ecosystem not relevant to Singapore or Southeast Asia.\"}, {\"id\": \"a01042\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Consumer Wi-Fi product review unrelated to reader's tech interests or region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1159,
+  "completion_tokens": 251
+ }
+}

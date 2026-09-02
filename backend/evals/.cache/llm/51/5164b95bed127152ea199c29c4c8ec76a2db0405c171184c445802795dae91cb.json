@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1d6b034efc77c8a653e8105d4e34289f1e5951a7bc8110a05352af008713c577",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00788\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia\"], \"confidence\": 0.8, \"rationale\": \"Relevant to Southeast Asia fintech ecosystem but indirect impact on reader's work.\"}, {\"id\": \"a00789\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"software engineering\", \"AI engineering\"], \"confidence\": 0.7, \"rationale\": \"Useful AI/product strategy insights but general, not deep technical.\"}, {\"id\": \"a00790\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"software engineering\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Discusses AI product decisions relevant to engineering but not urgent.\"}, {\"id\": \"a00791\", \"label\": \"must_see\", \"tags\": [\"Southeast Asia startups\", \"fintech\", \"need_to_know\", \"work\"], \"confidence\": 0.9, \"rationale\": \"Major fintech funding event in Southeast Asia with strategic implications.\"}, {\"id\": \"a00792\", \"label\": \"must_see\", \"tags\": [\"Southeast Asia startups\", \"fintech\", \"need_to_know\", \"work\"], \"confidence\": 0.9, \"rationale\": \"Detailed follow-up on major fintech funding round impacting regional ecosystem.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3992,
+  "completion_tokens": 304
+ }
+}

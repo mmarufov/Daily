@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6161a0df54d09f4a5b0f6ffcb24c44a8aeec5b145208400098c86c4948a448b6",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00777\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI and healthcare collaboration is interesting but not primary or urgent for reader.\"}, {\"id\": \"a00778\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US sanctions on Singapore entities unrelated to AI or reader's interests.\"}, {\"id\": \"a00784\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Generic daily debrief with no clear AI or primary interest relevance.\"}, {\"id\": \"a00785\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech adoption discussion relevant but not focused on AI or primary entities.\"}, {\"id\": \"a00787\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI regulation and adoption relevant but Singapore focus is secondary for Boston reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1039,
+  "completion_tokens": 249
+ }
+}

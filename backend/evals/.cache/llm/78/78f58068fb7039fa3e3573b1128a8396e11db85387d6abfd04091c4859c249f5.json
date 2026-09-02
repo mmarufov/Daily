@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "248a2102b2896e73d434901f08ce338e311ba6b407b546b1d0d178ee6e365a08",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00324\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Economic sanctions and Iran trade threats relate to Iran and economic policies.\"}, {\"id\": \"a00326\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope launch unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00333\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"US strike on Iran is a major geopolitical event affecting energy security.\"}, {\"id\": \"a00350\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Shooting at Swiss rave unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00354\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Stabbing in Germany unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1085,
+  "completion_tokens": 244
+ }
+}

@@ -1,0 +1,2301 @@
+{
+ "git_sha": "47edb50",
+ "runner": "prod-llm",
+ "snapshot": "2026-08-31-quiet",
+ "k": 12,
+ "created_at": "2026-09-02T07:14:03+00:00",
+ "summary": {
+  "recall_at_k_mean": 0.2042,
+  "recall_at_k_min": 0.0,
+  "raw_recall_at_k_mean": 0.1948,
+  "raw_recall_at_k_min": 0.0,
+  "recall_at_retrieval_mean": 0.4181,
+  "recall_at_retrieval_min": 0.1176,
+  "need_to_know_recall_mean": 0.1873,
+  "need_to_know_recall_min": 0.0,
+  "followup_recall_mean": 0.0833,
+  "followup_recall_min": 0.0,
+  "never_rate_mean": 0.2583,
+  "never_rate_min": 0.0,
+  "event_delivery_mean": null,
+  "event_delivery_min": null,
+  "major_delivery_mean": null,
+  "major_delivery_min": null,
+  "false_major_rate_mean": null,
+  "false_major_rate_min": null,
+  "judge_precision_mean": 0.4815,
+  "judge_precision_min": 0.0,
+  "judge_recall_mean": 0.45,
+  "judge_recall_min": 0.0,
+  "needle_recall_mean": 0.55,
+  "needle_recall_min": 0.0,
+  "lookalike_rate_mean": 0.1,
+  "lookalike_rate_min": 0.0,
+  "feed_size_k_mean": 11,
+  "feed_size_k_min": 2,
+  "distinct_sources_mean": 6,
+  "distinct_sources_min": 2,
+  "latency_s_mean": 2.924,
+  "latency_s_min": 0.44,
+  "calls_total": 44,
+  "calls_max_per_persona": 7,
+  "cost_usd_total": 0.2619,
+  "cache_misses_total": 0,
+  "loss_by_stage": {
+   "prefilter:cap": 4,
+   "lookback": 59,
+   "blended": 8,
+   "rank": 3
+  },
+  "personas": 10
+ },
+ "per_persona": {
+  "aisha": {
+   "n_must_see": 8,
+   "n_need_to_know": 8,
+   "n_labelled": 332,
+   "recall_at_k": 0.125,
+   "raw_recall_at_k": 0.125,
+   "recall_at_retrieval": 0.25,
+   "need_to_know_recall": 0.125,
+   "followup_recall": null,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 2,
+   "feed_size_k": 2,
+   "feed_size_flag": true,
+   "unlabelled_in_feed": 0,
+   "distinct_sources": 2,
+   "loss_by_stage": {
+    "prefilter:cap": 2,
+    "lookback": 4,
+    "blended": 1
+   },
+   "losses": [
+    {
+     "id": "a00698",
+     "title": "New private not-for-profit hospital to be located in the east due to high occupa",
+     "dropped_at": "prefilter:cap",
+     "reason": "No clear preference match",
+     "score": 0.0
+    },
+    {
+     "id": "a00704",
+     "title": "More than 300 cooling centres to open if S’pore faces heatwave: New heat office",
+     "dropped_at": "prefilter:cap",
+     "reason": "No clear preference match",
+     "score": 0.0
+    },
+    {
+     "id": "a00775",
+     "title": "NDR 2026: New workplace policies for parents add options to labour market",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00776",
+     "title": "NDR 2026: Bigger childcare subsidies can drive consolidation in pre-school marke",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00782",
+     "title": "NDR 2026: Childcare leave salary caps still leave gaps for higher-income parents",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00786",
+     "title": "Core inflation climbs to 2% in July; electricity prices rise sharply",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-aisha-02",
+     "title": "Baby Bonus cash gift raised to $11,000 and paternity leave doubled from January",
+     "dropped_at": "blended",
+     "reason": "The article discusses a UK prison policy, which is unrelated to the user's interests.",
+     "score": 0.14131249999999998
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 1.0,
+   "judge_recall": 0.5,
+   "judge_n": 37,
+   "needle_recall": 0.5,
+   "lookalike_rate": 0.0,
+   "calls": 5,
+   "cost_usd": 0.03978,
+   "latency_s": 4.62,
+   "cache_hits": 5,
+   "cache_misses": 0,
+   "stage_counts": {
+    "loaded": 196,
+    "scored": 98,
+    "pool": 938,
+    "loaded_rows": 4,
+    "feed": 2
+   },
+   "drop_counts": {
+    "prefilter:cap": 136,
+    "blended": 98,
+    "lookback": 938,
+    "prefilter:excluded": 60,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "n-aisha-01",
+     "rank": 1,
+     "title": "NEA issues haze advisory as PSI enters unhealthy range in eastern Singapore",
+     "source": "CNA Singapore",
+     "label": "must_see",
+     "score": 0.7681875
+    },
+    {
+     "id": "a00699",
+     "rank": 2,
+     "title": "How Singapore turns billion-dollar science research into real-world success",
+     "source": "Straits Times",
+     "label": "fine",
+     "score": 0.731
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "cold": {
+   "n_must_see": 1,
+   "n_need_to_know": 0,
+   "n_labelled": 368,
+   "recall_at_k": 0.0,
+   "raw_recall_at_k": 0.0,
+   "recall_at_retrieval": 1.0,
+   "need_to_know_recall": null,
+   "followup_recall": null,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 15,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 0,
+   "distinct_sources": 7,
+   "loss_by_stage": {
+    "blended": 1
+   },
+   "losses": [
+    {
+     "id": "n-cold-01",
+     "title": "Magnitude 7.8 earthquake strikes off Japan, tsunami warning issued for Pacific c",
+     "dropped_at": "blended",
+     "reason": "Matches general preference constraints",
+     "score": 0.2
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.0,
+   "judge_recall": 0.0,
+   "judge_n": 13,
+   "needle_recall": 0.0,
+   "lookalike_rate": 0.0,
+   "calls": 5,
+   "cost_usd": 0.03298,
+   "latency_s": 4.66,
+   "cache_hits": 5,
+   "cache_misses": 0,
+   "stage_counts": {
+    "loaded": 196,
+    "scored": 85,
+    "feed": 15,
+    "pool": 936,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "prefilter:cap": 196,
+    "blended": 85,
+    "rank": 3,
+    "lookback": 936,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "a00337",
+     "rank": 1,
+     "title": "'Like fighting a dinosaur': Sydney woman recalls how she punched shark during at",
+     "source": "BBC",
+     "label": "fine",
+     "score": 0.42393749999999997
+    },
+    {
+     "id": "a00009",
+     "rank": 2,
+     "title": "Singapore tackles finances and culture to avert a demographic crisis",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00335",
+     "rank": 3,
+     "title": "UK raises case of British activist detained by settlers in West Bank with Israel",
+     "source": "BBC",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00454",
+     "rank": 4,
+     "title": "Brooklyn nurse killed by hit-and-run driver walking home from shift at NYU Lango",
+     "source": "Gothamist",
+     "label": "fine",
+     "score": 0.42393749999999997
+    },
+    {
+     "id": "a01252",
+     "rank": 5,
+     "title": "Vote count starts in Guinea-Bissau referendum on strengthening presidency",
+     "source": "Al Jazeera",
+     "label": "fine",
+     "score": 0.42393749999999997
+    },
+    {
+     "id": "a00338",
+     "rank": 6,
+     "title": "Jewish community in harder position than immediately after synagogue attack, say",
+     "source": "BBC",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00342",
+     "rank": 7,
+     "title": "How the US-Canada trade war is being felt on both sides of the border",
+     "source": "BBC",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00031",
+     "rank": 8,
+     "title": "Shein CEO’s wealth slumps $15 billion after whittled-down IPO",
+     "source": "Fortune",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a01141",
+     "rank": 9,
+     "title": "Why is the GameCube controller so loved by gamers?",
+     "source": "Engadget",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00905",
+     "rank": 10,
+     "title": "'We're in this to build something': Why there's renewed optimism for Cal footbal",
+     "source": "ESPN",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00907",
+     "rank": 11,
+     "title": "How Man United went from 'everything is wrong' to a big blowout win that vindica",
+     "source": "ESPN",
+     "label": "fine",
+     "score": 0.3686875
+    },
+    {
+     "id": "a00902",
+     "rank": 12,
+     "title": "Inside the raucous and rapid rise of Alex Eala",
+     "source": "ESPN",
+     "label": "fine",
+     "score": 0.3686875
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "dilshod": {
+   "n_must_see": 3,
+   "n_need_to_know": 2,
+   "n_labelled": 343,
+   "recall_at_k": 0.3333,
+   "raw_recall_at_k": 0.3333,
+   "recall_at_retrieval": 0.6667,
+   "need_to_know_recall": 0.0,
+   "followup_recall": null,
+   "never_rate": 0.75,
+   "never_in_feed": [
+    {
+     "id": "a00903",
+     "title": "US Open experts' picks: Who will win?",
+     "rank": 2
+    },
+    {
+     "id": "a00923",
+     "title": "Handing out awards: Wilson, Reese and the most dominant stars of 2026",
+     "rank": 3
+    },
+    {
+     "id": "a00924",
+     "title": "Forecaster for Week 22: Aug. 31-Sept. 6",
+     "rank": 4
+    },
+    {
+     "id": "a00944",
+     "title": "Moritz Seider's Contract Looks Like A Steal After Cale Makar's Massive Extension",
+     "rank": 5
+    },
+    {
+     "id": "a00945",
+     "title": "‘That’s Why I Signed There For Eight Years’: Canucks Defenceman Filip Hronek On ",
+     "rank": 6
+    },
+    {
+     "id": "a00946",
+     "title": "Flyers Prospect Flashes Lofty Potential in Viral New Highlights",
+     "rank": 7
+    },
+    {
+     "id": "a00947",
+     "title": "Sabres Top 40 Prospects - #10",
+     "rank": 8
+    },
+    {
+     "id": "a00948",
+     "title": "Ryan Pulock's Best-Ever NHL Rating Revealed",
+     "rank": 9
+    },
+    {
+     "id": "a00918",
+     "title": "NBA insiders react to ESPN's 2026-27 season forecast",
+     "rank": 10
+    }
+   ],
+   "feed_size": 40,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 0,
+   "distinct_sources": 5,
+   "loss_by_stage": {
+    "lookback": 1,
+    "blended": 1
+   },
+   "losses": [
+    {
+     "id": "a00081",
+     "title": "Uzbekistan’s Presidential Daughter Just Got a Law of Her Own",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-dil-02",
+     "title": "Mirziyoyev signs decree abolishing exit visa-style registration and easing som c",
+     "dropped_at": "blended",
+     "reason": "The article discusses NFL team rosters, which is not relevant to the user's interests.",
+     "score": 0.23799999999999996
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.5,
+   "judge_recall": 0.5,
+   "judge_n": 57,
+   "needle_recall": 0.5,
+   "lookalike_rate": 0.0,
+   "calls": 5,
+   "cost_usd": 0.03368,
+   "latency_s": 4.74,
+   "cache_hits": 5,
+   "cache_misses": 0,
+   "stage_counts": {
+    "feed": 40,
+    "pool": 938,
+    "loaded": 196,
+    "scored": 60,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "rank": 28,
+    "lookback": 938,
+    "prefilter:cap": 193,
+    "prefilter:excluded": 3,
+    "blended": 60,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "a00002",
+     "rank": 1,
+     "title": "China's factory activity shrinks for second straight month, contracting less tha",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a00903",
+     "rank": 2,
+     "title": "US Open experts' picks: Who will win?",
+     "source": "ESPN",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00923",
+     "rank": 3,
+     "title": "Handing out awards: Wilson, Reese and the most dominant stars of 2026",
+     "source": "ESPN",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00924",
+     "rank": 4,
+     "title": "Forecaster for Week 22: Aug. 31-Sept. 6",
+     "source": "ESPN",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00944",
+     "rank": 5,
+     "title": "Moritz Seider's Contract Looks Like A Steal After Cale Makar's Massive Extension",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00945",
+     "rank": 6,
+     "title": "‘That’s Why I Signed There For Eight Years’: Canucks Defenceman Filip Hronek On ",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00946",
+     "rank": 7,
+     "title": "Flyers Prospect Flashes Lofty Potential in Viral New Highlights",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00947",
+     "rank": 8,
+     "title": "Sabres Top 40 Prospects - #10",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00948",
+     "rank": 9,
+     "title": "Ryan Pulock's Best-Ever NHL Rating Revealed",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00918",
+     "rank": 10,
+     "title": "NBA insiders react to ESPN's 2026-27 season forecast",
+     "source": "ESPN",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "n-dil-01",
+     "rank": 11,
+     "title": "Shomurodov scores twice as Uzbekistan beat Iran 2-1 in World Cup qualifier",
+     "source": "Al Jazeera",
+     "label": "must_see",
+     "score": 0.85
+    },
+    {
+     "id": "a00073",
+     "rank": 12,
+     "title": "Russia eyes Kazakhstan and Uzbekistan as arms purveyors – report",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.6842499999999999
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "farrukh": {
+   "n_must_see": 14,
+   "n_need_to_know": 14,
+   "n_labelled": 330,
+   "recall_at_k": 0.1667,
+   "raw_recall_at_k": 0.1429,
+   "recall_at_retrieval": 0.2857,
+   "need_to_know_recall": 0.1667,
+   "followup_recall": 0.0,
+   "never_rate": 0.4167,
+   "never_in_feed": [
+    {
+     "id": "a01228",
+     "title": "Captain and crew arrested after at least eight die in northern Cyprus ferry disa",
+     "rank": 1
+    },
+    {
+     "id": "a01243",
+     "title": "Prisons ‘one major event from disaster’ after U-turn on early release scheme",
+     "rank": 2
+    },
+    {
+     "id": "a01245",
+     "title": "Cleverly avoids culture war issues in pitch to be next London mayor",
+     "rank": 3
+    },
+    {
+     "id": "a01230",
+     "title": "At least eight dead and 18 missing after ferry capsizes off northern Cyprus",
+     "rank": 4
+    },
+    {
+     "id": "a01257",
+     "title": "Video: Raging floodwaters sweep away lorry in the Philippines",
+     "rank": 10
+    }
+   ],
+   "feed_size": 42,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 5,
+   "distinct_sources": 4,
+   "loss_by_stage": {
+    "blended": 2,
+    "lookback": 10
+   },
+   "losses": [
+    {
+     "id": "a00037",
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "dropped_at": "blended",
+     "reason": "The article discusses Iran's economic issues, which do not directly intersect with the user's primary interests in Centr",
+     "score": 0.2975
+    },
+    {
+     "id": "a00075",
+     "title": "Report accuses Azerbaijan, Georgia, Kazakhstan and Uzbekistan of scamming United",
+     "dropped_at": "blended",
+     "reason": "The article discusses allegations against Azerbaijan, Georgia, Kazakhstan, and Uzbekistan regarding scamming the US, whi",
+     "score": 0.2975
+    },
+    {
+     "id": "a00109",
+     "title": "The Iran War Is Disrupting Trade Connectivity Across Eurasia",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00141",
+     "title": "China Consolidates Position as Kazakhstan’s Top Trading Partner",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00151",
+     "title": "Middle Corridor Must Cut Delays, TITR Chief Tells TCA",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00164",
+     "title": "Taliban Responds to CSTO Plans to Strengthen Tajik-Afghan Border",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00581",
+     "title": "Russians Are Rushing for Cash. Should the Kremlin Be Worried?",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00595",
+     "title": "Deadly Ukrainian Strikes in Southern Russia Force Oil Refinery to Shut Down",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00600",
+     "title": "Kremlin Says It’s Working to Minimize Impact of Ukrainian Attacks on Russian Gra",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00612",
+     "title": "Aluminum producer Rusal promises to ‘minimize the socioeconomic consequences’ of",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00629",
+     "title": "Russia’s ‘digital ruble’ goes live on September 1. Here’s what we know.",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01318",
+     "title": "Grain exports stall as Ukraine steps up attacks on Russia's Black Sea ports",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 1.0,
+   "judge_recall": 0.5,
+   "judge_n": 27,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 5,
+   "cost_usd": 0.03321,
+   "latency_s": 4.72,
+   "cache_hits": 5,
+   "cache_misses": 0,
+   "stage_counts": {
+    "feed": 42,
+    "scored": 58,
+    "pool": 938,
+    "loaded": 196,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "rank": 30,
+    "blended": 58,
+    "lookback": 938,
+    "prefilter:cap": 175,
+    "prefilter:excluded": 21,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "a01228",
+     "rank": 1,
+     "title": "Captain and crew arrested after at least eight die in northern Cyprus ferry disa",
+     "source": "Guardian World",
+     "label": "never",
+     "score": 0.58
+    },
+    {
+     "id": "a01243",
+     "rank": 2,
+     "title": "Prisons ‘one major event from disaster’ after U-turn on early release scheme",
+     "source": "Guardian World",
+     "label": "never",
+     "score": 0.58
+    },
+    {
+     "id": "a01245",
+     "rank": 3,
+     "title": "Cleverly avoids culture war issues in pitch to be next London mayor",
+     "source": "Guardian World",
+     "label": "never",
+     "score": 0.58
+    },
+    {
+     "id": "a01230",
+     "rank": 4,
+     "title": "At least eight dead and 18 missing after ferry capsizes off northern Cyprus",
+     "source": "Guardian World",
+     "label": "never",
+     "score": 0.58
+    },
+    {
+     "id": "a01251",
+     "rank": 5,
+     "title": "What is Notting Hill Carnival’s Jab Jab parade?",
+     "source": "Al Jazeera",
+     "label": null,
+     "score": 0.5
+    },
+    {
+     "id": "a01252",
+     "rank": 6,
+     "title": "Vote count starts in Guinea-Bissau referendum on strengthening presidency",
+     "source": "Al Jazeera",
+     "label": null,
+     "score": 0.5
+    },
+    {
+     "id": "a01253",
+     "rank": 7,
+     "title": "Lamine Yamal getting back to ‘top level’, Barcelona coach Flick says",
+     "source": "Al Jazeera",
+     "label": null,
+     "score": 0.5
+    },
+    {
+     "id": "a01254",
+     "rank": 8,
+     "title": "Israeli strike kills 3-year-old child in Gaza",
+     "source": "Al Jazeera",
+     "label": null,
+     "score": 0.5
+    },
+    {
+     "id": "a01256",
+     "rank": 9,
+     "title": "‘Opening a new chapter’: Syria reopens embassy in Libya after talks",
+     "source": "Al Jazeera",
+     "label": null,
+     "score": 0.5
+    },
+    {
+     "id": "a01257",
+     "rank": 10,
+     "title": "Video: Raging floodwaters sweep away lorry in the Philippines",
+     "source": "Al Jazeera",
+     "label": "never",
+     "score": 0.5
+    },
+    {
+     "id": "n-far-01",
+     "rank": 11,
+     "title": "Kazakhstan reintroduces customs duties on Chinese trucks transiting to Central A",
+     "source": "Times of Cent.Asia",
+     "label": "must_see",
+     "score": 0.85
+    },
+    {
+     "id": "n-far-02",
+     "rank": 12,
+     "title": "EU adds three Tajik freight firms to Russia sanctions circumvention list",
+     "source": "Eurasianet",
+     "label": "must_see",
+     "score": 0.85
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "lena": {
+   "n_must_see": 9,
+   "n_need_to_know": 9,
+   "n_labelled": 301,
+   "recall_at_k": 0.4444,
+   "raw_recall_at_k": 0.4444,
+   "recall_at_retrieval": 0.5556,
+   "need_to_know_recall": 0.4444,
+   "followup_recall": 0.5,
+   "never_rate": 0.0833,
+   "never_in_feed": [
+    {
+     "id": "a00168",
+     "title": "German prosecutors accuse Turkish citizen of senior role in PKK’s Europe network",
+     "rank": 11
+    }
+   ],
+   "feed_size": 50,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 7,
+   "loss_by_stage": {
+    "lookback": 4,
+    "rank": 1
+   },
+   "losses": [
+    {
+     "id": "a00020",
+     "title": "Iran trade falls as Supreme Leader Khamenei urges less reliance on the U.S. doll",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00052",
+     "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00621",
+     "title": "Bloomberg: Ukraine’s drones have pushed Russian oil refining to a 20-year low",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01322",
+     "title": "Can new US sanctions cripple Iran's shadow economy?",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-lena-02",
+     "title": "Germany triggers gas emergency plan early-warning stage as LNG prices spike on H",
+     "dropped_at": "rank",
+     "reason": "Matched: oil and gas prices, Europe, world",
+     "score": 1.0
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": null,
+   "judge_recall": 0.0,
+   "judge_n": 45,
+   "needle_recall": 0.5,
+   "lookalike_rate": 0.0,
+   "calls": 7,
+   "cost_usd": 0.06298,
+   "latency_s": 4.29,
+   "cache_hits": 7,
+   "cache_misses": 0,
+   "stage_counts": {
+    "feed": 50,
+    "pool": 938,
+    "loaded": 196,
+    "scored": 40,
+    "roles": 10,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "rank": 38,
+    "lookback": 938,
+    "prefilter:cap": 134,
+    "prefilter:excluded": 62,
+    "blended": 40,
+    "after:roles": 10,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "n-lena-01",
+     "rank": 1,
+     "title": "Iran reopens Strait of Hormuz to tankers under UN-brokered 72-hour truce; Brent ",
+     "source": "CNBC",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a00009",
+     "rank": 2,
+     "title": "Singapore tackles finances and culture to avert a demographic crisis",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a00033",
+     "rank": 3,
+     "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+     "source": "Fortune",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a00147",
+     "rank": 4,
+     "title": "Tokayev Calls for Nuclear Talks 35 Years After Semipalatinsk Closure",
+     "source": "Times of Cent.Asia",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a00037",
+     "rank": 5,
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "source": "Fortune",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a00223",
+     "rank": 6,
+     "title": "Katseye’s Sophia to Sit Out European Leg of ‘Wildworld’ Tour to Focus on Her Men",
+     "source": "Variety",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a00426",
+     "rank": 7,
+     "title": "From ‘no nukes’ to ‘new nukes’: N.J.’s remarkable energy turnaround. | Opinion",
+     "source": "NJ.com",
+     "label": "fine",
+     "score": 0.96
+    },
+    {
+     "id": "a00068",
+     "rank": 8,
+     "title": "Kazakhstan hesitant to meet Kremlin’s energy needs",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.96
+    },
+    {
+     "id": "a00169",
+     "rank": 9,
+     "title": "Turkish central bank faces growing credibility deficit, says Commerzbank analyst",
+     "source": "bne IntelliNews",
+     "label": "fine",
+     "score": 0.8
+    },
+    {
+     "id": "a00010",
+     "rank": 10,
+     "title": "Trump-promoted Freedom Fuel stations sold gas a distributor says went unpaid for",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00168",
+     "rank": 11,
+     "title": "German prosecutors accuse Turkish citizen of senior role in PKK’s Europe network",
+     "source": "bne IntelliNews",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00171",
+     "rank": 12,
+     "title": "LNG prices in Europe skyrocket to highest level since 2023",
+     "source": "bne IntelliNews",
+     "label": "must_see",
+     "score": 1.0
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "maya": {
+   "n_must_see": 8,
+   "n_need_to_know": 5,
+   "n_labelled": 366,
+   "recall_at_k": 0.0,
+   "raw_recall_at_k": 0.0,
+   "recall_at_retrieval": 0.125,
+   "need_to_know_recall": 0.0,
+   "followup_recall": 0.0,
+   "never_rate": 0.0833,
+   "never_in_feed": [
+    {
+     "id": "a01011",
+     "title": "Professor Murder Rides the Subway is a forgotten slice of dance punk perfection",
+     "rank": 1
+    }
+   ],
+   "feed_size": 43,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 0,
+   "distinct_sources": 7,
+   "loss_by_stage": {
+    "lookback": 6,
+    "prefilter:cap": 1,
+    "blended": 1
+   },
+   "losses": [
+    {
+     "id": "a00045",
+     "title": "Meta agrees to major changes to Facebook and Instagram as it settles US trial ov",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00052",
+     "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00640",
+     "title": "IBM quantum computer solves classically intractable problem in 15 minutes",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01008",
+     "title": "Report: Nvidia to acquire AI model repository Hugging Face for $13 billion",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01088",
+     "title": "The UK Power Grid Has a Phantom Data Center Problem",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01108",
+     "title": "Industry that built the problem offers to sell you the solution",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-maya-01",
+     "title": "Bank of England cuts rates to 3.75% as inflation falls to target",
+     "dropped_at": "prefilter:cap",
+     "reason": "No clear preference match",
+     "score": 0.0
+    },
+    {
+     "id": "n-maya-02",
+     "title": "Scientists confirm first detection of biosignature gases on exoplanet K2-18b",
+     "dropped_at": "blended",
+     "reason": "The article focuses on Trump's criticism of media, which does not align with the user's interests.",
+     "score": 0.23428124999999994
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.0,
+   "judge_recall": 0.0,
+   "judge_n": 11,
+   "needle_recall": 0.0,
+   "lookalike_rate": 0.0,
+   "calls": 3,
+   "cost_usd": 0.00367,
+   "latency_s": 0.44,
+   "cache_hits": 3,
+   "cache_misses": 0,
+   "stage_counts": {
+    "feed": 43,
+    "scored": 57,
+    "pool": 938,
+    "loaded": 196,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "blended": 57,
+    "rank": 31,
+    "lookback": 938,
+    "prefilter:cap": 153,
+    "prefilter:excluded": 43,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "a01011",
+     "rank": 1,
+     "title": "Professor Murder Rides the Subway is a forgotten slice of dance punk perfection",
+     "source": "The Verge",
+     "label": "never",
+     "score": 0.73153125
+    },
+    {
+     "id": "a00639",
+     "rank": 2,
+     "title": "1.4-million-year-old footprints reveal a surprisingly large human relative",
+     "source": "ScienceDaily",
+     "label": "fine",
+     "score": 0.7166562500000001
+    },
+    {
+     "id": "a01024",
+     "rank": 3,
+     "title": "TechCrunch Mobility: The hidden human cost of robotaxis",
+     "source": "TechCrunch",
+     "label": "fine",
+     "score": 0.7060312499999999
+    },
+    {
+     "id": "a00992",
+     "rank": 4,
+     "title": "Why it matters that President Trump just dialed into a NASA news conference",
+     "source": "Ars Technica",
+     "label": "fine",
+     "score": 0.6842499999999999
+    },
+    {
+     "id": "a00015",
+     "rank": 5,
+     "title": "Here are the 3 big things we're watching in the stock market in the week ahead",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 0.6762812500000001
+    },
+    {
+     "id": "a00748",
+     "rank": 6,
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "source": "Business Times SG",
+     "label": "fine",
+     "score": 0.629
+    },
+    {
+     "id": "a01012",
+     "rank": 7,
+     "title": "Enormous 12TB Steam leak includes abandoned Half-Life 2: Episode 3 assets",
+     "source": "The Verge",
+     "label": "fine",
+     "score": 0.6210312499999998
+    },
+    {
+     "id": "a00011",
+     "rank": 8,
+     "title": "What caused Nvidia's nasty reversal Friday? Look to the Fed for clues",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 0.6210312499999998
+    },
+    {
+     "id": "a00000",
+     "rank": 9,
+     "title": "He beat Big Tobacco. Will the same playbook work against Meta and social media?",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 0.6210312499999998
+    },
+    {
+     "id": "a01014",
+     "rank": 10,
+     "title": "Texas Governor Abbott blocks funding for more Flock cameras",
+     "source": "The Verge",
+     "label": "fine",
+     "score": 0.5657812499999999
+    },
+    {
+     "id": "a00377",
+     "rank": 11,
+     "title": "The Guardian view on rare earths: it’s common sense to secure essential supply c",
+     "source": "Guardian US",
+     "label": "fine",
+     "score": 0.512125
+    },
+    {
+     "id": "a00371",
+     "rank": 12,
+     "title": "The datacenter backlash is bringing the entire political spectrum together – aga",
+     "source": "Guardian US",
+     "label": "fine",
+     "score": 0.47175
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "priya": {
+   "n_must_see": 4,
+   "n_need_to_know": 2,
+   "n_labelled": 328,
+   "recall_at_k": 0.5,
+   "raw_recall_at_k": 0.5,
+   "recall_at_retrieval": 0.5,
+   "need_to_know_recall": 0.5,
+   "followup_recall": null,
+   "never_rate": 0.5833,
+   "never_in_feed": [
+    {
+     "id": "a00892",
+     "title": "Yanks rout Sox after Rafaela's disputed no-catch",
+     "rank": 5
+    },
+    {
+     "id": "a00893",
+     "title": "SEC to dispute judge's pro player ruling Thursday",
+     "rank": 6
+    },
+    {
+     "id": "a00905",
+     "title": "'We're in this to build something': Why there's renewed optimism for Cal footbal",
+     "rank": 7
+    },
+    {
+     "id": "a00906",
+     "title": "College football is back, and Bill Belichick's North Carolina? 'They've improved",
+     "rank": 8
+    },
+    {
+     "id": "a00904",
+     "title": "Adam Schefter's fantasy cheat sheet: The players our NFL insider is most excited",
+     "rank": 9
+    },
+    {
+     "id": "a00907",
+     "title": "How Man United went from 'everything is wrong' to a big blowout win that vindica",
+     "rank": 10
+    },
+    {
+     "id": "a00908",
+     "title": "Alonso dropping Fernández has worked -- so far. Can Chelsea afford to let him go",
+     "rank": 11
+    }
+   ],
+   "feed_size": 28,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 2,
+   "distinct_sources": 4,
+   "loss_by_stage": {
+    "lookback": 2
+   },
+   "losses": [
+    {
+     "id": "a00048",
+     "title": "Canada announces retaliatory tariffs on wide range of US goods",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00233",
+     "title": "Where to Watch the 2026 U.S. Open Tennis Tournament Online",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.6667,
+   "judge_recall": 1.0,
+   "judge_n": 58,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 3,
+   "cost_usd": 0.00334,
+   "latency_s": 0.49,
+   "cache_hits": 3,
+   "cache_misses": 0,
+   "stage_counts": {
+    "loaded": 196,
+    "scored": 72,
+    "pool": 938,
+    "feed": 28,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "prefilter:cap": 195,
+    "blended": 72,
+    "lookback": 938,
+    "rank": 16,
+    "text_too_short": 4,
+    "prefilter:excluded": 1
+   },
+   "feed": [
+    {
+     "id": "n-priya-01",
+     "rank": 1,
+     "title": "Leylah Fernandez reaches first WTA 1000 final in Toronto after upset of world No",
+     "source": "ESPN",
+     "label": "must_see",
+     "score": 0.85
+    },
+    {
+     "id": "a01091",
+     "rank": 2,
+     "title": "Debian votes to let contributors code with AI",
+     "source": "The Register",
+     "label": null,
+     "score": 0.48
+    },
+    {
+     "id": "a01229",
+     "rank": 3,
+     "title": "Jason Arday accuser given three-month teaching ban but can continue research",
+     "source": "Guardian World",
+     "label": null,
+     "score": 0.43562499999999993
+    },
+    {
+     "id": "n-priya-02",
+     "rank": 4,
+     "title": "Ontario approves 2 GW of new solar under revised procurement, largest in provinc",
+     "source": "CNBC",
+     "label": "must_see",
+     "score": 0.85
+    },
+    {
+     "id": "a00892",
+     "rank": 5,
+     "title": "Yanks rout Sox after Rafaela's disputed no-catch",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00893",
+     "rank": 6,
+     "title": "SEC to dispute judge's pro player ruling Thursday",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00905",
+     "rank": 7,
+     "title": "'We're in this to build something': Why there's renewed optimism for Cal footbal",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00906",
+     "rank": 8,
+     "title": "College football is back, and Bill Belichick's North Carolina? 'They've improved",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00904",
+     "rank": 9,
+     "title": "Adam Schefter's fantasy cheat sheet: The players our NFL insider is most excited",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00907",
+     "rank": 10,
+     "title": "How Man United went from 'everything is wrong' to a big blowout win that vindica",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00908",
+     "rank": 11,
+     "title": "Alonso dropping Fernández has worked -- so far. Can Chelsea afford to let him go",
+     "source": "ESPN",
+     "label": "never",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a00902",
+     "rank": 12,
+     "title": "Inside the raucous and rapid rise of Alex Eala",
+     "source": "ESPN",
+     "label": "fine",
+     "score": 0.6599999999999999
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "ray": {
+   "n_must_see": 9,
+   "n_need_to_know": 5,
+   "n_labelled": 318,
+   "recall_at_k": 0.2222,
+   "raw_recall_at_k": 0.2222,
+   "recall_at_retrieval": 0.5556,
+   "need_to_know_recall": 0.2,
+   "followup_recall": 0.0,
+   "never_rate": 0.5,
+   "never_in_feed": [
+    {
+     "id": "a00946",
+     "title": "Flyers Prospect Flashes Lofty Potential in Viral New Highlights",
+     "rank": 2
+    },
+    {
+     "id": "n-ray-91",
+     "title": "New Jersey Devils-themed slot machine hits Atlantic City casino floors",
+     "rank": 4
+    },
+    {
+     "id": "n-ray-92",
+     "title": "Newark, Delaware approves new bike lanes along Main Street",
+     "rank": 5
+    },
+    {
+     "id": "a00424",
+     "title": "Highest RTP slots to play at the best NJ online casinos",
+     "rank": 6
+    },
+    {
+     "id": "a00031",
+     "title": "Shein CEO’s wealth slumps $15 billion after whittled-down IPO",
+     "rank": 9
+    },
+    {
+     "id": "a00275",
+     "title": "Thanks to a dedicated team 'art-directing' every single NPC, GTA 6 has over 10 t",
+     "rank": 12
+    }
+   ],
+   "feed_size": 45,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 2,
+   "distinct_sources": 6,
+   "loss_by_stage": {
+    "blended": 2,
+    "lookback": 4,
+    "rank": 1
+   },
+   "losses": [
+    {
+     "id": "a00407",
+     "title": "Giants’ 53-man roster to include Odell Beckham: Here’s the full squad.",
+     "dropped_at": "blended",
+     "reason": "The article discusses a music EP, which is not relevant to the user's interests.",
+     "score": 0.074375
+    },
+    {
+     "id": "a00409",
+     "title": "N.J. weather: Severe thunderstorms, flash flooding threat in N.J. this week",
+     "dropped_at": "blended",
+     "reason": "This article discusses an international issue unrelated to the user's interests.",
+     "score": 0.029749999999999995
+    },
+    {
+     "id": "a00494",
+     "title": "Trump administration appealing loss in Gateway tunnel funding case",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00495",
+     "title": "Monthly job losses worst in NJ since first months of pandemic",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00499",
+     "title": "Pennsylvania measles deaths prompt concerns for NJ health leaders",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00503",
+     "title": "Appeals court rejects Rep. LaMonica McIver’s bid to avoid trial on assault charg",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00894",
+     "title": "OBJ earns spot on Giants' initial 53-man roster",
+     "dropped_at": "rank",
+     "reason": "Matched: the Giants",
+     "score": 0.72
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.0,
+   "judge_recall": 0.0,
+   "judge_n": 44,
+   "needle_recall": 1.0,
+   "lookalike_rate": 1.0,
+   "calls": 5,
+   "cost_usd": 0.03408,
+   "latency_s": 4.3,
+   "cache_hits": 5,
+   "cache_misses": 0,
+   "stage_counts": {
+    "loaded": 196,
+    "scored": 55,
+    "pool": 938,
+    "feed": 45,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "prefilter:cap": 194,
+    "blended": 55,
+    "lookback": 938,
+    "prefilter:excluded": 2,
+    "rank": 33,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "n-ray-02",
+     "rank": 1,
+     "title": "Devils trade first-round pick for Jets goaltender Hellebuyck in blockbuster deal",
+     "source": "ESPN NHL",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a00946",
+     "rank": 2,
+     "title": "Flyers Prospect Flashes Lofty Potential in Viral New Highlights",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "n-ray-01",
+     "rank": 3,
+     "title": "NJ Transit to suspend Morris & Essex line service from Newark Penn for two weeks",
+     "source": "NJ.com",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "n-ray-91",
+     "rank": 4,
+     "title": "New Jersey Devils-themed slot machine hits Atlantic City casino floors",
+     "source": "NJ.com",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "n-ray-92",
+     "rank": 5,
+     "title": "Newark, Delaware approves new bike lanes along Main Street",
+     "source": "Guardian US",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00424",
+     "rank": 6,
+     "title": "Highest RTP slots to play at the best NJ online casinos",
+     "source": "NJ.com",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00426",
+     "rank": 7,
+     "title": "From ‘no nukes’ to ‘new nukes’: N.J.’s remarkable energy turnaround. | Opinion",
+     "source": "NJ.com",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a00431",
+     "rank": 8,
+     "title": "Adidas just dropped Manchester United, Liverpool and Real Madrid pet jerseys",
+     "source": "NJ.com",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a00031",
+     "rank": 9,
+     "title": "Shein CEO’s wealth slumps $15 billion after whittled-down IPO",
+     "source": "Fortune",
+     "label": "never",
+     "score": 0.96
+    },
+    {
+     "id": "a00368",
+     "rank": 10,
+     "title": "Canada erects giant ‘Lake Ontario’ sign as spat with Trump over name escalates",
+     "source": "Guardian US",
+     "label": null,
+     "score": 0.8800000000000001
+    },
+    {
+     "id": "a00434",
+     "rank": 11,
+     "title": "N.J. families struggle as home care shortages worsen statewide | Opinion",
+     "source": "NJ.com",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a00275",
+     "rank": 12,
+     "title": "Thanks to a dedicated team 'art-directing' every single NPC, GTA 6 has over 10 t",
+     "source": "PC Gamer",
+     "label": "never",
+     "score": 0.8
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "tom": {
+   "n_must_see": 17,
+   "n_need_to_know": 4,
+   "n_labelled": 330,
+   "recall_at_k": 0.1667,
+   "raw_recall_at_k": 0.1176,
+   "recall_at_retrieval": 0.1176,
+   "need_to_know_recall": 0.25,
+   "followup_recall": 0.0,
+   "never_rate": 0.0833,
+   "never_in_feed": [
+    {
+     "id": "a01041",
+     "title": "Google Maps Now Shows ‘Lake America’ Instead of Lake Ontario",
+     "rank": 10
+    }
+   ],
+   "feed_size": 13,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 6,
+   "distinct_sources": 9,
+   "loss_by_stage": {
+    "lookback": 15
+   },
+   "losses": [
+    {
+     "id": "a00014",
+     "title": "OpenAI to end model access to Cursor after acquisition by Elon Musk's SpaceX",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00201",
+     "title": "Anthropic warns infostealer malware is hijacking Claude sessions to drain usage",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00214",
+     "title": "Nearly 700 rogue AI agents coordinated in the Hugging Face attack",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00557",
+     "title": "Google Cloud Launches AI-powered Agents to Simplify Database Lifecycle Managemen",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00633",
+     "title": "Reuters: Russian-speaking hackers breached seven companies by tricking the AI ag",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00998",
+     "title": "Trump blacklisting of \"woke\" Anthropic deemed illegal by federal judge",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01005",
+     "title": "Anthropic's new hardware standard lets AI agents control the physical world",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01008",
+     "title": "Report: Nvidia to acquire AI model repository Hugging Face for $13 billion",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01009",
+     "title": "AI industry says Trump plans to tax chips in the “single dumbest way imaginable”",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01020",
+     "title": "Sony Music Publishing and Warner Chappell are suing Anthropic",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01035",
+     "title": "An Anthropic researcher just gave us a peek at self-improving AI",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01082",
+     "title": "OpenAI Is Developing a ‘Persistent’ AI Agent",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01096",
+     "title": "Researcher shows how Claude Code can be tricked simply by asking it to summarize",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01128",
+     "title": "Salesforce boasts: 50% of bookings were from 'customers refilling the tank... th",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01140",
+     "title": "OpenAI explains how its naughty AI agents attacked Hugging Face",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.6667,
+   "judge_recall": 1.0,
+   "judge_n": 22,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 3,
+   "cost_usd": 0.00833,
+   "latency_s": 0.47,
+   "cache_hits": 3,
+   "cache_misses": 0,
+   "stage_counts": {
+    "scored": 87,
+    "pool": 938,
+    "feed": 13,
+    "loaded": 196,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "blended": 87,
+    "lookback": 938,
+    "prefilter:cap": 175,
+    "prefilter:excluded": 21,
+    "text_too_short": 4,
+    "rank": 1
+   },
+   "feed": [
+    {
+     "id": "n-tom-01",
+     "rank": 1,
+     "title": "Anthropic releases Claude Opus 5 with 2M-token context and agentic computer use",
+     "source": "TechCrunch",
+     "label": "must_see",
+     "score": 0.85
+    },
+    {
+     "id": "n-tom-02",
+     "rank": 2,
+     "title": "EU AI Act enforcement begins: first fines issued against two general-purpose mod",
+     "source": "The Register",
+     "label": "must_see",
+     "score": 0.7947500000000001
+    },
+    {
+     "id": "a01091",
+     "rank": 3,
+     "title": "Debian votes to let contributors code with AI",
+     "source": "The Register",
+     "label": "fine",
+     "score": 0.7394999999999999
+    },
+    {
+     "id": "a00790",
+     "rank": 4,
+     "title": "The environmental ethics of AI should be a product decision, not a sustainabilit",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.6842499999999999
+    },
+    {
+     "id": "a00703",
+     "rank": 5,
+     "title": "The old, the young, the MPs: The ones who attend the festivities",
+     "source": "Straits Times",
+     "label": null,
+     "score": 0.6799999999999999
+    },
+    {
+     "id": "a00704",
+     "rank": 6,
+     "title": "More than 300 cooling centres to open if S’pore faces heatwave: New heat office",
+     "source": "Straits Times",
+     "label": null,
+     "score": 0.6799999999999999
+    },
+    {
+     "id": "a00639",
+     "rank": 7,
+     "title": "1.4-million-year-old footprints reveal a surprisingly large human relative",
+     "source": "ScienceDaily",
+     "label": null,
+     "score": 0.6799999999999999
+    },
+    {
+     "id": "a00638",
+     "rank": 8,
+     "title": "This strange “spacetime crystal” can suddenly become a black hole",
+     "source": "ScienceDaily",
+     "label": null,
+     "score": 0.6799999999999999
+    },
+    {
+     "id": "a00011",
+     "rank": 9,
+     "title": "What caused Nvidia's nasty reversal Friday? Look to the Fed for clues",
+     "source": "CNBC",
+     "label": "fine",
+     "score": 0.6599999999999999
+    },
+    {
+     "id": "a01041",
+     "rank": 10,
+     "title": "Google Maps Now Shows ‘Lake America’ Instead of Lake Ontario",
+     "source": "Wired",
+     "label": "never",
+     "score": 0.65821875
+    },
+    {
+     "id": "a01223",
+     "rank": 11,
+     "title": "Australia news live: PM urged to restrict violent pornography after teen’s death",
+     "source": "Guardian World",
+     "label": null,
+     "score": 0.64
+    },
+    {
+     "id": "a00227",
+     "rank": 12,
+     "title": "Olivia Rodrigo’s Inaugural Daisy Chain Fields Draws Massive Crowd to SoCal for a",
+     "source": "Hollywood Reporter",
+     "label": null,
+     "score": 0.5992500000000001
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  "wei": {
+   "n_must_see": 16,
+   "n_need_to_know": 1,
+   "n_labelled": 332,
+   "recall_at_k": 0.0833,
+   "raw_recall_at_k": 0.0625,
+   "recall_at_retrieval": 0.125,
+   "need_to_know_recall": 0.0,
+   "followup_recall": 0.0,
+   "never_rate": 0.0833,
+   "never_in_feed": [
+    {
+     "id": "a00991",
+     "title": "A 12TB Steam “teraleak” spills more than a decade of lost PC gaming history",
+     "rank": 6
+    }
+   ],
+   "feed_size": 30,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 6,
+   "distinct_sources": 9,
+   "loss_by_stage": {
+    "lookback": 13,
+    "rank": 1,
+    "prefilter:cap": 1
+   },
+   "losses": [
+    {
+     "id": "a00099",
+     "title": "AI, Scams, the Law, and Governance: A Conversation With David Tan",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00546",
+     "title": "AWS Open Sources Kiro Crew for Asynchronous Coding Agents",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00557",
+     "title": "Google Cloud Launches AI-powered Agents to Simplify Database Lifecycle Managemen",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00792",
+     "title": "Ajaib raises US$270M in Indonesia’s biggest tech funding round since 2022",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00800",
+     "title": "Language was never the problem: Inside SEA’s real AI adoption gap",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00804",
+     "title": "Fintech funding in Singapore drops to US$499M as dealmaking becomes more selecti",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00817",
+     "title": "Moving past the pilot and scaling AI in Southeast Asian retail",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00829",
+     "title": "When will AI stop making memory more expensive? Probably much later than you hop",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00833",
+     "title": "SEA’s stablecoin boom has a dollarisation problem nobody’s pricing in",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01005",
+     "title": "Anthropic's new hardware standard lets AI agents control the physical world",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01031",
+     "title": "Nvidia’s AI advantage is moving beyond the GPU",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01093",
+     "title": "AWS mumbles about its cost-busting networking tech when it should be shouting",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01140",
+     "title": "OpenAI explains how its naughty AI agents attacked Hugging Face",
+     "dropped_at": "lookback",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-wei-01",
+     "title": "MAS proposes new capital rules for Singapore payment firms holding customer fund",
+     "dropped_at": "rank",
+     "reason": "The article discusses the use of AI in the Debian community, which is relevant to the user's interest in AI engineering ",
+     "score": 0.5471875
+    },
+    {
+     "id": "n-wei-02",
+     "title": "PostgreSQL 19 released with built-in logical replication failover and async I/O",
+     "dropped_at": "prefilter:cap",
+     "reason": "Matched: how AI is actually being used in production engineering",
+     "score": 2.8
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": null,
+   "judge_precision": 0.5,
+   "judge_recall": 1.0,
+   "judge_n": 27,
+   "needle_recall": 0.0,
+   "lookalike_rate": 0.0,
+   "calls": 3,
+   "cost_usd": 0.00985,
+   "latency_s": 0.51,
+   "cache_hits": 3,
+   "cache_misses": 0,
+   "stage_counts": {
+    "scored": 70,
+    "loaded": 196,
+    "feed": 30,
+    "pool": 938,
+    "loaded_rows": 4
+   },
+   "drop_counts": {
+    "blended": 70,
+    "prefilter:cap": 155,
+    "rank": 18,
+    "lookback": 938,
+    "prefilter:excluded": 41,
+    "text_too_short": 4
+   },
+   "feed": [
+    {
+     "id": "a01223",
+     "rank": 1,
+     "title": "Australia news live: PM urged to restrict violent pornography after teen’s death",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a01261",
+     "rank": 2,
+     "title": "Israeli settler rabbi says Palestinians should leave the occupied West Bank",
+     "source": "Al Jazeera",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a01229",
+     "rank": 3,
+     "title": "Jason Arday accuser given three-month teaching ban but can continue research",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a00790",
+     "rank": 4,
+     "title": "The environmental ethics of AI should be a product decision, not a sustainabilit",
+     "source": "e27",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a01091",
+     "rank": 5,
+     "title": "Debian votes to let contributors code with AI",
+     "source": "The Register",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a00991",
+     "rank": 6,
+     "title": "A 12TB Steam “teraleak” spills more than a decade of lost PC gaming history",
+     "source": "Ars Technica",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a01012",
+     "rank": 7,
+     "title": "Enormous 12TB Steam leak includes abandoned Half-Life 2: Episode 3 assets",
+     "source": "The Verge",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a01041",
+     "rank": 8,
+     "title": "Google Maps Now Shows ‘Lake America’ Instead of Lake Ontario",
+     "source": "Wired",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a01024",
+     "rank": 9,
+     "title": "TechCrunch Mobility: The hidden human cost of robotaxis",
+     "source": "TechCrunch",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a01014",
+     "rank": 10,
+     "title": "Texas Governor Abbott blocks funding for more Flock cameras",
+     "source": "The Verge",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "a00748",
+     "rank": 11,
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "source": "Business Times SG",
+     "label": "must_see",
+     "score": 0.7394999999999999
+    },
+    {
+     "id": "a00788",
+     "rank": 12,
+     "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.6842499999999999
+    }
+   ],
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  }
+ },
+ "cache_keys": [
+  "0525b415c24eba034c3bfc5068f706e0a95d47fad51339ead2314a2738093bd6",
+  "128d570e3377ff20cd0d1c90fcea255f41875c9a20481351ce94772022b0e447",
+  "15e27b76d5d84f75a36037f57149c1347ffa9242b0cfc16f46778ca1220b13df",
+  "1b56e15cb90e933321a5323de32d62d5d08521a01744592d50cdf8b91e36a669",
+  "1b6454affaca7ca5ea355ed4cf39c061fbdaca34dbdc4b45b051f720835d03d4",
+  "1b9e27f9bd077e0626c5b6c292d1cec00cb85adcf03b884afe55cbf3cfb3ad1b",
+  "1f0a5511ade1b7d712d05c20beb0fbb7759e53c138801adb76312c52898e59bd",
+  "1ff960cf8c226e66656f572da4c0aa3a3861092b26f32b4951010f81d55cc61f",
+  "2272608f14aca6f25f2ec1e72a641bf66ed48e0fd3c8256c0b0645c4ebc7bd83",
+  "2337613ca2c87ad41e90b1a8ecfd21bee6abc1b38693e5b8a727b38394ab7c08",
+  "23917e0fba45df0a6330ef49c4d5d9d40bb407b6be390ba1f4f2f50318f8d33f",
+  "23ea6e411a09139b0af94d53af186152296a163a896425987e2f2d7e1962dc57",
+  "26dfb778f38fd94495aca39bb435abf5d2b12d3aaa1ab734494fdafecc955ac8",
+  "2c7d6c6918862f05b824dd84f779cd54752b8ac28422ff5283e898d652c4d73e",
+  "3ea9c78fe5a990f273930d0b273231c5845649d8ab36c08a19f3a8ef13fb305d",
+  "405850788bf54f24909c0fc47594d538c5a55953a86bd3dcd7b11bec168577e9",
+  "415292917075be22bfc7a6fb88bf2f4d85773762f65ed570dc9cf0dff1ccbd12",
+  "42c5ab859f5af0df4bb72bb9254e54b6e33b862ef8f79cbdef8e2c447a86c27e",
+  "46dc4d333dfe9d3f689e25b3e32ac6e93160b0e32759cc7b257d8ec426c1cc30",
+  "4888af9bf0c24337f15a9d43de0ec5ec9a33646fbc3b94dbb9388da1dbcf79f5",
+  "50d0e07013f9e76442dd43f6626c8e6ae90051874d50a3ae8403ca74187adb01",
+  "585150a6975b473954ee25fd08c459d6b114f69fa615d390cc52cafbf929122f",
+  "5bb1139014748ddeef2bdb8f3ae453e69e81b417be69f794a113f7f1774c5b5d",
+  "6b2a841ebee807b9b8a8a6ad7bf62e57ba0894c6e44b7f29d42916cf60524b71",
+  "6bb8bd843d6f278296a9b156cff2d23521da61166464e72403c147b9ff1e6f4a",
+  "6da911503017ae8dc5d2a789e9eae4ee81d1f1646a179a541195095bfaeeac8f",
+  "742ea2806ba5bb15fe99d9222d8c42984a72d13f2d5af423ca4fb6094057cb38",
+  "74c22695a4917dca76ed38bbaae626517c95916839b3d26a48f6b1c09b6a1d35",
+  "7ed36b519834f6a6faf8ed9dbcc75e979305a07a338b75b85bd71d77d48a7060",
+  "7f5936e2958adc414dc5cb1b7c5797661cfb74ed4f84534240ff6fa9dd995a12",
+  "88ec9560b811629c75f33b95e65bee9b0827d3c9eeaa06543adbd39bc21d259c",
+  "90afa1cd30af868f8f3bf89ca25f20075df9c1c1567f6850249eb5f890b60ac8",
+  "96c8c9254074a7fe24539c42cd4246708ab5be922fc8a98f9203a121432e821c",
+  "a37afaba42623578c46b83a1427f73f3a52802dd4f468b99d716bf652283ce04",
+  "a623dff7d0a137de6287010f5973bb9f77e0ad5bae2db6e4f1ac8a0d8f6bfb24",
+  "a9f8bdea73231b28c50d2bda542380b416518e569249cfe17232fde369d01417",
+  "abe586339abe70d71faf50c1fdc0680459abe0d9ce6125de2649459c4e8e3c4c",
+  "ad5e33df5761a0a77a043c2a6482a46ccd3c0b24502741b7eeeb66d21c791215",
+  "ada3a70bd43166c623809576a5368ddf9f968f1346b5368d21e2f0a41264b683",
+  "b0892bc6ab7bf6799612343636f693bc37be7881e67b60cb531fb67255523d1b",
+  "b3b213bf055823dd48eebb5f244d0ae85007211a0cec0504a2bb1b622138d8bf",
+  "c40566e9419c4bd047839107a2de23afcc1a11b50bce5fe0c6de062f0b8a1ed8",
+  "c7463bbb112106e0a8ab2be736bf1bb97c2838e24424b85370e54d40cd525182",
+  "c85ff4ccc34af8d978ff5d47eedac4ba3ef988b3b840e87b66b1caadd128ef5c",
+  "cc6f85e2402a9237865640cf79c9a91aac7ad452bc5f2387a0f78460148ee115",
+  "d4e6bfed06f71e7d0743320f0976a807f29c709a73117d772bc1287179bcc7af",
+  "d5e4db35c00344e0ffa5fbc17524d0159368f5912a557ec9927d31d932bb4efd",
+  "d7aa832333e1b2430c65bdadd30608dfb483f07da8efaac8ab5cb05e39b8d652",
+  "d8c47abe208873cd4192f2d4e941328da17f7024c0671e7c6fd342a08fb6cbab",
+  "d9dacf8c3800fa046e9edaa906d4149331f57dd4109db12754d1dab3c1869a70",
+  "dc3b1ac2667d08bd1613e7c4159ff8a4e3ff3622c8e60a5e8a45df3576e374cf",
+  "dcfb95be54ee600934c9df9accab5042fbd1be60c51751885d9ac5ee079d03d2",
+  "dd25ae009362ed0fbedd1ecd42894fdad5a64593ca7867ce23b711921e0cb5fe",
+  "df8aaa9c572199be5fef07f913413b0b7ee1759a7fa9289d8c4fd37f1f66d05e",
+  "e27062283f2640c0f87ec92bf9816f1b7b7f93969ea9a54ba68053c70ef1789e",
+  "f46a5f1157294b9a1fb2e59efa73e103bf62c7c4785dfd56ffe1f1c6ad4f0ab9",
+  "f711ac4c5e450a2d5b481dc38dd2b76361c05ff5e4e51128652e9895b0f84faf",
+  "fa164f6c6c739a85fcdea46390e027cf4bc84cb0f6cf68b5c4a60709a54c235c",
+  "fda894266676befb3cd8fa323e19bf63a1fe869bbd856e62ef8ecdd47bfcb7ad"
+ ],
+ "meta": {
+  "needles": true,
+  "quiet": true
+ }
+}

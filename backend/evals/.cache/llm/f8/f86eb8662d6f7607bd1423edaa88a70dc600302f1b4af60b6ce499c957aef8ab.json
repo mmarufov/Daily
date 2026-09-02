@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2a542b5df5e38928a94994f168b406e87aa1dfbf895dbe043ad6aa19e979400b",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00145\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting data use in aviation but off primary interests and region.\"}, {\"id\": \"a00158\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Tajikistan environmental risks, unrelated to reader's tech or fintech interests.\"}, {\"id\": \"a00159\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Parenting advice unrelated to reader's tech or fintech focus.\"}, {\"id\": \"a00176\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Historical money transfer methods interesting but lacks direct fintech regulation or Singapore relevance.\"}, {\"id\": \"a00179\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US micro-investing preferences irrelevant to reader's interests and excludes US politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2660,
+  "completion_tokens": 250
+ }
+}

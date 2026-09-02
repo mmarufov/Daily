@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "77439a0387a326e55edf45ce6f2aa5dba52339a84c380e48229a486406029696",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01115\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cybercrime in Australia unrelated to Singapore or reader's interests.\"}, {\"id\": \"a01120\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AFRINIC election forgery in Mauritius unrelated to Singapore or reader's interests.\"}, {\"id\": \"a01126\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Sponsored IT backup feature unrelated to reader's interests.\"}, {\"id\": \"a01129\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"UK airport data breach unrelated to Singapore or reader's interests.\"}, {\"id\": \"a01131\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Microsoft 365 AI roadmap unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3528,
+  "completion_tokens": 244
+ }
+}

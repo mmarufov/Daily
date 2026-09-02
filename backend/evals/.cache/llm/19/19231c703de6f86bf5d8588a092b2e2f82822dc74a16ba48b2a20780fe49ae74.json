@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a86657f797f12a5ff6875d2cdd176da68b1ace9f5aa53d963e05d73b569255a2",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01223\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Oil deal not related to solar or reader's sports interests.\"}, {\"id\": \"a01227\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.7, \"rationale\": \"AI surveillance in US unrelated to reader's interests.\"}, {\"id\": \"a01230\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tennis-related but about Serena Williams, not Canadian players.\"}, {\"id\": \"a01231\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.6, \"rationale\": \"Trade war affects Canada, possibly relevant to reader's life.\"}, {\"id\": \"a01235\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Aura battles unrelated to sports or environment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1085,
+  "completion_tokens": 236
+ }
+}

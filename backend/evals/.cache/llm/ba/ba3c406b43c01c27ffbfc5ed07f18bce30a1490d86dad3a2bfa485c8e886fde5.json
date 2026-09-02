@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c8a1d7585112ec167b05a5f7b2c17a3e109945f920b9de372e14d2b8df302893",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01127\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Social media platform news unrelated to energy or geopolitics.\"}, {\"id\": \"a01130\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech industry news; some economic relevance but not primary interest.\"}, {\"id\": \"a01139\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.9, \"rationale\": \"Geopolitical cyber security news relevant but not directly about energy or OPEC.\"}, {\"id\": \"a01141\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming controller story excluded by reader preferences.\"}, {\"id\": \"a01182\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Obituary unrelated to energy or geopolitics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2568,
+  "completion_tokens": 240
+ }
+}

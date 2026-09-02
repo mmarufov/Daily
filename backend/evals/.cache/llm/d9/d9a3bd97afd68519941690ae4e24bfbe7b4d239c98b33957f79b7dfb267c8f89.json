@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "417e2fc1cfa0d9ae3a68cac32f99e5ec5a1f2d2a9d26ac7113a8ec1c338a3ae6",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00728\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local policy/safeguarding news; not a major global event, but solid general news.\"\n    },\n    {\n      \"id\": \"a00839\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Significant science/space news, but not a must-know global event for all adults.\"\n    },\n    {\n      \"id\": \"a00856\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Space launch coverage is interesting but not essential for all general readers.\"\n    },\n    {\n      \"id\": \"a00881\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Background on a space mission; informative but not a major event.\"\n    },\n    {\n      \"id\": \"a00896\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Niche fantasy sports advice; not general news or of broad relevance.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2539,
+  "completion_tokens": 302
+ }
+}

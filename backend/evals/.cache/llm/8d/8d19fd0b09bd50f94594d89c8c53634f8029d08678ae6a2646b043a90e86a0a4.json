@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3455035dfd3dad3eecb929e26b78468638ae93e63b5d9f7d5171bf33d395f5da",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00298\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Video game news unrelated to NJ or reader interests.\"}, {\"id\": \"a00309\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI and gaming industry news unrelated to NJ or reader interests.\"}, {\"id\": \"a00317\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"GTA 6 gameplay reveal unrelated to NJ or reader interests.\"}, {\"id\": \"a00321\", \"label\": \"never\", \"tags\": [\"off_topic\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"International disaster, no local NJ relevance.\"}, {\"id\": \"a00326\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NASA space telescope launch unrelated to NJ or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2773,
+  "completion_tokens": 237
+ }
+}

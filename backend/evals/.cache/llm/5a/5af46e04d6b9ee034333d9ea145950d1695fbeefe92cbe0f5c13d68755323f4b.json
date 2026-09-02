@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4ad5b81e2b106cc08c5d93f02b1236d5e1f764b821ae2359f10395d2406c15a1",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00227\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Music festival charity event; interesting but not major news for general audience.\"}, {\"id\": \"a00228\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Death of Dolly Parton, a major cultural figure, is important general news.\"}, {\"id\": \"a00231\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Box office updates; routine entertainment news for general audience.\"}, {\"id\": \"a00232\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"followup\"], \"confidence\": 0.8, \"rationale\": \"Follow-up on charity donation doubling; interesting but not major news.\"}, {\"id\": \"a00234\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Celebrity joke about wedding; trivial entertainment, no broad news value.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1040,
+  "completion_tokens": 255
+ }
+}

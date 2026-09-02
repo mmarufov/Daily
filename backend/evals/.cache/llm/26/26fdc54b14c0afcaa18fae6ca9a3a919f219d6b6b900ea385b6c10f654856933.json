@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4027ce365831f6a138c4b5cacd8a9aa37bf53689737e85ac8a2a4b3aa90a0c2e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00050\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to tech and business but routine AI adoption insights.\"}, {\"id\": \"a00051\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"UK news\"], \"confidence\": 0.9, \"rationale\": \"Heat-related rail issues affect London commuters and consumer travel safety.\"}, {\"id\": \"a00052\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"UK news\", \"world news\"], \"confidence\": 0.9, \"rationale\": \"Low EU gas stores impact UK energy prices and consumer costs this winter.\"}, {\"id\": \"a00053\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world news\"], \"confidence\": 0.7, \"rationale\": \"Australian inflation affects global markets but less direct UK consumer impact.\"}, {\"id\": \"a00054\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"London\", \"technology\"], \"confidence\": 0.85, \"rationale\": \"Delay in London robotaxi rollout affects local tech and transport landscape.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1526,
+  "completion_tokens": 281
+ }
+}

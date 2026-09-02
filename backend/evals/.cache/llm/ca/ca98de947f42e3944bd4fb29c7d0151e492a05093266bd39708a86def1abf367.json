@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c65a479ad8773160eb58bab6fe3da21b88a1c063ea9faa371e4a7b1f3bd087e6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00687\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Science topic, but Australia bird flu is not directly relevant to UK or consumer impact.\"\n    },\n    {\n      \"id\": \"a00704\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"World news, but Singapore heatwave plans have little direct relevance for a London reader.\"\n    },\n    {\n      \"id\": \"a00711\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Science/education story, but not a primary interest or major event for this reader.\"\n    },\n    {\n      \"id\": \"a00754\",\n      \"label\": \"fine\",\n      \"tags\": [\"business\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Business/leadership topic, but not directly about marketing or UK/world impact.\"\n    },\n    {\n      \"id\": \"a00755\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech/AI in public transport, but Singapore focus limits direct relevance for London/UK reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1070,
+  "completion_tokens": 331
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "eafb798a0be16b77ebb9efd8a11f96ca17a6ed44f087bbf8c46c0108aea4c047",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01248\",\n      \"label\": \"fine\",\n      \"tags\": [\"world_news\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major world event, but not directly relevant to reader's life or primary interests.\"\n    },\n    {\n      \"id\": \"a01251\",\n      \"label\": \"fine\",\n      \"tags\": [\"London\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"London cultural event; relevant as local color, but not essential or primary.\"\n    },\n    {\n      \"id\": \"a01264\",\n      \"label\": \"fine\",\n      \"tags\": [\"world_news\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major disaster, world news; important for staying informed, but not must_see.\"\n    },\n    {\n      \"id\": \"a01312\",\n      \"label\": \"must_see\",\n      \"tags\": [\"science\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly addresses science, climate change, and public discourse; squarely in primary interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 956,
+  "completion_tokens": 255
+ }
+}

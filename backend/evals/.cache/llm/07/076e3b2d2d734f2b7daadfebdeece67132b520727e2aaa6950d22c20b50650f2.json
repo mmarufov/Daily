@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "78faa944a7bc7172fcf59291eeab6d073f28d060ccd28585f6c762fafc22264a",
+  "preview": "READER PROFILE:\nREADER: Product manager at an AI startup, interested in industry developments.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] OpenAI  (entity)\n  [PRIMARY] Anthropic  (entity)\n  [PRIMARY] Google  "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 75,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"AI industry\",\n      \"kind\": \"direct\",\n      \"why\": \"Discusses AI's impact on Southeast Asian marketing.\"\n    },\n    {\n      \"id\": 76,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Job losses not relevant to primary interests.\"\n    },\n    {\n      \"id\": 77,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focus on money transfer history, not AI.\"\n    },\n    {\n      \"id\": 78,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Celebrity sports news not relevant.\"\n    },\n    {\n      \"id\": 79,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Money laundering case unrelated to interests.\"\n    },\n    {\n      \"id\": 80,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Sports injury news not relevant.\"\n    },\n    {\n      \"id\": 81,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Crypto market updates not of interest.\"\n    },\n    {\n      \"id\": 82,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Bankruptcy of wealth gurus not relevant.\"\n    },\n    {\n      \"id\": 83,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Job opportunities abroad not aligned with interests.\"\n    },\n    {\n      \"id\": 84,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"NFL news not relevant.\"\n    },\n    {\n      \"id\": 85,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"NHL news not relevant.\"\n    },\n    {\n      \"id\": 86,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Library events not relevant.\"\n    },\n    {\n      \"id\": 87,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"job\",\n      \"kind\": \"contextual\",\n      \"why\": \"New workplace policies may affect job market.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1147,
+  "completion_tokens": 680
+ }
+}

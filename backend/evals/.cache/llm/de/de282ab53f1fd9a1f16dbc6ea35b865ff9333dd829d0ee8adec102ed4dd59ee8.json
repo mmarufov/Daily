@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f1b3748fd05c5bce422e162834b2bba92ef68b5a4c9a164b7e758c810751a1be",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01076\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pure promotional content, not general news.\"\n    },\n    {\n      \"id\": \"a01077\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Promotional codes, not newsworthy for a general audience.\"\n    },\n    {\n      \"id\": \"a01078\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Coupon and promo content, not general news.\"\n    },\n    {\n      \"id\": \"a01079\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Discount codes for a service, not news.\"\n    },\n    {\n      \"id\": \"a01080\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Deals and promo codes, not general news.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 941,
+  "completion_tokens": 266
+ }
+}

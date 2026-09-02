@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0823ffd4a1d8bbafad31b46fdc13c285418f76570a2c656d3581f5513dfdcca1",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01111\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article about UK tech market, unrelated to energy or geopolitical topics.\"}, {\"id\": \"a01117\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on AI hardware performance, unrelated to energy or geopolitical issues.\"}, {\"id\": \"a01118\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Cybercrime and ransomware topic unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01125\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US law enforcement cybersecurity incident unrelated to energy or geopolitical topics.\"}, {\"id\": \"a01126\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Sponsored feature on IT backup verification unrelated to energy or geopolitics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3463,
+  "completion_tokens": 246
+ }
+}

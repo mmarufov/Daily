@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "eb83a672368b5be12c88a6e3a21aa6d76525162db89a4ccd6ffb169f3a09d24c",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01023\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL hockey, unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a01024\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL prospects, unrelated to reader's sports or environmental interests.\"}, {\"id\": \"a01025\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL ownership news unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a01038\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Movie review unrelated to reader's interests.\"}, {\"id\": \"a01043\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Strong El Niño event impacts climate, relevant to solar industry and environment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2958,
+  "completion_tokens": 255
+ }
+}

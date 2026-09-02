@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "13da710351ed545bfa9d80377ae5c846d49cd619a85ee2dd896f676cdd2e6136",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01284\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Related to Russia but no direct impact on trade or sanctions for Central Asia.\"}, {\"id\": \"a01290\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Iran-US conflict, unrelated to Central Asia or trade interests.\"}, {\"id\": \"a01294\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"G20 trade imbalances mention China, relevant but not urgent for reader.\"}, {\"id\": \"a01295\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Venezuela oil deal unrelated to Central Asia or reader's trade concerns.\"}, {\"id\": \"a01297\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Ukraine-Russia conflict not directly relevant to reader's trade or region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1227,
+  "completion_tokens": 254
+ }
+}

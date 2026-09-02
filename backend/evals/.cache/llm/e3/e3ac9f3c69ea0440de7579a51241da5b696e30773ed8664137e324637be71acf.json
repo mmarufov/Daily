@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e4d4705de67e53df6dc31505436ad9ac9dc5bdd91032b9fa1017b937e7e32b60",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00855\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting astronomy news but niche and not major event for general reader.\"}, {\"id\": \"a00856\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Launch of major NASA space telescope is a significant event for informed adults.\"}, {\"id\": \"a00859\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Space honor for astronauts is notable but not critical general news.\"}, {\"id\": \"a00860\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Partial lunar eclipse is interesting general science news, missable.\"}, {\"id\": \"a00864\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"SpaceX Starship recovery is notable space news but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3667,
+  "completion_tokens": 253
+ }
+}

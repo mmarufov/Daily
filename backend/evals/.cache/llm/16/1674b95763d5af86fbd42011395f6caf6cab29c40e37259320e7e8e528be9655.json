@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "848e8847fcee6dae271bd0d527ea662758fd97940180453dc185b86fa078a576",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Not related to reader's interests in sports or environment.\"}, {\"id\": \"a00008\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Land swap unrelated to reader's interests.\"}, {\"id\": \"a00030\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Business profile unrelated to sports or environment.\"}, {\"id\": \"a00036\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Political content and partisan politics excluded.\"}, {\"id\": \"a00039\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Energy deal relevant to solar industry but no direct impact or climate focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2635,
+  "completion_tokens": 239
+ }
+}

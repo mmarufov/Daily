@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8ee44e96a91d9d719ac609f1b3b260e05fadfa7ffe71eca39e5932162e452525",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00704\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Heatwave centers impact vulnerable groups including families with young children.\"}, {\"id\": \"a00706\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"International aid news is less relevant to local daily life.\"}, {\"id\": \"a00709\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Education story interesting but not directly impacting reader's life.\"}, {\"id\": \"a00713\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Support for PSLE pupils is relevant but not urgent for new mother.\"}, {\"id\": \"a00715\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Parenting advice is relevant but not urgent or critical.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1096,
+  "completion_tokens": 246
+ }
+}

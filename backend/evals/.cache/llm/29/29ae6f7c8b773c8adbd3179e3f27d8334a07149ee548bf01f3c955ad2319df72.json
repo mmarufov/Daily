@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "616e5f29ef798f0d4db428ddf7164be2c311a05cd0ac2a3806a64d865b1e04a2",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00436\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"High school soccer in New Jersey irrelevant to Tajikistan business.\"}, {\"id\": \"a00440\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"Field hockey in New Jersey unrelated to reader's interests.\"}, {\"id\": \"a00453\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"New Jersey local news irrelevant to Central Asian trade.\"}, {\"id\": \"a00456\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"New Jersey local news unrelated to reader's business context.\"}, {\"id\": \"a00457\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US military repair bill unrelated to Central Asian trade or politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1297,
+  "completion_tokens": 246
+ }
+}

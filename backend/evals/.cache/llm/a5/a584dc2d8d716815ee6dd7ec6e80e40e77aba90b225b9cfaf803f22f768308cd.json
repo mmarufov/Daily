@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "84753f76f09a32216d6ec5bac9d765c7dfd604f24cd9c6980725a50cf0aa2f47",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00742\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Humanitarian aid is positive but not directly impacting daily life in Singapore.\"}, {\"id\": \"a00746\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local accident news is relevant but not critical for reader's daily life.\"}, {\"id\": \"a00747\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"ERP charge changes affect daily commuting and cost of living in Singapore.\"}, {\"id\": \"a00748\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Gaming event unrelated to reader's interests and excluded topic.\"}, {\"id\": \"a00749\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Local business struggles relevant but not urgent or primary interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1133,
+  "completion_tokens": 254
+ }
+}

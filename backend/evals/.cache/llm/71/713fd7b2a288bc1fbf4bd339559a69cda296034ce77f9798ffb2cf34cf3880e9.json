@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "828d662663a937cf5bad82f4e04a1a96e6e16f108617bbce8f70a8a06672f7bf",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00818\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major shift in Singapore/Southeast Asia startup funding; core to reader's interests and regional context.\"\n    },\n    {\n      \"id\": \"a00821\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Deep technical, real-world cloud infrastructure failure; highly relevant for backend/infra engineer.\"\n    },\n    {\n      \"id\": \"a00826\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Singapore fintech product news; relevant but not essential unless reader manages SME cash.\"\n    },\n    {\n      \"id\": \"a00836\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Singapore/SEA chip smuggling impacts AI, regulation, and tech industry; highly relevant for work and context.\"\n    },\n    {\n      \"id\": \"a00837\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"In-depth analysis of AI adoption and policy in Singapore/SEA; core to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3895,
+  "completion_tokens": 320
+ }
+}

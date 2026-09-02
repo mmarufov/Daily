@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8ea30d085d420c05aa1bbcf544ef98ff1e3e48f0400aea74c787448fc934043c",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00297\", \"label\": \"must_see\", \"tags\": [\"direct\", \"technology\", \"consumer impact\"], \"confidence\": 0.9, \"rationale\": \"New AI tech impacts consumer tech, relevant to primary tech interest and consumer impact.\"}, {\"id\": \"a00302\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.95, \"rationale\": \"Video game mod story unrelated to tech, science, UK, or marketing; off-topic.\"}, {\"id\": \"a00303\", \"label\": \"fine\", \"tags\": [\"direct\", \"technology\"], \"confidence\": 0.8, \"rationale\": \"Tech update on Task Manager sequel, interesting but not urgent or major.\"}, {\"id\": \"a00311\", \"label\": \"fine\", \"tags\": [\"direct\", \"technology\", \"consumer impact\"], \"confidence\": 0.85, \"rationale\": \"Tech deal story relevant to consumer tech interest, but not critical news.\"}, {\"id\": \"a00324\", \"label\": \"fine\", \"tags\": [\"direct\", \"world news\", \"UK news\"], \"confidence\": 0.7, \"rationale\": \"Political news relevant to UK/world news but no direct consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3180,
+  "completion_tokens": 282
+ }
+}

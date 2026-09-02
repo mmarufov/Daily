@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d28a625cacbbc3c03530045bc6dace4aef80d3b9b1df75aae228ad5e5e2478dc",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00000\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly about Iran situation, a primary interest with major geopolitical and energy security implications.\"\n    },\n    {\n      \"id\": \"a00004\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"US government shutdown is relevant to economic stability but not directly tied to primary interests.\"\n    },\n    {\n      \"id\": \"a00007\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Links Middle East turmoil, Iran, and energy/inflation risks—core to reader's focus on energy security.\"\n    },\n    {\n      \"id\": \"a00020\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Higher oil prices and yields directly impact energy markets and economic stability, both primary interests.\"\n    },\n    {\n      \"id\": \"a00024\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"IPO of SB Energy and OpenAI dependency is unrelated to energy security or markets focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1124,
+  "completion_tokens": 318
+ }
+}

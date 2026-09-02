@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "b0409126b9e5b3f6d37279382db3e1f84fe62e40e4ac480bbb402011d48a015d",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: I'm a product manager at an AI startup in Boston. My main thing is AI products and the AI industry: OpenAI, Anthropic, Googl"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"Product manager at an AI startup in Boston with a focus on AI products and industry developments.\",\n  \"interests\": {\n    \"topics\": [\"AI products\", \"AI industry\", \"model releases\", \"AI regulation\", \"company use of AI\"],\n    \"people\": [\"OpenAI\", \"Anthropic\", \"Google\"],\n    \"locations\": [\"Boston\"],\n    \"industries\": [\"AI\"],\n    \"excluded_topics\": [\"Crypto\", \"celebrity news\", \"gaming\"],\n    \"notes\": \"Casual follower of Arsenal and Celtics, interested in big moments rather than detailed reports.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [\"AI products\", \"AI industry\"],\n    \"current_interests\": [\"model releases\", \"AI regulation\", \"company use of AI\"],\n    \"people\": [\"OpenAI\", \"Anthropic\", \"Google\"],\n    \"locations\": [\"Boston\"],\n    \"industries\": [\"AI\"],\n    \"excluded_topics\": [\"Crypto\", \"celebrity news\", \"gaming\"],\n    \"utility_priorities\": [\"job\", \"money\"],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [\"informative\", \"concise\"],\n    \"life_context\": \"Product manager at an AI startup, interested in industry developments.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [\"AI products\", \"AI regulation\"],\n      \"must_cover_entities\": [\"OpenAI\", \"Anthropic\", \"Google\"],\n      \"must_avoid_topics\": [\"Crypto\", \"celebrity news\", \"gaming\"],\n      \"preferred_source_types\": [\"industry reports\", \"news articles\"],\n      \"coverage_targets\": [\"AI industry news\", \"major AI developments\"],\n      \"specificity_level\": \"specific\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 473,
+  "completion_tokens": 368
+ }
+}

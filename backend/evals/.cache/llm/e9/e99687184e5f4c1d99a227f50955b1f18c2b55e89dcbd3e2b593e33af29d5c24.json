@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "61e03470dd37bf9b340fcaee4be2c2cb413253014305ecf4573db0616a186e58",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01282\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"General international political news, not a major global event.\"}, {\"id\": \"a01283\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Political commentary, relevant but not major event or urgent.\"}, {\"id\": \"a01284\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"International conflict involving Russia and Germany, important global news.\"}, {\"id\": \"a01285\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Reported US bombing with civilian casualties, significant global event.\"}, {\"id\": \"a01286\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Nuclear proliferation issue, important but less immediate impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 945,
+  "completion_tokens": 229
+ }
+}

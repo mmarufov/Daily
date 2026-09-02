@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e405d84a66aaa4a621118cf10f961604ca2a201fa8b309b22526ecb80d701bda",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00505\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"family\"], \"confidence\": 0.9, \"rationale\": \"Cuts to food stamps affect school meals, directly impacting reader's kids' schools.\"}, {\"id\": \"a00507\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Amazon lawsuit is NJ-related but not directly affecting reader's daily life or primary interests.\"}, {\"id\": \"a00508\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Political debate skipping is NJ politics but routine and not urgent or impactful.\"}, {\"id\": \"a00511\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Gateway tunnel funding affects NJ Transit and daily commute for reader.\"}, {\"id\": \"a00512\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"money\"], \"confidence\": 0.9, \"rationale\": \"Job losses in NJ impact local economy and reader's financial context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3578,
+  "completion_tokens": 275
+ }
+}

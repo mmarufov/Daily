@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dc7e05c7fc70f3c3bbb932067e220001504c5cf157d387db39df9abd18156776",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00668\", \"label\": \"fine\", \"tags\": [\"science\"], \"confidence\": 0.8, \"rationale\": \"Relevant science update but no direct consumer impact or urgent need to know.\"}, {\"id\": \"a00669\", \"label\": \"fine\", \"tags\": [\"science\", \"world news\"], \"confidence\": 0.75, \"rationale\": \"Interesting tech/science world news, not urgent or UK-specific.\"}, {\"id\": \"a00670\", \"label\": \"fine\", \"tags\": [\"science\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Health science relevant to consumers but not urgent or UK-specific.\"}, {\"id\": \"a00672\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Ancient history, no relevance to reader's interests.\"}, {\"id\": \"a00673\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Biological discovery unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1183,
+  "completion_tokens": 245
+ }
+}

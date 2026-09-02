@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "beadd7eaa2a915715017051a5f388361e6ba78a8633fc77018c525c1e6600bc1",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00935\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"NFL news unrelated to Giants or NJ Transit, missable for this reader.\"}, {\"id\": \"a00940\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"NHL contract news not about Devils or NJ local teams, interesting but missable.\"}, {\"id\": \"a00941\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"NHL trade rumors unrelated to Devils, secondary interest only.\"}, {\"id\": \"a00942\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Buffalo Sabres goalie news unrelated to NJ or Devils, off-topic.\"}, {\"id\": \"a00943\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Montreal Canadiens prospect news unrelated to NJ or Devils, off-topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1985,
+  "completion_tokens": 255
+ }
+}

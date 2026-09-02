@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5e81d3958f01b92b8611c23d3416ae3aa5aa87a3017079445ab24acd793890a6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01039\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech and surveillance are primary interests, but US focus and survey angle make it missable.\"\n    },\n    {\n      \"id\": \"a01041\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"World news and tech angle, but US-centric and not directly impactful for UK reader.\"\n    },\n    {\n      \"id\": \"a01046\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Science discovery fits primary interest, but not urgent or directly impactful.\"\n    },\n    {\n      \"id\": \"a01048\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"technology\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech/science advance is on-topic, but not must_see unless direct UK/consumer impact.\"\n    },\n    {\n      \"id\": \"a01049\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"major_event\", \"need_to_know\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major tech warning with global consumer/safety implications; highly relevant for staying informed.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1036,
+  "completion_tokens": 342
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4b590686415c8407bff235179d4c842b02558e4a45c8cabc62aff496e554081f",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01045\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"EU's toughest AI safety rules directly impact OpenAI's ChatGPT, crucial for AI product manager.\"}, {\"id\": \"a01046\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Google's AI training deals with Hollywood are relevant but secondary interest.\"}, {\"id\": \"a01047\", \"label\": \"must_see\", \"tags\": [\"direct\", \"followup\"], \"confidence\": 0.95, \"rationale\": \"Anthropic's new cheaper, improved AI model release is key industry news.\"}, {\"id\": \"a01048\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Map renaming unrelated to AI or reader's interests.\"}, {\"id\": \"a01050\", \"label\": \"must_see\", \"tags\": [\"direct\", \"followup\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"OpenAI model hack and development delay is critical AI industry news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1961,
+  "completion_tokens": 280
+ }
+}

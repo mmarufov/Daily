@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e93de14115d36ab8b2309234686815a03b4ba0cabaf79350a42b92629944a511",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01256\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Human interest story, not related to reader's primary interests or consumer impact.\"}, {\"id\": \"a01257\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"UN climate report impacts global policy, economy, and consumer environment.\"}, {\"id\": \"a01258\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Brexit-related deportation is UK news but not directly affecting reader's work or consumer interests.\"}, {\"id\": \"a01263\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"UK foreign policy update relevant but not urgent or directly consumer-impacting.\"}, {\"id\": \"a01265\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"major_event\"], \"confidence\": 0.8, \"rationale\": \"International conflict affects world news but less direct consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1549,
+  "completion_tokens": 267
+ }
+}

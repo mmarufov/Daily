@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "089c713cb41042c95a97374a4fbecff57069fd17e58bec2b302c77d85b43b572",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00938\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Basketball offseason recap unrelated to tennis, horse racing, or environment.\"}, {\"id\": \"a00939\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"FIBA World Cup basketball coverage off-topic for reader interests.\"}, {\"id\": \"a00940\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Team USA basketball World Cup adjustments not relevant to reader.\"}, {\"id\": \"a00941\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Player movement in basketball programs off-topic for reader.\"}, {\"id\": \"a00942\", \"label\": \"fine\", \"tags\": [\"tennis\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Alcaraz tennis update relevant but not about Canadian players or WTA tour.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1095,
+  "completion_tokens": 247
+ }
+}

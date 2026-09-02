@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f74c72588a6f5cb8582cf5cfecb75f871a61b0da02dc7aae05234f7b040fce56",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01299\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting cultural crime but not major global news.\"}, {\"id\": \"a01303\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Sports gender study is niche but generally relevant.\"}, {\"id\": \"a01309\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Political opinion on Ukraine aid is topical but not urgent.\"}, {\"id\": \"a01311\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Death of a major artist is globally significant news.\"}, {\"id\": \"a01318\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Ongoing conflict impact on grain exports is important but not breaking.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 958,
+  "completion_tokens": 229
+ }
+}

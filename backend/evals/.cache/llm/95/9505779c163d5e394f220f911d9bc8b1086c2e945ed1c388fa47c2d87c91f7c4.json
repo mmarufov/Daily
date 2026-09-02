@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a6b8987d4c92bbf8c256398890cf504a6319c180ed4dd1f7492c40664df2cc99",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00769\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore luxury real estate and money laundering are irrelevant to Newark/NJ interests.\"\n    },\n    {\n      \"id\": \"a00779\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore/Indonesia currency news is unrelated to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00790\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore bus system technology has no relevance to NJ Transit or local transit.\"\n    },\n    {\n      \"id\": \"a00834\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Thailand AI startups and OpenAI partnership are not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00915\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"OBJ's jersey number is NFL news; Giants fan may find it interesting but it's routine, not must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1678,
+  "completion_tokens": 308
+ }
+}

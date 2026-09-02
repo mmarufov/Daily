@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4ed536804fe3523de62378254c93cfb3e00a98ac9f68e8345701124455060363",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00397\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine sports roster news, no broad impact or major event.\"}, {\"id\": \"a00398\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Local sports rankings, routine and niche interest.\"}, {\"id\": \"a00399\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports team roster changes, routine coverage.\"}, {\"id\": \"a00400\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Flash flood evacuation at major tourist site is important general news.\"}, {\"id\": \"a00401\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports roster decisions, routine coverage.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 885,
+  "completion_tokens": 233
+ }
+}

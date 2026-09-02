@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "404824f2ccec021320b5f22fd87bb38e66dee8e4e24dfac5be284d8663e5eb43",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00554\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.8, \"rationale\": \"Tech news relevant to OS users, interesting but not urgent.\"}, {\"id\": \"a00560\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Tech innovation in business, relevant but routine.\"}, {\"id\": \"a00567\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.7, \"rationale\": \"AI search tech update, relevant but not urgent.\"}, {\"id\": \"a00581\", \"label\": \"fine\", \"tags\": [\"world news\"], \"confidence\": 0.6, \"rationale\": \"World news, but no direct consumer or UK impact.\"}, {\"id\": \"a00583\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Crime news in Russia unrelated to reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1119,
+  "completion_tokens": 230
+ }
+}

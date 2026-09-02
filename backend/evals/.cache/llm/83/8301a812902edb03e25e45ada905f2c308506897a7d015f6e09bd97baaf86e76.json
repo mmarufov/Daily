@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fc31f70cd0318709799d0503c06ae4af2cf588d602a3702bdeb5c161c2bae0dd",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01267\", \"label\": \"fine\", \"tags\": [\"world news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news but no direct consumer or UK impact.\"}, {\"id\": \"a01271\", \"label\": \"fine\", \"tags\": [\"world news\", \"major_event\"], \"confidence\": 0.7, \"rationale\": \"Major world event, informative but no direct UK or consumer impact.\"}, {\"id\": \"a01275\", \"label\": \"fine\", \"tags\": [\"UK news\"], \"confidence\": 0.7, \"rationale\": \"UK political news, relevant but not primary interest or consumer impact.\"}, {\"id\": \"a01287\", \"label\": \"fine\", \"tags\": [\"world news\"], \"confidence\": 0.7, \"rationale\": \"Important world event but no direct UK or consumer impact.\"}, {\"id\": \"a01292\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Tech workplace issues at major company relevant to tech interest and consumer workplace culture.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1338,
+  "completion_tokens": 253
+ }
+}

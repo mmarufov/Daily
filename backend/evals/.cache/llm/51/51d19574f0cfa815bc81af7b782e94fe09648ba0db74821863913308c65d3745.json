@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b2f124f8fa719e68c9318a2d0f5240dd4159e26119fb91544cd46885ae967193",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00621\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"followup\"], \"confidence\": 0.95, \"rationale\": \"Significant impact on Russian oil refining affects global energy markets and security.\"}, {\"id\": \"a00624\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to energy crisis but more regional and less directly impactful on energy security.\"}, {\"id\": \"a00632\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Critical NATO defense shortage impacts European security and energy stability.\"}, {\"id\": \"a00642\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Interesting energy innovation but not immediately relevant to European energy security.\"}, {\"id\": \"a00668\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Cosmic phenomena unrelated to energy markets or geopolitical developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2661,
+  "completion_tokens": 272
+ }
+}

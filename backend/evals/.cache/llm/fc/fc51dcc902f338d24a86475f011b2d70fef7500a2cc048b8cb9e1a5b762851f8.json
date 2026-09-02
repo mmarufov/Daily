@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8acc9d3bb409c3b9b3ca6172b9ea0a69d756e94a909eb4485ec79f1f064a6e24",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00360\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Car launch unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00399\", \"label\": \"never\", \"tags\": [\"off_topic\", \"us domestic politics\"], \"confidence\": 1.0, \"rationale\": \"US-Canada political dispute irrelevant to reader's interests.\"}, {\"id\": \"a00409\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"High school field hockey unrelated to reader's interests.\"}, {\"id\": \"a00410\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"High school soccer unrelated to reader's interests.\"}, {\"id\": \"a00426\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"High school volleyball unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1210,
+  "completion_tokens": 243
+ }
+}

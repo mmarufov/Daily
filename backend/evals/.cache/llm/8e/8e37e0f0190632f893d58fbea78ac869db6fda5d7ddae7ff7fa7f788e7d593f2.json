@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "06252194304f3adaeb938430e04d34ecc5d0c60d626e426e773b214715c9d9c0",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00696\", \"label\": \"fine\", \"tags\": [\"followup\"], \"confidence\": 0.7, \"rationale\": \"General news updates, possibly useful but not specific or urgent.\"}, {\"id\": \"a00698\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"New hospital in east affects healthcare access, important for mother managing health.\"}, {\"id\": \"a00699\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Science research success is interesting but not directly relevant to daily life.\"}, {\"id\": \"a00701\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Entertainment article unrelated to reader's interests.\"}, {\"id\": \"a00702\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Child support initiative relevant but not urgent or directly impacting reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1079,
+  "completion_tokens": 247
+ }
+}

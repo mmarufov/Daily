@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d60a2ffbba380beab20edb238ede4d4f7d36b611b0a269bf86c5ba945b81c2f7",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01085\", \"label\": \"fine\", \"tags\": [\"technology\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech topic relevant but event is a future livestream, not urgent news.\"}, {\"id\": \"a01086\", \"label\": \"fine\", \"tags\": [\"technology\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"New tech product announcement, interesting but not urgent or major.\"}, {\"id\": \"a01088\", \"label\": \"must_see\", \"tags\": [\"technology\", \"UK news\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"UK power grid issues affect tech infrastructure and AI ambitions, relevant to consumer impact.\"}, {\"id\": \"a01092\", \"label\": \"must_see\", \"tags\": [\"UK news\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Poll on UK privacy trust impacts consumers and policy, important for staying informed.\"}, {\"id\": \"a01097\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Innovative tech in datacenter cooling relevant to tech and sustainability interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1959,
+  "completion_tokens": 290
+ }
+}

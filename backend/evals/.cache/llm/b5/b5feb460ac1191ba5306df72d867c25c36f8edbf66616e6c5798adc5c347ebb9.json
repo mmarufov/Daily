@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3190ca792cfd11535488e173a085a15069244cf7528c97f925e662b3183054c1",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00727\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"International disaster relief unrelated to NJ, no local or personal relevance.\"\n    },\n    {\n      \"id\": \"a00732\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Foreign financial crime and luxury auction, no NJ or personal connection.\"\n    },\n    {\n      \"id\": \"a00770\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Asia electronics supply chain, no relevance to NJ, transit, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00822\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto price news; reader explicitly excludes cryptocurrency.\"\n    },\n    {\n      \"id\": \"a00835\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Bitcoin rally analysis; reader does not want crypto or financial market news.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2277,
+  "completion_tokens": 300
+ }
+}

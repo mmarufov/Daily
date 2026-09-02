@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4b44e82717d857cac95dab255b2cbc20620908d547628fa03af990b15e6a7569",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00781\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore business board appointment; no relevance to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00808\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Crypto market analysis is tech-adjacent and global, but not a primary or must-know story for this reader.\"\n    },\n    {\n      \"id\": \"a00811\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"In-depth marketing tech piece; relevant to reader's work but not urgent or must-know.\"\n    },\n    {\n      \"id\": \"a00825\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major tech/science trend with global and UK relevance; impacts consumer/job landscape.\"\n    },\n    {\n      \"id\": \"a00829\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Marketing/tech trend analysis; relevant but not essential for daily awareness.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3299,
+  "completion_tokens": 315
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d92758327cd554c760faca95a55861f0f79ed6328afffddb9863342a67e9eb0f",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01115\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.9, \"rationale\": \"Shopping deals are promotional, not news or consumer impact.\"}, {\"id\": \"a01116\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech product review is on-topic but routine and missable.\"}, {\"id\": \"a01117\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Promo codes for meals are advertising, not news.\"}, {\"id\": \"a01118\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.85, \"rationale\": \"US political scandal unrelated to reader's interests or location.\"}, {\"id\": \"a01119\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Food safety issue is US-focused, relevant but not urgent for UK reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1067,
+  "completion_tokens": 238
+ }
+}

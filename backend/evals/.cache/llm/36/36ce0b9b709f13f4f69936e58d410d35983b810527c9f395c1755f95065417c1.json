@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "98bdcb16cd40864dd7d36db9556c41d73d0274481f4a44af5feb7575fa1e96a2",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00848\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting science history but not urgent or consumer-impacting news.\"}, {\"id\": \"a00851\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Astronomy event commentary, interesting but not critical or consumer-impacting.\"}, {\"id\": \"a00856\", \"label\": \"must_see\", \"tags\": [\"science\", \"technology\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Launch of major NASA space telescope with broad scientific and tech impact.\"}, {\"id\": \"a00859\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Space honor story is interesting but not directly relevant or urgent.\"}, {\"id\": \"a00873\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Personal eclipse story, interesting but not urgent or consumer-impacting.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3720,
+  "completion_tokens": 273
+ }
+}

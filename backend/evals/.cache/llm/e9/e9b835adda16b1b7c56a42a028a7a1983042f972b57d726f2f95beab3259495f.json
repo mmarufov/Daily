@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1ac401fa428f45040d035c7fe9935374b68c4417e7534daa30a2f02728a05f4f",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01223\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Relevant general news with diplomatic and social issues, but not major_event.\"}, {\"id\": \"a01224\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Notable death of a sports figure, relevant but not major_event.\"}, {\"id\": \"a01226\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Regional political news, important but not globally major.\"}, {\"id\": \"a01228\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Major ferry disaster with multiple deaths and missing persons.\"}, {\"id\": \"a01233\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"International military conflict escalation with US and Iran.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1387,
+  "completion_tokens": 243
+ }
+}

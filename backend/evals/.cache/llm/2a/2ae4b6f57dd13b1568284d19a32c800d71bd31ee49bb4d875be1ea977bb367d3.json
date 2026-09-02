@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f6482af53678aabc02b1cdffa82372a586a591ac23a74de005197617e8f4a11c",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US-Iran conflict unrelated to Singapore, fintech, or tech interests.\"}, {\"id\": \"a00003\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI server revenue growth relevant to AI engineering but not Singapore-specific or deep technical detail.\"}, {\"id\": \"a00006\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Apple leadership and AI challenges are tech-related but not Singapore or fintech focused.\"}, {\"id\": \"a00008\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Used car market unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00009\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"AI-powered robot sales interesting but not Singapore or fintech focused.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1176,
+  "completion_tokens": 252
+ }
+}

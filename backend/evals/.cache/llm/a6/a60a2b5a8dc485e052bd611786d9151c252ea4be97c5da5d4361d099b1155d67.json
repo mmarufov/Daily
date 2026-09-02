@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "98c55c6de6fddd7fc709105c61fa4d1495fc9e4f4517d9e9be9d41f93c64a08a",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01011\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Islanders preview is irrelevant; no Devils, Giants, or NJ angle.\"\n    },\n    {\n      \"id\": \"a01021\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Flyers player news is off-topic; not Devils, Giants, or NJ-focused.\"\n    },\n    {\n      \"id\": \"a01022\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Islanders ownership change is not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a01024\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Buffalo Sabres prospect news is off-topic for this reader.\"\n    },\n    {\n      \"id\": \"a01028\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"National measles reporting dispute is general interest, but not directly local or urgent.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3158,
+  "completion_tokens": 298
+ }
+}

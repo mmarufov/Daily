@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6c70a6e6e94bdc580a761adcfc7566084a6d0d2c5e3d80eb33928b410e1c1207",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00627\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Russian youth crime campaign is irrelevant to Singaporean parenting or local life.\"\n    },\n    {\n      \"id\": \"a00637\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Russian school attack is not relevant to Singaporean local news or parenting context.\"\n    },\n    {\n      \"id\": \"a00706\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Singaporean aid in Nepal is local involvement, but not directly impactful for reader's daily life.\"\n    },\n    {\n      \"id\": \"a00710\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Local caregiving app is relevant to parenting/family, but not essential for this reader today.\"\n    },\n    {\n      \"id\": \"a00711\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore's Pacific training programs are not relevant to reader's interests or daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2160,
+  "completion_tokens": 309
+ }
+}

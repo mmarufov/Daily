@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7cf4d501960598a5a6fb0870663b9ecaa3514dcb40aafdca5d9d8d9d9054155e",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01034\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Space exploration unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01045\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"EU regulation relevant to digital economy but not primary energy focus.\"}, {\"id\": \"a01055\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Legal dispute about AI company unrelated to energy or geopolitics.\"}, {\"id\": \"a01057\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.9, \"rationale\": \"Streaming service expansion unrelated to energy or geopolitical topics.\"}, {\"id\": \"a01068\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Health data integration unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1601,
+  "completion_tokens": 237
+ }
+}

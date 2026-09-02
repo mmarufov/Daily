@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b6c65e0ec274ee41a9b94ec5e7eff7cc1bc84ff77e557c14cd5309d06531d1d6",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00856\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Fintech funding trends are not relevant to parenting, healthcare, or daily life needs.\"\n    },\n    {\n      \"id\": \"a00915\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about an NFL player and jersey number, not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a01001\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL contract analysis is unrelated to reader's priorities or Singapore context.\"\n    },\n    {\n      \"id\": \"a01003\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"History of NHL jersey numbers is irrelevant to reader's interests and location.\"\n    },\n    {\n      \"id\": \"a01007\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL team preview is not relevant to Singapore, parenting, or daily life concerns.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3481,
+  "completion_tokens": 313
+ }
+}

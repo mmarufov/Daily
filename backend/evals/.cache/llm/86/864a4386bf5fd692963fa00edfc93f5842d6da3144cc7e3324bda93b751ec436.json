@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "119e15329a9838eb7edff2ae7f3c48dd3e295e558b32c6ab7d13add799b61537",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00493\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Astronomy report unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00496\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Local Brooklyn event noise issue irrelevant to reader's interests.\"}, {\"id\": \"a00507\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Amazon ad pricing lawsuit is US legal news, not relevant to Singapore or fintech regulation.\"}, {\"id\": \"a00514\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Data center energy reporting law relevant to cloud infrastructure but in NJ, not Singapore/SEA.\"}, {\"id\": \"a00520\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US political legal case unrelated to reader's tech or fintech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2643,
+  "completion_tokens": 252
+ }
+}

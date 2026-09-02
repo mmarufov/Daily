@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3c4eed55b0921a5d4206df4565b4e3e972fcb340a865b89b953de10ef9087b63",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00500\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Local Congresswoman's legal trouble is relevant Newark/Essex politics, but not urgent or life-affecting today.\"\n    },\n    {\n      \"id\": \"a00503\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"followup\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Follow-up on local Congresswoman's legal case; relevant to local politics but not must_see for daily life.\"\n    },\n    {\n      \"id\": \"a00505\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"General healthcare investment trends; no NJ/Essex/Newark/local tie or direct impact on reader's life.\"\n    },\n    {\n      \"id\": \"a00507\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Bellmawr protest policing is South Jersey, not relevant to Newark/Essex/local interests or reader's priorities.\"\n    },\n    {\n      \"id\": \"a00512\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"State-level voter registration issue; relevant to NJ politics but not urgent or directly life-affecting.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3719,
+  "completion_tokens": 352
+ }
+}

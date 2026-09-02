@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6d0470ae1e8687d8b4ffe10723c4099d8a85b7ad7db3495a870d01cb38902d20",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00001\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"oil and gas prices\", \"Iran situation\", \"Strait of Hormuz\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Directly impacts oil prices and energy security; key geopolitical event for analyst's focus.\"\n    },\n    {\n      \"id\": \"a00006\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"Strait of Hormuz\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Escalating U.S.-Iran hostilities are central to energy security and oil market analysis.\"\n    },\n    {\n      \"id\": \"a00017\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"oil and gas prices\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to oil supply but less direct impact on European energy security or immediate markets.\"\n    },\n    {\n      \"id\": \"a00020\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"Iran situation\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Useful context for Iran situation; background on sanctions and trade, but not urgent.\"\n    },\n    {\n      \"id\": \"a00029\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"Economics\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Fed policy is relevant for economic context, but not a primary focus for this reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1122,
+  "completion_tokens": 360
+ }
+}

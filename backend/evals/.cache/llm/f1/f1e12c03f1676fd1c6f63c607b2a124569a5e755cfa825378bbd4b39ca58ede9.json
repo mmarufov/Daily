@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f5a0a557446ec47eb1b715b3c99e528c249e6993069ca3d7e06fe5f6f068262f",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00112\", \"label\": \"fine\", \"tags\": [\"climate\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant climate event but not directly impacting reader's life or work.\"}, {\"id\": \"a00128\", \"label\": \"fine\", \"tags\": [\"climate\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Climate-related trade news, interesting but not urgent or primary.\"}, {\"id\": \"a00130\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tourism industry news unrelated to reader's interests.\"}, {\"id\": \"a00133\", \"label\": \"fine\", \"tags\": [\"climate\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Climate security warning relevant but not immediate or local.\"}, {\"id\": \"a00140\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Not related to reader's interests or priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1078,
+  "completion_tokens": 248
+ }
+}

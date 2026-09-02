@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d55a427f7c29dc0b9a3174973d62eeb1bab1693687a2860f3e6169a518bf5a0b",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00827\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Southeast Asia\"], \"confidence\": 0.8, \"rationale\": \"Relevant to Southeast Asia economy but not focused on fintech or tech engineering.\"}, {\"id\": \"a00828\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Southeast Asia startups\", \"secondary\"], \"confidence\": 0.85, \"rationale\": \"Startup funding advice relevant but not deep technical or regulatory.\"}, {\"id\": \"a00829\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI engineering\", \"Southeast Asia\"], \"confidence\": 0.8, \"rationale\": \"AI marketing trends in SEA relevant but not deep engineering or fintech regulation.\"}, {\"id\": \"a00830\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Southeast Asia\", \"secondary\"], \"confidence\": 0.75, \"rationale\": \"Solar startup in Philippines interesting but outside Singapore fintech focus.\"}, {\"id\": \"a00831\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Southeast Asia startups\"], \"confidence\": 0.85, \"rationale\": \"Southeast Asia startup funding update relevant but not deep technical or MAS related.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3901,
+  "completion_tokens": 295
+ }
+}

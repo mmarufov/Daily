@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3de11b44d8dce5573a7e6788ce21ab98c9495c94519e7ec13dae0ac3e417bf9c",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00235\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Streaming price hike irrelevant to reader's interests or life context.\"}, {\"id\": \"a00249\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment TV show story unrelated to reader's priorities.\"}, {\"id\": \"a00256\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Celebrity funeral news unrelated to reader's interests or location.\"}, {\"id\": \"a00271\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Movie casting news irrelevant to reader's preferences.\"}, {\"id\": \"a00272\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gadget news unrelated to reader's interests or needs.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1321,
+  "completion_tokens": 235
+ }
+}

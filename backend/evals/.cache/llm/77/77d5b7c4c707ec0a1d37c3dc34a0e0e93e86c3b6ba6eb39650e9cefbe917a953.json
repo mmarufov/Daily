@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5b095c9c186758c5365564a19a014e356eeadfac8cb51182f0d3227fa02a8caf",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00935\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL/American football is excluded; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00936\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL/American sports are excluded; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00938\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL/American football is excluded; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00948\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL/ice hockey and video game ratings are off-topic for this reader.\"\n    },\n    {\n      \"id\": \"a00949\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL/ice hockey and video game ratings are off-topic for this reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1665,
+  "completion_tokens": 310
+ }
+}

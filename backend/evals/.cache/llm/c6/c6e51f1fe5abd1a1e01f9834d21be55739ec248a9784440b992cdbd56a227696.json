@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "644bd4d73c7f422014ddae6216e11f5311ecdf4de20d862effd33fb73a24b9e2",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00508\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Supreme Court ruling on voting rights is major national news for informed adults.\"}, {\"id\": \"a00515\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Comment thread with no news value or general interest.\"}, {\"id\": \"a00516\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Comment thread unrelated to general news.\"}, {\"id\": \"a00517\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Comment thread with no general news content.\"}, {\"id\": \"a00518\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Comment thread about niche graphics topic, no general news interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1293,
+  "completion_tokens": 236
+ }
+}

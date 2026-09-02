@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5562b5f8978c1e144131a3452ad7bedf18e979597079defb231be1bdd0866c75",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01272\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI strategy and UK politics unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01273\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"UK tax and defence spending relevant to economics but not primary interest.\"}, {\"id\": \"a01274\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Local UK crime news unrelated to energy or geopolitical topics.\"}, {\"id\": \"a01275\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"UK political standards investigation unrelated to energy or economics.\"}, {\"id\": \"a01276\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical developments\"], \"confidence\": 0.85, \"rationale\": \"German-Russian hybrid attacks relate to geopolitical context but not direct energy impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1401,
+  "completion_tokens": 248
+ }
+}

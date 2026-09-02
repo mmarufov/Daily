@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6047b0ae6624dad7fa46595c66c0301035993b82d5b73507f57223385ff46ea7",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00663\", \"label\": \"fine\", \"tags\": [\"science\", \"consumer impact\"], \"confidence\": 0.9, \"rationale\": \"Sustainable vitamin B12 source relevant to science and consumer health interest.\"}, {\"id\": \"a00664\", \"label\": \"fine\", \"tags\": [\"science\"], \"confidence\": 0.8, \"rationale\": \"Advanced physics discovery interesting but less directly relevant to consumer impact.\"}, {\"id\": \"a00665\", \"label\": \"must_see\", \"tags\": [\"science\", \"technology\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"New diamond electricity tech could impact future consumer devices and medical implants.\"}, {\"id\": \"a00666\", \"label\": \"fine\", \"tags\": [\"science\"], \"confidence\": 0.7, \"rationale\": \"Interesting anthropology but less relevant to reader's primary interests or consumer impact.\"}, {\"id\": \"a00667\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Quantum computing breakthrough is major tech news with broad implications.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1215,
+  "completion_tokens": 266
+ }
+}

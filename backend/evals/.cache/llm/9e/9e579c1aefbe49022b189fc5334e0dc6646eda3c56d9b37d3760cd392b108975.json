@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d61fef4a46466bee63032d35cf2b02ac706627d3ec8392be8bba2571fedf54ab",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00742\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.9, \"rationale\": \"Humanitarian aid news is solid general interest but not major event.\"}, {\"id\": \"a00743\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Security incident at airport is general news, missable.\"}, {\"id\": \"a00744\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Crime and court case is general news, not major event.\"}, {\"id\": \"a00747\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"ERP charge resumption affects daily commuters' expenses and travel.\"}, {\"id\": \"a00749\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Local business struggles are general interest but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 971,
+  "completion_tokens": 230
+ }
+}

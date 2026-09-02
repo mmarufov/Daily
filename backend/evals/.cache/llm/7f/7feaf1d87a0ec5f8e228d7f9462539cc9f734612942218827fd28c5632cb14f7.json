@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "f73e60938eeccbd7cc2fa03e6946c3ad7b50da6f60526e1a09a784988e872178",
+  "preview": "READER PROFILE:\nREADER: User works in marketing in London and is interested in news that affects consumers.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] technology  (topic)\n  [PRIMARY] science  (topic)\n  [seco"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 50,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"technology\",\n      \"kind\": \"direct\",\n      \"why\": \"Privacy concerns in technology affect consumers directly.\"\n    },\n    {\n      \"id\": 51,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Celebrity politics not relevant to interests.\"\n    },\n    {\n      \"id\": 52,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development affecting consumer interests.\"\n    },\n    {\n      \"id\": 53,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to primary or secondary interests.\"\n    },\n    {\n      \"id\": 54,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development affecting consumer interests.\"\n    },\n    {\n      \"id\": 55,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development affecting consumer interests.\"\n    },\n    {\n      \"id\": 56,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"business\",\n      \"kind\": \"contextual\",\n      \"why\": \"Business partnerships impact consumer spending.\"\n    },\n    {\n      \"id\": 57,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to primary or secondary interests.\"\n    },\n    {\n      \"id\": 58,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"business\",\n      \"kind\": \"contextual\",\n      \"why\": \"Fintech developments impact consumer finance options.\"\n    },\n    {\n      \"id\": 59,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"business\",\n      \"kind\": \"contextual\",\n      \"why\": \"R&D spending trends affect business landscape.\"\n    },\n    {\n      \"id\": 60,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"technology\",\n      \"kind\": \"direct\",\n      \"why\": \"AI's environmental impact is a tech consumer concern.\"\n    },\n    {\n      \"id\": 61,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to primary or secondary interests.\"\n    },\n    {\n      \"id\": 62,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"consumer impact\",\n      \"kind\": \"contextual\",\n      \"why\": \"Energy policies directly affect household budgets.\"\n    },\n    {\n      \"id\": 63,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to primary or secondary interests.\"\n    },\n    {\n      \"id\": 64,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to primary or secondary interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1494,
+  "completion_tokens": 800
+ }
+}

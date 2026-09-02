@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b81d3cca4dc4502187458f08ff68b0b47de0852b16783bc82dd0f7570ba49df9",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00559\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to AI-driven infrastructure but not Singapore or fintech regulation focused.\"}, {\"id\": \"a00560\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Interesting cloud engineering automation but US company, no Singapore or fintech focus.\"}, {\"id\": \"a00561\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Java ecosystem updates relevant to software engineering but routine and broad.\"}, {\"id\": \"a00562\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"GCP identity federation relevant to cloud infrastructure and security, but no regional or fintech angle.\"}, {\"id\": \"a00563\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"UX design podcast unrelated to backend engineering, fintech, or Singapore tech.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1406,
+  "completion_tokens": 254
+ }
+}

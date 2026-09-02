@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "07748cd038e6e9eeebba70b39974ab1afe59fd2fdac0ed5df3a0108978938662",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00539\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"No clear relevance to tech, science, UK, or world news; no consumer impact.\"}, {\"id\": \"a00549\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Tech innovation in AI on consumer hardware relevant to tech and consumer impact.\"}, {\"id\": \"a00566\", \"label\": \"fine\", \"tags\": [\"direct\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Important world news but no direct UK or consumer impact.\"}, {\"id\": \"a00568\", \"label\": \"fine\", \"tags\": [\"direct\", \"world_news\"], \"confidence\": 0.75, \"rationale\": \"Relevant world news but no direct UK or consumer impact.\"}, {\"id\": \"a00569\", \"label\": \"fine\", \"tags\": [\"direct\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"World news on conflict, relevant but no direct UK or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1056,
+  "completion_tokens": 263
+ }
+}

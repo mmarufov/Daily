@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "41bfd01d0c36f23c60eb47b20f37d6216d23d7f0238b87ed1cf40d2510ee61e4",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01020\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine sports history, no broad news impact for general reader.\"}, {\"id\": \"a01027\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Interesting science roundup, but not major or urgent news.\"}, {\"id\": \"a01031\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Historical car feature, niche interest but solid general news.\"}, {\"id\": \"a01034\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Speculative space exploration topic, interesting but not urgent.\"}, {\"id\": \"a01035\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Car review and engineering story, routine coverage for general audience.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2641,
+  "completion_tokens": 233
+ }
+}

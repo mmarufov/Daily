@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ee6ed909cf72f9d68fe853d9dd26c6f87afdfa4a3b242499b2846b14f47ca989",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00534\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Technical but not directly relevant to primary interests or region.\"}, {\"id\": \"a00536\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Interesting technical topic but not directly related to primary interests or region.\"}, {\"id\": \"a00545\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Cloudflare AI search tool relevant to AI engineering and developer tooling.\"}, {\"id\": \"a00546\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"AWS open source AI coding agents relevant to AI engineering and developer tooling.\"}, {\"id\": \"a00547\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.95, \"rationale\": \"Deep technical AI data layer architecture highly relevant to AI engineering and backend systems.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1240,
+  "completion_tokens": 250
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3b20c6e851461d9e69fc9d433a2d2a4a43f1f794e83990f9813d1fa8a74d0606",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00390\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Canadian-US lake naming dispute irrelevant to Singapore mother.\"}, {\"id\": \"a00396\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US SEC legal hearing unrelated to Singapore or reader interests.\"}, {\"id\": \"a00406\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US local charity race unrelated to Singapore or reader interests.\"}, {\"id\": \"a00409\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US weather alert irrelevant to Singapore reader.\"}, {\"id\": \"a00413\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 1.0, \"rationale\": \"US sports news unrelated to reader's preferences.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1168,
+  "completion_tokens": 233
+ }
+}

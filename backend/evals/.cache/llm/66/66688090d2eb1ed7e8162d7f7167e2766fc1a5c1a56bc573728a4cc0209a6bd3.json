@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7407ea7e568d5ce6ebd28fc89b26dde29aa0bb26e29dea9acf32f85c165e3458",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00990\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL Canadiens contract news is not relevant to tennis, horse racing, or environmental interests.\"\n    },\n    {\n      \"id\": \"a00991\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Retrospective on Vancouver Canucks prospects is unrelated to reader's sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a00992\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"LA Kings rookie camp is not relevant to tennis, horse racing, or environmental topics.\"\n    },\n    {\n      \"id\": \"a00993\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL trade speculation about Hellebuyck is not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00996\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Ottawa Senators preseason and contract news is not relevant to reader's stated interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3883,
+  "completion_tokens": 310
+ }
+}

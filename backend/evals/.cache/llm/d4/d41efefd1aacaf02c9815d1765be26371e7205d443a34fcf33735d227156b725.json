@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5ac53a56ba468ed4cc93942e0e45defced2dd4e1dd3f186e107411e921734f91",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00825\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"AI's impact on jobs affects marketing and consumer employment trends in UK and globally.\"}, {\"id\": \"a00826\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Fintech product relevant to business cash management but Singapore-focused, less UK impact.\"}, {\"id\": \"a00827\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"FDI manufacturing shifts relevant to business and tech but focused on Southeast Asia.\"}, {\"id\": \"a00828\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Startup investment advice relevant to tech and marketing but regionally focused on Southeast Asia.\"}, {\"id\": \"a00829\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"AI marketing perception impacts marketing strategies and consumer trust globally, including UK.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3780,
+  "completion_tokens": 282
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aaee5fcf1b64292add43e34c02d7be495e5d622d29c85e0659e62de2c5ed122e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01033\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major NASA Mars mission update; primary science/tech interest and global significance.\"\n    },\n    {\n      \"id\": \"a01035\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Covers automotive tech and sustainability, but luxury car focus is secondary for this reader.\"\n    },\n    {\n      \"id\": \"a01036\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"science\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Significant US public health/science policy story; relevant for staying informed, but not UK-focused.\"\n    },\n    {\n      \"id\": \"a01038\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Film review; not tech, science, or news—irrelevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a01040\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Major tech/IP lawsuit involving AI, copyright, and consumer impact; highly relevant to reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2049,
+  "completion_tokens": 318
+ }
+}

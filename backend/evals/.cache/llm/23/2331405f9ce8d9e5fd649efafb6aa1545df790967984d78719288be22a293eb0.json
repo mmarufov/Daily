@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6dd902c388989c01fa3330f7f9a9e41a5f0b68975367799be2de11cbb52a467e",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01197\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly about Iran situation and global economic pressure, both primary interests for energy security analyst.\"\n    },\n    {\n      \"id\": \"a01200\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Focuses on Iran, China, and economic sanctions—key geopolitical and energy security concerns for this reader.\"\n    },\n    {\n      \"id\": \"a01203\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Oil deal is relevant to energy markets, but not directly about primary interests; heat deaths are off-topic.\"\n    },\n    {\n      \"id\": \"a01223\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"US-Venezuela oil deal is relevant to energy markets, but not a primary focus for this reader.\"\n    },\n    {\n      \"id\": \"a01243\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Art theft is unrelated to energy, economics, or reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1236,
+  "completion_tokens": 323
+ }
+}

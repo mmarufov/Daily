@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e495db23a39bbfde820aceb76ddaf3d963e3269fde4365b069ed189dd30f3c8f",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00043\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI regulation\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"High-level AI risk discussion; relevant but not urgent or directly actionable for Tom.\"\n    },\n    {\n      \"id\": \"a00055\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"company use of AI\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Industry news on AI server demand; relevant but not a primary interest or must-know.\"\n    },\n    {\n      \"id\": \"a00198\",\n      \"label\": \"fine\",\n      \"tags\": [\"OpenAI\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"OpenAI media coverage; relevant to primary interest but not essential or actionable.\"\n    },\n    {\n      \"id\": \"a00208\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Critical security flaw affecting OpenAI keys; urgent for AI product managers.\"\n    },\n    {\n      \"id\": \"a00218\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"need_to_know\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"OpenAI outage directly impacts AI product work; essential operational update.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1142,
+  "completion_tokens": 341
+ }
+}

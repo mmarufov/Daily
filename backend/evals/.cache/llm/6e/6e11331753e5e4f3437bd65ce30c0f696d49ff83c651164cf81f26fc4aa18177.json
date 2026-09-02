@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "5ab70650bc21f655faf4680ae3cc675e809f25d72e1cf6913be8d0b4e557bc4d",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about AI models and does not relate to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a comedy show and is unrelated to the user's sports or environmental interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers an oil arrangement in Venezuela, which does not intersect with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on Ariana Grande's personal life and tour, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a legal case involving a pro-democracy activist, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a criminal case and does not relate to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a family legal case in Italy, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a legal case involving a political activist, which does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses venture capital trends in Southeast Asia, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a Thai bank's financial performance, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a food court's financial struggles, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article reviews a film and does not relate to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses human rights issues in Tunisia, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers an actor's career and does not relate to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a startup's funding for AI chip packaging, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses economic data for Tajikistan, which does not relate to the user's interests.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"The article discusses Coco Gauff's performance at the US Open, which is relevant to the user's interest in tennis.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article previews a girls soccer team and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article previews another girls soccer team and is unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2868,
+  "completion_tokens": 637
+ }
+}

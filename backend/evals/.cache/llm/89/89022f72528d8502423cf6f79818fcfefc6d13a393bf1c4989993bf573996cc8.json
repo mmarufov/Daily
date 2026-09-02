@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ad74c8ac5dcf4b4e8059bc80b6d938d91c2bac7594e67570c6cb904e9653f1cd",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01205\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major international disaster, but not at must_see threshold for a general global audience.\"\n    },\n    {\n      \"id\": \"a01220\",\n      \"label\": \"fine\",\n      \"tags\": [\"followup\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Followup on Nepal floods; significant but not a must_see for all informed adults.\"\n    },\n    {\n      \"id\": \"a01228\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tragic ferry disaster, but not a global must_see; solid general news.\"\n    },\n    {\n      \"id\": \"a01233\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"US-Iran military strikes risk wider conflict; major global event all should know.\"\n    },\n    {\n      \"id\": \"a01243\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"UK prison policy news; important locally but not a global must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1313,
+  "completion_tokens": 300
+ }
+}

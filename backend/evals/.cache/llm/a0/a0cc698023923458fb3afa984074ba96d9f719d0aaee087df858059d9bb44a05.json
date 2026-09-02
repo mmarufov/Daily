@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "00720205149931a875ff405718f70c1ea7af750221a2ed933c051c31a789acf4",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00782\",\n      \"label\": \"fine\",\n      \"tags\": [\"government_schemes_for_parents\", \"childcare\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to parenting and government schemes, but not urgent or directly impactful today.\"\n    },\n    {\n      \"id\": \"a00785\",\n      \"label\": \"never\",\n      \"tags\": [\"tech_industry_news\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Tech industry news is excluded; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00786\",\n      \"label\": \"must_see\",\n      \"tags\": [\"cost_of_living\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Inflation and electricity price hikes directly affect daily expenses and living conditions.\"\n    },\n    {\n      \"id\": \"a00787\",\n      \"label\": \"never\",\n      \"tags\": [\"tech_industry_news\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on AI and tech industry; not aligned with reader's priorities.\"\n    },\n    {\n      \"id\": \"a00788\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"China's tax reform and regional investment impact are not relevant to reader's daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1597,
+  "completion_tokens": 334
+ }
+}

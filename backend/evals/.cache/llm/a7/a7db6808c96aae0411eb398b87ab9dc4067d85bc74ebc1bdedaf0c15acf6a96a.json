@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4a0b556a43d9cc242e1ad7b5c4bcd618c2e58965d0fd682dfe411e26706e1135",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00695\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Singapore\"], \"confidence\": 0.8, \"rationale\": \"Relevant to Singapore tech funding but not deep technical or urgent.\"}, {\"id\": \"a00696\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Generic news updates with no specific tech or fintech focus.\"}, {\"id\": \"a00697\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cultural festival unrelated to tech or fintech interests.\"}, {\"id\": \"a00699\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Singapore\"], \"confidence\": 0.7, \"rationale\": \"General success stories on Singapore RIE, not deep technical or urgent.\"}, {\"id\": \"a00701\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment content unrelated to reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1071,
+  "completion_tokens": 241
+ }
+}

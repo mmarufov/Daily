@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a5aae8f2bf081ac1eb5d258e5e2b0c45ea927e79a59c8bcaaa24d09052a6a7c4",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00207\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Data breach affects many; relevant for health utility but not primary interest.\"}, {\"id\": \"a00219\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Cybersecurity news relevant to tech but not primary energy or geopolitical focus.\"}, {\"id\": \"a00227\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Entertainment streaming launch unrelated to energy or economics.\"}, {\"id\": \"a00228\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment industry news unrelated to reader's interests.\"}, {\"id\": \"a00234\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Reality TV exit news irrelevant to energy or economic interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1240,
+  "completion_tokens": 242
+ }
+}

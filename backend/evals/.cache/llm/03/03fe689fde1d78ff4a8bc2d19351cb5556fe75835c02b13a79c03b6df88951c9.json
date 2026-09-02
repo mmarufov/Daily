@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ce0f8421e3bea8f048e499a0cba26a15f7dfe93d977d51d37e5c9ec2f52cb276",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00922\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine sports transfer news, general interest but missable.\"}, {\"id\": \"a00928\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports culture story, interesting but niche and missable.\"}, {\"id\": \"a00929\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Celebrity pet photo shoot promoting a brand, not general news.\"}, {\"id\": \"a00930\", \"label\": \"never\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Feature on a cocktail at a sports event, niche and promotional.\"}, {\"id\": \"a00931\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Speculative sports coaching job story, routine coverage.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 946,
+  "completion_tokens": 239
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "5b1d183974a0a29cf9588cfa2b3d94790fa2b2078bc9456b66414058d17de34e",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is unrelated to the user's interests in sports, climate, or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article does not relate to the user's primary interests in tennis, horse racing, or environmental issues.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The content is not relevant to the user's focus areas of sports or climate.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses military actions, which do not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is focused on community issues unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a natural disaster without any connection to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers military actions, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is focused on military actions and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses trade issues, which are not aligned with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a natural disaster without any connection to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses military actions, which do not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses military actions and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses military actions and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a demographic issue unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses military and economic issues, which do not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political issues unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political issues unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political issues unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political issues unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political issues unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2062,
+  "completion_tokens": 567
+ }
+}

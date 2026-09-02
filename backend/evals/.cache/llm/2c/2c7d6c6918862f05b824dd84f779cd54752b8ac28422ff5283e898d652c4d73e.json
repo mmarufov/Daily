@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "4327d715b1ff61b0deb7972879f6b146a1ad1f63bc7ba761886613474a620cd1",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a tragic incident at a Christian festival, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a natural disaster in Nepal and Tibet, which does not intersect with the user's primary focus areas.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about Nicolas Maduro's custody in the US, which is irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article focuses on a diplomatic meeting in Istanbul, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article reports on flood survivors in Nepal, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses missing persons in China due to flooding, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers Iceland's voting decision on EU membership, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a fictional character in a TV show, which is irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about Emmy nominations and opinions, which do not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses US military actions against Iran, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers US Open tennis results, which is irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses Trump's threats regarding a journalist, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article reports on a golf tournament, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses property and capital gains, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides instructions for resetting an iPhone, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses video game development, which does not align with the user's primary focus areas.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses investment decisions related to a Roth IRA, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a local community initiative, which does not intersect with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a community program for children, which is unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2328,
+  "completion_tokens": 620
+ }
+}

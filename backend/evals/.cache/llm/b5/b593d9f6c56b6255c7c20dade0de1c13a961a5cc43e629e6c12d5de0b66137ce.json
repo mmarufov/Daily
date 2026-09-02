@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "73f43b3228e6807098e89f9889aad85cc0251c18adacefae3b1c5de1b9e03ff4",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00790\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"AI engineering\", \"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"AI-powered public transport control relevant to Singapore tech and safety.\"}, {\"id\": \"a00793\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Retail empire story unrelated to tech, fintech, or engineering interests.\"}, {\"id\": \"a00795\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"AI engineering\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI program signups relevant but routine, no deep technical detail.\"}, {\"id\": \"a00796\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"AI engineering\", \"economic\"], \"confidence\": 0.7, \"rationale\": \"Economic impact of AI relevant but more general policy, not deep tech.\"}, {\"id\": \"a00797\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Recreation club legal dispute unrelated to reader's tech or fintech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1163,
+  "completion_tokens": 268
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "0879efecca1075651e6f2ff209432fe6e7d1cb5351d98cf360b2b31a9460b3f8",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Background interest but lacks major significance or relevance to user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Background interest but lacks major significance or relevance to user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Background interest but lacks major significance or relevance to user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"Relevant to user's interest in climate and clean energy, discussing the environmental ethics of AI.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: unrelated to user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2104,
+  "completion_tokens": 469
+ }
+}

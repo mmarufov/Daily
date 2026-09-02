@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a662c31c674b1be24b69d5ab9693dd11dd735e5d8558f1979b1b38bbd44ba87a",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00835\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article about AI in global expansion, unrelated to energy or geopolitics.\"}, {\"id\": \"a00838\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on workplace burnout, unrelated to energy markets or geopolitical developments.\"}, {\"id\": \"a00840\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.8, \"rationale\": \"China tax reform impacts Southeast Asia capital flows, relevant to economics but not primary interest.\"}, {\"id\": \"a00843\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Fintech funding in Indonesia, unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00848\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Agritech investment in Southeast Asia, unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3697,
+  "completion_tokens": 257
+ }
+}

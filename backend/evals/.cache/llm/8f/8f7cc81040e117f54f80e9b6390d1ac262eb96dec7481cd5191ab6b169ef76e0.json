@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "769c18b8dc568be23a584e843c48e17806039a48379c0a9bda5a2ca66fb23f7e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00685\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.9, \"rationale\": \"Relevant tech/science innovation but no immediate consumer impact.\"}, {\"id\": \"a00687\", \"label\": \"must_see\", \"tags\": [\"science\", \"UK news\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"UK food safety issue affecting consumers directly.\"}, {\"id\": \"a00690\", \"label\": \"fine\", \"tags\": [\"science\", \"world news\"], \"confidence\": 0.8, \"rationale\": \"Interesting science on human impact, but less direct consumer relevance.\"}, {\"id\": \"a00691\", \"label\": \"fine\", \"tags\": [\"science\"], \"confidence\": 0.7, \"rationale\": \"Scientific history insight, less relevant to consumer or tech interests.\"}, {\"id\": \"a00693\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.9, \"rationale\": \"Major tech breakthrough with broad future impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1201,
+  "completion_tokens": 253
+ }
+}

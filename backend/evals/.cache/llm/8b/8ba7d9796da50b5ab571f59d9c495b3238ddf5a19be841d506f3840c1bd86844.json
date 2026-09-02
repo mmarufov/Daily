@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "434c67f48cfa658ee003e181508d496a1114aabcbe657767c880c9d5d9b92fc1",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00333\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"USPS voting issue unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00335\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Iran attacks US bases, critical for energy security and geopolitical risk.\"}, {\"id\": \"a00337\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"UK PMQs political commentary unrelated to energy or economics.\"}, {\"id\": \"a00340\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tiger Woods legal issues unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00342\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"Ukraine-Russia conflict affects geopolitics but less direct on energy security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1140,
+  "completion_tokens": 252
+ }
+}

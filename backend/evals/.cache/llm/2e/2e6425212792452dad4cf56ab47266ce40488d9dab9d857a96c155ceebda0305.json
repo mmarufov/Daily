@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "09997978ba9e262d976fd6f8d2953f0c6605d63eae4d66ac7304d5b922fae19d",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00576\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Significant deadly industrial fire with rising death toll.\"}, {\"id\": \"a00579\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Serious international incident but less globally critical.\"}, {\"id\": \"a00581\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Economic behavior analysis, interesting but not urgent.\"}, {\"id\": \"a00585\", \"label\": \"fine\", \"tags\": [\"followup\"], \"confidence\": 0.7, \"rationale\": \"Earlier report on the same fire, less updated.\"}, {\"id\": \"a00595\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.85, \"rationale\": \"Deadly military strikes affecting infrastructure and lives.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 968,
+  "completion_tokens": 224
+ }
+}

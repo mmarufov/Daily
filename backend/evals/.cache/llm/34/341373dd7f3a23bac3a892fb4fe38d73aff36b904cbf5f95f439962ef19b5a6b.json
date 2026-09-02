@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b736eaf24e0f5c9ff28d8e0bec726ea6cee7f51062a4a1607350073012667648",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Relevant world news but no direct consumer or UK impact.\"}, {\"id\": \"a00001\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Global trade and sanctions news relevant to business context.\"}, {\"id\": \"a00002\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Political insult story unrelated to reader's interests.\"}, {\"id\": \"a00003\", \"label\": \"must_see\", \"tags\": [\"technology\", \"business\", \"consumer_impact\"], \"confidence\": 0.95, \"rationale\": \"Significant tech company forecast on AI servers affects market and consumers.\"}, {\"id\": \"a00004\", \"label\": \"fine\", \"tags\": [\"world_news\", \"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"US government shutdown avoidance affects global markets, indirectly relevant.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1062,
+  "completion_tokens": 251
+ }
+}

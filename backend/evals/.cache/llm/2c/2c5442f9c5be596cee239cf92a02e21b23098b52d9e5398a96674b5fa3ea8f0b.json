@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2b1d3425badebaf6b41f306543c0f64a2f344974cb0236841a2a3588b6269815",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01067\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Google, AI product launch, and industry development—squarely a primary interest.\"\n    },\n    {\n      \"id\": \"a01073\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to company use of AI, but not a primary company or major event.\"\n    },\n    {\n      \"id\": \"a01090\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"model releases\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"OpenAI model release with major security implications; primary interest and industry impact.\"\n    },\n    {\n      \"id\": \"a01094\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Folding phones are not relevant to AI or the reader's interests.\"\n    },\n    {\n      \"id\": \"a01123\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Map naming controversy is unrelated to AI or the reader's focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1069,
+  "completion_tokens": 305
+ }
+}

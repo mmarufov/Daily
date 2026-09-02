@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "cf7e3bd9b27650475983cf3c2972eb928e46d91ed8f8d2d9c96e1ac8af2d7dc1",
+  "preview": "User Profile:\nFree-form profile:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nStructured interests:\n- Topics: AI products, AI industry, model rele"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: fantasy football.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2041,
+  "completion_tokens": 405
+ }
+}

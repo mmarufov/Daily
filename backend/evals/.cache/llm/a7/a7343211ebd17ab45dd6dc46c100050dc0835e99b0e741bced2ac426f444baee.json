@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bd8ed45a401b3f0cafb2bc6e73bde0644930e2a87cbbb4e8249de0abe330f5ac",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00833\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting AI market insight but not about primary entities or direct product releases.\"}, {\"id\": \"a00834\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"OpenAI involvement relevant but focused on Thailand, less relevant to Boston-based reader.\"}, {\"id\": \"a00835\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI industry topic relevant but general and not about primary entities or regulation.\"}, {\"id\": \"a00836\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"AI chip smuggling is industry relevant but geographically distant and indirect.\"}, {\"id\": \"a00837\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"AI industry analysis relevant but focused on Southeast Asia, not primary entities or regulation.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3679,
+  "completion_tokens": 257
+ }
+}

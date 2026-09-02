@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c460eb49e0bf7ab02cfb9c37780ae089b4fba3e7af55f5b1fbfd493dd55c689c",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00426\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Energy policy is relevant but not urgent or directly impacting daily life.\"}, {\"id\": \"a00427\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Hunting attraction in Ocean County unrelated to reader's interests or location.\"}, {\"id\": \"a00429\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"College football Heisman campaign unrelated to New Jersey or reader's interests.\"}, {\"id\": \"a00432\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Affordable housing opportunity in NJ affects local residents' money and family life.\"}, {\"id\": \"a00434\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Home care shortages affect NJ families but not directly urgent for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1126,
+  "completion_tokens": 253
+ }
+}

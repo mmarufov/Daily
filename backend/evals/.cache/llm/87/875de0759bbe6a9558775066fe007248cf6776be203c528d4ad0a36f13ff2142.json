@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "700d5e93a24547d16ea3bf39b0ac5eab30ca7bcfaad0ced5dbb1b872301f3c04",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00534\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Technical article on TSP heuristic; no relevance to reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00766\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article about Singapore's tourism branding; not relevant to reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00775\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singaporean workplace policy changes; not relevant to Uzbek reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00873\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Personal story about a solar eclipse in Spain; unrelated to reader's interests or context.\"\n    },\n    {\n      \"id\": \"a00888\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL news about Aaron Donald; reader excludes American sports.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1700,
+  "completion_tokens": 304
+ }
+}

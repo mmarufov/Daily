@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e0db58892570e7151a3b6c6fa7de6d1eeb6207e12c4933bf9114bb72408d21c1",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00144\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Kazakh scientist commemoration is not relevant to Uzbek sports, politics, or local affairs.\"\n    },\n    {\n      \"id\": \"a00147\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Regional sports event with some political presence; plausible interest for a sports/politics enthusiast.\"\n    },\n    {\n      \"id\": \"a00149\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Kazakhstan's security council changes are not relevant to Uzbek politics or local affairs.\"\n    },\n    {\n      \"id\": \"a00150\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Kazakhstan's education reforms are not relevant to Uzbek local or national interests.\"\n    },\n    {\n      \"id\": \"a00151\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Kazakh corporate bond issue is not relevant to Uzbek economy or reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4137,
+  "completion_tokens": 309
+ }
+}

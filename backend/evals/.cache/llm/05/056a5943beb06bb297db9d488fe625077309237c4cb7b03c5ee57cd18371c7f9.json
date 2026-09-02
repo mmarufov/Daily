@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "51ee241a3160b3404fe0d120c060e1d4fe44413fc5c87aa39a3a836de232d3b4",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00370\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine sports transfer news, not major for general audience.\"}, {\"id\": \"a00371\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Potentially impacts US election integrity, important for informed adults.\"}, {\"id\": \"a00372\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"US primary election result, relevant but not urgent for general audience.\"}, {\"id\": \"a00373\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Significant legal ruling on transgender rights with broad social impact.\"}, {\"id\": \"a00374\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Political appointment news, relevant but not urgent or major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1255,
+  "completion_tokens": 244
+ }
+}

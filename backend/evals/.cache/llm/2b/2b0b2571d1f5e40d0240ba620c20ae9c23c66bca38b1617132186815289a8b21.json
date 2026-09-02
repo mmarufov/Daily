@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3245c94786bcb7abbce2fd864c468eaed944c265a8dad0606173c448ac16373e",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00064\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Stock market leverage unrelated to reader's interests or exclusions.\"}, {\"id\": \"a00071\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan trade commentary unrelated to reader's interests.\"}, {\"id\": \"a00073\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russia arms report unrelated to reader's interests.\"}, {\"id\": \"a00077\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Japan-North Korea dialogue unrelated to reader's interests.\"}, {\"id\": \"a00079\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"climate\"], \"confidence\": 0.8, \"rationale\": \"COP17 climate event relevant to environmental interest but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1006,
+  "completion_tokens": 237
+ }
+}

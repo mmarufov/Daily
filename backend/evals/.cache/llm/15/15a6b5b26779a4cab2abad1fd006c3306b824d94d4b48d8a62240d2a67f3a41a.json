@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "47b9404e5cd1781b4df518663351b37892ccffd688e2ea43a3a6768468df21a1",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nStructured interests:\n- Topics: Uzbek footbal"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses cryptocurrency market trends, which are not relevant to the user's interests in sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article focuses on a historical figure in Kazakhstan, which does not intersect with the user's primary interests in Uzbek football or politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a personal deportation case in Sweden, which is unrelated to the user's interests in Uzbek sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article provides promotional codes for outdoor gear, which is irrelevant to the user's focus on local sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article offers travel discounts, which do not align with the user's interests in Uzbek football and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses hotel and flight discounts, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides promotional codes for tech products, which do not intersect with the user's interests in sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article focuses on camera and tech deals, which are irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses discounts on running shoes, which do not align with the user's interests in local sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article offers discounts on fitness products, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses office furniture discounts, which do not intersect with the user's interests in sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article provides promotional codes for a telecommunications service, which is irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses discounts on running shoes, which do not align with the user's interests in local sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article offers discounts on eBay items, which are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses health issues related to hormone prescriptions, which do not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a criminal case unrelated to the user's interests in sports and politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political commentary in the UK, which is not relevant to the user's focus on Uzbek politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a court case involving a broadcaster, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses cryptocurrency market trends, which are not relevant to the user's interests in sports and politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2170,
+  "completion_tokens": 649
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "7bbd1eb30b48cddedbff101c5e2d952a5a260800a5c34f112f0c5ccb317f68b6",
+  "preview": "READER PROFILE:\nREADER: Lives in Newark NJ, commutes on NJ Transit, two kids in public school.\nDEPTH: breaking\n\nWANTS:\n  [PRIMARY] New Jersey Devils  (entity)\n  [PRIMARY] New York Giants  (entity)\n  ["
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 75,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major story or relevant to interests.\"\n    },\n    {\n      \"id\": 76,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major story or relevant to interests.\"\n    },\n    {\n      \"id\": 77,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major story or relevant to interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 729,
+  "completion_tokens": 170
+ }
+}

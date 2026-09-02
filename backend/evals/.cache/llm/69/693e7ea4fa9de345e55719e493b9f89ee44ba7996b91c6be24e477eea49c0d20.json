@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "59c93230f0cd8b033e5352ce982d7b6da08ee6af7bc17bd3c38f5127bbd74f49",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01075\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Video game news is off-topic and not relevant to reader's interests.\"}, {\"id\": \"a01076\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"AI collaboration between US and China is major tech and world news with broad impact.\"}, {\"id\": \"a01077\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Tech insider trading case is relevant but not critical for daily feed.\"}, {\"id\": \"a01078\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.9, \"rationale\": \"Sales and deals content is promotional and off-topic.\"}, {\"id\": \"a01079\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Police personal drama unrelated to reader's interests or location.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1071,
+  "completion_tokens": 246
+ }
+}

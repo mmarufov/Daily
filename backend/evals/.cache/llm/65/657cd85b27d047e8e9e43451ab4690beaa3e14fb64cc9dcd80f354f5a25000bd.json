@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ecebc729d80137c74d8a56c9e7c95c8f9e7c84082f139bca62f61191225bcb9c",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00151\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Relevant to Kazakhstan finance and trade but no urgent impact on reader's business.\"}, {\"id\": \"a00152\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Economic structural shift in Kazakhstan is relevant but not urgent or directly impactful.\"}, {\"id\": \"a00153\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"South Korea-Central Asia summit relevant to trade but no immediate actionable news.\"}, {\"id\": \"a00154\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sports news unrelated to reader's business or interests.\"}, {\"id\": \"a00155\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Tajikistan glacier mudflow warning affects safety and travel in reader's region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4219,
+  "completion_tokens": 257
+ }
+}

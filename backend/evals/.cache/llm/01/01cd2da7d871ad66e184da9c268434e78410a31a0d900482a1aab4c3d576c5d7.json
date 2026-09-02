@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a6ae78f3ce7c06b824f3ad205a58da6f0b39f8f8968cb6ca38303cb0c728dfd4",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01066\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"world news\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech/privacy topic, global relevance, but not directly UK- or consumer-impacting.\"\n    },\n    {\n      \"id\": \"a01072\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pure promotional content, not news or analysis.\"\n    },\n    {\n      \"id\": \"a01076\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"world news\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech and geopolitics, relevant to world news and tech interests.\"\n    },\n    {\n      \"id\": \"a01080\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"science\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Primary tech/science interest, real-world impact, AI automation risks.\"\n    },\n    {\n      \"id\": \"a01081\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"marketing\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech/marketing angle, but not essential or directly impactful.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1065,
+  "completion_tokens": 304
+ }
+}

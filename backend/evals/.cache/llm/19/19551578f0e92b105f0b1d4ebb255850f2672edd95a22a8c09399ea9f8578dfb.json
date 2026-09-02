@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "114f46bb67d9c7c53f7db09e6cc3c561414cf7d60e5b1092f583ccbc982d3a54",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01047\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Earbuds review unrelated to energy or economic topics.\"}, {\"id\": \"a01078\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Labor Day sales on tools irrelevant to energy or economics.\"}, {\"id\": \"a01083\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming monitor review unrelated to energy or economic interests.\"}, {\"id\": \"a01088\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy\"], \"confidence\": 0.8, \"rationale\": \"UK power grid issues relevant to energy but not primary focus or urgent.\"}, {\"id\": \"a01089\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Discount codes are promotional content, off-topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1102,
+  "completion_tokens": 236
+ }
+}

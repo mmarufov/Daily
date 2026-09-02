@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "045b84d534d0debc4aa2bca45c9651f0de09b96df747d1d940c1bec362daec7b",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00150\", \"label\": \"fine\", \"tags\": [\"primary\", \"followup\"], \"confidence\": 0.8, \"rationale\": \"Kazakhstan political changes relevant but not urgent for trade.\"}, {\"id\": \"a00151\", \"label\": \"must_see\", \"tags\": [\"primary\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Middle Corridor logistics improvements directly affect trade routes.\"}, {\"id\": \"a00152\", \"label\": \"fine\", \"tags\": [\"secondary\", \"followup\"], \"confidence\": 0.7, \"rationale\": \"TAPI pipeline progress relevant but limited immediate impact on Tajik trade.\"}, {\"id\": \"a00153\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Ski resort project unrelated to trade or business interests.\"}, {\"id\": \"a00154\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Olympic delegation spending unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3732,
+  "completion_tokens": 247
+ }
+}

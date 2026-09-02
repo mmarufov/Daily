@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "341346ab67bda6b94fc9da238411913648344c7e06fee636cbb9dd6383fb60e6",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00753\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Real estate and money laundering case is background financial news, not fintech or tech focus.\"}, {\"id\": \"a00755\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"AI-powered command center in Singapore public transport relevant to AI engineering and local tech.\"}, {\"id\": \"a00757\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.9, \"rationale\": \"Daily Debrief is a generic summary, likely low depth and not technical.\"}, {\"id\": \"a00758\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Retail empire story unrelated to fintech, cloud, AI, or Singapore tech scene.\"}, {\"id\": \"a00760\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.8, \"rationale\": \"AI program signups relevant to AI but more general education than deep engineering.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1132,
+  "completion_tokens": 270
+ }
+}

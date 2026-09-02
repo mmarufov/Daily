@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b5e417801a29fe33fd82d07e6dd7d5f0e28395448dc2ec318b8828180052171c",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00776\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Economic news relevant but not directly impacting daily life or parenting.\"}, {\"id\": \"a00778\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.9, \"rationale\": \"Generic summary with no specific local or parenting relevance.\"}, {\"id\": \"a00779\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Financial currency framework unrelated to reader's interests.\"}, {\"id\": \"a00780\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Fintech investment unrelated to parenting, healthcare, or local life.\"}, {\"id\": \"a00783\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Business R&D report unrelated to reader's primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1089,
+  "completion_tokens": 234
+ }
+}

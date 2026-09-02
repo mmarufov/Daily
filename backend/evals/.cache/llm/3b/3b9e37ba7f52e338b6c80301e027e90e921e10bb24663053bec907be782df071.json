@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "57fb2c266671c36bbb33782939eebe1589548314550e7c5b2cf7230723872f53",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00605\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Economic behavior in Russia is general news but not a major event.\"}, {\"id\": \"a00606\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"US president comments on CIA trip to Russia amid war, important global news.\"}, {\"id\": \"a00608\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Grain terminal repair delays are routine war-related updates.\"}, {\"id\": \"a00610\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Election candidate registration is routine political news.\"}, {\"id\": \"a00622\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Zelensky's warning about Russian airspace safety affects global aviation safety.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1404,
+  "completion_tokens": 254
+ }
+}

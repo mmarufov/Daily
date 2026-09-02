@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b3660140445255619983b90c0cd14d1217e4806fc0f97c92f61ae075f1a3f707",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00837\", \"label\": \"must_see\", \"tags\": [\"direct\", \"primary\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Deep AI and Southeast Asia tech ecosystem analysis, highly relevant to reader's interests.\"}, {\"id\": \"a00838\", \"label\": \"fine\", \"tags\": [\"direct\", \"secondary\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Workplace burnout topic relevant to work but less technical and not primary interest.\"}, {\"id\": \"a00839\", \"label\": \"must_see\", \"tags\": [\"direct\", \"primary\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Insight on Southeast Asia economies critical for fintech and startup strategy in region.\"}, {\"id\": \"a00840\", \"label\": \"must_see\", \"tags\": [\"direct\", \"primary\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"China tax reform impacts Southeast Asia fintech capital flows, crucial for reader's fintech role.\"}, {\"id\": \"a00841\", \"label\": \"fine\", \"tags\": [\"direct\", \"secondary\", \"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Strategy frameworks useful but less technical and not core interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3805,
+  "completion_tokens": 296
+ }
+}

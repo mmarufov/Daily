@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b8c73a14645c41d7d3d14916a848ecc4898651bb6784af1e0ca0738d9da58299",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00188\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.5,\n      \"rationale\": \"Global economic news, but not directly relevant to Central Asia or reader's business today.\"\n    },\n    {\n      \"id\": \"a00200\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"UK airport hack unrelated to Central Asia, trade, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00256\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Entertainment/music review; explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a00333\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Major geopolitical event, but only indirectly relevant to Central Asia trade context.\"\n    },\n    {\n      \"id\": \"a00353\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Music/entertainment news; not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1430,
+  "completion_tokens": 301
+ }
+}

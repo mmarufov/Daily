@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9376b72e534c35f5d419683646e1ed1d9269623660962e8b0609733f3eadcf0b",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00169\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Media anniversary and interview; not relevant to business, trade, or regional economics.\"\n    },\n    {\n      \"id\": \"a00170\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Potential changes to state investment projects could impact business environment, trade, and financing.\"\n    },\n    {\n      \"id\": \"a00172\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports/cultural event coverage; not relevant to business, trade, or economic interests.\"\n    },\n    {\n      \"id\": \"a00173\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Rahmon's proposals at SCO summit directly affect regional economic cooperation and trade.\"\n    },\n    {\n      \"id\": \"a00242\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Entertainment/TV review; explicitly excluded by reader's preferences.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3120,
+  "completion_tokens": 311
+ }
+}

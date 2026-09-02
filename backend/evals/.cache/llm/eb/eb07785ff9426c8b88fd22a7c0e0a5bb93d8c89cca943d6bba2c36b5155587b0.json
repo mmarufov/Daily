@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "44272b3f0c43e5dfa441e7b6f13c3894f127eeb7d71f5382160c901ac8066527",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01001\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Entertainment anniversary re-release, general interest but not urgent news.\"}, {\"id\": \"a01003\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Major global cybercrime arrests affecting many organizations worldwide.\"}, {\"id\": \"a01004\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Space industry update, interesting but not urgent for general reader.\"}, {\"id\": \"a01010\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"NASA jet repaint is a niche interest, not major news.\"}, {\"id\": \"a01011\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Music nostalgia article, off-topic for general news feed.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2061,
+  "completion_tokens": 241
+ }
+}

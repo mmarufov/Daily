@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e660f07ca2f510395a4aea80a4a1edc1132b9c5ccfeab1e6ab014ec43afccc1c",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00622\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Belarusian media espionage unrelated to Central Asia or trade.\"}, {\"id\": \"a00623\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Russian ICBM test is geopolitical but not directly relevant to trade or Central Asia.\"}, {\"id\": \"a00624\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Putin's visit to Nizhny Novgorod and gasoline crisis unrelated to Central Asia or trade.\"}, {\"id\": \"a00625\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russian marketplace military gear sales irrelevant to reader's interests.\"}, {\"id\": \"a00626\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russian internal security incident unrelated to Central Asia or trade.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3590,
+  "completion_tokens": 253
+ }
+}

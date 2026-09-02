@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e5754d0b0465941b279adde2eb201ffcdd96a9c1525336683e3eb50d8a10158a",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00674\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting science but not urgent or directly impactful for reader.\"}, {\"id\": \"a00676\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Scientific discovery about Mars; relevant to science interest but not urgent.\"}, {\"id\": \"a00678\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Medical breakthrough interesting but not directly affecting reader's life or work.\"}, {\"id\": \"a00680\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Cosmology update; relevant science but no immediate consumer impact.\"}, {\"id\": \"a00684\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Advanced physics research; interesting but not urgent or consumer-impacting.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1192,
+  "completion_tokens": 262
+ }
+}

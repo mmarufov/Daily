@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1e38e97a2380d9648f76ac2802015f286616729f7b1d9124baadf6349557b113",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00790\", \"label\": \"must_see\", \"tags\": [\"direct\", \"primary\", \"technology\", \"science\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Important AI environmental ethics impact product decisions, relevant to tech and consumer impact.\"}, {\"id\": \"a00796\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\", \"technology\", \"world_news\", \"business\"], \"confidence\": 0.8, \"rationale\": \"Interesting agritech business insight but less relevant to UK or consumer impact.\"}, {\"id\": \"a00799\", \"label\": \"fine\", \"tags\": [\"direct\", \"technology\", \"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI microfinance innovation relevant to tech and science but not urgent or UK focused.\"}, {\"id\": \"a00800\", \"label\": \"fine\", \"tags\": [\"direct\", \"technology\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI adoption challenges in SEA relevant to tech interest but less relevant to UK or consumer impact.\"}, {\"id\": \"a00809\", \"label\": \"fine\", \"tags\": [\"direct\", \"marketing\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Marketing product segmentation insight relevant but routine and missable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3765,
+  "completion_tokens": 307
+ }
+}

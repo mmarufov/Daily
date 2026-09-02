@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f8ab7d2d5a6026508b1d6c0a785b438b746e8515eb1e83d03c213b972e222b8e",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00193\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major regulatory proposal in Singapore fintech; directly impacts reader's work and sector.\"\n    },\n    {\n      \"id\": \"a00207\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Large data breach is relevant to engineering/cybersecurity, but not directly tied to reader's region or sector.\"\n    },\n    {\n      \"id\": \"a00345\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US politics/tech naming story; not relevant to reader's interests or region.\"\n    },\n    {\n      \"id\": \"a00558\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Deep technical discussion on telemetry visualization; relevant to distributed systems and engineering.\"\n    },\n    {\n      \"id\": \"a00711\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Singapore government activity, but not tech/fintech or directly impactful for reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1158,
+  "completion_tokens": 316
+ }
+}

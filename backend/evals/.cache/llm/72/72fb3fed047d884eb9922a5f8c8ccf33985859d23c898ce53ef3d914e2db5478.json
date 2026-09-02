@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c792e755bee53ca5f6f9fbaa9c7779ce57e4b5182e43c3d18ea6f281be3360e7",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00032\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.95, \"rationale\": \"Ad and influencer fraud unrelated to Singapore or reader interests.\"}, {\"id\": \"a00033\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Local Singapore tech business news, but not relevant to reader's primary interests.\"}, {\"id\": \"a00036\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US wildfire legislation unrelated to Singapore or reader's life.\"}, {\"id\": \"a00041\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US labor union story unrelated to Singapore or reader interests.\"}, {\"id\": \"a00044\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Canadian boycott story unrelated to Singapore or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2921,
+  "completion_tokens": 244
+ }
+}

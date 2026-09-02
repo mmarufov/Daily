@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d6e390ead1399f319f6a400a1fbd307d36d1b80cfc1ce46ab451166b1a958f89",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00879\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"SpaceX launch unrelated to NJ or reader interests.\"}, {\"id\": \"a00881\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NASA telescope launch unrelated to NJ or reader interests.\"}, {\"id\": \"a00885\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"SpaceX Louisiana spaceport unrelated to NJ or reader interests.\"}, {\"id\": \"a00886\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Astronomy article unrelated to NJ or reader interests.\"}, {\"id\": \"a00892\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 1.0, \"rationale\": \"Yankees vs Red Sox, no Giants or Devils relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3328,
+  "completion_tokens": 239
+ }
+}

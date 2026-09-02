@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8c9cfa3dc3f5b67c1b886f5a849a320c673be483e1b6c81b14e5ae7b1d5d7404",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01272\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Significant military strike with potential global impact.\"}, {\"id\": \"a01273\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.85, \"rationale\": \"Political fact check relevant but not urgent or major.\"}, {\"id\": \"a01278\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Important regional political development, but niche.\"}, {\"id\": \"a01280\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"EU accession vote is notable but not urgent worldwide.\"}, {\"id\": \"a01282\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.75, \"rationale\": \"Interesting social activism story, missable for general reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 943,
+  "completion_tokens": 228
+ }
+}

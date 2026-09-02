@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f95b6827bc2a3ab52dfce4bb52108b2a420dd36988253ee9adfc30bff9f40bab",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00042\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI legal issues relevant but not directly about production AI engineering or Singapore.\"}, {\"id\": \"a00043\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Global AI economic risks interesting but not Singapore or fintech regulation focused.\"}, {\"id\": \"a00044\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"US domestic politics and consumer boycott irrelevant to reader interests.\"}, {\"id\": \"a00045\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"US Federal Reserve and inflation unrelated to Singapore fintech or tech interests.\"}, {\"id\": \"a00050\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI adoption lessons relevant but general and US-centric, not Singapore-specific.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1617,
+  "completion_tokens": 269
+ }
+}

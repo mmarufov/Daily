@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a2cab6d6cf12cacb7321e080f48efa84a75c0a3b77342b1f490cda405d84d168",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01330\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"EU pesticide drone policy is background policy, not directly energy or security.\"}, {\"id\": \"a01333\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Far-right election politics in Saxony-Anhalt unrelated to energy or economics.\"}, {\"id\": \"a01335\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.85, \"rationale\": \"Serbia's geopolitical balancing relevant but not primary energy security news.\"}, {\"id\": \"a01345\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"German football gender study unrelated to energy or economics.\"}, {\"id\": \"a01356\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"UEFA and FIFA sports news irrelevant to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1142,
+  "completion_tokens": 246
+ }
+}

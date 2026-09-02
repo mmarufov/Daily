@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d664ddc46f5dcff65bd49b1dce4cbcce25a128057021e976d429a5b7e66091b5",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00815\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting AI use case but not Singapore or SEA specific, no deep technical detail.\"}, {\"id\": \"a00816\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Singapore dominates SEA startup funding; MAS fintech investment relevant to reader's fintech and Singapore interests.\"}, {\"id\": \"a00817\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"ERP market in Singapore relevant but more business than deep tech or AI engineering.\"}, {\"id\": \"a00818\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Deep analysis of SEA startup funding shift centered on Singapore, key for reader's SEA startup interest.\"}, {\"id\": \"a00819\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Corruption legal case in Indonesia unrelated to reader's tech, fintech, or Singapore interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3996,
+  "completion_tokens": 281
+ }
+}

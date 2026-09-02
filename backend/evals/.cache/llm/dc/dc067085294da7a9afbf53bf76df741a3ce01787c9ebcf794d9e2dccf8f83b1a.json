@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "40af73d5ad431a76183ef04f322b5cb1173cdadefbf4b03fbe81bb37ec36daa2",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01271\", \"label\": \"never\", \"tags\": [\"off_topic\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"International flood disaster unrelated to Singapore or reader's interests.\"}, {\"id\": \"a01272\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"UK AI strategy and tech industry news excluded.\"}, {\"id\": \"a01273\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"UK tax and defence spending unrelated to Singapore or reader's concerns.\"}, {\"id\": \"a01281\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"US tech company map naming unrelated to Singapore or reader's interests.\"}, {\"id\": \"a01282\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Honduran court case unrelated to Singapore or reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1416,
+  "completion_tokens": 242
+ }
+}

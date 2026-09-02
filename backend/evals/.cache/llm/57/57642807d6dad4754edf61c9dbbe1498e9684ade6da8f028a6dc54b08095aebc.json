@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e8ec5f4ea761bbcd94feeccb1c8c5bd746dfd861b826ff75c50c5472850fe984",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01257\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Natural disaster in Philippines unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01258\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Iran-US military conflict impacts geopolitical stability and energy security.\"}, {\"id\": \"a01259\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Historical/political event unrelated to energy or economic interests.\"}, {\"id\": \"a01260\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sports news unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01261\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"Relevant geopolitical topic but less directly tied to energy security or primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1105,
+  "completion_tokens": 247
+ }
+}

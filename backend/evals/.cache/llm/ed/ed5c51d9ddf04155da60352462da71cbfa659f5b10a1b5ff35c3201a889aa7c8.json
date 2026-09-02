@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1365d4174baf2587e29c5b2d5da0c53e0b6c77c9536b34df6e32a49c4021dd0c",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00025\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Driverless cars unrelated to energy markets or geopolitical developments.\"}, {\"id\": \"a00026\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Car sales and supply unrelated to energy security or markets.\"}, {\"id\": \"a00027\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.8, \"rationale\": \"Economic growth and Fed policy relevant but not primary focus.\"}, {\"id\": \"a00028\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"economic_policies\", \"oil_and_gas_prices\"], \"confidence\": 0.95, \"rationale\": \"US oil refining capacity and gas prices directly impact energy markets and security.\"}, {\"id\": \"a00029\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Student housing investment unrelated to energy or geopolitical interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1120,
+  "completion_tokens": 261
+ }
+}

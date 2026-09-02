@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "90141e8e114db4df31e3d0b5e12f4440463a81355d2fa8902c0b97e8b6ab0740",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00005\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Political news with some general interest but not a major event.\"}, {\"id\": \"a00006\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Escalating U.S.-Iran hostilities are globally important news.\"}, {\"id\": \"a00009\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Interesting policy topic but niche and not urgent.\"}, {\"id\": \"a00011\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Market analysis is routine financial news, missable for general reader.\"}, {\"id\": \"a00020\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.75, \"rationale\": \"Economic news about Iran is relevant but not urgent or major.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 932,
+  "completion_tokens": 233
+ }
+}

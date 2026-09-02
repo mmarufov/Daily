@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5fabcf2f4af2329e8056cdc426132bc446d70a3fef7593a1c5f7fab95fe6f137",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00209\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Critical tech security breach affecting software updates relevant to tech interest.\"}, {\"id\": \"a00219\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"New hacking tactics on Cisco routers impact tech security and consumer safety.\"}, {\"id\": \"a00221\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Celebrity-focused film review, off-topic and excluded content.\"}, {\"id\": \"a00241\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Celebrity and entertainment film review, excluded topic.\"}, {\"id\": \"a00243\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Celebrity profile unrelated to reader's interests or needs.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1535,
+  "completion_tokens": 263
+ }
+}

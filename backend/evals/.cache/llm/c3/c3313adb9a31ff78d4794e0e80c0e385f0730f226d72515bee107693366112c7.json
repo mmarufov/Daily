@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cc9ad6f5e73ee30e87c6a9c203c18f4c53985b2b56046d599010315ae4ad06ee",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01130\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to Singapore, parenting, healthcare, or local government.\"}, {\"id\": \"a01131\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech industry news about Firefox ad blocking, irrelevant to reader interests.\"}, {\"id\": \"a01135\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cloud service news unrelated to reader's local or parenting concerns.\"}, {\"id\": \"a01137\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"healthcare\"], \"confidence\": 0.7, \"rationale\": \"Healthcare data breach relevant to health interest but not local or urgent.\"}, {\"id\": \"a01142\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"public services\"], \"confidence\": 0.6, \"rationale\": \"Public transport tech issue mildly relevant to local public services interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3375,
+  "completion_tokens": 252
+ }
+}

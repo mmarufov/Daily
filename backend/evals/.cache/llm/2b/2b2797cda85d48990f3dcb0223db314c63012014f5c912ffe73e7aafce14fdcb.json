@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b3f0715ed92ab2711e206d1d73e6369f38707ba758ae2ffb6c20247d1322dd45",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00448\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US immigration law and New Jersey politics are irrelevant to Maya's interests.\"\n    },\n    {\n      \"id\": \"a00449\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey news roundup is not relevant to Maya's UK/world/tech/science focus.\"\n    },\n    {\n      \"id\": \"a00452\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Another New Jersey news roundup; not relevant to Maya's interests.\"\n    },\n    {\n      \"id\": \"a00466\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US transit and World Cup coverage are off-topic and sports-related, which Maya avoids.\"\n    },\n    {\n      \"id\": \"a00491\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Brooklyn legal dispute is not relevant to Maya's UK/world/tech/science/consumer focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1143,
+  "completion_tokens": 329
+ }
+}

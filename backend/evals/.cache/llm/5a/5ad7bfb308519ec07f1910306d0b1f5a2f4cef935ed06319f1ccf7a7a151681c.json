@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3bc2c9f87d79c868a26273c51ff8b580967bdb6a61c03142ae5fd99149e0226b",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00028\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly relevant to oil prices, OPEC, and energy markets; US policy impacts global energy security.\"\n    },\n    {\n      \"id\": \"a00030\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Touches on Iran, Strait of Hormuz, and energy prices, but focus is on tinned fish market, not core interest.\"\n    },\n    {\n      \"id\": \"a00045\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"US Fed policy is relevant to economic stability, but not a primary focus; indirect impact on energy markets.\"\n    },\n    {\n      \"id\": \"a00048\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Unrelated to energy, economics, or geopolitical developments; about teaching jobs abroad.\"\n    },\n    {\n      \"id\": \"a00052\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.98,\n      \"rationale\": \"Critical update on European energy security and gas storage; directly impacts analyst's core focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1942,
+  "completion_tokens": 335
+ }
+}

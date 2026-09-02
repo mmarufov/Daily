@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c1242f78d8418b2a3349d0bf34d2c63495a86a8e393477ac839b8c0aac3c641c",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00022\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto policy is excluded and irrelevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00057\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"General money/retirement advice is plausibly interesting but not must_see or directly relevant.\"\n    },\n    {\n      \"id\": \"a00163\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Foreign migration law in Uzbekistan is irrelevant to reader's local focus.\"\n    },\n    {\n      \"id\": \"a00185\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto/Robinhood news is excluded and not relevant to reader.\"\n    },\n    {\n      \"id\": \"a00190\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"UK crypto crime is off-topic and not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1552,
+  "completion_tokens": 301
+ }
+}

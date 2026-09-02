@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c38c51e0af10bb91307cc69eb7d01e974aceaafb2e4c3860a944738f998fda51",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00984\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article about Flyers prospects, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00985\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Winnipeg Jets and player dispute, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00986\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Anaheim Ducks jersey retirement, unrelated to NJ or reader interests.\"}, {\"id\": \"a00987\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"San Jose Sharks rookie roster, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00988\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Controversy about former Jets player, no NJ or Devils/Giants/NJ Transit relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3388,
+  "completion_tokens": 267
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ba002056665d7698bad91e22b11ca482b90f1d67bfd9e5a577116bbfbd12ea5e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01090\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major tech development with security implications; highly relevant to tech/science and staying informed.\"\n    },\n    {\n      \"id\": \"a01103\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pure promotional content; not news or analysis, does not inform or impact user.\"\n    },\n    {\n      \"id\": \"a01115\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Shopping deals and sales; not news, not relevant to user's interests or utility priorities.\"\n    },\n    {\n      \"id\": \"a01121\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Tech security issue with broad implications; relevant but not urgent for daily life.\"\n    },\n    {\n      \"id\": \"a01127\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major international cybercrime disruption; important tech/science news with consumer impact.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1521,
+  "completion_tokens": 307
+ }
+}

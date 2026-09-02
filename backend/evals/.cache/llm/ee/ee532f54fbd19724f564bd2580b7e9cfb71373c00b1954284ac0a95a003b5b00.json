@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1e435bb7d57fb2e9f522fc2a9e9d9a8bf27e3b45f1d72bb62081cb59ebad9a48",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00846\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"SpaceX rocket test unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00848\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article about NASA astronomer, unrelated to reader's interests.\"}, {\"id\": \"a00849\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"SpaceX launch of telescope unrelated to reader's sports or solar interests.\"}, {\"id\": \"a00853\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"TV show interview unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00861\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Astronomy research unrelated to reader's sports or solar energy interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3807,
+  "completion_tokens": 247
+ }
+}

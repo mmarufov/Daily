@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4e462d25f7104df9bad71f8c9ba0ac4f1d5ec987ad4757e0520cd4534c2b2261",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00429\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Tornado warnings affect safety in NJ, urgent for Newark resident.\"}, {\"id\": \"a00437\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Family reaction to Charlie Kirk unrelated to NJ local interests.\"}, {\"id\": \"a00451\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.7, \"rationale\": \"NJ House candidates skipping debates is political but routine.\"}, {\"id\": \"a00452\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Local Newark teacher's concerns about ICE near schools affect family safety.\"}, {\"id\": \"a00453\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.6, \"rationale\": \"General NJ news summary, relevant but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1184,
+  "completion_tokens": 262
+ }
+}

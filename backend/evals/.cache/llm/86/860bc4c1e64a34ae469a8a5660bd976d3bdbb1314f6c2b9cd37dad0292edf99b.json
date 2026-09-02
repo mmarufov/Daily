@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "89280f2e83fc05b9f70bf591d61a938f6b2e391832c7523ff904649afa35803d",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01223\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Interesting geopolitical news but not a major event for all adults.\"}, {\"id\": \"a01225\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Important international diplomacy story, but not a must-see today.\"}, {\"id\": \"a01230\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Entertainment/sports niche, not general news for all adults.\"}, {\"id\": \"a01234\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Environmental issue of interest but not a must-see major event.\"}, {\"id\": \"a01237\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Severe natural disaster with humanitarian impact, important for all adults.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 942,
+  "completion_tokens": 233
+ }
+}

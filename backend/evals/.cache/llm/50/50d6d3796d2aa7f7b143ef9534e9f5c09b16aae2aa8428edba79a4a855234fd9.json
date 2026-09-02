@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a4b5f092622a7da0b446a54c127bc0ef1d8521908ebb596e194373ba693bb833",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00544\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major environmental trend, but not a global must_see; solid general news.\"\n    },\n    {\n      \"id\": \"a00571\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Significant incident, but not a major global event; general news interest.\"\n    },\n    {\n      \"id\": \"a00576\",\n      \"label\": \"fine\",\n      \"tags\": [\"followup\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Industrial accident with rising death toll; notable but not must_see globally.\"\n    },\n    {\n      \"id\": \"a00581\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Economic trend in Russia; relevant but not a global must_see.\"\n    },\n    {\n      \"id\": \"a00585\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Industrial accident; important but not a must_see for all readers.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 939,
+  "completion_tokens": 286
+ }
+}

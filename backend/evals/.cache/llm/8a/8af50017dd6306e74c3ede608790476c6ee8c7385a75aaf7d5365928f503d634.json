@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "847291679ca9e7bb1aebfce750632d21f8a0e1bec3da97f5d50e4b66be5e405d",
+  "preview": "READER PROFILE:\nREADER: New mother on maternity leave, managing asthma, living in a rented HDB flat.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Ministry of Health  (entity)\n  [PRIMARY] local government  (ent"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 75,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"childcare\",\n      \"kind\": \"direct\",\n      \"why\": \"Study on pre-K benefits for children's education.\"\n    },\n    {\n      \"id\": 76,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 77,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 78,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 79,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 80,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 81,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 82,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 83,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"cost of living\",\n      \"kind\": \"contextual\",\n      \"why\": \"Addresses demographic challenges affecting Singapore.\"\n    },\n    {\n      \"id\": 84,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 85,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"childcare\",\n      \"kind\": \"contextual\",\n      \"why\": \"Concerns about child safety in community settings.\"\n    },\n    {\n      \"id\": 86,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 87,\n      \"keep\": true,\n      \"score\": 0.9,\n      \"matched\": \"public transport changes\",\n      \"kind\": \"direct\",\n      \"why\": \"New flats with shorter waiting times are relevant.\"\n    },\n    {\n      \"id\": 88,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 89,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"public transport changes\",\n      \"kind\": \"direct\",\n      \"why\": \"New BTO flats with shorter waiting times.\"\n    },\n    {\n      \"id\": 90,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 91,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 92,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 93,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 94,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 95,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 96,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    },\n    {\n      \"id\": 97,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Unrelated to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1752,
+  "completion_tokens": 1206
+ }
+}

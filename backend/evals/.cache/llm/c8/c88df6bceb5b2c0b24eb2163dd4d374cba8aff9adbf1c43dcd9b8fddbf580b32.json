@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d3365d7fd8ada0f808eaa7d1c9694791f8916c44d4fd105e1bbf1c8f19b6788c",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00696\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting science but no direct consumer or UK impact.\"}, {\"id\": \"a00697\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Scientific discovery with no direct UK or consumer impact.\"}, {\"id\": \"a00706\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\", \"world_news\"], \"confidence\": 0.95, \"rationale\": \"Major disaster with global humanitarian impact.\"}, {\"id\": \"a00717\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Gaming event unrelated to reader interests.\"}, {\"id\": \"a00727\", \"label\": \"fine\", \"tags\": [\"need_to_know\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Health advisory relevant but outside UK and limited consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1152,
+  "completion_tokens": 256
+ }
+}

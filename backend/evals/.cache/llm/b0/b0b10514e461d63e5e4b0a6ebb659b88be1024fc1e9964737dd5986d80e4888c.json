@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d1263c5ea378de2c92445216c85a9af69112586540c8ba9a67c59d6140687ba2",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00439\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"State-level child protection ruling is relevant for a NJ parent, but not urgent or directly actionable.\"\n    },\n    {\n      \"id\": \"a00441\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Eagles news is irrelevant; reader follows Giants and Devils, not Eagles.\"\n    },\n    {\n      \"id\": \"a00479\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"NJ man, Penn Station: tangentially relevant for a NJ Transit commuter, but not essential.\"\n    },\n    {\n      \"id\": \"a00482\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Brooklyn crash unrelated to NJ, Newark, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00487\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"NYC weather may affect some commutes, but not directly about NJ or NJ Transit.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1144,
+  "completion_tokens": 309
+ }
+}

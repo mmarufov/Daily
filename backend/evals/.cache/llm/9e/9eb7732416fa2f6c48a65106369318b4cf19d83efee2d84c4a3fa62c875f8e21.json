@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a47d6ab6ca0b4d3e18753b420d9bb6458980fd13fb0914b068a3db173aee9925",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00414\", \"label\": \"never\", \"tags\": [\"promo\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Sports betting promo, user excludes gambling and betting content.\"}, {\"id\": \"a00418\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.9, \"rationale\": \"Product promotion unrelated to user's interests.\"}, {\"id\": \"a00426\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Energy topic relevant but not solar-specific or urgent.\"}, {\"id\": \"a00429\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"College football campaign unrelated to user's interests.\"}, {\"id\": \"a00430\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Legal case unrelated to user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1093,
+  "completion_tokens": 226
+ }
+}

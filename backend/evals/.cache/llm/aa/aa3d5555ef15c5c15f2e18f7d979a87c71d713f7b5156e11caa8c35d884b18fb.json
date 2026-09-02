@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9a4a2860cbd21c04e10dd8fa8257aeecd5ad66e5b025b715ba784fd5c55cb46c",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01216\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US-Venezuela oil deal unrelated to Central Asia or reader's trade interests.\"}, {\"id\": \"a01217\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US-Venezuela oil stake controversy unrelated to Central Asia or reader's trade interests.\"}, {\"id\": \"a01219\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Nepal-Tibet floods unrelated to Central Asia or reader's business context.\"}, {\"id\": \"a01220\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Nepal flood missing persons unrelated to reader's interests or region.\"}, {\"id\": \"a01221\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US aircraft carrier visit to Thailand unrelated to Central Asia or trade.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1799,
+  "completion_tokens": 253
+ }
+}

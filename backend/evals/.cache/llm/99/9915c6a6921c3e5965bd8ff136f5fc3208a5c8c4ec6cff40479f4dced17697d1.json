@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8f96ec594a1fb6da0910bd98a25e3a8bb967cffbd8655f60a7688abeac47d647",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01028\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Biotech/AI in medicine is on-topic for tech/science, but not urgent or directly impactful today.\"\n    },\n    {\n      \"id\": \"a01031\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI hardware advances are relevant to tech interest, but not must_see without direct consumer impact.\"\n    },\n    {\n      \"id\": \"a01034\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"business\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"AI chip financing is tech/business news, but not essential for daily awareness or consumer impact.\"\n    },\n    {\n      \"id\": \"a01035\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Self-improving AI is notable for tech/science, but not a must_see event or urgent update.\"\n    },\n    {\n      \"id\": \"a01036\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"consumer impact\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Browser privacy feature is relevant to tech/consumer, but not urgent or life-changing today.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1134,
+  "completion_tokens": 357
+ }
+}

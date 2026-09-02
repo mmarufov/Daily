@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "674c5f3c2e69e728416933cae86969d5dda5cb87703e26ba9ccac70e95c0fbd7",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00721\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Public transport changes affect daily life and mobility for a new mother.\"}, {\"id\": \"a00722\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local dining change interesting but not critical for daily life or parenting.\"}, {\"id\": \"a00723\", \"label\": \"fine\", \"tags\": [\"local_news\"], \"confidence\": 0.6, \"rationale\": \"Serious local incident but no direct impact on reader's life or interests.\"}, {\"id\": \"a00726\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.5, \"rationale\": \"Political visit with no immediate impact on reader's life or interests.\"}, {\"id\": \"a00727\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"healthcare_advisory\"], \"confidence\": 0.95, \"rationale\": \"Influenza rise and vaccine advice directly relevant to health and family safety.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1124,
+  "completion_tokens": 264
+ }
+}

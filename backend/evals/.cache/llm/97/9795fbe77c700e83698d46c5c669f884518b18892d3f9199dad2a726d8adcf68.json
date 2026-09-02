@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "028595fa56d2df5f48634bbdca7a984bf1fd5f29a440be49a2327598ef584bb4",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00999\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Colorado Avalanche, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a01001\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Vegas Golden Knights NHL contracts, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a01002\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Toronto Maple Leafs player, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a01003\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Columbus Blue Jackets history, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a01004\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Pittsburgh Penguins future roster, no NJ or Devils/Giants/NJ Transit relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4175,
+  "completion_tokens": 269
+ }
+}

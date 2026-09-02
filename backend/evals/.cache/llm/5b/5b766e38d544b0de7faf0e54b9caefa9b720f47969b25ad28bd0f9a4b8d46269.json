@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "54b536e144877abad9e204144c460b6406b8bfff6f9c7e67f73c1d149f161644",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00551\", \"label\": \"fine\", \"tags\": [\"cloud infrastructure\", \"distributed systems\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Relevant to cloud infrastructure and distributed systems but routine update.\"}, {\"id\": \"a00552\", \"label\": \"fine\", \"tags\": [\"software engineering\", \"distributed systems\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting architecture evolution but not directly Singapore or fintech.\"}, {\"id\": \"a00554\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Meta's custom silicon relevant to AI engineering but not regional or fintech.\"}, {\"id\": \"a00556\", \"label\": \"fine\", \"tags\": [\"developer tools\", \"software engineering\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Spring ecosystem updates relevant to developer tools but routine.\"}, {\"id\": \"a00557\", \"label\": \"must_see\", \"tags\": [\"AI engineering\", \"databases\", \"cloud infrastructure\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"AI-powered DB agents from Google Cloud impact production engineering directly.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1328,
+  "completion_tokens": 288
+ }
+}

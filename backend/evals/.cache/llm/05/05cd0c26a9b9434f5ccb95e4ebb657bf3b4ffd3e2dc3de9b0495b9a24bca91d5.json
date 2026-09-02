@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ea2c3f7e6605c0ab2ae795bb901f10e9365c6fdd6d31538d90febfe29e558850",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00445\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"High school girls soccer in New Jersey unrelated to reader's interests.\"}, {\"id\": \"a00453\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"General New Jersey news irrelevant to reader's sports and solar focus.\"}, {\"id\": \"a00456\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"General New Jersey news irrelevant to reader's sports and solar focus.\"}, {\"id\": \"a00459\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"General New Jersey news irrelevant to reader's sports and solar focus.\"}, {\"id\": \"a00466\", \"label\": \"fine\", \"tags\": [\"secondary\", \"solar energy\", \"environmental impact\"], \"confidence\": 0.8, \"rationale\": \"Solar panel policy relevant to solar industry work, but in New Jersey, not Toronto.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1166,
+  "completion_tokens": 256
+ }
+}

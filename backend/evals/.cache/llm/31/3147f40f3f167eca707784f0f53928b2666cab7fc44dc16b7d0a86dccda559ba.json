@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5d2ce2e2772768ec31a6c56dfff400ef9088987be9bf0457e4e072782742d6c4",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00191\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Crypto investment in Southeast Asia unrelated to Central Asia trade or sanctions.\"}, {\"id\": \"a00192\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Bitcoin and stock market news irrelevant to reader's trade and regional interests.\"}, {\"id\": \"a00196\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Stablecoin payments in South Korea unrelated to Central Asian trade or sanctions.\"}, {\"id\": \"a00198\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Bitcoin price movements irrelevant to reader's business and regional focus.\"}, {\"id\": \"a00200\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Airport data breach may affect travel security, relevant to reader's travel utility priority.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1192,
+  "completion_tokens": 250
+ }
+}

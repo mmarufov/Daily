@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "518a2c82d5f3c049fb6b8d3492285b8e9455b6636f2ed4a16f6744066bfa96e8",
+  "preview": "User Profile:\nFree-form profile:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses UK government policies and is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers an incident in England and does not relate to New Jersey or the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article reports on a flash flood in Arizona, which is not relevant to the user's local interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a Korean film studio and does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article also discusses a flash flood in the Grand Canyon, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about Trump's comments regarding a media host and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Singapore's demographic challenges and is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a cultural event in London and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the SEC's legal actions and is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses Iran's economic issues and is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Philadelphia Eagles and does not relate to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article provides rankings for New Jersey football teams but lacks major news relevance for the user.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses US military actions in Iran and is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article reports on a flash flood in the Grand Canyon, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Eagles' roster decisions and does not relate to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Eagles' roster decisions and does not relate to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses the Eagles' roster decisions and does not relate to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a celebrity's comments and is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a celebrity's comments and is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a celebrity's comments and is unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2016,
+  "completion_tokens": 630
+ }
+}

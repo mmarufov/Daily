@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "69aaf15d3c6f3430fdf6a9bbec11600afcc59f8b23b6a44a7f629185ce2532f4",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00654\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.9, \"rationale\": \"Interesting science and tech but no direct consumer impact or urgent news.\"}, {\"id\": \"a00655\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\", \"consumer impact\"], \"confidence\": 0.85, \"rationale\": \"Sustainable tech with potential consumer and environmental benefits, but routine.\"}, {\"id\": \"a00656\", \"label\": \"fine\", \"tags\": [\"science\", \"health\"], \"confidence\": 0.8, \"rationale\": \"Health science relevant but no immediate consumer or UK impact.\"}, {\"id\": \"a00657\", \"label\": \"must_see\", \"tags\": [\"science\", \"UK news\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"UK plant-based food safety with potential consumer health implications.\"}, {\"id\": \"a00658\", \"label\": \"fine\", \"tags\": [\"science\", \"health\"], \"confidence\": 0.75, \"rationale\": \"Scientific finding on vape flavoring, relevant but less urgent for consumer.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1171,
+  "completion_tokens": 268
+ }
+}

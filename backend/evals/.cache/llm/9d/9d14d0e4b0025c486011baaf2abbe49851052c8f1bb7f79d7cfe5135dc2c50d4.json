@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fc57bdcd7a138c99dd1224bd59893da6bab680f2f8a7b9ad37e621759d375289",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00893\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports legal dispute, general interest but not major news for all adults.\"}, {\"id\": \"a00894\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports roster update, routine sports news.\"}, {\"id\": \"a00895\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Little League sports result, niche but general sports interest.\"}, {\"id\": \"a00896\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Fantasy sports predictions, promotional and niche content.\"}, {\"id\": \"a00897\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Golf tournament recap, routine sports coverage.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 944,
+  "completion_tokens": 232
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2d8c9658fb3e3329100786bf88bb373a51fb4bc97b324fca599f1e47bdf38eae",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00001\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"US-Iran military clash and oil market impact are major global news for any informed adult.\"\n    },\n    {\n      \"id\": \"a00003\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Large business deal; notable but not essential for general audience.\"\n    },\n    {\n      \"id\": \"a00006\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Escalating US-Iran hostilities are major international news.\"\n    },\n    {\n      \"id\": \"a00033\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Iran's economic crisis and US pressure have global implications; major event coverage.\"\n    },\n    {\n      \"id\": \"a00034\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"US-Iran military action in Strait of Hormuz is a major global event affecting oil and security.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2003,
+  "completion_tokens": 324
+ }
+}

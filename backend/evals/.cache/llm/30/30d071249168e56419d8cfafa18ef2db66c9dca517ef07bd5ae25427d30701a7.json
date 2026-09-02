@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ce2ad73ddfa15b60a85648191c3508f7fd8928bbc821e8c670175d218e9f1986",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01291\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Central Asia politics\"], \"confidence\": 0.8, \"rationale\": \"Modi visit to Uzbekistan relevant to Central Asia politics but not directly about trade or sanctions.\"}, {\"id\": \"a01293\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"Russia relations\"], \"confidence\": 0.7, \"rationale\": \"Serbia election affects Russia relations but not directly impacting Tajikistan trade or sanctions.\"}, {\"id\": \"a01306\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Russia economy\"], \"confidence\": 0.7, \"rationale\": \"Russian economic pressure relevant background but no direct trade or sanctions update.\"}, {\"id\": \"a01315\", \"label\": \"never\", \"tags\": [\"off_topic\", \"gaming\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Gaming industry news is off-topic and excluded.\"}, {\"id\": \"a01318\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"trade routes\", \"commodities\"], \"confidence\": 0.9, \"rationale\": \"Disruption of Russian Black Sea ports affects regional grain exports and trade routes.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1270,
+  "completion_tokens": 297
+ }
+}

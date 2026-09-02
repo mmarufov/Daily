@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1c7fa8cae68d2ab87faf04deeb6e6a797bf8aaa141312f97c0a91ea9f08c2764",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00756\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Business leadership change is routine; not directly relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00760\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"AI in accounting is tech-related but focused on Singapore; tangentially relevant to tech/marketing interests.\"\n    },\n    {\n      \"id\": \"a00766\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Article is about Singapore tourism branding; not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00779\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Generic daily summary from Singapore; not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00788\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"China tax reform's impact on tech/venture capital is relevant to tech/business interests, but not must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1519,
+  "completion_tokens": 318
+ }
+}

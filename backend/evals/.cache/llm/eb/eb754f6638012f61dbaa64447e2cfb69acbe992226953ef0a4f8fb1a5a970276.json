@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2a63b3ad8cc0097696a3cf629959cd0edb8855ccc6d3f6021e124be7ff3542fd",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01040\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.8, \"rationale\": \"Tech funding news relevant to technology interest but not urgent.\"}, {\"id\": \"a01041\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"Political map rename unrelated to tech, science, or UK consumer impact.\"}, {\"id\": \"a01042\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer impact\"], \"confidence\": 0.7, \"rationale\": \"Tech product review useful but routine, not urgent or major.\"}, {\"id\": \"a01043\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.7, \"rationale\": \"Wearable tech innovation relevant but not urgent or major news.\"}, {\"id\": \"a01044\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Label makers are niche and not aligned with primary or secondary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1045,
+  "completion_tokens": 253
+ }
+}

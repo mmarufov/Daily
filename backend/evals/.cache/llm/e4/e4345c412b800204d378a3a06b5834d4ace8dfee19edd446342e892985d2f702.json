@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1c22de5ee1d2e0ff947ac762b4b9ab4a632bb90efc54621b71395fdf185041f1",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00402\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Routine sports roster moves, not major news for general audience.\"}, {\"id\": \"a00403\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Sports roster announcement, general interest but missable.\"}, {\"id\": \"a00404\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Entertainment gossip, narrow niche, not general news.\"}, {\"id\": \"a00405\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Multiple deaths in local boating accidents, important safety news.\"}, {\"id\": \"a00406\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Human interest story, not critical news for general audience.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 904,
+  "completion_tokens": 240
+ }
+}

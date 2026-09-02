@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d253f594bbe1e9e09ae6c27f39529e9ed30c66946d480ffab29fd484a5be7a19",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00481\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Event announcement, general interest but missable.\"}, {\"id\": \"a00482\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Local tragedy, important but not major event for general reader.\"}, {\"id\": \"a00484\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Local tax increase, relevant but not major for general audience.\"}, {\"id\": \"a00498\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Developing trade war affects economy and prices broadly.\"}, {\"id\": \"a00504\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Legal and social issue in NJ, important but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1938,
+  "completion_tokens": 235
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "69022f88182986e1d7055f14dccc187297a2dc973f0c9c45632cd4f24ce104ee",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01302\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Not a major global event but notable political news.\"}, {\"id\": \"a01303\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Significant international conflict escalation with global implications.\"}, {\"id\": \"a01305\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"State-level accusation of attack affecting international security.\"}, {\"id\": \"a01317\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Important regional security news but less urgent globally.\"}, {\"id\": \"a01331\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Ongoing regional dispute, relevant but not urgent worldwide.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 978,
+  "completion_tokens": 222
+ }
+}

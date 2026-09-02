@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "81b9b623e0c6179cd5c2bb90cd880155459134d854c76e8a209e2fae8806f7d3",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00109\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"World news, geopolitics; relevant for staying informed but not primary or urgent for this reader.\"\n    },\n    {\n      \"id\": \"a00197\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major tech/business news in London with consumer/market impact; highly relevant to reader's work and interests.\"\n    },\n    {\n      \"id\": \"a00209\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major tech security incident; relevant to tech interest and consumer impact, important for staying informed.\"\n    },\n    {\n      \"id\": \"a00219\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Cybersecurity/science/tech angle; interesting but not urgent unless reader works in network security.\"\n    },\n    {\n      \"id\": \"a00221\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity/entertainment review; explicitly excluded by reader's preferences.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1098,
+  "completion_tokens": 334
+ }
+}

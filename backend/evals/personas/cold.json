@@ -1,0 +1,80 @@
+{
+ "key": "cold",
+ "name": "Cold start — no preferences",
+ "axis": "cold start; a reader who gave nothing must still get a plausible feed",
+ "transcript": [
+  {
+   "role": "assistant",
+   "content": "Hi! Tell me what kind of news you want to see."
+  },
+  {
+   "role": "user",
+   "content": "just show me the news"
+  },
+  {
+   "role": "assistant",
+   "content": "Any topics, places or people you care about?"
+  },
+  {
+   "role": "user",
+   "content": "no, whatever is important"
+  }
+ ],
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "User prefers a general news feed without specific interests or preferences.",
+  "interests": {
+   "topics": [],
+   "people": [],
+   "locations": [],
+   "industries": [],
+   "excluded_topics": [],
+   "notes": "User is open to any important news."
+  },
+  "user_profile_v2": {
+   "stable_interests": [],
+   "current_interests": [],
+   "people": [],
+   "locations": [],
+   "industries": [],
+   "excluded_topics": [],
+   "expanded_exclusions": [],
+   "utility_priorities": [],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "neutral"
+   ],
+   "life_context": "User is open to any important news.",
+   "source_selection_brief": {
+    "priority_topics": [],
+    "must_cover_entities": [],
+    "must_avoid_topics": [],
+    "preferred_source_types": [
+     "breadth",
+     "publisher"
+    ],
+    "coverage_targets": [],
+    "specificity_level": "broad"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [],
+   "must_cover_entities": [],
+   "must_avoid_topics": [],
+   "preferred_source_types": [
+    "breadth",
+    "publisher"
+   ],
+   "coverage_targets": [],
+   "specificity_level": "broad"
+  }
+ },
+ "expect": {
+  "has_preferences": false
+ },
+ "built_with": {
+  "model": "gpt-4o-mini",
+  "cache_key": "4cc80d055f6049e4314fa28dd0805eda64f426ee0d4abe5f04d0b9678cbdcfc7",
+  "date": "2026-09-01"
+ }
+}

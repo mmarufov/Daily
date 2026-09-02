@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7843e4e77aa5978932643c051033c3c16ce6c318d277c9ff3dbb62ba5ff1b6a1",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00790\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Tech and ethics focus; relevant to primary interests but not urgent or life-impacting.\"\n    },\n    {\n      \"id\": \"a00828\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Marketing/tech in Asia; relevant to work/interest but not essential or UK/London-specific.\"\n    },\n    {\n      \"id\": \"a00833\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Business/tech/finance topic; interesting for staying informed, but not must_see for UK/London reader.\"\n    },\n    {\n      \"id\": \"a00856\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Major science/tech event; relevant to primary interests but not essential for daily life.\"\n    },\n    {\n      \"id\": \"a00881\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Science/tech backgrounder; interesting but not urgent or must_see for this reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3839,
+  "completion_tokens": 326
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "93feb981bfba6b292bb646ebfd283bafd354fe2aaf5b44e421760cc2ade22547",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01239\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Rugby stunt unrelated to energy, geopolitics, or economic security.\"}, {\"id\": \"a01243\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Theft of necklace unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01244\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"Trade war tensions relevant to economics but not primary energy focus.\"}, {\"id\": \"a01245\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Navigation app ranking unrelated to energy or geopolitics.\"}, {\"id\": \"a01246\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical developments\"], \"confidence\": 0.7, \"rationale\": \"US meddling in Brazil election relevant geopolitics but not primary energy or Europe.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1613,
+  "completion_tokens": 260
+ }
+}

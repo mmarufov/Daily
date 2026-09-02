@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "614b75d10010bf9654f1c8c04649a35ed41ad7ee8ecdaf2c3540c0da54420747",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00847\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Security and supply chain resilience relevant but not primary AI or company news.\"}, {\"id\": \"a00849\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Fintech compliance story interesting but not about AI or primary interests.\"}, {\"id\": \"a00851\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"AI-driven microfinance product impacts AI industry and financial product innovation.\"}, {\"id\": \"a00852\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Insight on AI adoption challenges in SEA relevant to AI industry and product development.\"}, {\"id\": \"a00853\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI safety monitoring in Singapore warehouses is interesting but secondary geography and topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3830,
+  "completion_tokens": 259
+ }
+}

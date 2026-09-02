@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "51703be8a2996c9a7523ce13ce73d5634cbb8a75d79b36f322a13f7bea6e8407",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00632\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to European security context, but not directly about energy or a primary interest.\"\n    },\n    {\n      \"id\": \"a00686\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Health study unrelated to energy, economics, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00696\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"General news updates with no clear relevance to reader's interests.\"\n    },\n    {\n      \"id\": \"a00747\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore money laundering case is not relevant to energy or economic security.\"\n    },\n    {\n      \"id\": \"a00778\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"US sanctions on Iran are directly relevant to energy security and a primary interest.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1635,
+  "completion_tokens": 297
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ef6754081c276066436c98517ca3bf86a8d2c2c09ed14cd9393d4f1e7bd4e740",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00948\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"MMA and UFC unrelated to reader's interests.\"}, {\"id\": \"a00951\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"NHL draft prospects are secondary interest, missable.\"}, {\"id\": \"a00952\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 1.0, \"rationale\": \"Devils acquiring a player is primary interest and real news.\"}, {\"id\": \"a00953\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Anaheim Ducks ceremony unrelated to reader's interests.\"}, {\"id\": \"a00954\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Colorado Avalanche player contract unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1148,
+  "completion_tokens": 234
+ }
+}

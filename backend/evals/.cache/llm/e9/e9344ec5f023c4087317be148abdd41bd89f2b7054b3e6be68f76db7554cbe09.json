@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e10274cb5060f83daf2d2275cbb8cce41d90d2b84dfb7212adf76b39735a56d0",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01258\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major escalation in Iran situation; direct impact on energy security and geopolitical risk.\"\n    },\n    {\n      \"id\": \"a01272\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\", \"followup\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Directly about Iran, Strait of Hormuz; critical for energy security analysis and ongoing crisis.\"\n    },\n    {\n      \"id\": \"a01322\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Relevant to Iran situation and energy markets, but not urgent or breaking; background context.\"\n    },\n    {\n      \"id\": \"a01327\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Economic/health impact in Iran is contextually relevant, but not central to reader's primary focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1034,
+  "completion_tokens": 271
+ }
+}

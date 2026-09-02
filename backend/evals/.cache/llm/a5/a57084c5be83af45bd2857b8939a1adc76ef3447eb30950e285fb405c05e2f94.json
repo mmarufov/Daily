@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e339a2614ca22e28893d080ac1f9cf5f3f3dad205a6ece0b46f66162e1cf3ea0",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00496\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to AI or reader's interests.\"}, {\"id\": \"a00502\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Energy legislation relevant to AI data centers but not primary interest.\"}, {\"id\": \"a00504\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Medical licensing unrelated to AI or reader's interests.\"}, {\"id\": \"a00512\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Job market news relevant to utility but not AI-specific.\"}, {\"id\": \"a00514\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Data center regulation impacts AI infrastructure and energy use.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3054,
+  "completion_tokens": 240
+ }
+}

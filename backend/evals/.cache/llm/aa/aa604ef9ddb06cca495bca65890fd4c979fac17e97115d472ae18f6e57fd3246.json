@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7c7e2cd74e0c66889075c4ad0d3330fc23436ff99bae404d96b7486040c20a61",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00766\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Movie screening unrelated to tech, fintech, or Singapore news.\"}, {\"id\": \"a00767\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Retail defamation suit irrelevant to reader's tech and fintech interests.\"}, {\"id\": \"a00768\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Singapore\", \"AI engineering\"], \"confidence\": 0.8, \"rationale\": \"Minister's AI and market priorities are relevant but high-level and general.\"}, {\"id\": \"a00769\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Money laundering case unrelated to fintech regulation or tech.\"}, {\"id\": \"a00770\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"MAS\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"MAS survey on growth and inflation is relevant but routine economic news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1144,
+  "completion_tokens": 256
+ }
+}

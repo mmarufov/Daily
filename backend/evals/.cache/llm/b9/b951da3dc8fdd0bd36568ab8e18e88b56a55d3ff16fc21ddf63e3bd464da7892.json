@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "2b18e62e53f36975dfc648b5f4565c8c9f6da1d6d0a1aa4154fc66a08a2bd222",
+  "preview": "READER PROFILE:\nREADER: User works in the solar industry and values climate-related news.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Leylah Fernandez  (entity)\n  [PRIMARY] Bianca Andreescu  (entity)\n  [PRIMA"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\"id\": 25, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 26, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 27, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 28, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 29, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 30, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 31, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 32, \"keep\": true, \"score\": 1.0, \"matched\": \"solar energy\", \"kind\": \"direct\", \"why\": \"Directly related to solar energy interest.\"},\n    {\"id\": 33, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 34, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 35, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 36, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 37, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 38, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 39, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 40, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 41, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 42, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 43, \"keep\": true, \"score\": 1.0, \"matched\": \"clean energy\", \"kind\": \"direct\", \"why\": \"Discusses clean energy potential.\"},\n    {\"id\": 44, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 45, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 46, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 47, \"keep\": true, \"score\": 1.0, \"matched\": \"climate\", \"kind\": \"direct\", \"why\": \"Relevant to climate security discussions.\"},\n    {\"id\": 48, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"},\n    {\"id\": 49, \"keep\": false, \"score\": 0.0, \"matched\": null, \"kind\": \"direct\", \"why\": \"Not related to reader's interests.\"}\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2091,
+  "completion_tokens": 1091
+ }
+}

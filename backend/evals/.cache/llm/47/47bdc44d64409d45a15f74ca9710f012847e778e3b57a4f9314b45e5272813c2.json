@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d2cae6a6c7e02acc71bdc08ae33da0a4bbabaa7ed88bf700bd62e5957ebedca5",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00479\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NYC childcare policy is irrelevant to a Singaporean parent; not local or actionable.\"\n    },\n    {\n      \"id\": \"a00482\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NYC school calendar is not relevant to Singapore; no local impact.\"\n    },\n    {\n      \"id\": \"a00486\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NYC subway service changes do not affect Singaporean daily life.\"\n    },\n    {\n      \"id\": \"a00502\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey solar law is not relevant to Singaporean renters or parents.\"\n    },\n    {\n      \"id\": \"a00509\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US food recalls and outbreaks have no direct impact on Singaporean health or food safety.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2144,
+  "completion_tokens": 299
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dce7d8340a2d4b6b804631b692133b5ec097675c79f8d7e307fdfd7fb4cbd5b1",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00094\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Bangladesh-India politics is not relevant to reader's interests or region.\"\n    },\n    {\n      \"id\": \"a00102\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Indian youth politics is not relevant to Uzbek or local interests.\"\n    },\n    {\n      \"id\": \"a00118\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pakistan military reforms are not relevant to Uzbek or local affairs.\"\n    },\n    {\n      \"id\": \"a00127\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Regional political update; Kazakhstan is a neighbor, so some contextual interest.\"\n    },\n    {\n      \"id\": \"a00128\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Rohingya/Myanmar issue is not relevant to reader's interests or region.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1152,
+  "completion_tokens": 295
+ }
+}
