@@ -19,7 +19,9 @@ from app.services.news_ingestion import (
     _fetch_single_feed,
     _fetch_source_images,
     _resolve_redirect_urls,
+    _upsert_ingested_article,
 )
+from app.services.article_content import article_content_transaction
 from app.services.source_discovery import determine_profile_specificity
 
 logger = logging.getLogger(__name__)
@@ -124,10 +126,25 @@ def _merge_fetched_articles(articles: list[dict]) -> list[dict]:
         existing["_source_urls"] = sorted(set(existing.get("_source_urls", []) + record.get("_source_urls", [])))
         if not existing.get("summary") and record.get("summary"):
             existing["summary"] = record["summary"]
+        if not existing.get("content") and record.get("content"):
+            existing["content"] = record["content"]
+            existing["feed_url"] = record.get("feed_url")
+        elif (
+            existing.get("content")
+            and record.get("content") == existing.get("content")
+            and not existing.get("feed_url")
+        ):
+            existing["feed_url"] = record.get("feed_url")
         if not existing.get("author") and record.get("author"):
             existing["author"] = record["author"]
         if not existing.get("image_url") and record.get("image_url"):
             existing["image_url"] = record["image_url"]
+            existing["image_origin"] = record.get("image_origin")
+            existing["image_source_url"] = record.get("image_source_url")
+            existing["image_attribution"] = record.get("image_attribution")
+            existing["image_is_illustrative"] = bool(
+                record.get("image_is_illustrative", False)
+            )
         if not existing.get("published_at") and record.get("published_at"):
             existing["published_at"] = record["published_at"]
         if not existing.get("category") and record.get("category"):
@@ -139,51 +156,27 @@ def _merge_fetched_articles(articles: list[dict]) -> list[dict]:
 def _upsert_articles_and_links(conn, articles: list[dict]) -> int:
     linked_count = 0
 
-    with conn.cursor() as cur:
-        for article in articles:
-            cur.execute(
-                """
-                INSERT INTO public.articles (
-                    url, title, summary, author, source_name, image_url, published_at, category, ingested_at
-                )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, now())
-                ON CONFLICT (url) DO UPDATE SET
-                    title = COALESCE(NULLIF(EXCLUDED.title, ''), public.articles.title),
-                    summary = COALESCE(public.articles.summary, EXCLUDED.summary),
-                    author = COALESCE(public.articles.author, EXCLUDED.author),
-                    source_name = COALESCE(public.articles.source_name, EXCLUDED.source_name),
-                    image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
-                    published_at = COALESCE(public.articles.published_at, EXCLUDED.published_at),
-                    category = COALESCE(public.articles.category, EXCLUDED.category),
-                    ingested_at = now()
-                RETURNING id
-                """,
-                (
-                    article.get("url"),
-                    article.get("title") or "Untitled",
-                    article.get("summary"),
-                    article.get("author"),
-                    article.get("source_name"),
-                    article.get("image_url"),
-                    article.get("published_at"),
-                    article.get("category"),
-                ),
-            )
-            row = cur.fetchone()
-            article_id = row["id"]
+    for article in articles:
+        # Source links and content registration share the article transaction;
+        # a crash cannot leave a visible pool row without its lifecycle job.
+        with article_content_transaction(conn):
+            article_id = _upsert_ingested_article(conn, article)
+            if not article_id:
+                continue
 
-            for source_url in article.get("_source_urls", []):
-                cur.execute(
-                    """
-                    INSERT INTO public.article_source_links (article_id, source_url, fetched_at, published_at)
-                    VALUES (%s, %s, now(), %s)
-                    ON CONFLICT (article_id, source_url) DO UPDATE SET
-                        fetched_at = now(),
-                        published_at = COALESCE(EXCLUDED.published_at, public.article_source_links.published_at)
-                    """,
-                    (article_id, source_url, article.get("published_at")),
-                )
-                linked_count += 1
+            with conn.cursor() as cur:
+                for source_url in article.get("_source_urls", []):
+                    cur.execute(
+                        """
+                        INSERT INTO public.article_source_links (article_id, source_url, fetched_at, published_at)
+                        VALUES (%s, %s, now(), %s)
+                        ON CONFLICT (article_id, source_url) DO UPDATE SET
+                            fetched_at = now(),
+                            published_at = COALESCE(EXCLUDED.published_at, public.article_source_links.published_at)
+                        """,
+                        (article_id, source_url, article.get("published_at")),
+                    )
+                    linked_count += 1
 
     return linked_count
 

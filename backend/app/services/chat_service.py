@@ -993,18 +993,28 @@ class ChatService:
         limit: int,
         lookback_hours: int,
     ) -> list[dict[str, Any]]:
-        embedding = await self.openai_service.generate_embedding(query)
+        from app.services.understanding_consumers import enabled as s3_enabled, query_vector
+        embedding = (await query_vector(conn,query) if s3_enabled()
+                     else await self.openai_service.generate_embedding(query))
         if not embedding:
             return []
+
+        from app.services.understanding_consumers import enabled as s3_enabled, semantic_rows
+        if s3_enabled():
+            return semantic_rows(conn,embedding,limit=limit,lookback_hours=lookback_hours,private=True)
 
         with conn.cursor() as cur:
             cur.execute(
                 f"""
-                SELECT id, title, summary, content, author, source_name, image_url,
+                SELECT id, title, summary, COALESCE(analysis_text, content) AS content,
+                       author, source_name, image_url, image_origin, image_source_url,
+                       image_attribution, image_is_illustrative,
                        published_at, category, url,
                        1 - (embedding <=> %s::vector) AS similarity
                 FROM public.articles
                 WHERE embedding IS NOT NULL
+                  AND analysis_content_version IS NOT NULL
+                  AND embedding_content_version = analysis_content_version
                   AND COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
                 ORDER BY embedding <=> %s::vector
                 LIMIT %s
@@ -1235,16 +1245,20 @@ class ChatService:
         }
 
     def _serialize_source_card(self, article: dict[str, Any]) -> dict[str, Any]:
+        from app.services.article_content import serialize_article
+
+        serialized = serialize_article(article, include_body=False)
         published_at = article.get("published_at")
         return {
             "article_id": str(article["id"]),
             "title": article["title"],
             "summary": article.get("summary"),
             "source": article.get("source_name"),
-            "image_url": article.get("image_url"),
+            "image": serialized.get("image"),
+            "image_url": serialized.get("image_url"),
             "published_at": self._iso(published_at) if isinstance(published_at, datetime) else published_at,
             "category": article.get("category"),
-            "url": article.get("url"),
+            "url": serialized.get("url"),
         }
 
     def _resolve_intent_spec(self, intent: str | None) -> dict[str, Any] | None:

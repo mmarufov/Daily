@@ -529,16 +529,11 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
             feed_service,
             "_load_cached_feed",
             return_value=cached_articles,
-        ), patch.object(
-            feed_service,
-            "_hydrate_missing_feed_images",
-            new=AsyncMock(),
-        ) as hydrate_mock:
+        ):
             articles = await feed_service.get_personalized_feed(user_id, conn=object(), limit=10)
 
         self.assertEqual(len(articles), 1)
         self.assertEqual(articles[0]["image_url"], "https://images.example.com/anthropic.jpg")
-        hydrate_mock.assert_awaited_once()
 
     async def test_load_candidates_for_profile_expands_windows_for_strict_topics(self):
         profile = feed_service._build_preference_profile(

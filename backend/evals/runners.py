@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Literal, Protocol
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 from evals.fake_db import SnapshotConn, eval_uuid, persona_uuid
 
@@ -253,8 +253,7 @@ class ProductionRunner:
                  patch.object(feed_service, "_apply_individual_analysis_results", w_apply), \
                  patch.object(feed_service, "_collapse_duplicate_coverage", _stage_wrapper(o_dedup, "dedup", "dedup")), \
                  patch.object(feed_service, "_enforce_diversity", _stage_wrapper(o_div, "diversity", "diversity")), \
-                 patch.object(feed_service, "_balance_feed_roles", _stage_wrapper(o_roles, "roles", "roles")), \
-                 patch.object(feed_service, "_hydrate_missing_feed_images", AsyncMock(return_value=None)):
+                 patch.object(feed_service, "_balance_feed_roles", _stage_wrapper(o_roles, "roles", "roles")):
                 return asyncio.run(feed_service.get_personalized_feed(
                     user_id, conn, limit=self.limit, force_refresh=True))
 

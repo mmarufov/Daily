@@ -171,6 +171,12 @@ def _normalize_term(value: str | None) -> str:
     return " ".join((value or "").strip().lower().split())
 
 
+def _word_in(text: str, term: str) -> bool:
+    """Whole-word/phrase containment. See feed_service._word_in for the rationale."""
+    from app.services.feed_service import _word_in as _impl
+    return _impl(text, term)
+
+
 def _dedupe_preserve(values: list[str]) -> list[str]:
     seen = set()
     deduped: list[str] = []
@@ -200,12 +206,16 @@ def _categories_for_terms(terms: list[str]) -> set[str]:
     matched: set[str] = set()
     for term in terms:
         normalized = _normalize_term(term)
+        if not normalized:
+            continue
         for category, keywords in CATEGORY_KEYWORDS.items():
-            if (
-                normalized == category
-                or normalized in keywords
-                or any(keyword in normalized for keyword in keywords)
-            ):
+            if normalized == category or normalized in keywords:
+                matched.add(category)
+                continue
+            # Word boundaries, not substrings: the unbounded form matched the
+            # "ai" keyword inside "entertainment", "ukraine" and "maintain",
+            # so those terms pulled AI feeds into the user's source graph.
+            if any(_word_in(normalized, kw) for kw in keywords):
                 matched.add(category)
     return matched
 
@@ -854,7 +864,12 @@ async def fetch_user_sources(conn) -> int:
     Fetch articles from user-discovered sources that are due for fetching.
     Called from the ingestion loop. Returns count of new articles.
     """
-    from app.services.news_ingestion import _fetch_single_feed, _fetch_source_images
+    from app.services.news_ingestion import (
+        _fetch_single_feed,
+        _fetch_source_images,
+        _resolve_redirect_urls,
+        _upsert_ingested_article,
+    )
 
     # Get sources due for fetching (next_fetch_at <= now), limit to 50 per cycle
     with conn.cursor() as cur:
@@ -919,6 +934,8 @@ async def fetch_user_sources(conn) -> int:
     if not all_articles:
         return 0
 
+    await _resolve_redirect_urls(None, all_articles)
+
     # Deduplicate by URL
     seen = set()
     unique = []
@@ -930,34 +947,15 @@ async def fetch_user_sources(conn) -> int:
     # Fetch images for articles missing them
     await _fetch_source_images(unique)
 
-    # Insert into shared articles table
+    # Insert metadata and the content lifecycle job atomically. The helper
+    # passes any feed body to provenance storage instead of a display column.
     new_count = 0
-    with conn.cursor() as cur:
-        for article in unique:
-            try:
-                cur.execute(
-                    """
-                    INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (url) DO UPDATE SET
-                        image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
-                        summary = COALESCE(public.articles.summary, EXCLUDED.summary)
-                    """,
-                    (
-                        article["url"],
-                        article["title"],
-                        article["summary"],
-                        article["author"],
-                        article["source_name"],
-                        article["image_url"],
-                        article["published_at"],
-                        article["category"],
-                    ),
-                )
-                if cur.rowcount == 1:
-                    new_count += 1
-            except Exception as e:
-                logger.warning("User source insert error: %s", e)
+    for article in unique:
+        try:
+            if _upsert_ingested_article(conn, article):
+                new_count += 1
+        except Exception as e:
+            logger.warning("User source insert error: %s", e)
 
     logger.info("User sources: fetched %d sources, %d articles, %d new", len(due_sources), len(unique), new_count)
     return new_count

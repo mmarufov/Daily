@@ -1,0 +1,56 @@
+name: S3 isolated database verification
+on:
+  push:
+    branches: [codex/s3-verification-20260906]
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.0-pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: disposable-ci-only
+          POSTGRES_DB: postgres
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      EVAL_OFFLINE: "1"
+      S2_TEST_DATABASE_REQUIRED: "1"
+      S3_TEST_DATABASE_REQUIRED: "1"
+      S2_TEST_DATABASE_URL: postgresql://postgres:disposable-ci-only@127.0.0.1:5432/postgres
+      S3_TEST_DATABASE_URL: postgresql://postgres:disposable-ci-only@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: >-
+          python -m pytest tests/test_article_content_postgres.py tests/test_understanding_postgres.py
+          tests/test_understanding_contract.py tests/test_understanding_provider.py
+          tests/test_understanding_eval.py tests/test_understanding_worker.py tests/test_story_clustering.py
+          -q --junitxml=s3-verification.xml
+      - name: Assert database tests actually ran
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          cases=ET.parse('s3-verification.xml').getroot().findall('.//testcase')
+          for module in ('test_article_content_postgres','test_understanding_postgres'):
+              selected=[c for c in cases if module in c.get('classname','')]
+              assert selected and not any(c.find('skipped') is not None for c in selected), module
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s3-verification-results
+          path: backend/s3-verification.xml

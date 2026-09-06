@@ -154,6 +154,7 @@ class SnapshotConn:
         if "FROM public.user_feed_cache ufc" in q:
             return []
         if ("FROM public.articles a JOIN public.article_source_links" in q
+                or "FROM public.articles a LEFT JOIN public.article_content_artifacts artifact" in q
                 or "FROM public.articles WHERE COALESCE(published_at" in q):
             return self._candidate_rows(q)
         if any(t in q for t in ("FROM public.entity_pins", "FROM public.source_quality",

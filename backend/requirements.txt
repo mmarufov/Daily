@@ -4,8 +4,13 @@ python-dotenv==1.0.1
 psycopg[binary]==3.2.4
 psycopg-pool>=3.2.0
 httpx==0.27.2
+# safe_http's DNS-pinned transport integrates with the public httpcore pool API;
+# keep the pair locked and exercise construction in test_safe_http.py.
+httpcore==1.0.9
 pyjwt[crypto]==2.9.0
 openai==1.12.0
+pydantic==2.12.5
+tiktoken==0.8.0
 beautifulsoup4==4.12.3
 lxml>=5.2.0,<7
 feedparser==6.0.11
