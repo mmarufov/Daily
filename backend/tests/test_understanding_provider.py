@@ -33,6 +33,10 @@ def card(bundle):
                             for field in ["kind", "topics", "entities", "places", "commercial", "about", "event_hints"]]}
 
 
+def wire_json(value):
+    return json.dumps({key: item for key, item in value.items() if key != "abstentions"})
+
+
 def response(bundle, stage="facets"):
     if stage == "embedding":
         return {"model": DEFAULT_RECIPE["embedding_model"], "usage": {"prompt_tokens": 12},
@@ -40,7 +44,7 @@ def response(bundle, stage="facets"):
     return {"id": "chatcmpl-test", "model": DEFAULT_RECIPE["model"],
             "usage": {"prompt_tokens": 100, "completion_tokens": 30},
             "choices": [{"index": 0, "finish_reason": "stop", "message": {
-                "role": "assistant", "content": json.dumps(card(bundle)), "refusal": None}}]}
+                "role": "assistant", "content": wire_json(card(bundle)), "refusal": None}}]}
 
 
 class UnderstandingProviderTests(unittest.IsolatedAsyncioTestCase):
@@ -61,7 +65,9 @@ class UnderstandingProviderTests(unittest.IsolatedAsyncioTestCase):
         bundle = evidence()
         adapter = self.make_provider(response(bundle))
         result = await adapter.generate(stage="facets", bundle=bundle, recipe=DEFAULT_RECIPE)
-        self.assertEqual(result.payload, card(bundle))
+        expected = card(bundle)
+        expected["abstentions"].sort(key=lambda item: item["field"])
+        self.assertEqual(result.payload, expected)
         self.assertAlmostEqual(result.usage_usd, 0.000088)
         self.assertGreater(adapter.estimate_usd(bundle, DEFAULT_RECIPE, "facets"), result.usage_usd)
         sent = json.loads(self.requests[0].content)
@@ -69,7 +75,117 @@ class UnderstandingProviderTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(sent["response_format"]["json_schema"]["strict"])
         self.assertNotIn("tools", sent)
         self.assertIn("untrusted", sent["messages"][0]["content"])
+        span = sent["response_format"]["json_schema"]["schema"]["$defs"]["EvidenceSpan"]
+        self.assertEqual(set(span["properties"]), {"field", "quote"})
+        self.assertEqual(set(span["required"]), {"field", "quote"})
+        self.assertNotIn("abstentions", sent["response_format"]["json_schema"]["schema"]["properties"])
         self.assertEqual(str(self.requests[0].url), provider.API_ROOT + "/chat/completions")
+
+    def test_quote_anchoring_uses_unicode_character_offsets_without_mutation(self):
+        bundle = build_evidence({"id": "unicode", "url": "https://example.com/story",
+                                 "title": "📰 Le café ouvre à Paris"})
+        wire = {"evidence": [{"field": "title", "quote": "café"}]}
+        anchored = provider.anchor_evidence_quotes(wire, bundle)
+        self.assertEqual(anchored["evidence"][0], {"field": "title", "quote": "café", "start": 5, "end": 9})
+        self.assertNotIn("start", wire["evidence"][0])
+
+    def test_missing_repeated_and_overlapping_quotes_are_rejected(self):
+        bundle = build_evidence({"id": "repeated", "url": "https://example.com/story",
+                                 "title": "Paris and Paris aaa"})
+        for quote, kind in (("missing", "evidence_quote_not_found"),
+                            ("Paris", "evidence_quote_ambiguous"),
+                            ("aa", "evidence_quote_ambiguous")):
+            with self.subTest(quote=quote), self.assertRaises(provider.ProviderFailure) as raised:
+                provider.anchor_evidence_quotes({"field": "title", "quote": quote}, bundle)
+            self.assertEqual(raised.exception.kind, kind)
+        anchored = provider.anchor_evidence_quotes({"field": "title", "quote": "and Paris"}, bundle)
+        self.assertEqual(anchored["start"], 6)
+
+    async def test_anchored_quote_passes_canonical_validation(self):
+        bundle = evidence()
+        value = card(bundle)
+        value["kind"] = "report"
+        value["kind_evidence"] = [{"field": "title", "quote": "A story"}]
+        value["abstentions"] = [item for item in value["abstentions"] if item["field"] != "kind"]
+        data = response(bundle)
+        data["choices"][0]["message"]["content"] = wire_json(value)
+        adapter = self.make_provider(data)
+        result = await adapter.generate(bundle, DEFAULT_RECIPE, "facets")
+        self.assertEqual(result.payload["kind_evidence"][0]["start"], 0)
+        self.assertEqual(result.payload["kind_evidence"][0]["end"], 7)
+
+    async def test_unanchorable_quote_preserves_bill_with_safe_failure_category(self):
+        bundle = evidence()
+        value = card(bundle)
+        value["kind_evidence"] = [{"field": "title", "quote": "private fabricated body"}]
+        data = response(bundle)
+        data["choices"][0]["message"]["content"] = wire_json(value)
+        adapter = self.make_provider(data)
+        with self.assertRaises(provider.ProviderFailure) as raised:
+            await adapter.generate(bundle, DEFAULT_RECIPE, "facets")
+        self.assertEqual(raised.exception.kind, "evidence_quote_not_found")
+        self.assertGreater(raised.exception.usage_usd, 0)
+        self.assertNotIn("private", str(raised.exception))
+
+    async def test_card_validation_failure_categories_are_safe_and_retain_usage(self):
+        bundle = evidence()
+        cases = [
+            ({**card(bundle), "input_hash": "wrong"}, "card_identity_mismatch"),
+            ({**card(bundle), "kind": "report"}, "card_kind_evidence_missing"),
+            ({**card(bundle), "kind": "private article text"}, "invalid_card_schema"),
+            ({**card(bundle), "commercial": {"value": "no", "subtype": None, "evidence": []}},
+             "card_commercial_evidence_missing"),
+            ({**card(bundle), "entities": [{"mention": "story", "entity_type": "other", "role": "subject",
+                "resolved_id": "fabricated-id", "resolution": "resolved",
+                "evidence": [{"field": "title", "quote": "A story"}]}]}, "card_resolution_id_unsupplied"),
+        ]
+        for value, kind in cases:
+            data = response(bundle)
+            data["choices"][0]["message"]["content"] = wire_json(value)
+            adapter = self.make_provider(data)
+            with self.subTest(kind=kind), self.assertRaises(provider.ProviderFailure) as raised:
+                await adapter.generate(bundle, DEFAULT_RECIPE, "facets")
+            self.assertEqual(raised.exception.kind, kind)
+            self.assertGreater(raised.exception.usage_usd, 0)
+            self.assertEqual(raised.exception.request_id, "req-test")
+            self.assertNotIn("private article text", str(raised.exception))
+
+    def test_unknown_validation_exception_text_is_never_exposed(self):
+        for error in (ValueError("private unexpected body"), ValueError("secret", "second")):
+            with patch.object(provider, "validate_card", side_effect=error):
+                with self.assertRaises(provider.ProviderFailure) as raised:
+                    provider._validate_anchored_card({}, evidence())
+                self.assertEqual(raised.exception.kind, "invalid_card_semantics")
+
+    def test_abstentions_are_derived_only_from_explicit_unknown_values(self):
+        bundle = evidence()
+        wire = json.loads(wire_json(card(bundle)))
+        wire["kind"] = "report"
+        wire["kind_evidence"] = [{"field": "title", "quote": "A story"}]
+        result = provider.normalize_wire_card(wire, bundle)
+        self.assertEqual({item["field"] for item in result["abstentions"]},
+                         {"topics", "entities", "places", "event_hints", "about", "commercial"})
+        self.assertTrue(all(item["reason"] == "insufficient_evidence" for item in result["abstentions"]))
+        self.assertNotIn("abstentions", wire)
+        for field in ("kind", "about", "commercial", "topics"):
+            missing = dict(wire)
+            del missing[field]
+            with self.subTest(field=field), self.assertRaises(provider.ProviderFailure) as raised:
+                provider.normalize_wire_card(missing, bundle)
+            self.assertEqual(raised.exception.kind, "invalid_card_schema")
+
+    def test_abstention_normalization_never_rescues_asserted_invalid_facet(self):
+        bundle = evidence()
+        wire = json.loads(wire_json(card(bundle)))
+        wire["kind"] = "report"
+        with self.assertRaises(provider.ProviderFailure) as raised:
+            provider.normalize_wire_card(wire, bundle)
+        self.assertEqual(raised.exception.kind, "card_kind_evidence_missing")
+        wire["kind"] = "unknown"
+        wire["about"] = "Unsubstantiated claim"
+        with self.assertRaises(provider.ProviderFailure) as raised:
+            provider.normalize_wire_card(wire, bundle)
+        self.assertEqual(raised.exception.kind, "card_about_evidence_invalid")
 
     async def test_embeddings_and_queries_use_same_space(self):
         bundle = evidence()
@@ -130,7 +246,7 @@ class UnderstandingProviderTests(unittest.IsolatedAsyncioTestCase):
             lambda data: data["choices"][0].update(finish_reason="length"),
             lambda data: data["choices"][0]["message"].update(refusal="private body"),
             lambda data: data["choices"][0]["message"].update(content="not json private body"),
-            lambda data: data["choices"][0]["message"].update(content=json.dumps({**card(bundle), "input_hash": "wrong"})),
+            lambda data: data["choices"][0]["message"].update(content=wire_json({**card(bundle), "input_hash": "wrong"})),
         ):
             data = copy.deepcopy(base)
             mutate(data)

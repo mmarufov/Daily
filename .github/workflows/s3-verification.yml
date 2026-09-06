@@ -39,6 +39,7 @@ jobs:
           python -m pytest tests/test_article_content_postgres.py tests/test_understanding_postgres.py
           tests/test_understanding_contract.py tests/test_understanding_provider.py
           tests/test_understanding_eval.py tests/test_understanding_worker.py tests/test_story_clustering.py
+          tests/test_s3_management.py tests/test_understanding_consumers.py tests/test_eval_llm_cache.py
           -q --junitxml=s3-verification.xml
       - name: Assert database tests actually ran
         run: |

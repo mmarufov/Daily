@@ -21,10 +21,13 @@ from app.services.understanding_contract import DEFAULT_RECIPE, recipe_id
 
 
 def validate_promotion(doc, identifier):
-    if doc.get('recipe_id')!=identifier or doc.get('quality_gates_passed') is not True or doc.get('blockers'):
+    if (not isinstance(doc, dict) or doc.get('recipe_id')!=identifier
+        or doc.get('quality_gates_passed') is not True or doc.get('blockers') != []):
         raise ValueError('matching recipe with passing quality report required')
-    ops=doc.get('operations') or {}
-    if (not ops.get('build_sha') or not ops.get('schema_version')
+    ops=doc.get('operations')
+    if (not isinstance(ops, dict)
+        or not isinstance(ops.get('build_sha'), str) or not ops['build_sha'].strip()
+        or type(ops.get('schema_version')) is not int or ops['schema_version'] < 1
         or ops.get('s1_s2_verified') is not True or ops.get('rollback_verified') is not True
         or ops.get('quiet_and_burst_verified') is not True):
         raise ValueError('missing build/schema/prerequisite/rollback evidence')
@@ -34,9 +37,18 @@ def validate_promotion(doc, identifier):
         value=ops.get(key)
         if type(value) not in (float,int) or not minimum<=value<float('inf'):
             raise ValueError('operational gate failed: '+key)
-    if any(ops.get(k)!=0 for k in ('stale_publications','wrong_article_evidence','private_text_leaks','mixed_spaces')):
+        if key in ('ready_fraction','filtered_ann_recall_at_50') and value > 1:
+            raise ValueError('operational fraction exceeds one: '+key)
+        if key in ('reviewed_articles','holdout_articles') and type(value) is not int:
+            raise ValueError('article counts must be integers: '+key)
+    if ops['holdout_articles'] > ops['reviewed_articles']:
+        raise ValueError('holdout articles cannot exceed reviewed articles')
+    if any(type(ops.get(k)) is not int or ops[k]!=0
+           for k in ('stale_publications','wrong_article_evidence','private_text_leaks','mixed_spaces')):
         raise ValueError('integrity counters must all be zero')
-    if ops.get('budget_verified') is not True or not doc.get('supported_slices'):
+    slices = doc.get('supported_slices')
+    if (ops.get('budget_verified') is not True or not isinstance(slices, list) or not slices
+        or any(not isinstance(value, str) or not value.strip() for value in slices)):
         raise ValueError('budget and supported slices must be verified')
 
 

@@ -311,7 +311,7 @@ DEFAULT_RECIPE = {
     "embedding_model": "text-embedding-3-small", "dimensions": 1536,
     "maximum_input_tokens": 12000, "maximum_output_tokens": 6000, "maximum_embedding_tokens": 8000,
     "schema_hash": digest(card_schema()), "taxonomy_hash": hashlib.sha256(_TOPIC_BYTES).hexdigest(),
-    "input_version": "original-evidence-nfc-v1", "prompt_version": "source-attributed-facets-v1",
+    "input_version": "original-evidence-nfc-v1", "prompt_version": "source-attributed-facets-v3",
     "linker_version": "supplied-candidates-v1", "document_recipe": "labeled-title-summary-body-v1",
     "query_recipe": "raw-nfc-whitespace-v1",
     "cluster_policy": "singleton-until-calibrated-v1", "cluster_cosine_threshold": None,
