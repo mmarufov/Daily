@@ -4,7 +4,7 @@
 
 **Your own daily edition — a personalized news app that reads like a magazine that knows you.**
 
-*iOS ([SwiftUI](https://developer.apple.com/xcode/swiftui/)) front end + a Python ([FastAPI](https://fastapi.tiangolo.com/)) intelligence engine that ingests the open web, understands each article, and ranks a feed around who you actually are — steered by conversation, not toggles.*
+*iOS ([SwiftUI](https://developer.apple.com/xcode/swiftui/)) front end + a Python ([FastAPI](https://fastapi.tiangolo.com/)) intelligence engine that ingests publisher feeds, analyzes available article context, and ranks a feed around who you actually are — steered by conversation, not toggles.*
 
 <br/>
 
@@ -24,14 +24,14 @@
 
 Most news apps ask you to pick from a wall of category checkboxes and then bury the one story you cared about under ten you didn't. Daily inverts that.
 
-You **talk** to it. During onboarding you have a short conversation — *"I run a small design studio, I follow AI tooling and typography, I couldn't care less about crypto"* — and Daily builds a profile from your own words. Behind the scenes it discovers credible sources for those interests, pulls their feeds, reads every article in full, embeds them, and ranks a feed that looks like a hand-set magazine edition with your name on the masthead: `JUL 11 · SARAH EDITION`.
+You **talk** to it. During onboarding you have a short conversation — *"I run a small design studio, I follow AI tooling and typography, I couldn't care less about crypto"* — and Daily builds a profile from your own words. Behind the scenes it discovers credible sources for those interests, pulls their feeds, analyzes the publisher context available for each story, and ranks a feed that looks like a hand-set magazine edition with your name on the masthead: `JUL 11 · SARAH EDITION`.
 
 Then it keeps learning. A **Tune** chat lets you nudge the feed in plain language — *"more on the design side, less product-launch noise"* — and the feed visibly re-sorts in front of you. What you open, how long you read, and what you save quietly sharpen the model over time. No scoring numbers, no "because you read X" receipts, no dark-pattern engagement bait. The personalization is felt, not exposed.
 
 ## Why it's interesting
 
 - **Conversation is the control surface.** Onboarding and the Tune panel turn natural language into a structured interest profile and re-rank the feed — no settings grid, no manual source management.
-- **Full-article understanding, not headline matching.** The backend extracts clean body text ([Trafilatura](https://trafilatura.readthedocs.io/)), enriches it, and embeds it with `text-embedding-3-small`, so ranking and semantic search work on what an article *says*, not just its title.
+- **Article-aware ranking, not headline matching alone.** The backend uses publisher metadata, summaries, and provenance-bound body text when available. Reader text and ranking analysis stay separate: Daily shows a verified body natively only for an explicitly approved source and otherwise opens the canonical publisher page.
 - **Autonomous source discovery.** Give it an interest and it finds and quality-scores real publications for it, seeds their feeds, and starts ingesting — you never paste an RSS URL.
 - **An editorial design system, not a card wall.** One signature element per surface, a warm ink-and-ochre palette, provenance shown only when it's rare and certain. See [`DESIGN.md`](DESIGN.md).
 - **Batch-first and cost-aware.** A background worker does ingestion, extraction, embedding, and enrichment on a loop; user requests read from pre-built, cached feeds instead of hitting an LLM in the hot path.
@@ -52,11 +52,10 @@ Then it keeps learning. A **Tune** chat lets you nudge the feed in plain languag
                                                    │
                                      ┌─────────────▼─────────────┐   Background ingestion loop
                                      │  RSS + topic feeds        │   (runs continuously):
-                                     │  Trafilatura extraction   │   fetch → extract → embed →
-                                     │  OpenAI embed + enrich    │   enrich → rank → cache
+                                     │  Origin-only extraction   │   fetch → classify → analyze →
+                                     │  OpenAI embed + enrich    │   rank → cache
                                      │  Source discovery/scoring │
-                                     │  Tavily search · Gemini/  │
-                                     │  Unsplash imagery         │
+                                     │  Publisher/source imagery │
                                      └───────────────────────────┘
 ```
 
@@ -85,7 +84,9 @@ backend/                       FastAPI intelligence engine (deployed to Fly.io)
 ├── app/main.py                API surface + background ingestion loop + schema bootstrap
 ├── app/services/
 │   ├── news_ingestion.py      RSS + topic feed fetching
-│   ├── content_extractor.py   Full-text extraction (Trafilatura)
+│   ├── article_content.py     Versioned artifacts, source policy, leased jobs, presentation
+│   ├── content_extractor.py   Bounded origin-only extraction (Trafilatura)
+│   ├── safe_http.py           Redirect/DNS/size/type-bounded outbound fetching
 │   ├── article_enrichment.py  Summaries, metadata, entity enrichment
 │   ├── source_discovery.py    Finds + seeds credible sources for an interest
 │   ├── source_quality.py      Scores source reliability
@@ -94,7 +95,8 @@ backend/                       FastAPI intelligence engine (deployed to Fly.io)
 │   ├── profile_model.py       User profile v2 derivation + normalization
 │   ├── openai_service.py      Chat + embeddings (gpt-4o-mini, text-embedding-3-small)
 │   ├── chat_service.py        Onboarding / Tune conversation logic (SSE streaming)
-│   ├── image_generation_service.py  Gemini imagery · image_extraction.py · web_search_service.py (Tavily)
+│   ├── image_extraction.py    Publisher/source-page image discovery
+│   ├── web_search_service.py  Discovery/analysis only; never a publisher-body fallback
 │   └── …
 ├── Dockerfile · fly.toml      Container + Fly.io deploy config
 └── requirements.txt
@@ -110,7 +112,7 @@ tasks/                         Design system + execution plans (DESIGN.md is the
 | **iOS** | SwiftUI (iOS 17+), `@Observable` state, async/await, background `URLSession` fetch, Google Sign-In, Sign in with Apple |
 | **Backend** | FastAPI, `psycopg` + connection pool, server-sent events for streaming chat, background asyncio ingestion worker |
 | **Data** | PostgreSQL + `pgvector` for embeddings and semantic search |
-| **AI / content** | OpenAI (`gpt-4o-mini` chat, `text-embedding-3-small` embeddings), Trafilatura extraction, Tavily web search, Gemini + Unsplash imagery |
+| **AI / content** | OpenAI (`gpt-4o-mini` chat, `text-embedding-3-small` embeddings), bounded same-source Trafilatura extraction, Tavily-assisted discovery |
 | **Auth** | Google & Apple ID-token verification against provider JWKS, server-issued session tokens |
 | **Infra** | Docker, Fly.io (`iad`), HTTPS-forced with health checks (`/healthz`, `/readyz`) |
 
@@ -124,6 +126,7 @@ tasks/                         Design system + execution plans (DESIGN.md is the
 | `POST /chat`, `POST /chat/threads/{id}/messages/stream` | Onboarding + Tune conversations (streamed) |
 | `POST /sources/discover`, `GET /sources` | Discover & list personalized sources |
 | `POST /feed/build`, `GET /feed`, `POST /feed/refresh` | Build and read the ranked edition |
+| `GET /feed/{article_id}` | Authenticated article detail using the typed reader contract |
 | `GET /briefing` | A short daily briefing |
 | `POST /search/semantic` | Vector search over ingested articles |
 | `POST /reading-events`, `POST /feed/feedback` | Behavioral signals that sharpen ranking |
@@ -159,6 +162,56 @@ Configure `backend/.env` (never commit it — it's gitignored):
 
 The app bootstraps its own schema on startup and starts the ingestion worker automatically.
 
+## S2 article-content contract and operations
+
+Daily does not treat text found in an RSS payload or on the web as permission to republish it.
+Every publisher defaults to `source_only`, which sends the reader to the canonical source in
+`SFSafariViewController`. Native full text requires a human-reviewed source policy plus a complete,
+identity-matched, versioned artifact. Cross-source search context can inform ranking but is never
+returned as a publisher summary or body.
+
+Policy and migration commands read the database URL only from an environment variable. They are
+strictly dry-run unless `--apply` is present. From the repository root, review a proposed exact-feed
+grant like this:
+
+```bash
+backend/venv/bin/python backend/scripts/manage_s2_source_policy.py \
+  grant publisher.example.com \
+  --display-policy native_full_text \
+  --allow-kind publisher_feed \
+  --publisher-feed-full-text \
+  --allow-feed-url https://publisher.example.com/feed.xml \
+  --rights-basis publisher_contract_2026_09 \
+  --access-hint free \
+  --reviewed-by reviewer@example.com
+```
+
+The output is only a validated proposal. Re-run the reviewed command with `--apply` to commit it.
+Use `inspect publisher.example.com` to read the current policy and append-only audit history, or
+`revoke publisher.example.com --reviewed-by reviewer@example.com` to preview a fail-closed
+revocation.
+The hostname in the article URL is not enough to trust feed text: `--allow-feed-url` must match the
+exact normalized HTTPS feed that actually supplied it.
+
+The resumable legacy migration has the same safety model:
+
+```bash
+# Read-only inventory
+backend/venv/bin/python backend/scripts/backfill_s2_content.py
+
+# Bounded production canary after backup and review
+backend/venv/bin/python backend/scripts/backfill_s2_content.py --apply --max-rows 250
+
+# Complete the idempotent backfill, then validate deferred constraints
+backend/venv/bin/python backend/scripts/backfill_s2_content.py --apply
+backend/venv/bin/python backend/scripts/backfill_s2_content.py --apply --validate-constraints
+```
+
+Do not grant native display before publisher/rights review. A production rollout is complete only
+after the deployed build SHA reports ready and live canaries confirm zero publisher/body mismatches,
+zero synthetic publisher bodies, valid one-tap destinations, and acceptable reader latency. The
+repository implementation does not imply those production steps have run.
+
 ### iOS app
 
 1. Open `Daily.xcodeproj` in Xcode (iOS 17+ SDK).
@@ -183,9 +236,9 @@ fly secrets set OPENAI_API_KEY=... DATABASE_URL=...   # secrets live in Fly, not
 
 1. **You describe yourself** in the onboarding chat; the backend derives a structured interest profile.
 2. **Source discovery** finds and quality-scores credible publications for those interests and seeds their feeds.
-3. **The ingestion worker** fetches new articles, extracts full body text, generates embeddings, and enriches metadata — continuously, in the background.
+3. **The ingestion worker** fetches new articles, records provenance-bound content variants, analyzes usable context, and enriches metadata — continuously, in the background.
 4. **Feed build** ranks candidates against your profile and behavior and caches a ready-to-serve edition.
-5. **You read it** as a hero-plus-rows magazine layout; opens, dwell time, and saves are recorded.
+5. **You read it** as a hero-plus-rows magazine layout. Daily uses its native reader only for a verified, policy-approved body; every other story opens at its canonical publisher page. Opens, dwell time, and saves are recorded.
 6. **You Tune it** in natural language; the feed re-sorts live and an ephemeral diff toast shows what changed.
 7. **Interest evolution** folds those signals back into your profile so tomorrow's edition is sharper.
 

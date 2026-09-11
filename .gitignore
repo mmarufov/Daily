@@ -28,4 +28,7 @@ venv/
 *.tmp
 *.temp
 .enc.temp
+
+# Regenerable eval corpus (rebuild: python evals/build_corpus.py)
+backend/evals/corpus.json
 backend/evals/.cache/emb_*.pkl
