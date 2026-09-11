@@ -29,9 +29,14 @@ class Index:
 
 
 INDEXES = (
-    # Reuse the S5-owned expression; S6 must never drop another stage's index.
-    Index('reader_article_lexical', 'articles', 'gin',
-          "to_tsvector('simple',COALESCE(title,'')||' '||COALESCE(summary,''))", owned=False),
+    # Reuse the S5-owned index; S6 must never drop another stage's index.
+    # Over the generated/stored title_summary_tsv column, not an inline
+    # to_tsvector(...) expression: a GIN index on a bare expression still
+    # re-tokenizes raw title/summary text for every candidate row's Recheck
+    # Cond and again for ts_rank_cd's ORDER BY -- measured live at ~900ms for
+    # a single moderately common term, cut to ~10ms by reusing the
+    # already-computed value for both. See manage_s5_reader.py's `index`.
+    Index('reader_article_lexical_v2', 'articles', 'gin', 'title_summary_tsv', owned=False),
     Index('s6_article_time', 'articles', 'btree', 'COALESCE(published_at,ingested_at) DESC,id'),
     Index('s6_current_facets', 'article_understanding_results', 'gin', 'payload', "stage='facets'"),
 )

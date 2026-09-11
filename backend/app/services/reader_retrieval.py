@@ -114,12 +114,19 @@ def lexical_rows(conn, intent, *, limit=40):
     # PostgreSQL's simple dictionary preserves original-script lexemes. The
     # plain query requires all terms, preserving qualified/conjunctive intent;
     # unlike substring matching, AI does not match retail or airline.
+    #
+    # Reads the generated/stored title_summary_tsv column, not an inline
+    # to_tsvector(...) expression: a GIN index over a bare expression still
+    # re-tokenizes raw title/summary text for every candidate row's Recheck
+    # Cond (this table's bitmap scans are lossy at this row count) and again
+    # for ts_rank_cd below -- measured live at ~900ms for a single moderately
+    # common term. Reusing the already-computed value for both cuts that to
+    # ~10ms; see manage_s5_reader.py's `index` command for the migration.
     return conn.execute(_ARTICLE_SELECT + '''
       WHERE COALESCE(a.published_at,a.ingested_at)>now()-interval '14 days'
         AND (a.content_quality>=0.4 OR NOT COALESCE(a.enrichment_completed,false))
-        AND to_tsvector('simple',COALESCE(a.title,'')||' '||COALESCE(a.summary,''))
-          @@ plainto_tsquery('simple',%s)
-      ORDER BY ts_rank_cd(to_tsvector('simple',COALESCE(a.title,'')||' '||COALESCE(a.summary,'')),
+        AND a.title_summary_tsv @@ plainto_tsquery('simple',%s)
+      ORDER BY ts_rank_cd(a.title_summary_tsv,
           plainto_tsquery('simple',%s)) DESC, COALESCE(a.published_at,a.ingested_at) DESC,a.id LIMIT %s''',
       (intent_query(intent), intent_query(intent), max(1, min(int(limit), 100)))).fetchall()
 
@@ -293,9 +300,13 @@ def _s6_page(conn, state, *, request, recipe, count, config):
     join = ''
     fields = ''
     if leg == 'lexical':
-        score = "ts_rank_cd(to_tsvector('simple',COALESCE(a.title,'')||' '||COALESCE(a.summary,'')),plainto_tsquery('simple',%s))::double precision"
+        # Reads the generated/stored title_summary_tsv column rather than an
+        # inline to_tsvector(...) expression -- see lexical_rows above and
+        # manage_s5_reader.py's `index` command for why (a ~900ms-per-term
+        # re-tokenization cost measured live, cut to ~10ms).
+        score = "ts_rank_cd(a.title_summary_tsv,plainto_tsquery('simple',%s))::double precision"
         prefix = [state['query']]
-        filters += " AND to_tsvector('simple',COALESCE(a.title,'')||' '||COALESCE(a.summary,'')) @@ plainto_tsquery('simple',%s)"
+        filters += " AND a.title_summary_tsv @@ plainto_tsquery('simple',%s)"
         params.append(state['query'])
     elif leg == 'dense':
         score = '1-(u.embedding <=> %s::vector)'

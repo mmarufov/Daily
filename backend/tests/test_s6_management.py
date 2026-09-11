@@ -119,14 +119,12 @@ def test_wrong_existing_definition_never_dropped_even_repair():
     assert not any(sql.startswith('DROP') for sql in conn.statements)
 
 
-def test_catalog_deparse_matches_lexical_but_wrong_literal_does_not():
+def test_catalog_deparse_matches_lexical_but_wrong_column_does_not():
     spec = cli.INDEXES[0]
-    definition = ("CREATE INDEX reader_article_lexical ON public.articles USING gin "
-                  "(to_tsvector('simple'::regconfig, ((COALESCE(title, ''::text) || ' '::text) "
-                  "|| COALESCE(summary, ''::text))))")
+    definition = "CREATE INDEX reader_article_lexical_v2 ON public.articles USING gin (title_summary_tsv)"
     conn = Connection({spec.name: row(spec, definition=definition)})
     assert cli.index_state(conn, spec)['matches']
-    conn.indexes[spec.name]['definition'] = definition.replace("' '::text", "''::text")
+    conn.indexes[spec.name]['definition'] = definition.replace('title_summary_tsv', 'summary_tsv')
     assert not cli.index_state(conn, spec)['matches']
 
 
