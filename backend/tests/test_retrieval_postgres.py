@@ -63,6 +63,12 @@ def s6_database_url():
                 ensure_article_content_schema(conn)
                 understanding.ensure_schema(conn)
                 understanding.check_schema(conn)
+                # Matches manage_s5_reader.py's `index` command: lexical_rows/
+                # _s6_page read this generated column directly rather than
+                # recomputing to_tsvector(title||summary) inline per query.
+                conn.execute("""ALTER TABLE public.articles ADD COLUMN
+                  title_summary_tsv tsvector GENERATED ALWAYS AS
+                  (to_tsvector('simple',COALESCE(title,'')||' '||COALESCE(summary,''))) STORED""")
         except Exception as exc:
             reason = f"S6 PostgreSQL setup unavailable ({type(exc).__name__})"
             if REQUIRED:
