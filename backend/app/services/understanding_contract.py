@@ -307,7 +307,13 @@ def embedding_text(bundle: Mapping[str, Any]) -> str:
 
 
 DEFAULT_RECIPE = {
-    "version": 1, "status": "provisional_unpromoted", "model": "gpt-4.1-mini-2025-04-14",
+    # The pilot bake-off rejected gpt-4.1-mini-2025-04-14 on 6/20 facet calls
+    # (5 missing evidenced event actors, 1 non-exact quote); gpt-4o-mini-2024-07-18
+    # passed 20/20 (tasks/s3-implementation-status.md). Not live-impacting on
+    # its own -- nothing is promoted off this recipe yet -- but this constant
+    # is exactly what a future promotion would copy, so it should be the
+    # model that actually won, not the one that lost.
+    "version": 1, "status": "provisional_unpromoted", "model": "gpt-4o-mini-2024-07-18",
     "embedding_model": "text-embedding-3-small", "dimensions": 1536,
     "maximum_input_tokens": 12000, "maximum_output_tokens": 6000, "maximum_embedding_tokens": 8000,
     "schema_hash": digest(card_schema()), "taxonomy_hash": hashlib.sha256(_TOPIC_BYTES).hexdigest(),

@@ -68,7 +68,9 @@ class UnderstandingProviderTests(unittest.IsolatedAsyncioTestCase):
         expected = card(bundle)
         expected["abstentions"].sort(key=lambda item: item["field"])
         self.assertEqual(result.payload, expected)
-        self.assertAlmostEqual(result.usage_usd, 0.000088)
+        # DEFAULT_RECIPE's model is gpt-4o-mini-2024-07-18 ($0.15/$0.60 per
+        # 1M input/output tokens); this literal must move if that changes.
+        self.assertAlmostEqual(result.usage_usd, 0.000033)
         self.assertGreater(adapter.estimate_usd(bundle, DEFAULT_RECIPE, "facets"), result.usage_usd)
         sent = json.loads(self.requests[0].content)
         self.assertEqual(sent["model"], DEFAULT_RECIPE["model"])
