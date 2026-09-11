@@ -1,0 +1,25 @@
+{
+  "namespace": "daily.topic",
+  "version": 1,
+  "provenance": "Daily authored initial vocabulary; not an imported IPTC taxonomy. Requires labeled evaluation before promotion.",
+  "topics": [
+    {"id":"daily.topic.politics","parent":null,"definition":"Government, elections and public policy.","example":"Parliament approves a bill"},
+    {"id":"daily.topic.world","parent":null,"definition":"Diplomacy and international affairs.","example":"Countries negotiate a treaty"},
+    {"id":"daily.topic.business","parent":null,"definition":"Companies, industries, labor and economic activity.","example":"Factory workers negotiate pay"},
+    {"id":"daily.topic.finance","parent":"daily.topic.business","definition":"Financial markets, banking and personal finance.","example":"Central bank changes interest rates"},
+    {"id":"daily.topic.technology","parent":null,"definition":"Technology products, industry and their societal use.","example":"Phone manufacturer announces a device"},
+    {"id":"daily.topic.software","parent":"daily.topic.technology","definition":"Software engineering, programming tools and implementation.","example":"A compiler implements a new optimization; merely mentioning code is insufficient"},
+    {"id":"daily.topic.ai","parent":"daily.topic.technology","definition":"Artificial intelligence research, systems and deployment.","example":"Researchers evaluate a language model"},
+    {"id":"daily.topic.science","parent":null,"definition":"Scientific research and discovery.","example":"Astronomers observe a distant planet"},
+    {"id":"daily.topic.health","parent":null,"definition":"Public health, medicine and health research.","example":"Health officials issue a water advisory"},
+    {"id":"daily.topic.environment","parent":null,"definition":"Climate, ecosystems and environmental protection.","example":"Researchers measure glacier loss"},
+    {"id":"daily.topic.weather","parent":null,"definition":"Weather observations, forecasts and hazardous weather.","example":"Flooding closes bridges"},
+    {"id":"daily.topic.sports","parent":null,"definition":"Competitive sports, athletes and leagues.","example":"Mikal Bridges is traded"},
+    {"id":"daily.topic.culture","parent":null,"definition":"Arts, entertainment and cultural life.","example":"Museum opens an exhibition"},
+    {"id":"daily.topic.gaming","parent":"daily.topic.culture","definition":"Video games and gaming communities.","example":"A Zelda gameplay mod changes combat"},
+    {"id":"daily.topic.education","parent":null,"definition":"Schools, universities and education policy.","example":"University changes admissions"},
+    {"id":"daily.topic.public_safety","parent":null,"definition":"Crime, emergency response and public safety.","example":"Police investigate a fire"},
+    {"id":"daily.topic.transport","parent":null,"definition":"Transportation services, vehicles and infrastructure.","example":"Railway changes commuter services"},
+    {"id":"daily.topic.lifestyle","parent":null,"definition":"Food, travel and everyday living.","example":"A reported travel guide"}
+  ]
+}

@@ -79,9 +79,28 @@ class SnapshotConn:
         self.content_quality = content_quality
         self.store: dict[str, Any] = {"executed": [], "cache_inserts": {}, "unhandled": [], "served_ids": set()}
         self._rows: list[dict] | None = None
+        # S10 F: in-memory stand-in for user_feedback_signals/reading_events,
+        # written by the REAL app.services.feedback_signals.apply_feedback
+        # against this same connection (see evals/learning_replay.py) so a
+        # persona's next build reflects actual feedback instead of the
+        # unconditional `[]` this harness previously always returned for
+        # these tables -- the S0 gap tasks/s10-learning-audit.md names as the
+        # most important one: nothing could previously prove learning works.
+        self.feedback_signals: dict[tuple[str, str, str], dict] = {}
+        self.suppressed_article_ids: set[str] = set()
 
     def cursor(self) -> SnapshotCursor:
         return SnapshotCursor(self)
+
+    def suppress(self, article_id: str) -> None:
+        """S10 F: record that this user rejected an article, exactly what
+        load_suppressed_article_ids checks for (not_relevant/less_like_this/
+        already_knew/hide_source in reading_events). Direct rather than a
+        scripted INSERT round-trip: that write path is already covered by
+        test_feedback_signals.py's TestSuppression; what this harness proves
+        is that the unchanged production get_personalized_feed responds
+        correctly once the signal exists, not that the insert SQL is right."""
+        self.suppressed_article_ids.add(str(eval_uuid(article_id)))
 
     # -- helpers ---------------------------------------------------------------
     def _dt(self, value: Any) -> Any:
@@ -154,11 +173,45 @@ class SnapshotConn:
         if "FROM public.user_feed_cache ufc" in q:
             return []
         if ("FROM public.articles a JOIN public.article_source_links" in q
+                or "FROM public.articles a LEFT JOIN public.article_content_artifacts artifact" in q
                 or "FROM public.articles WHERE COALESCE(published_at" in q):
             return self._candidate_rows(q)
-        if any(t in q for t in ("FROM public.entity_pins", "FROM public.source_quality",
-                                "FROM public.user_feedback_signals", "FROM public.reading_events")):
+        if "FROM public.entity_pins" in q or "FROM public.source_quality" in q:
             return []
+        # S10 F: real signals instead of an unconditional []. `_attributions`
+        # (the SELECT with the LEFT JOIN) reads the article's source/category
+        # from the pool and its matched_profile_signals from whatever a prior
+        # INSERT INTO user_feed_cache recorded, exactly like production.
+        if "FROM public.articles a" in q and "LEFT JOIN public.user_feed_cache ufc" in q:
+            article_id = str(params[1]) if params and len(params) > 1 else None
+            row = next((r for r in self._all_rows() if str(r["id"]) == article_id), None)
+            if row is None:
+                return []
+            cached = self.store["cache_inserts"].get(article_id, {})
+            return [{"source_name": row["source_name"], "category": row["category"],
+                     "matched_profile_signals": cached.get("matched_profile_signals")}]
+        if q.startswith("INSERT INTO public.user_feedback_signals"):
+            user_id, kind, value, delta = str(params[0]), params[1], params[2], params[3]
+            floor, ceiling = params[4], params[5]
+            key = (user_id, kind, value)
+            existing = self.feedback_signals.get(key)
+            # Replay applies at a single frozen instant: no wall-clock time
+            # passes between builds, so the real UPSERT's decay term is ~1
+            # and is correctly omitted here rather than reimplementing SQL's
+            # extract(epoch FROM ...) in Python for a case that never fires.
+            base = existing["weight"] if existing else 0.0
+            self.feedback_signals[key] = {
+                "weight": max(floor, min(ceiling, base + delta)),
+                "events": (existing["events"] + 1) if existing else 1,
+                "updated_at": self.frozen_now,
+            }
+            return []
+        if "FROM public.user_feedback_signals" in q:
+            user_id = str(params[0]) if params else None
+            return [{"kind": k, "value": v, "weight": data["weight"], "updated_at": data["updated_at"]}
+                    for (uid, k, v), data in self.feedback_signals.items() if uid == user_id]
+        if "FROM public.reading_events" in q:
+            return [{"article_id": aid} for aid in self.suppressed_article_ids]
         if q.startswith("DELETE FROM public.user_feed_cache"):
             return []
         if q.startswith("INSERT INTO public.user_feed_cache"):
@@ -166,6 +219,9 @@ class SnapshotConn:
                 self.store["cache_inserts"][str(params[1])] = {
                     "score": params[2], "relevant": params[3],
                     "reason": params[4] if len(params) > 4 else None,
+                    # S10 F: index 8 in the 12-param shape _save_feed_cache
+                    # writes (S10 A1 added feed_request_id at the end).
+                    "matched_profile_signals": json.loads(params[8]) if len(params) > 8 and params[8] else None,
                 }
             return []
         if q.startswith("UPDATE public.articles") or q.startswith("INSERT INTO public.feed_build_log"):

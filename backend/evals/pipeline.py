@@ -439,6 +439,10 @@ def assemble(cands: list[Candidate], rubric: Rubric, size: int = 20,
     intent's remaining slots actively makes the feed worse. A short honest feed
     beats a padded one.
     """
+    if type(size) is not int or size < 0:
+        raise ValueError("Edition size must be a nonnegative integer")
+    if size == 0:
+        return []
     judged_run = any(c.article.get("_judged") for c in cands)
     if judged_run:
         # The model has ruled. Anything it rejected is out regardless of how
@@ -487,8 +491,18 @@ def assemble(cands: list[Candidate], rubric: Rubric, size: int = 20,
 
     # Forced items go to the top, displacing the weakest picks if need be.
     if forced:
-        keep = [c for c in out if c.doc_idx not in {f.doc_idx for f in forced}]
-        out = forced + keep[:max(0, size - len(forced))]
+        reserved = []
+        reserved_ids = set()
+        for candidate in forced:
+            identity = candidate.article.get("id", candidate.doc_idx)
+            if (identity not in reserved_ids and len(reserved) < min(2, size)
+                    and not is_excluded(candidate.article, rubric)
+                    and not any(_near_dupe(candidate.article, other.article) for other in reserved)):
+                reserved.append(candidate)
+                reserved_ids.add(identity)
+        keep = [c for c in out if c.article.get("id", c.doc_idx) not in reserved_ids
+                and not any(_near_dupe(c.article, other.article) for other in reserved)]
+        out = reserved + keep[:max(0, size - len(reserved))]
     return out
 
 
@@ -501,10 +515,8 @@ def run_pipeline(persona: dict, docs: list[dict], backend: BM25Backend,
     rubric = compile_rubric(persona)
     recalled = recall(rubric, backend, docs)
 
-    # World-critical events bypass everything. If states are exchanging fire,
-    # no reader's topic preferences justify hiding it from them — and the
-    # per-user judge does not get a vote, because "not about New Jersey" is a
-    # correct judgement that produces the wrong feed.
+    # Critical events may bypass soft relevance ranking, never explicit reader
+    # exclusions. Reservation is bounded independently of detector recall.
     forced: list[Candidate] = []
     if events:
         from evals.global_events import pick_for_reader
@@ -512,21 +524,28 @@ def run_pipeline(persona: dict, docs: list[dict], backend: BM25Backend,
         for e in events:
             if e.get("tier") == "world_critical":
                 idx = pick_for_reader(e, docs, home or set(), emb=emb)
+                if is_excluded(docs[idx], rubric):
+                    continue
                 c = next((x for x in recalled if x.doc_idx == idx), None)
                 if c is None:
                     c = Candidate(idx, docs[idx])
                     recalled.append(c)
+                    have.add(idx)
                 c.intent_hits["world event"] = 2.0
                 c.intent_kinds["world event"] = "world_critical"
-                c.article["_forced"] = e.get("what") or "Major world event"
-                forced.append(c)
+                if len(forced) < min(2, max(0, feed_size)) and c.doc_idx not in {f.doc_idx for f in forced}:
+                    c.article["_forced"] = e.get("what") or "Major world event"
+                    forced.append(c)
             elif e.get("tier") == "major":
                 idx = pick_for_reader(e, docs, home or set(), emb=emb)
+                if is_excluded(docs[idx], rubric):
+                    continue
                 if idx not in have:
                     c = Candidate(idx, docs[idx])
                     c.intent_hits["major story"] = 0.85
                     c.intent_kinds["major story"] = "salience"
                     recalled.append(c)
+                    have.add(idx)
 
     if with_salience:
         # Merge the "big story" leg in. Anything already retrieved by profile

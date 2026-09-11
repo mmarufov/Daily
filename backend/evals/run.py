@@ -41,6 +41,8 @@ def evaluate(runner_name: str, snapshot: str, persona_keys: list[str] | None = N
 
     per: dict[str, dict] = {}
     touched_before = set(client().touched)
+    prepare_global = getattr(runner, "prepare_global", None)
+    global_preparation = prepare_global(docs, now) if prepare_global else None
     for key, persona in personas.items():
         pool = pool_with_needles(snapshot, key, docs, now) if needles else list(docs)
         labels = load_labels(snapshot, key, include_needles=needles)
@@ -51,15 +53,27 @@ def evaluate(runner_name: str, snapshot: str, persona_keys: list[str] | None = N
             _print_persona(key, m, pool)
 
     summary = aggregate(per)
+    # Historical S0's per-reader ceiling excluded preparation. Preserve that
+    # metric explicitly without dropping preparation from actual system totals.
+    summary["reader_pipeline_calls_max_per_persona"] = max(
+        (m.get("meta", {}).get("reader_pipeline_calls", m["calls"]) for m in per.values()), default=0)
+    if global_preparation is not None:
+        summary["reader_calls_total"] = summary["calls_total"]
+        summary["reader_cost_usd_total"] = summary["cost_usd_total"]
+        summary["calls_total"] += global_preparation["calls"]
+        summary["cost_usd_total"] = round(summary["cost_usd_total"] + global_preparation["cost_usd"], 8)
+        summary["cache_misses_total"] += global_preparation["cache_misses"]
+        summary["global_preparation"] = global_preparation
     if verbose:
         _print_summary(runner.name, snapshot, summary)
     keys = sorted(set(client().touched) - touched_before) if not write else sorted(client().touched)
-    doc = {"runner": runner.name, "snapshot": snapshot, "k": k, "summary": summary, "per_persona": per,
+    protocol = getattr(runner, "protocol", "production-feed-v1")
+    doc = {"runner": runner.name, "protocol": protocol, "snapshot": snapshot, "k": k, "summary": summary, "per_persona": per,
            "cache_keys": keys}
     if write:
         path = out_dir / f"{git_sha()}-{runner.name}-{snapshot}.json"
         write_scorecard(path, runner.name, snapshot, per, summary, keys, k,
-                        meta={"needles": needles, "quiet": quiet})
+                        meta={"needles": needles, "quiet": quiet, "protocol": protocol})
         doc["path"] = str(path)
         if verbose:
             print(f"scorecard -> {path}")
@@ -103,7 +117,7 @@ def _print_summary(runner: str, snapshot: str, s: dict) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="Evaluate a feed system against labelled snapshots")
-    ap.add_argument("--runner", default="prod", choices=["prod", "prod-fallback", "proto", "proto-bm25"])
+    ap.add_argument("--runner", default="prod", choices=["prod", "prod-fallback", "proto", "proto-bm25", "proto-s0-legacy-v1"])
     ap.add_argument("--snapshot")
     ap.add_argument("--all-snapshots", action="store_true")
     ap.add_argument("--persona", nargs="*")

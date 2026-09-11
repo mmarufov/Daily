@@ -5,6 +5,7 @@ import os
 import sys
 import types
 import unittest
+from unittest.mock import AsyncMock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -32,15 +33,9 @@ class _MockResponse:
         self.url = url
 
 
-class _MockClient:
-    def __init__(self, responses=None, should_fail=False):
-        self._responses = responses or {}
-        self._should_fail = should_fail
-
-    async def head(self, url, **kwargs):
-        if self._should_fail:
-            raise Exception("timeout")
-        return _MockResponse(self._responses.get(url, url))
+class _FakePolicy:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
 
 
 # ---------------------------------------------------------------------------
@@ -73,65 +68,85 @@ class ResolveRedirectUrlsTests(unittest.IsolatedAsyncioTestCase):
     async def test_resolve_redirect_urls_resolves_google_news(self):
         google_url = "https://news.google.com/rss/articles/abc123"
         resolved_url = "https://arstechnica.com/real-article"
-        client = _MockClient(responses={google_url: resolved_url})
         articles = [{"url": google_url}]
 
-        await news_ingestion._resolve_redirect_urls(client, articles)
+        safe_fetch = AsyncMock(return_value=_MockResponse(resolved_url))
+        safe_http = types.SimpleNamespace(
+            SafeFetchPolicy=_FakePolicy,
+            safe_fetch=safe_fetch,
+        )
+        with patch.dict(sys.modules, {"app.services.safe_http": safe_http}):
+            await news_ingestion._resolve_redirect_urls(None, articles)
 
         self.assertEqual(articles[0]["url"], resolved_url)
+        safe_fetch.assert_awaited_once()
+        self.assertIsNone(safe_fetch.await_args.kwargs["policy"].kwargs["allowed_content_types"])
 
     async def test_resolve_redirect_urls_keeps_original_on_timeout(self):
         google_url = "https://news.google.com/rss/articles/abc123"
-        client = _MockClient(should_fail=True)
         articles = [{"url": google_url}]
 
-        await news_ingestion._resolve_redirect_urls(client, articles)
+        safe_http = types.SimpleNamespace(
+            SafeFetchPolicy=_FakePolicy,
+            safe_fetch=AsyncMock(side_effect=Exception("timeout")),
+        )
+        with patch.dict(sys.modules, {"app.services.safe_http": safe_http}):
+            await news_ingestion._resolve_redirect_urls(None, articles)
 
         self.assertEqual(articles[0]["url"], google_url)
 
     async def test_resolve_redirect_urls_skips_non_google_urls(self):
         normal_url = "https://arstechnica.com/some-article"
-        client = _MockClient(responses={normal_url: "https://should-not-change.com"})
         articles = [{"url": normal_url}]
 
-        await news_ingestion._resolve_redirect_urls(client, articles)
+        await news_ingestion._resolve_redirect_urls(None, articles)
 
         self.assertEqual(articles[0]["url"], normal_url)
 
 
 # ---------------------------------------------------------------------------
-# Tests: upsert SQL COALESCE pattern
+# Tests: provenance-safe image upsert
 # ---------------------------------------------------------------------------
 
 class UpsertCoalesceTests(unittest.TestCase):
-    """Verify the ON CONFLICT upsert SQL uses COALESCE(existing, new) so that
-    an existing non-NULL image_url is never overwritten by a NULL from a later feed."""
+    """Verify trusted images survive refreshes while unknown legacy images heal."""
 
     def _get_upsert_sql(self):
         """Extract the SQL string from fetch_rss_feeds source code."""
-        source = inspect.getsource(news_ingestion.fetch_rss_feeds)
+        source = inspect.getsource(news_ingestion._upsert_ingested_article)
         return source
 
     def test_upsert_preserves_existing_image(self):
         sql = self._get_upsert_sql()
-        # The pattern COALESCE(public.articles.image_url, EXCLUDED.image_url) means:
-        # keep existing value if non-NULL, else use the new value.
-        self.assertIn("COALESCE(public.articles.image_url, EXCLUDED.image_url)", sql)
+        self.assertIn("THEN EXCLUDED.image_url ELSE public.articles.image_url END", sql)
+        self.assertIn("EXCLUDED.image_url IS NOT NULL", sql)
 
     def test_upsert_fills_missing_image(self):
         sql = self._get_upsert_sql()
-        # When existing is NULL (first arg to COALESCE), EXCLUDED.image_url wins.
-        # This is implicit in COALESCE semantics — we just verify the pattern exists.
-        self.assertIn("COALESCE(public.articles.image_url, EXCLUDED.image_url)", sql)
+        self.assertIn("public.articles.image_url IS NULL", sql)
         # Also verify summary gets the same treatment
         self.assertIn("COALESCE(public.articles.summary, EXCLUDED.summary)", sql)
 
-    def test_upsert_coalesce_both_null(self):
+    def test_upsert_repairs_only_unknown_provenance(self):
         sql = self._get_upsert_sql()
-        # Verify ON CONFLICT is present (so the COALESCE is within an upsert context)
         self.assertIn("ON CONFLICT (url) DO UPDATE SET", sql)
-        # Verify that image_url uses COALESCE (both NULL → NULL is standard SQL behavior)
-        self.assertIn("COALESCE(public.articles.image_url, EXCLUDED.image_url)", sql)
+        self.assertIn("public.articles.image_origin IS NULL", sql)
+        self.assertIn("public.articles.image_origin = 'legacy_unknown'", sql)
+
+    def test_raw_feed_content_never_enters_article_display_columns(self):
+        sql = self._get_upsert_sql()
+        self.assertIn("NULL, false", sql)
+        self.assertNotIn('article.get("content")', sql.split("cur.execute", 1)[1].split("stored =", 1)[0])
+
+    def test_image_provenance_is_written_as_one_bundle(self):
+        sql = self._get_upsert_sql()
+        for column in (
+            "image_origin",
+            "image_source_url",
+            "image_attribution",
+            "image_is_illustrative",
+        ):
+            self.assertIn(column, sql)
 
 
 if __name__ == "__main__":

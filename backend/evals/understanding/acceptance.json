@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "unmeasured_unpromoted",
+  "supported_slices": [],
+  "minimums": {
+    "reviewed_articles": 600,
+    "holdout_articles": 150,
+    "slice_articles": 100,
+    "metric_denominator": 50
+  },
+  "quality_targets": {
+    "kind_macro_f1": 0.90,
+    "primary_topic": {"precision": 0.95, "recall": 0.90},
+    "entities": {"precision": 0.98, "recall": 0.90},
+    "places": {"precision": 0.98, "recall": 0.90},
+    "promotion": {"precision": 0.99, "recall": 0.95},
+    "stories": {"precision": 0.98, "recall": 0.90},
+    "unsupported_assertion_rate_max": 0.01,
+    "filtered_ann_recall_at_50": 0.98
+  },
+  "operations": {
+    "forecast_revisions_per_day": null,
+    "forecast_burst_revisions_per_minute": null,
+    "ready_within_seconds": 300,
+    "ready_fraction_target": 0.99,
+    "load_multiplier": 2,
+    "production_observation_hours_min": 72,
+    "retention_days": null
+  },
+  "budgets": {"pilot_usd": 5.0, "benchmark_usd": null, "production_daily_usd": null},
+  "note": "Targets are not achieved results. The user authorized USD 5 aggregate for the small S3 pilot only; its durable ledger spans restarts and output/cache paths. Benchmark and production budgets remain unset. Empty support declarations and null load forecasts block promotion. No production readiness is inferred from the offline quality report. Expand critical slices until intervals support the claim."
+}

@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "release_ready": false,
+  "supported_slices": [],
+  "pilot_budget_usd": null,
+  "daily_budget_usd": null,
+  "monthly_budget_usd": null,
+  "forecast_revisions_per_day": null,
+  "forecast_burst_per_minute": null,
+  "max_evidence_per_event": 128,
+  "max_snapshot_bytes": 512000,
+  "max_attempts": 5,
+  "max_priority_lifetime_seconds": 86400,
+  "freshness_p95_seconds": 300,
+  "private_purge_slo_seconds": 3600,
+  "quality_targets": {
+    "membership_precision": 0.98,
+    "membership_recall": 0.90,
+    "critical_precision_lower_95": 0.99,
+    "critical_recall_lower_95": 0.95,
+    "negative_error_upper_95": 0.005,
+    "delta_precision": 0.98,
+    "delta_recall": 0.90,
+    "representative_accuracy": 0.99
+  },
+  "blockers": ["unapproved_support_slices", "independent_evaluation_missing", "budget_approval_missing", "hosted_lifecycle_verification_missing", "production_prerequisites_unverified"]
+}

@@ -143,6 +143,8 @@ Echo every id exactly once."""
 
 def classify_gravity(events: list[dict], llm_call, top_n: int = 24) -> dict[int, dict]:
     """Classify the widest-spread events. One call, shared by every user."""
+    if type(top_n) is not int or top_n < 1 or top_n > 100:
+        raise ValueError("Gravity shortlist must be a bounded positive integer")
     ranked = sorted(events, key=lambda e: -e["spread"])[:top_n]
     if not ranked or llm_call is None:
         return {}
@@ -158,12 +160,21 @@ def classify_gravity(events: list[dict], llm_call, top_n: int = 24) -> dict[int,
 
     out: dict[int, dict] = {}
     valid = {e["id"] for e in ranked}
-    for v in verdicts or []:
+    if not isinstance(verdicts, list) or len(verdicts) > len(ranked):
+        return {}
+    duplicate_ids = {v["id"] for v in verdicts if isinstance(v, dict) and type(v.get("id")) is int
+                     and sum(isinstance(other, dict) and type(other.get("id")) is int
+                             and other["id"] == v["id"] for other in verdicts) > 1}
+    for v in verdicts:
+        if not isinstance(v, dict) or set(v) != {"id", "tier", "what"}:
+            continue
         vid = v.get("id")
-        if isinstance(vid, int) and vid in valid and vid not in out:
+        if type(vid) is int and vid in valid and vid not in duplicate_ids:
             tier = v.get("tier")
-            if tier in {"world_critical", "major", "routine"}:
-                out[vid] = {"tier": tier, "what": v.get("what", "")}
+            what = v.get("what")
+            if (isinstance(tier, str) and tier in {"world_critical", "major", "routine"}
+                    and isinstance(what, str) and what.strip() and len(what) <= 500):
+                out[vid] = {"tier": tier, "what": what}
     return out
 
 
@@ -184,7 +195,8 @@ def detect_events(docs: list[dict], emb: np.ndarray, llm_call,
     gravity = classify_gravity(events, llm_call)
     for e in events:
         g = gravity.get(e["id"])
-        e["tier"] = g["tier"] if g else "routine"
+        e["tier"] = g["tier"] if g else "unknown"
+        e["assessment_status"] = "ready" if g else "unassessed"
         e["what"] = g["what"] if g else ""
     return events
 

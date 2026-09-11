@@ -1,0 +1,28 @@
+# Reviewed deployment template. Merge process definitions into fly.toml only
+# after S1/S2 readiness and S3 schema migration. Not auto-deployed by this change.
+app = "daily-backend"
+primary_region = "iad"
+
+[processes]
+  app = "uvicorn app.main:app --host 0.0.0.0 --port 8080 --workers 2"
+  understanding = "python -m app.services.understanding_worker"
+
+[env]
+  S3_WORKER_ENABLED = "true"
+  S3_CONSUMERS_ENABLED = "false"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[[vm]]
+  processes = ["app"]
+  size = "shared-cpu-2x"
+
+[[vm]]
+  processes = ["understanding"]
+  size = "shared-cpu-2x"

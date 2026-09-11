@@ -20,12 +20,13 @@ from __future__ import annotations
 import asyncio
 import copy
 import hashlib
+import json
 import os
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Literal, Protocol
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 from evals.fake_db import SnapshotConn, eval_uuid, persona_uuid
 
@@ -253,8 +254,7 @@ class ProductionRunner:
                  patch.object(feed_service, "_apply_individual_analysis_results", w_apply), \
                  patch.object(feed_service, "_collapse_duplicate_coverage", _stage_wrapper(o_dedup, "dedup", "dedup")), \
                  patch.object(feed_service, "_enforce_diversity", _stage_wrapper(o_div, "diversity", "diversity")), \
-                 patch.object(feed_service, "_balance_feed_roles", _stage_wrapper(o_roles, "roles", "roles")), \
-                 patch.object(feed_service, "_hydrate_missing_feed_images", AsyncMock(return_value=None)):
+                 patch.object(feed_service, "_balance_feed_roles", _stage_wrapper(o_roles, "roles", "roles")):
                 return asyncio.run(feed_service.get_personalized_feed(
                     user_id, conn, limit=self.limit, force_refresh=True))
 
@@ -278,6 +278,8 @@ class ProductionRunner:
 # ---------------------------------------------------------------------------
 
 class PrototypeRunner:
+    protocol = "canonical-global-events-v2"
+
     def __init__(self, backend: Literal["bm25", "hybrid"] = "hybrid", judge: bool = True,
                  events: bool = True, feed_size: int = 12, k: int = 12,
                  judge_model: str | None = None, cluster_threshold: float = 0.55):
@@ -286,9 +288,24 @@ class PrototypeRunner:
         self.cluster_threshold = cluster_threshold
         self.name = f"proto-{backend}{'-judge' if judge else ''}{'-events' if events else ''}"
         self._pool_state: dict[str, dict] = {}
+        self._global_state: dict | None = None
+        self._global_prepared: dict | None = None
+        self._global_docs_digest: str | None = None
 
-    def _prepare(self, docs: list[dict]) -> dict:
-        key = hashlib.sha1("|".join(d["id"] for d in docs).encode()).hexdigest()
+    @staticmethod
+    def _digest(value) -> str:
+        return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False,
+                                          separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+
+    def _prepare(self, docs: list[dict], frozen_now: datetime | None = None, *, global_detection: bool = True) -> dict:
+        from evals.global_events import GRAVITY_SYSTEM, SOURCE_REGION
+        from evals.openai_backend import EMBED_MODEL, JUDGE_MODEL
+        key = self._digest({"docs": docs, "cutoff": frozen_now.isoformat() if frozen_now else None,
+                            "backend": self.backend_kind, "judge": self.judge, "model": self.judge_model or JUDGE_MODEL,
+                            "embedding_model": EMBED_MODEL, "gravity_prompt": GRAVITY_SYSTEM,
+                            "source_regions": SOURCE_REGION, "recipe": "legacy-prototype-events-v2",
+                            "events": self.events, "threshold": self.cluster_threshold,
+                            "global_detection": global_detection})
         st = self._pool_state.get(key)
         if st is not None:
             return st
@@ -303,25 +320,63 @@ class PrototypeRunner:
                 st["backend"] = HybridBackend(dense, lexical)
             if self.judge:
                 st["judge"] = make_judge(self.judge_model) if self.judge_model else make_judge()
-        if self.events and st["emb"] is not None and st["judge"] is not None:
+        if global_detection and self.events and st["emb"] is not None and st["judge"] is not None:
             from evals.global_events import detect_events
             st["events"] = detect_events(docs, st["emb"], st["judge"],
                                          threshold=self.cluster_threshold, min_sources=2)
         self._pool_state[key] = st
         return st
 
+    def prepare_global(self, docs: list[dict], frozen_now: datetime) -> dict:
+        """Freeze detector inputs before per-reader needles; account once.
+
+        The returned costs belong to system preparation, not every persona's
+        marginal build. Repeated article IDs with changed evidence are not hits.
+        """
+        if len({d["id"] for d in docs}) != len(docs):
+            raise ValueError("Duplicate canonical global article IDs")
+        st, calls, cost, hits, misses, secs = _meter_delta(lambda: self._prepare(docs, frozen_now))
+        self._global_prepared = st
+        self._global_docs_digest = self._digest(docs)
+        self._global_state = {
+            "articles": {d["id"]: self._digest(d) for d in docs},
+            "cutoff": frozen_now.isoformat(),
+            "events": [{**event, "member_ids": [docs[i]["id"] for i in event["members"]],
+                        "rep_id": docs[event["rep"]]["id"]} for event in st["events"] or []],
+        }
+        return {"calls": calls, "cost_usd": cost, "cache_hits": hits, "cache_misses": misses,
+                "latency_s": secs, "canonical_pool_sha256": self._digest(self._global_state)}
+
+    def _events_for_pool(self, pool: list[dict], frozen_now: datetime) -> list[dict]:
+        state = self._global_state
+        if state is None:
+            raise ValueError("Canonical global events have not been prepared")
+        positions = {doc["id"]: i for i, doc in enumerate(pool)}
+        if len(positions) != len(pool) or state["cutoff"] != frozen_now.isoformat():
+            raise ValueError("Duplicate pool IDs or changed global decision cutoff")
+        for aid, checksum in state["articles"].items():
+            if aid not in positions or self._digest(pool[positions[aid]]) != checksum:
+                raise ValueError("Canonical global evidence changed; prepare_global again")
+        return [{**event, "members": [positions[i] for i in event["member_ids"]],
+                 "rep": positions[event["rep_id"]]} for event in state["events"]]
+
     def build(self, persona: dict, pool: list[dict], frozen_now: datetime) -> BuildResult:
         from evals.global_events import home_regions
-        from evals.pipeline import final_score, run_pipeline
+        from evals.pipeline import final_score
 
-        st = self._prepare(pool)
+        st, prep_calls, prep_cost, prep_hits, prep_misses, prep_secs = _meter_delta(
+            lambda: self._global_prepared if self._global_state is not None
+            and self._global_state["cutoff"] == frozen_now.isoformat()
+            and self._global_docs_digest == self._digest(pool)
+            else self._prepare(pool, frozen_now, global_detection=self._global_state is None))
+        events = self._events_for_pool(pool, frozen_now) if self._global_state is not None else st["events"]
         docs = copy.deepcopy(pool)          # run_pipeline annotates articles in place
         tr = _Trace([d["id"] for d in docs], first_drop="recall")
         home = home_regions(persona) if persona.get("user_profile_v2") else set()
 
         def run():
-            return run_pipeline(persona, docs, st["backend"], llm_call=st["judge"],
-                                feed_size=self.feed_size, events=st["events"], home=home, emb=st["emb"])
+            return self._run_pipeline(persona, docs, st["backend"], llm_call=st["judge"],
+                                feed_size=self.feed_size, events=events, home=home, emb=st["emb"])
 
         r, calls, cost, hits, misses, secs = _meter_delta(run)
 
@@ -359,14 +414,43 @@ class PrototypeRunner:
             tr.t[i]["dropped_at"] = None
         tr.finish(feed, self.k)
 
-        n_events = len([e for e in (st["events"] or []) if e.get("tier") == "world_critical"])
+        n_events = len([e for e in (events or []) if e.get("tier") == "world_critical"])
         return BuildResult(
-            feed=feed, trace=tr.t, calls=calls, cost_usd=cost, latency_s=secs,
-            cache_hits=hits, cache_misses=misses,
+            feed=feed, trace=tr.t, calls=calls + prep_calls, cost_usd=cost + prep_cost, latency_s=secs + prep_secs,
+            cache_hits=hits + prep_hits, cache_misses=misses + prep_misses,
             meta={"runner": self.name, "backend": self.backend_kind, "judge": self.judge,
+                  "protocol": self.protocol, "reader_pipeline_calls": calls,
                   "events": self.events, "world_critical_events": n_events,
+                  "reader_preparation": {"calls": prep_calls, "cost_usd": prep_cost, "latency_s": prep_secs},
+                  "global_pool_frozen": self._global_state is not None,
                   "recalled": r["recalled"], "triaged": r["triaged"], "k": self.k},
         )
+
+    @staticmethod
+    def _run_pipeline(*args, **kwargs):
+        from evals.pipeline import run_pipeline
+        return run_pipeline(*args, **kwargs)
+
+
+class HistoricalS0PrototypeRunner(PrototypeRunner):
+    """Explicit reproducibility adapter, never selected by the current default.
+
+    Old cached responses belong to persona-dependent detector inputs. They are
+    not interchangeable with corrected canonical-global requests. Full cost and
+    preparation calls remain accounted; old call ceilings refer to the separate
+    reader_pipeline_calls metric, which was their original measurement boundary.
+    """
+    protocol = "s0-prototype-persona-global-v1"
+    prepare_global = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.name += "-s0-legacy-v1"
+
+    @staticmethod
+    def _run_pipeline(*args, **kwargs):
+        from evals.legacy_s0 import run_pipeline
+        return run_pipeline(*args, **kwargs)
 
 
 def get_runner(name: str, **kw) -> FeedSystem:
@@ -376,6 +460,8 @@ def get_runner(name: str, **kw) -> FeedSystem:
         return ProductionRunner(mode="fallback", **kw)
     if name == "proto":
         return PrototypeRunner(**kw)
+    if name == "proto-s0-legacy-v1":
+        return HistoricalS0PrototypeRunner(**kw)
     if name == "proto-bm25":
         return PrototypeRunner(backend="bm25", judge=False, events=False, **kw)
     raise ValueError(f"unknown runner {name!r}")

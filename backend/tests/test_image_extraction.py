@@ -175,6 +175,27 @@ class ImageExtractionTests(unittest.TestCase):
 
         self.assertEqual(image_url, "")
 
+    def test_rejects_private_and_special_use_image_hosts(self):
+        for candidate in (
+            "http://localhost/lead.jpg",
+            "http://metadata/lead.jpg",
+            "http://cdn.internal/lead.jpg",
+            "http://10.0.0.8/lead.jpg",
+            "http://[::1]/lead.jpg",
+        ):
+            with self.subTest(candidate=candidate):
+                html = (
+                    '<html><head><meta property="og:image" content="'
+                    + candidate
+                    + '" /></head><body></body></html>'
+                )
+                self.assertEqual(
+                    image_extraction.extract_best_image_from_html(
+                        html, "https://example.com/story"
+                    ),
+                    "",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

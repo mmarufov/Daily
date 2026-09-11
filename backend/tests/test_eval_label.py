@@ -74,6 +74,15 @@ class TestAgentReview(unittest.TestCase):
         self.assertEqual(saved["clusters"][0]["source"], "agent")
         self.assertEqual(saved["review"]["source"], "agent")
 
+    def test_bootstrap_cannot_overwrite_reviewed_events_or_spend_first(self):
+        path = self.labels / "snap" / "events.json"
+        payload = {"clusters": [{"id": "reviewed", "source": "agent"}]}
+        path.write_text(json.dumps(payload))
+        with patch("evals.openai_backend.EmbeddingBackend", side_effect=AssertionError("must not call provider")):
+            with self.assertRaisesRegex(ValueError, "overwrite independently reviewed"):
+                label.bootstrap_events("snap", [])
+        self.assertEqual(json.loads(path.read_text()), payload)
+
 
 if __name__ == "__main__":
     unittest.main()

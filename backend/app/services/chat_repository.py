@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from app.services.article_content import article_content_transaction, register_ingested_article
+
 
 def ensure_chat_tables(conn) -> None:
     with conn.cursor() as cur:
@@ -324,8 +326,11 @@ def get_message_sources(
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT cms.message_id, cms.source_rank, a.id, a.title, a.summary, a.content,
-                   a.author, a.source_name, a.image_url, a.published_at, a.category, a.url
+            SELECT cms.message_id, cms.source_rank, a.id, a.title, a.summary,
+                   COALESCE(a.analysis_text, a.content) AS content,
+                   a.author, a.source_name, a.image_url, a.image_origin,
+                   a.image_source_url, a.image_attribution, a.image_is_illustrative,
+                   a.published_at, a.category, a.url
             FROM public.chat_message_sources cms
             JOIN public.articles a ON a.id = cms.article_id
             WHERE cms.message_id = ANY(%s)
@@ -351,8 +356,11 @@ def get_recent_thread_source_articles(
         cur.execute(
             """
             SELECT DISTINCT ON (a.id)
-                   a.id, a.title, a.summary, a.content, a.author,
-                   a.source_name, a.image_url, a.published_at, a.category, a.url,
+                   a.id, a.title, a.summary,
+                   COALESCE(a.analysis_text, a.content) AS content, a.author,
+                   a.source_name, a.image_url, a.image_origin, a.image_source_url,
+                   a.image_attribution, a.image_is_illustrative,
+                   a.published_at, a.category, a.url,
                    cm.created_at
             FROM public.chat_messages cm
             JOIN public.chat_message_sources cms ON cms.message_id = cm.id
@@ -375,8 +383,9 @@ def get_articles_by_ids(conn, *, article_ids: list[str]) -> list[dict[str, Any]]
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, title, summary, content, author, source_name, image_url,
-                   published_at, category, url
+            SELECT id, title, summary, COALESCE(analysis_text, content) AS content,
+                   author, source_name, image_url, image_origin, image_source_url,
+                   image_attribution, image_is_illustrative, published_at, category, url
             FROM public.articles
             WHERE id = ANY(%s)
             """,
@@ -396,8 +405,9 @@ def get_articles_by_urls(conn, *, urls: list[str]) -> list[dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, title, summary, content, author, source_name, image_url,
-                   published_at, category, url
+            SELECT id, title, summary, COALESCE(analysis_text, content) AS content,
+                   author, source_name, image_url, image_origin, image_source_url,
+                   image_attribution, image_is_illustrative, published_at, category, url
             FROM public.articles
             WHERE url = ANY(%s)
             """,
@@ -419,35 +429,81 @@ def upsert_external_articles(
     if not cleaned:
         return []
 
-    with conn.cursor() as cur:
-        for article in cleaned:
-            cur.execute(
-                """
-                INSERT INTO public.articles (
-                    url, title, summary, author, source_name, image_url, published_at, category, ingested_at
+    for article in cleaned:
+        source_name = article.get("source_name") or article.get("source")
+        image_url = article.get("image_url")
+        with article_content_transaction(conn):
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO public.articles (
+                        url, title, summary, author, source_name, image_url,
+                        image_origin, image_source_url, image_attribution,
+                        image_is_illustrative, published_at, category, ingested_at
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, false, %s, %s, now())
+                    ON CONFLICT (url) DO UPDATE SET
+                        title = COALESCE(NULLIF(EXCLUDED.title, ''), public.articles.title),
+                        summary = COALESCE(public.articles.summary, EXCLUDED.summary),
+                        author = COALESCE(public.articles.author, EXCLUDED.author),
+                        source_name = COALESCE(public.articles.source_name, EXCLUDED.source_name),
+                        image_url = CASE
+                            WHEN EXCLUDED.image_url IS NOT NULL
+                             AND (public.articles.image_url IS NULL
+                                  OR public.articles.image_origin IS NULL
+                                  OR public.articles.image_origin = 'legacy_unknown')
+                            THEN EXCLUDED.image_url ELSE public.articles.image_url END,
+                        image_origin = CASE
+                            WHEN EXCLUDED.image_url IS NOT NULL
+                             AND (public.articles.image_url IS NULL
+                                  OR public.articles.image_origin IS NULL
+                                  OR public.articles.image_origin = 'legacy_unknown')
+                            THEN EXCLUDED.image_origin ELSE public.articles.image_origin END,
+                        image_source_url = CASE
+                            WHEN EXCLUDED.image_url IS NOT NULL
+                             AND (public.articles.image_url IS NULL
+                                  OR public.articles.image_origin IS NULL
+                                  OR public.articles.image_origin = 'legacy_unknown')
+                            THEN EXCLUDED.image_source_url ELSE public.articles.image_source_url END,
+                        image_attribution = CASE
+                            WHEN EXCLUDED.image_url IS NOT NULL
+                             AND (public.articles.image_url IS NULL
+                                  OR public.articles.image_origin IS NULL
+                                  OR public.articles.image_origin = 'legacy_unknown')
+                            THEN EXCLUDED.image_attribution ELSE public.articles.image_attribution END,
+                        image_is_illustrative = CASE
+                            WHEN EXCLUDED.image_url IS NOT NULL
+                             AND (public.articles.image_url IS NULL
+                                  OR public.articles.image_origin IS NULL
+                                  OR public.articles.image_origin = 'legacy_unknown')
+                            THEN EXCLUDED.image_is_illustrative ELSE public.articles.image_is_illustrative END,
+                        published_at = COALESCE(public.articles.published_at, EXCLUDED.published_at),
+                        category = COALESCE(public.articles.category, EXCLUDED.category),
+                        ingested_at = now()
+                    RETURNING id
+                    """,
+                    (
+                        article.get("url"),
+                        article.get("title") or "Untitled",
+                        article.get("summary"),
+                        article.get("author"),
+                        source_name,
+                        image_url,
+                        "aggregator_api" if image_url else None,
+                        article.get("url") if image_url else None,
+                        source_name if image_url else None,
+                        article.get("published_at"),
+                        article.get("category"),
+                    ),
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, now())
-                ON CONFLICT (url) DO UPDATE SET
-                    title = COALESCE(NULLIF(EXCLUDED.title, ''), public.articles.title),
-                    summary = COALESCE(public.articles.summary, EXCLUDED.summary),
-                    author = COALESCE(public.articles.author, EXCLUDED.author),
-                    source_name = COALESCE(public.articles.source_name, EXCLUDED.source_name),
-                    image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
-                    published_at = COALESCE(public.articles.published_at, EXCLUDED.published_at),
-                    category = COALESCE(public.articles.category, EXCLUDED.category),
-                    ingested_at = now()
-                """,
-                (
-                    article.get("url"),
-                    article.get("title") or "Untitled",
-                    article.get("summary"),
-                    article.get("author"),
-                    article.get("source_name") or article.get("source"),
-                    article.get("image_url"),
-                    article.get("published_at"),
-                    article.get("category"),
-                ),
-            )
+                stored = cur.fetchone()
+            if stored:
+                register_ingested_article(
+                    conn,
+                    stored["id"],
+                    canonical_url=str(article["url"]),
+                    feed_content=None,
+                )
 
     return get_articles_by_urls(
         conn,

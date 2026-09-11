@@ -1,10 +1,11 @@
 import asyncio
 import importlib
+import inspect
 import os
 import sys
 import types
 import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -67,6 +68,17 @@ class _FakeOpenAIService:
 # ---------------------------------------------------------------------------
 
 class EnrichmentTests(unittest.IsolatedAsyncioTestCase):
+    def test_enrichment_scans_all_pending_rows_and_uses_analysis_text(self):
+        source = inspect.getsource(article_enrichment.enrich_articles)
+        self.assertIn("analysis_text", source)
+        self.assertIn("enrichment_completed = false", source)
+        self.assertIn("content_quality_content_version", source)
+        self.assertNotIn("WHERE content_extracted = true", source)
+
+    def test_illustrative_image_sources_are_default_off(self):
+        self.assertFalse(article_enrichment.ENRICH_STOCK_IMAGES)
+        self.assertFalse(article_enrichment.ENRICH_GENERATED_IMAGES)
+
     async def test_enrichment_retries_on_image_failure(self):
         """Article without image, image fetch fails -> attempts incremented, NOT marked completed."""
         row = {
@@ -204,6 +216,32 @@ class EnrichmentTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("enrichment_completed = true", update_sql)
         self.assertIn("image_url", update_sql)
         self.assertEqual(result["images_found"], 1)
+
+    async def test_stock_search_is_not_called_when_default_disabled(self):
+        row = {
+            "id": "article-stock-off",
+            "url": "https://example.com/story",
+            "title": "Publisher story",
+            "summary": "A useful summary.",
+            "analysis_text": "A" * 300,
+            "image_url": None,
+            "enrichment_attempts": 0,
+        }
+        conn = _FakeConn(rows=[row])
+        openai_factory = Mock(return_value=_FakeOpenAIService())
+
+        with patch.object(
+            article_enrichment,
+            "fetch_best_source_image",
+            new=AsyncMock(return_value=None),
+        ), patch.object(
+            openai_service_mod,
+            "get_openai_service",
+            new=openai_factory,
+        ), patch.object(article_enrichment, "ENRICH_STOCK_IMAGES", False):
+            await article_enrichment.enrich_articles(conn)
+
+        openai_factory.assert_not_called()
 
 
 if __name__ == "__main__":

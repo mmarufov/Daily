@@ -366,6 +366,10 @@ def bootstrap(snapshot: str, persona_key: str, persona: dict, docs: list[dict],
 
 def bootstrap_events(snapshot: str, docs: list[dict], threshold: float = 0.55,
                      keep_routine_top: int = 10) -> dict:
+    out = labels_dir(snapshot) / "events.json"
+    if out.exists() and any(c.get("source") in {"agent", "human"}
+                            for c in json.loads(out.read_text()).get("clusters", [])):
+        raise ValueError("Refusing to overwrite independently reviewed events with model seeds")
     from evals.global_events import detect_events
     from evals.openai_backend import EmbeddingBackend, make_judge
     dense = EmbeddingBackend(docs)
@@ -383,7 +387,8 @@ def bootstrap_events(snapshot: str, docs: list[dict], threshold: float = 0.55,
             "tier": e["tier"], "spread": e["spread"], "sources": e["source_names"],
             "article_ids": [docs[i]["id"] for i in e["members"]], "source": "model",
         })
-    doc = {"snapshot": snapshot, "threshold": threshold, "clusters": clusters}
+    doc = {"snapshot": snapshot, "threshold": threshold, "clusters": clusters,
+           "quality_status": "model_seeds_not_independent_ground_truth"}
     out = labels_dir(snapshot) / "events.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n")

@@ -125,6 +125,9 @@ def score_build(result: BuildResult, labels: dict[str, dict], events: dict, pool
         "event_delivery": _div(crit_delivered, len(crit)) if crit else None,
         "major_delivery": _div(major_delivered, len(major)) if major else None,
         "false_major_rate": false_major,
+        # Historical key retained for S0 baseline continuity; the explicit name
+        # prevents this feed-slot metric being mistaken for detector precision.
+        "event_slot_contamination": false_major,
         "judge_precision": _div(tp, tp + fp) if (tp + fp) else None,
         "judge_recall": _div(tp, tp + fn) if (tp + fn) else None,
         "judge_n": tp + fp + fn + tn,
@@ -141,7 +144,7 @@ def score_build(result: BuildResult, labels: dict[str, dict], events: dict, pool
 
 
 NUMERIC = ("recall_at_k", "raw_recall_at_k", "recall_at_retrieval", "need_to_know_recall", "followup_recall", "never_rate",
-           "event_delivery", "major_delivery", "false_major_rate", "judge_precision", "judge_recall",
+           "event_delivery", "major_delivery", "false_major_rate", "event_slot_contamination", "judge_precision", "judge_recall",
            "needle_recall", "lookalike_rate", "feed_size_k", "distinct_sources", "latency_s")
 
 

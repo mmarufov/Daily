@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "draft",
+  "approved_by": null,
+  "frozen_at": "2026-09-06T00:00:00Z",
+  "supported_slices": [],
+  "alignment": "core-overlap-type-place-time-maximum-cardinality-v1",
+  "minimum_core_coverage": 0.5,
+  "interval_method": "independent-opportunity-clopper-pearson-v1",
+  "independent_opportunities_attested": false,
+  "minimum_slice_developments": 100,
+  "minimum_metric_denominator": 50
+}
