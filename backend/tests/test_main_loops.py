@@ -151,8 +151,17 @@ class TestPerUserRefreshQuery(unittest.TestCase):
         """`last_active_at` is only set once a client makes an authenticated
         call; without the COALESCE a brand-new reader is never refreshed."""
         import inspect
-        source = inspect.getsource(app_main._per_user_refresh_loop)
+        source = inspect.getsource(app_main._active_users_with_sources)
         self.assertIn("COALESCE(u.last_active_at, u.last_login)", source)
+
+    def test_loop_delegates_to_the_standalone_query_function(self):
+        """The query lives in _active_users_with_sources specifically so a
+        real-Postgres test can exercise it without running the infinite
+        loop; guard against it silently being inlined back."""
+        import inspect
+        source = inspect.getsource(app_main._per_user_refresh_loop)
+        self.assertIn("_active_users_with_sources(conn)", source)
+        self.assertNotIn("SELECT DISTINCT", source)
 
     def test_schema_creates_last_active_at(self):
         """The column the loop filters on must actually exist."""

@@ -307,6 +307,38 @@ async def _interest_evolution_loop():
         await asyncio.sleep(21600)  # 6 hours
 
 
+def _active_users_with_sources(conn) -> list[str]:
+    """User ids (as strings) with an active source and recent activity.
+
+    A standalone, directly testable function on purpose: the SQL here has
+    broken twice in ways no source-inspection test could have caught, since
+    both bugs only manifest against a real Postgres server:
+    - referenced `last_active_at` before that column existed (UndefinedColumn)
+    - compared `u.id::text` against `us.user_id`, a real `uuid` column, not
+      text (UndefinedFunction: operator does not exist: text = uuid) --
+      caught only once this path finally ran for real, in production,
+      2026-09-11, after five months where nothing exercised it.
+    COALESCE(u.last_active_at, u.last_login) because `last_active_at` is only
+    set once a client calls an authenticated endpoint; `last_login` always is.
+    The outer cast to `text` matches this file's convention of handing user
+    ids around as plain strings (see `_get_user_id_from_token`'s
+    `str(row["id"])`), not `uuid.UUID` objects.
+    """
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT DISTINCT us.user_id::text AS user_id
+            FROM public.user_sources us
+            WHERE us.active = true
+            AND EXISTS (
+                SELECT 1 FROM public.users u
+                WHERE u.id = us.user_id
+                AND COALESCE(u.last_active_at, u.last_login)
+                    > now() - interval '24 hours'
+            )
+        """)
+        return [row["user_id"] for row in cur.fetchall()]
+
+
 async def _per_user_refresh_loop():
     """Background task: refresh articles from per-user sources every 30 minutes."""
     from app.services.user_source_pipeline import build_feed_for_user
@@ -324,25 +356,7 @@ async def _per_user_refresh_loop():
                 await asyncio.sleep(1800)
                 continue
             with _leader("per_user_refresh") as conn:
-                # Find users who have sources and were active recently.
-                # COALESCE because `last_active_at` is only set once a client
-                # calls an authenticated endpoint; `last_login` always is. Before
-                # this fix the query referenced `last_active_at` alone, a column
-                # that did not exist, so every tick raised UndefinedColumn and
-                # was swallowed — this loop had never once run.
-                with conn.cursor() as cur:
-                    cur.execute("""
-                        SELECT DISTINCT us.user_id
-                        FROM public.user_sources us
-                        WHERE us.active = true
-                        AND EXISTS (
-                            SELECT 1 FROM public.users u
-                            WHERE u.id::text = us.user_id
-                            AND COALESCE(u.last_active_at, u.last_login)
-                                > now() - interval '24 hours'
-                        )
-                    """)
-                    active_users = [row["user_id"] for row in cur.fetchall()]
+                active_users = _active_users_with_sources(conn)
 
                 # The refresh runs inside the leader block so a second worker
                 # cannot start an overlapping pass; it takes its own pooled
