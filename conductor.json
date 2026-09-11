@@ -1,8 +1,0 @@
-{
-  "previewUrl": "http://localhost:$CONDUCTOR_PORT",
-  "scripts": {
-    "setup": "bash scripts/setup.sh",
-    "run": "cd backend && source venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload",
-    "archive": "rm -rf backend/venv && find backend -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; true"
-  }
-}
