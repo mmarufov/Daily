@@ -1,0 +1,11 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+archive = "rm -rf backend/venv && find backend -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; true"
+setup = "bash scripts/setup.sh"
+
+[scripts.run.run]
+available_in = "local"
+command = "cd backend && source venv/bin/activate && uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload"
+default = true
+icon = "play"
