@@ -85,9 +85,22 @@ class ShadowRunner:
                     return {'status': 'reader_unavailable'}
                 # load_reader has committed; retrieval owns the next idle,
                 # read-only repeatable-read transaction on the same connection.
+                #
+                # No remaining() check here: build_candidate_batch already
+                # enforces this exact deadline internally (tightening
+                # statement_timeout per query via reader_retrieval._remaining,
+                # catching its own RetrievalDeadline/QueryCanceled) and always
+                # returns a valid CandidateBatch either way -- 'complete' if it
+                # finished, 'degraded' with a partial result and
+                # stop_reason='deadline' if it ran out of time. A live
+                # production profile with several intents was observed
+                # completing its own work correctly but landing microseconds
+                # past this external deadline (the cost of Postgres actually
+                # cancelling a statement is not free); re-checking here after
+                # the batch is already computed can only discard an
+                # already-valid result for a race that already resolved.
                 batch = build_candidate_batch(conn, user_id, snapshot,
                                                deadline=deadline, as_of=as_of)
-                remaining()
                 return _aggregate(batch)
         except (TimeoutError, QueryCanceled):
             return {'status': 'timed_out'}
@@ -116,9 +129,17 @@ class ShadowRunner:
         future.add_done_callback(self._finished)
         wrapped = asyncio.wrap_future(future)
         try:
-            result = await asyncio.wait_for(asyncio.shield(wrapped),
-                                            timeout=max(0, deadline - time.monotonic()))
-            return result if time.monotonic() < deadline else {'status': 'timed_out'}
+            # asyncio.wait_for already is the deadline enforcement: it raises
+            # asyncio.TimeoutError (caught below) if the worker doesn't finish
+            # within `timeout`, and shield() keeps that worker running rather
+            # than cancelling it either way. If wait_for returns instead of
+            # raising, the worker genuinely finished in time -- a second
+            # wall-clock re-check here only ever fires on the same race
+            # _worker used to lose (see the comment above _worker's return),
+            # discarding an already-valid result for a timing question
+            # wait_for already answered correctly.
+            return await asyncio.wait_for(asyncio.shield(wrapped),
+                                          timeout=max(0, deadline - time.monotonic()))
         except asyncio.TimeoutError:
             abandoned.set()
             return {'status': 'timed_out'}

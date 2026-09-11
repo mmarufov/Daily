@@ -1,6 +1,7 @@
 """Offline S6 deadline/admission tests; no DB listener or provider credits."""
 import asyncio
 from contextlib import contextmanager
+from datetime import datetime, timezone
 import threading
 import time
 from types import SimpleNamespace
@@ -112,6 +113,85 @@ def test_shadow_uses_dedicated_connection_and_only_returns_aggregates(dependenci
     statement, params = pool.conn.statements[0]
     assert 'set_config' in statement and 'statement_timeout' in statement and 'lock_timeout' in statement
     assert 0 < int(params[0]) <= 2000 and 0 < int(params[1]) <= 100
+
+
+def test_worker_trusts_a_batch_completed_after_its_own_deadline_passed(dependencies):
+    """Regression: observed live against a real production reader profile.
+
+    build_candidate_batch already enforces this exact deadline internally
+    (reader_retrieval._remaining tightens statement_timeout per query and
+    build_candidate_batch catches its own RetrievalDeadline/QueryCanceled,
+    always returning a valid -- possibly degraded -- CandidateBatch either
+    way). A stray remaining() check *after* that call returned was found to
+    discard an already-computed, valid batch as 'timed_out' purely because
+    wall-clock time had ticked past the deadline while build_candidate_batch
+    was correctly finishing up (Postgres actually cancelling/rolling back a
+    statement is not free). Calls _worker directly (synchronous, no executor
+    or event loop involved) so the deadline can be crossed deterministically
+    -- not by racing a real sleep against asyncio.wait_for's own, separate
+    timeout, which is a different, legitimate enforcement layer covered by
+    test_run_trusts_whatever_wait_for_returns below.
+    """
+    loader, builder = dependencies
+    deadline = time.monotonic() + 0.01
+
+    def finishes_just_past_the_deadline(*args, **kwargs):
+        time.sleep(0.02)  # _worker's own deadline has now elapsed mid-call
+        return batch()
+
+    builder.side_effect = finishes_just_past_the_deadline
+    pool = Pool()
+
+    result = runtime.ShadowRunner._worker(
+        pool, 'private ID', deadline, datetime.now(timezone.utc), threading.Event())
+
+    assert result == {'status': 'degraded', 'candidates': 1,
+                      'legs': {'missing_vector': 1, 'exhausted': 1},
+                      'unique_examined': 3, 'rows_returned': 5, 'rounds': 2}
+
+
+def test_run_trusts_whatever_wait_for_returns(monkeypatch):
+    """Same fix, at the run() layer: asyncio.wait_for already raises
+    asyncio.TimeoutError (handled separately) when the worker doesn't finish
+    in time, and shield() keeps it running either way. If wait_for instead
+    returns a result, the worker genuinely finished within its window -- a
+    second wall-clock re-check on the way out used to discard that result
+    for a race wait_for had already resolved correctly. Mocks wait_for
+    directly so this is deterministic: no real thread, deadline, or sleep.
+    """
+    sentinel = {'status': 'degraded', 'candidates': 99}
+
+    async def fake_wait_for(awaitable, timeout):
+        return sentinel
+
+    monkeypatch.setattr(runtime.asyncio, 'wait_for', fake_wait_for)
+    # If a stale post-check like `result if time.monotonic() < deadline else
+    # ...` still existed, this makes it take the 'else' branch every time.
+    monkeypatch.setattr(runtime.time, 'monotonic', lambda: float('inf'))
+    runner = runtime.ShadowRunner()
+
+    async def scenario():
+        result = await runner.run(Pool(), 'reader')
+        assert await runner.aclose()
+        return result
+
+    assert asyncio.run(scenario()) is sentinel
+
+
+def test_worker_and_run_no_longer_recheck_wall_clock_after_a_result_exists():
+    """Source-level guard for both fixes above: neither layer should regain
+    a post-hoc `time.monotonic() < deadline`-style re-check between getting
+    a result and returning it -- that shape is exactly what discarded valid,
+    already-computed work in production."""
+    import inspect
+    worker_source = inspect.getsource(runtime.ShadowRunner._worker)
+    run_source = inspect.getsource(runtime.ShadowRunner.run)
+    # The only legitimate deadline check in _worker is remaining(), used to
+    # bound *waiting* (for a connection, before issuing SQL) -- never called
+    # again after build_candidate_batch has already returned a result.
+    after_build = worker_source.split('batch = build_candidate_batch', 1)[1]
+    assert 'remaining()' not in after_build
+    assert 'time.monotonic() < deadline' not in run_source
 
 
 @pytest.mark.parametrize('snapshot', [None, {'migration_status': 'needs_review'}])
