@@ -2,249 +2,129 @@
 //  ArticleDetailView.swift
 //  Daily
 //
-//  Created by Muhammadjon on 3/11/25.
-//
 
 import SwiftUI
-import SafariServices
 
 struct ArticleDetailView: View {
-    let article: NewsArticle
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var auth = AuthService.shared
+    typealias FetchRelatedArticles = (
+        _ query: String,
+        _ limit: Int,
+        _ accessToken: String
+    ) async throws -> [NewsArticle]
 
-    @State private var fullArticle: NewsArticle?
-    @State private var isLoadingFullContent = false
-    @State private var loadErrorMessage: String?
-    @State private var showingSafari = false
-    @State private var showingTextSize = false
+    @StateObject private var reader: ArticleReaderModel
+    @State private var sourceDestination: ArticleSourceDestination?
     @State private var showingChat = false
     @State private var relatedArticles: [NewsArticle] = []
-    @AppStorage("articleFontSize") private var fontSizeIndex: Int = 2 // 0-4, default middle
+    @State private var relatedDestination: ArticleReaderDestination?
     @State private var articleOpenTime = Date()
+    @State private var activeReadStart: Date?
+    @State private var activeReadArticle: NewsArticle?
+    @State private var nativeBodyVisible = false
+    @State private var viewportHeight: CGFloat = 0
+    @State private var readerTask: Task<Void, Never>?
+    @State private var relatedTask: Task<Void, Never>?
+    @State private var requestedRelated = false
+    @State private var hasTrackedOpen = false
+    @State private var hasLoggedQualifyingRead = false
+    @AppStorage("articleFontSize") private var fontSizeIndex = 2
 
     @ObservedObject private var bookmarks = BookmarkService.shared
     @StateObject private var tuneViewModel = TuneViewModel()
 
-    private var fontSizeMultiplier: CGFloat {
-        [0.8, 0.9, 1.0, 1.15, 1.3][fontSizeIndex]
+    private let accessTokenProvider: @MainActor () -> String?
+    private let userIDProvider: @MainActor () -> String?
+    private let fetchRelatedArticles: FetchRelatedArticles
+    private let tracksOpenAutomatically: Bool
+
+    init(
+        article: NewsArticle,
+        tracksOpenAutomatically: Bool = true,
+        fetchArticle: @escaping ArticleReaderModel.FetchArticle = { articleID, accessToken in
+            try await BackendService.shared.fetchFeedArticle(id: articleID, accessToken: accessToken)
+        },
+        accessTokenProvider: @escaping @MainActor () -> String? = {
+            AuthService.shared.getAccessToken()
+        },
+        userIDProvider: @escaping @MainActor () -> String? = {
+            AuthService.shared.currentUser?.id
+        },
+        fetchRelatedArticles: @escaping FetchRelatedArticles = { query, limit, accessToken in
+            try await BackendService.shared.semanticSearch(
+                query: query,
+                limit: limit,
+                accessToken: accessToken
+            )
+        }
+    ) {
+        _reader = StateObject(
+            wrappedValue: ArticleReaderModel(article: article, fetchArticle: fetchArticle)
+        )
+        self.accessTokenProvider = accessTokenProvider
+        self.userIDProvider = userIDProvider
+        self.fetchRelatedArticles = fetchRelatedArticles
+        self.tracksOpenAutomatically = tracksOpenAutomatically
     }
 
+    private var article: NewsArticle { reader.state.article }
+    private var fontSizeMultiplier: CGFloat {
+        let sizes: [CGFloat] = [0.8, 0.9, 1.0, 1.15, 1.3]
+        return sizes.indices.contains(fontSizeIndex) ? sizes[fontSizeIndex] : 1
+    }
     private let fontSizeLabels = ["XS", "S", "M", "L", "XL"]
 
     var body: some View {
-        Group {
-            if isLoadingFullContent && fullArticle == nil {
-                VStack(spacing: AppSpacing.md) {
-                    ProgressView()
-                        .scaleEffect(1.1)
-                    Text("Loading article...")
-                        .font(AppTypography.subheadline)
-                        .foregroundStyle(EditionPalette.ink60)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let error = loadErrorMessage, fullArticle == nil {
-                VStack(spacing: AppSpacing.md) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(AppTypography.iconMedium)
-                        .foregroundStyle(EditionPalette.ink60)
-                    Text(error)
-                        .font(AppTypography.subheadline)
-                        .foregroundStyle(EditionPalette.error)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, AppSpacing.xxl)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onTapGesture {
-                    loadErrorMessage = nil
-                    Task { await loadFullArticleIfNeeded() }
-                }
-            } else {
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        if let full = fullArticle {
-                            headerImage(for: full)
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                ArticleHeaderImage(article: article)
 
-                            VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                                // Source + category
-                                HStack(spacing: AppSpacing.sm) {
-                                    Text(full.displaySource)
-                                        .textCase(.uppercase)
-                                        .accessibilityLabel(full.displaySource)
-                                        .font(AppTypography.sourceLabel)
-                                        .tracking(0.8)
-                                        .foregroundStyle(EditionPalette.inkBlue)
+                VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    ArticleMetadataHeader(article: article)
+                    sourceAction
+                    HairlineDivider()
 
-                                    if let category = full.category, !category.isEmpty {
-                                        Circle()
-                                            .fill(EditionPalette.ink60)
-                                            .frame(width: 3, height: 3)
-                                        Text(category)
-                                            .textCase(.uppercase)
-                                            .accessibilityLabel(category)
-                                            .font(AppTypography.chipIcon)
-                                            .tracking(0.6)
-                                            .foregroundStyle(EditionPalette.ink60)
-                                    }
-                                }
+                    if let summary = article.summary?.trimmingCharacters(in: .whitespacesAndNewlines),
+                       !summary.isEmpty {
+                        Text(summary)
+                            .font(AppTypography.articleLeadIn)
+                            .foregroundStyle(EditionPalette.ink)
+                            .lineSpacing(4)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
 
-                                // Title
-                                Text(full.title)
-                                    .font(AppTypography.articleTitle)
-                                    .foregroundStyle(EditionPalette.ink)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .lineSpacing(4)
-
-                                // Author + Date + Reading Time
-                                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                                    if let author = full.author, !author.isEmpty {
-                                        Text("By \(author)")
-                                            .font(AppTypography.articleAuthor)
-                                            .foregroundStyle(EditionPalette.ink60)
-                                    }
-                                    HStack(spacing: AppSpacing.xs) {
-                                        if let publishedAt = full.publishedAt {
-                                            Text(formattedFullDate(publishedAt))
-                                                .font(AppTypography.caption1)
-                                                .foregroundStyle(EditionPalette.ink60)
-                                        }
-                                        Circle()
-                                            .fill(EditionPalette.ink60)
-                                            .frame(width: 3, height: 3)
-                                        Text("\(full.estimatedReadingTime) min read")
-                                            .font(AppTypography.caption1)
-                                            .foregroundStyle(EditionPalette.ink60)
-                                    }
-                                }
-
-                                // Divider
-                                HairlineDivider()
-
-                                // Summary / lede
-                                if let summary = full.summary,
-                                   !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                    Text(summary.trimmingCharacters(in: .whitespacesAndNewlines))
-                                        .font(AppTypography.articleLeadIn)
-                                        .foregroundStyle(EditionPalette.ink)
-                                        .lineSpacing(4)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-
-                                // Content
-                                contentSection(for: full)
-
-                                // Discuss with AI
-                                discussButton(for: full)
-
-                                // External link
-                                externalLinkButton(for: full)
-
-                                // Related articles
-                                if !relatedArticles.isEmpty {
-                                    HairlineDivider()
-                                        .padding(.vertical, AppSpacing.lg)
-
-                                    Text("MORE LIKE THIS")
-                                        .font(AppTypography.sectionTitle)
-                                        .foregroundStyle(EditionPalette.inkBlue)
-                                        .tracking(0.8)
-
-                                    VStack(spacing: 0) {
-                                        let related = Array(relatedArticles.prefix(4))
-                                        ForEach(Array(related.enumerated()), id: \.element.id) { index, item in
-                                            NavigationLink(destination: ArticleDetailView(article: item)) {
-                                                StoryRow(article: item)
-                                            }
-                                            .buttonStyle(PressableButtonStyle())
-
-                                            if index < related.count - 1 {
-                                                Rectangle()
-                                                    .fill(EditionPalette.sepia)
-                                                    .frame(height: EditionPalette.hairlineWidth)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            .frame(maxWidth: 700, alignment: .leading)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.top, AppSpacing.lg)
-                            .padding(.bottom, AppSpacing.xxl)
+                    readerContent
+                    if reader.isSavedBody {
+                        Text(reader.isRevalidating ? "Saved article · checking for updates" : "Saved article")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    discussButton
+                    if !requestedRelated {
+                        Button("Find related stories") {
+                            requestedRelated = true
+                            relatedTask = Task { await loadRelatedArticles() }
                         }
                     }
+                    relatedStories
                 }
+                .frame(maxWidth: 700, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.lg)
+                .padding(.bottom, AppSpacing.xxl)
             }
         }
         .background(EditionPalette.paper)
+        .coordinateSpace(name: "ReaderViewport")
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { viewportHeight = $0 }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigationBarTrailing) {
-                // Discuss
-                Button {
-                    HapticService.impact(.medium)
-                    if let full = fullArticle {
-                        Task {
-                            await tuneViewModel.startArticleDiscussion(full)
-                            showingChat = true
-                        }
-                    }
-                } label: {
-                    Image(systemName: "slider.horizontal.3")
-                        .font(AppTypography.toolbarIcon)
-                }
-                .tint(EditionPalette.inkBlue)
-                .accessibilityLabel("Discuss with AI")
-
-                // Bookmark
-                Button {
-                    HapticService.impact(.medium)
-                    if let full = fullArticle ?? Optional(article) {
-                        bookmarks.toggleBookmark(full)
-                    }
-                } label: {
-                    Image(systemName: bookmarks.isBookmarked(article.id) ? "bookmark.fill" : "bookmark")
-                        .font(AppTypography.toolbarIcon)
-                }
-                .tint(EditionPalette.inkBlue)
-                .accessibilityLabel(bookmarks.isBookmarked(article.id) ? "Remove bookmark" : "Add bookmark")
-
-                // Share
-                if let urlString = (fullArticle ?? article).url, let url = URL(string: urlString) {
-                    ShareLink(item: url) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(AppTypography.toolbarIcon)
-                    }
-                    .tint(EditionPalette.inkBlue)
-                    .accessibilityLabel("Share article")
-                }
-
-                // Text size
-                Menu {
-                    ForEach(0..<fontSizeLabels.count, id: \.self) { index in
-                        Button {
-                            fontSizeIndex = index
-                            HapticService.selection()
-                        } label: {
-                            HStack {
-                                Text(fontSizeLabels[index])
-                                if index == fontSizeIndex {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
-                } label: {
-                    Image(systemName: "textformat.size")
-                        .font(AppTypography.toolbarIcon)
-                }
-                .tint(EditionPalette.inkBlue)
-                .accessibilityLabel("Change text size")
-            }
-        }
-        .sheet(isPresented: $showingSafari) {
-            if let urlString = (fullArticle ?? article).url, let url = URL(string: urlString) {
-                SafariView(url: url)
-                    .ignoresSafeArea()
-            }
+        .toolbar { articleToolbar }
+        .sheet(item: $sourceDestination) { destination in
+            SafariView(url: destination.url)
+                .ignoresSafeArea()
+                .accessibilityIdentifier("article-source-reader")
         }
         .sheet(isPresented: $showingChat) {
             TuneView(
@@ -253,59 +133,199 @@ struct ArticleDetailView: View {
                 presentedAsSheet: true
             )
         }
+        .articleReaderDestination($relatedDestination)
         .task {
-            BookmarkService.shared.markAsRead(article.id)
-            ReadingEventTracker.shared.logTap(articleId: article.id)
+            // SwiftUI may begin a view task while it is still committing the
+            // current update. Yield once before publishing reader/bookmark
+            // state so startup never mutates observable state reentrantly.
+            await Task.yield()
+            guard !Task.isCancelled else { return }
+            trackOpenIfNeeded()
             articleOpenTime = Date()
-            await loadFullArticleIfNeeded()
+            hasLoggedQualifyingRead = false
+            readerTask = Task { await loadReaderContent() }
+            await readerTask?.value
+        }
+        .onChange(of: scenePhase) { _, phase in
+            reconcileReadingInterval()
+            if phase == .active { retry() }
+            else { readerTask?.cancel(); relatedTask?.cancel() }
+        }
+        .onChange(of: sourceDestination) { _, _ in reconcileReadingInterval() }
+        .onChange(of: showingChat) { _, _ in reconcileReadingInterval() }
+        .onChange(of: reader.state) { _, _ in
+            if activeReadArticle?.readContentHash != reader.state.article.readContentHash { finishReadingInterval() }
+            reconcileReadingInterval()
+        }
+        .onChange(of: auth.sessionGeneration) { _, _ in
+            activeReadStart = nil; readerTask?.cancel(); relatedTask?.cancel()
+            reader.invalidate(); relatedArticles = []; dismiss()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .deliveryMembershipChanged)) { notification in
+            guard let cards = notification.object as? [NewsArticle] else { return }
+            guard let contract = cards.first(where: { $0.id == article.id }),
+                  contract.readerRoute == .native,
+                  contract.acceptsReaderDetail(reader.state.article) else {
+                finishReadingInterval(); readerTask?.cancel(); reader.invalidate()
+                return
+            }
         }
         .onDisappear {
-            let duration = Int(Date().timeIntervalSince(articleOpenTime))
-            ReadingEventTracker.shared.logRead(articleId: article.id, durationSeconds: duration)
-        }
-        .task(id: fullArticle?.id) {
-            guard fullArticle != nil,
-                  let token = AuthService.shared.getAccessToken() else { return }
-            if let results = try? await BackendService.shared.semanticSearch(
-                query: article.title, limit: 5, accessToken: token
-            ) {
-                relatedArticles = results.filter { $0.id != article.id }
-            }
+            finishReadingInterval()
+            trackQuickBackIfNeeded()
+            readerTask?.cancel(); relatedTask?.cancel()
         }
     }
 
-    // MARK: - Header Image
+    @ToolbarContentBuilder
+    private var articleToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            Button { discussArticle() } label: {
+                Image(systemName: "slider.horizontal.3")
+                    .font(AppTypography.toolbarIcon)
+            }
+            .tint(EditionPalette.inkBlue)
+            .accessibilityLabel("Discuss with AI")
 
-    @ViewBuilder
-    private func headerImage(for article: NewsArticle) -> some View {
-        if let imageURL = fullArticle?.imageURL ?? self.article.imageURL,
-           let url = URL(string: imageURL) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 220)
-                        .clipped()
-                default:
-                    Rectangle()
-                        .fill(EditionPalette.paperSecondary)
-                        .frame(height: 220)
+            Button {
+                HapticService.impact(.medium)
+                bookmarks.toggleBookmark(article.safeForReaderCache())
+            } label: {
+                Image(systemName: bookmarks.isBookmarked(article.id) ? "bookmark.fill" : "bookmark")
+                    .font(AppTypography.toolbarIcon)
+            }
+            .tint(EditionPalette.inkBlue)
+            .accessibilityLabel(bookmarks.isBookmarked(article.id) ? "Remove bookmark" : "Add bookmark")
+
+            if let url = article.originalSourceURL {
+                ShareLink(item: url) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(AppTypography.toolbarIcon)
                 }
+                .tint(EditionPalette.inkBlue)
+                .accessibilityLabel("Share original article")
             }
+
+            Menu {
+                ForEach(0..<fontSizeLabels.count, id: \.self) { index in
+                    Button {
+                        fontSizeIndex = index
+                        HapticService.selection()
+                    } label: {
+                        HStack {
+                            Text(fontSizeLabels[index])
+                            if index == fontSizeIndex { Image(systemName: "checkmark") }
+                        }
+                    }
+                }
+            } label: {
+                Image(systemName: "textformat.size")
+                    .font(AppTypography.toolbarIcon)
+            }
+            .tint(EditionPalette.inkBlue)
+            .accessibilityLabel("Change text size")
         }
     }
 
-    // MARK: - Content
+    @ViewBuilder
+    private var sourceAction: some View {
+        if let url = article.originalSourceURL {
+            Button {
+                guard sourceDestination == nil else { return }
+                HapticService.impact(.light)
+                sourceDestination = ArticleSourceDestination(articleID: article.id, url: url)
+            } label: {
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "safari")
+                    Text("Read at \(article.displaySource)")
+                    Spacer()
+                    Image(systemName: "arrow.up.right")
+                }
+                .font(AppTypography.actionLabel)
+                .foregroundStyle(EditionPalette.inkBlue)
+                .padding(.vertical, AppSpacing.sm)
+                .contentShape(Rectangle())
+            }
+            .accessibilityIdentifier("article-source-button")
+            .accessibilityHint("Opens the original publisher website")
+        } else {
+            Label("Original source link unavailable", systemImage: "link.badge.plus")
+                .font(AppTypography.subheadline)
+                .foregroundStyle(EditionPalette.ink60)
+                .accessibilityIdentifier("article-source-unavailable")
+        }
+    }
 
     @ViewBuilder
-    private func contentSection(for article: NewsArticle) -> some View {
-        if let content = article.content,
-           !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+    private var readerContent: some View {
+        switch reader.state {
+        case .ready(let readyArticle):
+            nativeBody(for: readyArticle)
+        case .loading(_):
+            ArticleReaderStatusView(
+                icon: nil,
+                title: "Loading article",
+                message: "Keeping the story information available while the full text loads.",
+                showsProgress: true,
+                retryAction: nil
+            )
+        case .sourceAvailable(_, let message):
+            ArticleReaderStatusView(
+                icon: "safari",
+                title: "Continue at the publisher",
+                message: message,
+                showsProgress: false,
+                retryAction: nil
+            )
+        case .authenticationRequired(_, let message):
+            ArticleReaderStatusView(
+                icon: "person.crop.circle.badge.exclamationmark",
+                title: "Sign in required",
+                message: message,
+                showsProgress: false,
+                retryAction: nil
+            )
+        case .offline(_, let message):
+            ArticleReaderStatusView(
+                icon: "wifi.exclamationmark",
+                title: "You're offline",
+                message: message,
+                showsProgress: false,
+                retryAction: retry
+            )
+        case .failed(_, let message):
+            ArticleReaderStatusView(
+                icon: "exclamationmark.triangle",
+                title: "Article unavailable",
+                message: message,
+                showsProgress: false,
+                retryAction: retry
+            )
+        case .unavailable(_, let message):
+            ArticleReaderStatusView(
+                icon: "doc.questionmark",
+                title: "Article unavailable",
+                message: message,
+                showsProgress: false,
+                retryAction: nil
+            )
+        case .preview(_):
+            ArticleReaderStatusView(
+                icon: "doc.text",
+                title: "Preparing article",
+                message: "The headline, summary, and original source remain available.",
+                showsProgress: false,
+                retryAction: nil
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func nativeBody(for readyArticle: NewsArticle) -> some View {
+        if readyArticle.verifiedNativeBody != nil {
+            let paragraphs = reader.paragraphs
             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                ForEach(contentParagraphs(from: content), id: \.self) { paragraph in
+                ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
                     ArticleBodyTextView(
                         text: paragraph,
                         lineSpacing: 6,
@@ -313,31 +333,19 @@ struct ArticleDetailView: View {
                     )
                 }
             }
-        } else if !isLoadingFullContent {
-            VStack(spacing: AppSpacing.sm) {
-                Text("Full article content is not available.")
-                    .font(AppTypography.subheadline)
-                    .foregroundStyle(EditionPalette.ink60)
-
-                if article.url != nil {
-                    Text("Read the full article at the source below.")
-                        .font(AppTypography.caption1)
-                        .foregroundStyle(EditionPalette.ink60)
-                }
+            .accessibilityIdentifier("article-native-body")
+            .onGeometryChange(for: Bool.self) { geometry in
+                let viewport = CGRect(x: 0, y: 0, width: geometry.size.width, height: viewportHeight)
+                return geometry.frame(in: .named("ReaderViewport")).intersection(viewport).height >= 20
+            } action: { visible in
+                nativeBodyVisible = visible
+                reconcileReadingInterval()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, AppSpacing.md)
         }
     }
 
-    private func discussButton(for article: NewsArticle) -> some View {
-        Button {
-            HapticService.impact(.medium)
-            Task {
-                await tuneViewModel.startArticleDiscussion(article)
-                showingChat = true
-            }
-        } label: {
+    private var discussButton: some View {
+        Button { discussArticle() } label: {
             HStack(spacing: AppSpacing.sm) {
                 Image(systemName: "slider.horizontal.3")
                     .font(AppTypography.actionIcon)
@@ -356,57 +364,131 @@ struct ArticleDetailView: View {
     }
 
     @ViewBuilder
-    private func externalLinkButton(for article: NewsArticle) -> some View {
-        if article.url != nil {
-            Button {
-                showingSafari = true
-            } label: {
-                HStack(spacing: AppSpacing.xs) {
-                    Text("Read full article at \(article.displaySource)")
-                        .font(AppTypography.actionIcon)
-                    Image(systemName: "arrow.up.right")
-                        .font(AppTypography.sourceLabel)
-                }
+    private var relatedStories: some View {
+        if !relatedArticles.isEmpty {
+            HairlineDivider()
+                .padding(.vertical, AppSpacing.lg)
+
+            Text("MORE LIKE THIS")
+                .font(AppTypography.sectionTitle)
                 .foregroundStyle(EditionPalette.inkBlue)
+                .tracking(0.8)
+
+            VStack(spacing: 0) {
+                let related = Array(relatedArticles.prefix(4))
+                ForEach(Array(related.enumerated()), id: \.element.id) { index, item in
+                    ArticleReaderButton(article: item, destination: $relatedDestination) {
+                        StoryRow(article: item)
+                    }
+                    .buttonStyle(PressableButtonStyle())
+
+                    if index < related.count - 1 {
+                        Rectangle()
+                            .fill(EditionPalette.sepia)
+                            .frame(height: EditionPalette.hairlineWidth)
+                    }
+                }
             }
-            .padding(.top, AppSpacing.md)
         }
     }
 
-    // MARK: - Helpers
+    private func retry() {
+        readerTask?.cancel()
+        finishReadingInterval()
+        reader.invalidate() // Fence a transport that completes after cancellation.
+        readerTask = Task { await loadReaderContent() }
+    }
 
-    private func loadFullArticleIfNeeded() async {
-        guard !isLoadingFullContent, fullArticle == nil else { return }
+    private func loadReaderContent() async {
+        let userID = userIDProvider()
+        let session = auth.sessionGeneration
+        var cachedDetail: NewsArticle?
+        if let userID {
+            cachedDetail = await BackgroundNewsFetcher.shared.loadVerifiedArticleDetailAsync(articleID: article.id, forUserID: userID)
+        }
+        guard !Task.isCancelled, session == auth.sessionGeneration, userID == userIDProvider() else { return }
+        _ = await reader.load(
+            accessToken: accessTokenProvider(),
+            cachedDetail: cachedDetail,
+            revalidate: true,
+            isCurrent: { session == auth.sessionGeneration && userID == userIDProvider() },
+            accept: { disposition in
+                guard session == auth.sessionGeneration, userID == userIDProvider() else { return false }
+                guard let userID else { return true } // Isolated injected UI-test reader.
+                do {
+                    switch disposition {
+                    case .store(let detail):
+                        let result = try await BackgroundNewsFetcher.shared.storeVerifiedArticleDetailAsync(
+                            detail, forUserID: userID, sessionGeneration: session)
+                        return result != .rejectedStale
+                    case .evict(let id):
+                        let result = try await BackgroundNewsFetcher.shared.removeVerifiedArticleDetailAsync(
+                            articleID: id, forUserID: userID, sessionGeneration: session)
+                        return result != .rejectedStale
+                    case .none: return true
+                    }
+                } catch { return false }
+            }
+        )
+    }
 
-        if let existingContent = article.content, existingContent.count > 500 {
-            fullArticle = article.normalizedForDisplay()
+    private func reconcileReadingInterval() {
+        let eligible = scenePhase == .active && nativeBodyVisible && reader.state.isDisplayingNativeBody
+            && sourceDestination == nil && !showingChat
+        if eligible && activeReadStart == nil {
+            activeReadStart = Date(); activeReadArticle = reader.state.article
+        }
+        if !eligible { finishReadingInterval() }
+    }
+    private func finishReadingInterval() {
+        guard let start = activeReadStart else { return }
+        activeReadStart = nil
+        let displayed = activeReadArticle ?? reader.state.article
+        activeReadArticle = nil
+        let duration = Int(Date().timeIntervalSince(start))
+        if duration >= 5 { hasLoggedQualifyingRead = true }
+        ReadingEventTracker.shared.logRead(article: displayed,
+            durationSeconds: duration, nativeBodyWasDisplayed: true)
+    }
+
+    /// S10 B1: fires only on a genuine navigation-away from this article
+    /// (.onDisappear -- the view leaving the navigation stack), never on
+    /// backgrounding the app (scenePhase changes go through a separate path
+    /// and never call this). Distinguishes "the reader didn't want this" from
+    /// "the reader left the app", per tasks/s10-implementation-plan.md batch B.
+    private func trackQuickBackIfNeeded() {
+        guard !hasLoggedQualifyingRead,
+              Date().timeIntervalSince(articleOpenTime) < 8 else { return }
+        ReadingEventTracker.shared.logSkip(article: article)
+    }
+
+    private func trackOpenIfNeeded() {
+        guard tracksOpenAutomatically, !hasTrackedOpen else { return }
+        hasTrackedOpen = true
+        bookmarks.markAsRead(article.id)
+        ReadingEventTracker.shared.logTap(article: article)
+    }
+
+    private func discussArticle() {
+        HapticService.impact(.medium)
+        let session = auth.sessionGeneration
+        Task {
+            await tuneViewModel.startArticleDiscussion(article)
+            guard !Task.isCancelled, session == auth.sessionGeneration else { return }
+            showingChat = true
+        }
+    }
+
+    private func loadRelatedArticles() async {
+        let session = auth.sessionGeneration
+        guard let token = accessTokenProvider(),
+              let results = try? await fetchRelatedArticles(article.title, 5, token) else {
             return
         }
-
-        guard let token = AuthService.shared.getAccessToken() else { return }
-
-        isLoadingFullContent = true
-        loadErrorMessage = nil
-
-        do {
-            let fetched = try await BackendService.shared.fetchFeedArticle(id: article.id, accessToken: token)
-            fullArticle = NewsArticle(
-                id: fetched.id,
-                title: fetched.title,
-                summary: fetched.summary ?? article.summary,
-                content: fetched.content ?? article.content,
-                author: fetched.author ?? article.author,
-                source: fetched.source ?? article.source,
-                imageURL: fetched.imageURL ?? article.imageURL,
-                publishedAt: fetched.publishedAt ?? article.publishedAt,
-                category: fetched.category ?? article.category,
-                url: fetched.url ?? article.url
-            ).normalizedForDisplay()
-            isLoadingFullContent = false
-        } catch {
-            loadErrorMessage = "Couldn't load article. Tap to retry."
-            isLoadingFullContent = false
-        }
+        guard !Task.isCancelled, session == auth.sessionGeneration else { return }
+        relatedArticles = results
+            .filter { $0.id != article.id }
+            .map { $0.safeForReaderCache().normalizedForDisplay() }
     }
 
     private func contentParagraphs(from content: String) -> [String] {
@@ -415,23 +497,140 @@ struct ArticleDetailView: View {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
+}
 
-    private func formattedFullDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        return formatter.string(from: date)
+private struct ArticleHeaderImage: View {
+    let article: NewsArticle
+
+    var body: some View {
+        if let url = article.displayImageURL {
+            ZStack(alignment: .bottomTrailing) {
+                ArticleRemoteImage(url: url, pixelSize: 1200)
+                    .frame(maxWidth: .infinity).frame(height: 220).clipped()
+                if article.imageIsIllustrative {
+                    Text("Illustration")
+                        .font(AppTypography.chipIcon)
+                        .textCase(.uppercase)
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xs)
+                        .foregroundStyle(Color.white)
+                        .background(Color.black.opacity(0.72))
+                        .padding(AppSpacing.sm)
+                }
+            }
+        }
+    }
+
+    private var placeholder: some View {
+        Rectangle()
+            .fill(EditionPalette.paperSecondary)
+            .frame(height: 220)
+    }
+}
+
+private struct ArticleMetadataHeader: View {
+    let article: NewsArticle
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            HStack(spacing: AppSpacing.sm) {
+                Text(article.displaySource)
+                    .textCase(.uppercase)
+                    .accessibilityLabel(article.displaySource)
+                    .font(AppTypography.sourceLabel)
+                    .tracking(0.8)
+                    .foregroundStyle(EditionPalette.inkBlue)
+
+                if let category = article.category, !category.isEmpty {
+                    Circle()
+                        .fill(EditionPalette.ink60)
+                        .frame(width: 3, height: 3)
+                    Text(category)
+                        .textCase(.uppercase)
+                        .accessibilityLabel(category)
+                        .font(AppTypography.chipIcon)
+                        .tracking(0.6)
+                        .foregroundStyle(EditionPalette.ink60)
+                }
+            }
+
+            Text(article.title)
+                .font(AppTypography.articleTitle)
+                .foregroundStyle(EditionPalette.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(4)
+                .accessibilityIdentifier("article-title")
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                if let author = article.author, !author.isEmpty {
+                    Text("By \(author)")
+                        .font(AppTypography.articleAuthor)
+                        .foregroundStyle(EditionPalette.ink60)
+                }
+                HStack(spacing: AppSpacing.xs) {
+                    if let publishedAt = article.publishedAt {
+                        Text(publishedAt.formatted(date: .long, time: .omitted))
+                            .font(AppTypography.caption1)
+                            .foregroundStyle(EditionPalette.ink60)
+                    }
+                    Text("\(article.estimatedReadingTime) min read")
+                        .font(AppTypography.caption1)
+                        .foregroundStyle(EditionPalette.ink60)
+                }
+            }
+        }
+    }
+}
+
+private struct ArticleReaderStatusView: View {
+    let icon: String?
+    let title: String
+    let message: String
+    let showsProgress: Bool
+    let retryAction: (() -> Void)?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            HStack(spacing: AppSpacing.sm) {
+                if showsProgress {
+                    ProgressView()
+                } else if let icon {
+                    Image(systemName: icon)
+                        .foregroundStyle(EditionPalette.ink60)
+                }
+                Text(title)
+                    .font(AppTypography.headline)
+                    .foregroundStyle(EditionPalette.ink)
+            }
+
+            Text(message)
+                .font(AppTypography.subheadline)
+                .foregroundStyle(EditionPalette.ink60)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let retryAction {
+                Button("Try again", action: retryAction)
+                    .buttonStyle(.bordered)
+                    .accessibilityIdentifier("article-retry-button")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.md)
+        .background(EditionPalette.paperSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("article-reader-status")
     }
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ArticleDetailView(
             article: NewsArticle(
                 id: "1",
                 title: "Sample Article Title for Detail View",
                 summary: "This is a concise summary of the article to give the reader context.",
-                content: "This is the first paragraph.\n\nThis is another paragraph with more details.",
+                content: nil,
                 author: "John Doe",
                 source: "Tech News",
                 imageURL: nil,

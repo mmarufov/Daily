@@ -1,0 +1,13 @@
+{
+  "status": "ready",
+  "feed_request_id": "8bbc2235-f4d6-4193-af3f-3f197ea88970",
+  "reader_generation": 3,
+  "reader_revision": 7,
+  "articles": [
+    {"id":"story-0","title":"First report without artwork","reader_generation":3,"reader_revision":7,"feed_request_id":"8bbc2235-f4d6-4193-af3f-3f197ea88970","delivery_position":0,"url":"https://publisher.example/first"},
+    {"id":"story-1","title":"Second report","reader_generation":3,"reader_revision":7,"feed_request_id":"8bbc2235-f4d6-4193-af3f-3f197ea88970","delivery_position":1,"url":"https://publisher.example/second"},
+    {"id":"story-2","title":"Third report","reader_generation":3,"reader_revision":7,"feed_request_id":"8bbc2235-f4d6-4193-af3f-3f197ea88970","delivery_position":2,"url":"https://publisher.example/third"},
+    {"id":"story-3","title":"Fourth report","reader_generation":3,"reader_revision":7,"feed_request_id":"8bbc2235-f4d6-4193-af3f-3f197ea88970","delivery_position":3,"url":"https://publisher.example/fourth"},
+    {"id":"story","title":"A  report","reader_generation":3,"reader_revision":7,"feed_request_id":"8bbc2235-f4d6-4193-af3f-3f197ea88970","delivery_position":4,"url":"https://publisher.example/story"}
+  ]
+}

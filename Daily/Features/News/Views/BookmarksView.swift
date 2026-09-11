@@ -7,6 +7,7 @@ import SwiftUI
 
 struct BookmarksView: View {
     @ObservedObject private var bookmarks = BookmarkService.shared
+    @State private var readerDestination: ArticleReaderDestination?
 
     var body: some View {
         NavigationStack {
@@ -21,7 +22,7 @@ struct BookmarksView: View {
                     ScrollView(.vertical, showsIndicators: false) {
                         LazyVStack(spacing: 0) {
                             ForEach(bookmarks.bookmarkedArticles) { entry in
-                                NavigationLink(destination: ArticleDetailView(article: entry.article)) {
+                                ArticleReaderButton(article: entry.article, destination: $readerDestination) {
                                     FeaturedArticleCard(article: entry.article, style: .feed)
                                 }
                                 .buttonStyle(PressableButtonStyle())
@@ -45,6 +46,7 @@ struct BookmarksView: View {
             .background(Color(.systemBackground))
             .navigationTitle("Saved")
             .navigationBarTitleDisplayMode(.large)
+            .articleReaderDestination($readerDestination)
         }
     }
 }

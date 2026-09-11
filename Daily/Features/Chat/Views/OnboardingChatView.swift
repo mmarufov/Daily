@@ -332,11 +332,13 @@ private extension OnboardingChatView {
             try await viewModel.saveOnboardingPreferences()
             // Post notification so NewsViewModel starts the discovery → build flow
             // instead of dismissing immediately. The feed tab will show BuildingFeedView.
-            NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
+            if !viewModel.savedCanonicalReader {
+                NotificationCenter.default.post(name: .onboardingCompleted, object: nil)
+            }
             onCompleted?()
             dismiss()
         } catch {
-            viewModel.errorMessage = "Couldn't save your preferences — please try again."
+            if !(error is CancellationError) { viewModel.errorMessage = error.localizedDescription }
         }
     }
 }

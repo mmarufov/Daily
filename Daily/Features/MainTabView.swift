@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: AppTab = .news
     @State private var showOnboarding = false
     @StateObject private var tuneViewModel = TuneViewModel()
@@ -20,7 +21,7 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("News", systemImage: "newspaper", value: .news) {
-                NewsView(viewModel: newsViewModel)
+                NewsView(viewModel: newsViewModel, isPresented: selectedTab == .news && !showOnboarding)
             }
 
             Tab("Saved", systemImage: "bookmark", value: .saved) {
@@ -36,6 +37,10 @@ struct MainTabView: View {
             }
         }
         .tint(BrandColors.primary)
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await newsViewModel.foregroundRefresh() } }
+            else { newsViewModel.suspend() }
+        }
         .onChange(of: selectedTab) { _, _ in
             HapticService.selection()
         }

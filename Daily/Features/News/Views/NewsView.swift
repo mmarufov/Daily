@@ -6,21 +6,35 @@
 //
 
 import SwiftUI
+import os
 
 struct NewsView: View {
     @ObservedObject var viewModel: NewsViewModel
+    /// Parent tab/cover ownership is separate from scroll geometry and scene activity.
+    var isPresented = true
     @ObservedObject private var auth = AuthService.shared
     @ObservedObject private var bookmarks = BookmarkService.shared
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showingProfile = false
     @State private var showWelcomeBanner = false
-    @State private var briefingContent: String?
     @State private var selectedFeedbackArticle: NewsArticle?
+    @State private var readerDestination: ArticleReaderDestination?
+    @State private var measuredMetadata = false
 
     var body: some View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     editionHeader
+
+                    if let status = viewModel.deliveryStatusLabel {
+                        Text(status)
+                            .font(AppTypography.caption1)
+                            .foregroundStyle(EditionPalette.ink60)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.bottom, AppSpacing.sm)
+                            .accessibilityIdentifier("feed.deliveryStatus")
+                    }
 
                     if showWelcomeBanner {
                         welcomeBanner
@@ -37,7 +51,15 @@ struct NewsView: View {
                         )
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.xxl)
-                    } else if viewModel.isLoading {
+
+                        Button("Try again") {
+                            Task { await viewModel.refreshFeed() }
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.md)
+                        .accessibilityIdentifier("feed.retry")
+                    } else if viewModel.isLoading && viewModel.articles.isEmpty {
                         VStack(alignment: .leading, spacing: AppSpacing.md) {
                             Text("Loading your personalized feed...")
                                 .font(AppTypography.subheadline)
@@ -71,11 +93,15 @@ struct NewsView: View {
             .sheet(item: $selectedFeedbackArticle) { article in
                 WhyThisStorySheet(
                     reason: feedbackReason(for: article),
+                    onMoreLikeThis: { Task { await viewModel.submitFeedback(for: article, action: "more_like_this") } },
+                    onImportant: { Task { await viewModel.submitFeedback(for: article, action: "important") } },
                     onLessOfThis: { Task { await viewModel.submitFeedback(for: article, action: "less_like_this") } },
                     onWrongReason: { Task { await viewModel.submitFeedback(for: article, action: "not_relevant") } },
+                    onAlreadyKnew: { Task { await viewModel.submitFeedback(for: article, action: "already_knew") } },
                     onHide: { Task { await viewModel.submitFeedback(for: article, action: "hide_source") } }
                 )
             }
+            .articleReaderDestination($readerDestination)
             .overlay {
                 if viewModel.isSettingUp, let phase = viewModel.setupPhase {
                     BuildingFeedView(phase: phase, detailText: viewModel.setupDetailText)
@@ -83,23 +109,21 @@ struct NewsView: View {
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .onboardingCompleted)) { _ in
-                withAnimation(.easeInOut(duration: 0.4)) {
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.4)) {
                     showWelcomeBanner = true
                 }
                 Task {
                     try? await Task.sleep(for: .seconds(3))
-                    withAnimation(.easeInOut(duration: 0.4)) {
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.4)) {
                         showWelcomeBanner = false
                     }
                 }
             }
-            .task {
-                // Load morning briefing
-                guard let token = AuthService.shared.getAccessToken() else { return }
-                if let response = try? await BackendService.shared.fetchBriefing(accessToken: token),
-                   let content = response.content {
-                    briefingContent = content
-                }
+        }
+        .onChange(of: viewModel.articles.isEmpty) { _, empty in
+            if !empty && !measuredMetadata {
+                measuredMetadata = true
+                os_signpost(.event, log: OSLog(subsystem: "com.daily.app", category: "delivery"), name: "FeedMetadataPublished")
             }
         }
     }
@@ -147,7 +171,8 @@ private extension NewsView {
     var editionDateLabel: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
-        return formatter.string(from: Date()).uppercased()
+        guard let publishedAt = viewModel.editionPublishedAt else { return "SAVED EDITION" }
+        return formatter.string(from: publishedAt).uppercased()
     }
 
     var editionName: String {
@@ -177,24 +202,16 @@ private extension NewsView {
 
     // MARK: - Feed content
 
+    @ViewBuilder
     var feedContent: some View {
         let articles = viewModel.articles
-
-        return VStack(alignment: .leading, spacing: 0) {
-            // Briefing card
-            if let briefing = briefingContent {
-                BriefingCard(content: briefing)
-                    .padding(.horizontal, AppSpacing.lg)
-                    .padding(.bottom, AppSpacing.md)
-            }
-
             // Top Story (hero — full bleed)
             if let featured = articles.first {
                 sectionLabel("Top Story")
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.md)
 
-                NavigationLink(destination: ArticleDetailView(article: featured)) {
+                ArticleReaderButton(article: featured, position: 0, destination: $readerDestination) {
                     HeroStory(
                         article: featured,
                         provenance: featured.whyThisStory,
@@ -206,8 +223,9 @@ private extension NewsView {
                     HapticService.impact(.medium)
                     selectedFeedbackArticle = featured
                 }
-                .onAppear {
-                    ReadingEventTracker.shared.logImpression(articleId: featured.id, position: 0)
+                .accessibilityAction(named: "Story feedback") { selectedFeedbackArticle = featured }
+                .deliveryImpression(identity: impressionIdentity(featured), enabled: impressionsEnabled) {
+                    ReadingEventTracker.shared.logImpression(article: featured)
                 }
             }
 
@@ -221,9 +239,12 @@ private extension NewsView {
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.bottom, AppSpacing.sm)
 
-                VStack(spacing: 0) {
                     ForEach(Array(articles.dropFirst().enumerated()), id: \.element.id) { index, article in
-                        NavigationLink(destination: ArticleDetailView(article: article)) {
+                        ArticleReaderButton(
+                            article: article,
+                            position: index + 1,
+                            destination: $readerDestination
+                        ) {
                             StoryRow(
                                 article: article,
                                 isRead: bookmarks.isRead(article.id)
@@ -234,16 +255,24 @@ private extension NewsView {
                             HapticService.impact(.medium)
                             selectedFeedbackArticle = article
                         }
-                        .onAppear {
-                            ReadingEventTracker.shared.logImpression(articleId: article.id, position: index + 1)
+                        .accessibilityAction(named: "Story feedback") { selectedFeedbackArticle = article }
+                        .deliveryImpression(identity: impressionIdentity(article), enabled: impressionsEnabled) {
+                            ReadingEventTracker.shared.logImpression(article: article)
                         }
 
                         sepiaHairline
                             .padding(.horizontal, AppSpacing.lg)
                     }
-                }
             }
-        }
+    }
+
+    var impressionsEnabled: Bool {
+        isPresented && viewModel.canAttributeImpressions && !showingProfile && selectedFeedbackArticle == nil
+            && readerDestination == nil && !viewModel.isSettingUp
+    }
+
+    func impressionIdentity(_ article: NewsArticle) -> String {
+        "\(article.feedRequestID ?? "unattributed")|\(article.id)"
     }
 
     var sepiaHairline: some View {
@@ -371,7 +400,7 @@ struct FeaturedArticleCard: View {
         VStack(alignment: .leading, spacing: AppSpacing.smPlus) {
             // Image
             ZStack {
-                if let imageURL = article.imageURL, let url = URL(string: imageURL) {
+                if let url = article.displayImageURL {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .success(let image):

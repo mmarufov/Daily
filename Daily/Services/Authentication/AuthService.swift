@@ -10,15 +10,32 @@ import Combine
 import os
 import Security
 
-enum AuthState {
+enum AuthState: Equatable {
     case unknown      // restoring session — show splash, not sign-in
     case authenticated
+    /// Local presentation only. This state grants no server or mutation authority.
+    case savedAccount(userID: String)
     case unauthenticated
 }
 
 @MainActor
 final class AuthService: ObservableObject {
-    static let shared = AuthService()
+    static let shared = AuthService(
+        baseURL: AppConfig.backendURL,
+        urlSession: makeSession(),
+        tokenStore: KeychainHelper(),
+        identityCleanup: LiveAuthIdentityCleaner(),
+        providerSignOut: GoogleAuthProviderSigner(),
+        restoresSession: restoresLiveSession
+    )
+
+    private static var restoresLiveSession: Bool {
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+            || ProcessInfo.processInfo.arguments.contains("--s2-reader-ui-test") { return false }
+        #endif
+        return true
+    }
 
     @Published private(set) var state: AuthState = .unknown
     @Published private(set) var currentUser: User?
@@ -28,49 +45,93 @@ final class AuthService: ObservableObject {
 
     private let baseURL: URL
     private let urlSession: URLSession
-    private let keychain = KeychainHelper()
+    private let tokenStore: any AuthTokenStoring
+    private let identityCleanup: any AuthIdentityCleaning
+    private let providerSignOut: any AuthProviderSigningOut
     private let tokenKey = "app_token"
+    private let userIDKey = "app_user_id"
     private let logger = Logger(subsystem: "com.daily.app", category: "auth")
+    private var transitionGeneration: UInt64 = 0
+    private var restoreTask: Task<Void, Never>?
+    /// Session identity, including A → B → A transitions. Never compare tokens alone.
+    var sessionGeneration: UInt64 { transitionGeneration }
 
-    private init(baseURL: URL = AppConfig.backendURL, urlSession: URLSession = .shared) {
+    private static func makeSession() -> URLSession {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForRequest = 5
+        configuration.timeoutIntervalForResource = 8
+        configuration.waitsForConnectivity = false
+        configuration.urlCache = nil
+        configuration.httpCookieStorage = nil
+        return URLSession(configuration: configuration)
+    }
+
+    init(
+        baseURL: URL,
+        urlSession: URLSession,
+        tokenStore: any AuthTokenStoring,
+        identityCleanup: any AuthIdentityCleaning,
+        providerSignOut: any AuthProviderSigningOut,
+        restoresSession: Bool
+    ) {
         self.baseURL = baseURL
         self.urlSession = urlSession
-        self.restoreSession()
+        self.tokenStore = tokenStore
+        self.identityCleanup = identityCleanup
+        self.providerSignOut = providerSignOut
+        if restoresSession {
+            restoreSession()
+        } else {
+            state = tokenStore.read(key: tokenKey) == nil ? .unauthenticated : .unknown
+        }
     }
 
     func authenticateWithGoogle(idToken: String) async throws {
+        transitionGeneration &+= 1
+        restoreTask?.cancel()
+        let requestGeneration = transitionGeneration
         let endpoint = baseURL.appendingPathComponent("/auth/google")
-        try await authenticate(providerEndpoint: endpoint, payload: ["id_token": idToken])
+        try await authenticate(
+            providerEndpoint: endpoint,
+            payload: ["id_token": idToken],
+            requestGeneration: requestGeneration
+        )
     }
 
     func signOut() {
-        keychain.delete(key: tokenKey)
-        self.currentUser = nil
-        self.state = .unauthenticated
-        // Clear all per-user local state so a new sign-in starts clean.
-        BookmarkService.shared.clearAll()
-        ReadingEventTracker.shared.discardPending()
-        BackgroundNewsFetcher.shared.clearCache()
-        GoogleSignInHelper.shared.signOut()
+        transitionToUnauthenticated(signOutProvider: true)
     }
 
     func getAccessToken() -> String? {
-        keychain.read(key: tokenKey)
+        guard isAuthenticated else { return nil }
+        return tokenStore.read(key: tokenKey)
     }
 
-    private func restoreSession() {
-        guard let token = keychain.read(key: tokenKey) else {
-            self.state = .unauthenticated
+    func restoreSession() {
+        restoreTask?.cancel()
+        guard let token = tokenStore.read(key: tokenKey) else {
+            transitionToUnauthenticated(signOutProvider: false)
             return
         }
-        // Optimistically authenticated while we verify with /me. ContentView
-        // shows a splash for `.unknown` state; once /me responds we resolve.
-        Task { [weak self] in
-            await self?.hydrateUser(with: token)
+
+        transitionGeneration &+= 1
+        let requestGeneration = transitionGeneration
+        currentUser = nil
+        if let owner = tokenStore.read(key: userIDKey), !owner.isEmpty {
+            state = .savedAccount(userID: owner)
+        } else {
+            state = .unknown
+        }
+        restoreTask = Task { [weak self] in
+            await self?.hydrateUser(with: token, requestGeneration: requestGeneration)
         }
     }
 
-    private func authenticate(providerEndpoint: URL, payload: [String: String]) async throws {
+    private func authenticate(
+        providerEndpoint: URL,
+        payload: [String: String],
+        requestGeneration: UInt64
+    ) async throws {
         var request = URLRequest(url: providerEndpoint)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -98,57 +159,155 @@ final class AuthService: ObservableObject {
         }
 
         struct AuthResponse: Codable { let token: String; let user: User }
+        let decoded: AuthResponse
         do {
-            let decoded = try JSONDecoder().decode(AuthResponse.self, from: data)
-            try keychain.write(key: tokenKey, value: decoded.token)
-            self.currentUser = decoded.user
-            self.state = .authenticated
+            decoded = try JSONDecoder().decode(AuthResponse.self, from: data)
         } catch {
             logger.error("Failed to decode auth response: \(error.localizedDescription, privacy: .private)")
             throw NSError(domain: "AuthService", code: 2, userInfo: [
                 NSLocalizedDescriptionKey: "Failed to parse server response"
             ])
         }
+
+        // A sign-out or newer login request supersedes this response.
+        try Task.checkCancellation()
+        guard requestGeneration == transitionGeneration else {
+            throw CancellationError()
+        }
+        try transitionToAuthenticated(user: decoded.user, token: decoded.token)
     }
 
-    private func hydrateUser(with token: String) async {
+    private func hydrateUser(with token: String, requestGeneration: UInt64) async {
         var request = URLRequest(url: baseURL.appendingPathComponent("/me"))
+        request.timeoutInterval = 8
+        request.cachePolicy = .reloadIgnoringLocalCacheData
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         do {
             let (data, response) = try await urlSession.data(for: request)
+            guard isCurrentRestore(token: token, generation: requestGeneration) else { return }
             guard let http = response as? HTTPURLResponse else {
-                // Network error — keep token, retry on next launch.
-                self.state = .unauthenticated
+                resolveTransientRestoreFailure()
                 return
             }
-            if http.statusCode == 401 {
-                // Token revoked or expired — clear it so user isn't stuck.
-                keychain.delete(key: tokenKey)
-                self.state = .unauthenticated
+            if [401, 403].contains(http.statusCode) {
+                transitionToUnauthenticated(signOutProvider: true)
                 return
             }
             guard (200..<300).contains(http.statusCode) else {
-                self.state = .unauthenticated
+                resolveTransientRestoreFailure()
                 return
             }
             let user = try JSONDecoder().decode(User.self, from: data)
-            self.currentUser = user
-            self.state = .authenticated
+            guard isCurrentRestore(token: token, generation: requestGeneration) else { return }
+            try transitionToAuthenticated(user: user, token: token)
         } catch {
-            // Network error during silent restore — don't kick user to sign-in.
-            // Keep them in `.unknown` would block forever; flip to unauth so
-            // they can choose to retry by re-signing in.
-            self.state = .unauthenticated
+            guard isCurrentRestore(token: token, generation: requestGeneration) else { return }
+            resolveTransientRestoreFailure()
         }
     }
+
+    private func transitionToAuthenticated(user: User, token: String) throws {
+        let previousUserID = currentUser?.id ?? tokenStore.read(key: userIDKey)
+
+        // Persist credentials before publishing the new identity. If either
+        // write fails, no new account state becomes visible to the app.
+        do {
+            try tokenStore.write(key: tokenKey, value: token)
+            try tokenStore.write(key: userIDKey, value: user.id)
+        } catch {
+            transitionToUnauthenticated(signOutProvider: false)
+            throw error
+        }
+
+        transitionGeneration &+= 1
+        if previousUserID != user.id {
+            identityCleanup.run()
+        }
+        currentUser = user
+        identityCleanup.activate(userID: user.id, sessionGeneration: transitionGeneration)
+        state = .authenticated
+    }
+
+    private func transitionToUnauthenticated(signOutProvider: Bool) {
+        transitionGeneration &+= 1
+        restoreTask?.cancel()
+        restoreTask = nil
+        tokenStore.delete(key: tokenKey)
+        tokenStore.delete(key: userIDKey)
+        identityCleanup.run()
+        currentUser = nil
+        state = .unauthenticated
+        if signOutProvider {
+            providerSignOut.signOut()
+        }
+    }
+
+    private func isCurrentRestore(token: String, generation: UInt64) -> Bool {
+        generation == transitionGeneration && tokenStore.read(key: tokenKey) == token
+    }
+
+    private func resolveTransientRestoreFailure() {
+        // The backend may be briefly unreachable. Retain the token and its
+        // owner marker so retrying does not destroy the user's local state.
+        currentUser = nil
+        if let owner = tokenStore.read(key: userIDKey), !owner.isEmpty {
+            state = .savedAccount(userID: owner)
+        } else {
+            state = .unauthenticated
+        }
+    }
+}
+
+@MainActor
+protocol AuthIdentityCleaning {
+    func run()
+    func activate(userID: String, sessionGeneration: UInt64)
+}
+
+extension AuthIdentityCleaning {
+    func activate(userID: String, sessionGeneration: UInt64) {}
+}
+
+@MainActor
+struct LiveAuthIdentityCleaner: AuthIdentityCleaning {
+    func run() {
+        BookmarkService.shared.clearAll()
+        ReadingEventTracker.shared.discardPending()
+        ReaderFeedbackStore.shared.clear()
+        BackgroundNewsFetcher.shared.clearCache()
+        ImageCacheService.shared.clearCache()
+    }
+
+    func activate(userID: String, sessionGeneration: UInt64) {
+        BackgroundNewsFetcher.shared.invalidatePendingWrites()
+        BookmarkService.shared.activate(userID: userID, sessionGeneration: sessionGeneration)
+    }
+}
+
+@MainActor
+protocol AuthProviderSigningOut {
+    func signOut()
+}
+
+@MainActor
+struct GoogleAuthProviderSigner: AuthProviderSigningOut {
+    func signOut() {
+        GoogleSignInHelper.shared.signOut()
+    }
+}
+
+protocol AuthTokenStoring {
+    func write(key: String, value: String) throws
+    func read(key: String) -> String?
+    func delete(key: String)
 }
 
 // Simple Keychain wrapper suitable for tokens.
 // - Sets kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly so tokens never
 //   leave the device (no iCloud backup).
 // - Surfaces OSStatus failures by throwing on write so callers can handle.
-final class KeychainHelper {
+final class KeychainHelper: AuthTokenStoring {
     enum KeychainError: Error { case unhandledStatus(OSStatus) }
 
     private static let accessibility = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly

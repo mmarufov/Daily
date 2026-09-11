@@ -23,6 +23,19 @@ final class OnboardingChatViewModel: ObservableObject {
     
     private let backendService = BackendService.shared
     private let authService = AuthService.shared
+    private var pendingReaderMutation: ReaderMutation?
+    @Published private(set) var savedCanonicalReader = false
+    private var subscriptions = Set<AnyCancellable>()
+
+    init() {
+        authService.$currentUser.dropFirst().sink { [weak self] _ in
+            guard let self else { return }
+            self.messages = []; self.inputText = ""; self.lifeContext = ""
+            self.locations = []; self.currentInterests = []; self.utilityPriorities = []
+            self.pendingReaderMutation = nil
+            self.savedCanonicalReader = false
+        }.store(in: &subscriptions)
+    }
     
     /// Prepend an AI greeting so the conversation starts warmly.
     func startConversation() {
@@ -53,6 +66,7 @@ final class OnboardingChatViewModel: ObservableObject {
             isLoading = false
             return
         }
+        let session = authService.sessionGeneration
         
         do {
             let historyPayload = messages.map { msg in
@@ -67,6 +81,7 @@ final class OnboardingChatViewModel: ObservableObject {
                 history: historyPayload,
                 accessToken: token
             )
+            guard session == authService.sessionGeneration else { return }
             
             // Add AI response
             let aiMessage = ChatMessage(content: response, isUser: false)
@@ -87,8 +102,9 @@ final class OnboardingChatViewModel: ObservableObject {
     func saveOnboardingPreferences() async throws {
         guard let token = authService.getAccessToken() else {
             errorMessage = "Authentication required"
-            return
+            throw ReaderClientError.authenticationRequired
         }
+        let generation = authService.sessionGeneration
         
         isSaving = true
         errorMessage = nil
@@ -102,11 +118,43 @@ final class OnboardingChatViewModel: ObservableObject {
         }
         
         do {
+            do {
+                let base = try await ReaderService.shared.fetch(token: token)
+                guard generation == authService.sessionGeneration else { throw CancellationError() }
+                guard !currentInterests.isEmpty else {
+                    throw NSError(domain: "Onboarding", code: 1, userInfo: [NSLocalizedDescriptionKey: "Add at least one explicit Current focus below. Conversation suggestions are not saved automatically."])
+                }
+                // Preserve unrelated existing interests when this sheet is used to refine a profile.
+                let kept = base.profile.intents.filter { intent in
+                    !(intent.kind == "topic" && currentInterests.contains(intent.label)) &&
+                    !(intent.kind == "place" && locations.contains(intent.label)) &&
+                    !(intent.kind == "utility" && utilityPriorities.contains(intent.label))
+                }
+                let added = ReaderEditor.intents(base: pendingReaderMutation?.patch.intents ?? base.profile.intents, topics: [], current: currentInterests, places: locations, utilities: utilityPriorities)
+                    .filter { $0.kind != "entity" }
+                let patch = ReaderPatch(intents: kept + added, depth: contentDepth, context: lifeContext)
+                if pendingReaderMutation?.patch != patch {
+                    pendingReaderMutation = ReaderMutation(baseGeneration: base.generation, baseRevision: base.revision, patch: patch)
+                }
+                guard !base.needsReview else {
+                    throw NSError(domain: "Onboarding", code: 2, userInfo: [NSLocalizedDescriptionKey: "Review your existing imported preferences in Personalization settings first."])
+                }
+                _ = try await ReaderService.shared.apply(pendingReaderMutation!, token: token)
+                guard generation == authService.sessionGeneration else { throw CancellationError() }
+                pendingReaderMutation = nil
+                savedCanonicalReader = true
+                isSaving = false
+                NotificationCenter.default.post(name: .readerPreferencesCommitted, object: nil)
+                return
+            } catch ReaderClientError.unavailable {
+                // Explicit compatibility path; no fallback after a rejected canonical write.
+            }
             try await backendService.completeUserPreferences(
                 accessToken: token,
                 history: historyPayload,
                 explicitContext: explicitContextPayload()
             )
+            guard authService.sessionGeneration == generation else { throw CancellationError() }
             isSaving = false
         } catch {
             isSaving = false
@@ -125,4 +173,3 @@ final class OnboardingChatViewModel: ObservableObject {
         ]
     }
 }
-

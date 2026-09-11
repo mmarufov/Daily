@@ -16,6 +16,8 @@ import SwiftUI
 /// Caller is responsible for hairline dividers between rows (use a List with
 /// `.listRowSeparator` or wrap in a VStack with explicit hairlines).
 struct StoryRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.displayScale) private var displayScale
     let article: NewsArticle
     var isRead: Bool = false
 
@@ -39,41 +41,35 @@ struct StoryRow: View {
                         .tracking(0.8)
                         .textCase(.uppercase)
                         .foregroundStyle(EditionPalette.inkBlue)
-                        .lineLimit(1)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                 }
                 Text(article.title)
                     .font(AppTypography.rowHeadline)
                     .foregroundStyle(EditionPalette.ink)
-                    .lineLimit(2)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                     .lineSpacing(2)
                     .multilineTextAlignment(.leading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            thumbnail
+            if article.displayImageURL != nil && !dynamicTypeSize.isAccessibilitySize {
+                thumbnail
                 .frame(width: 80, height: 80)
                 .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                 .accessibilityHidden(true)
+            }
         }
         .padding(.vertical, AppSpacing.smLg)
         .padding(.horizontal, AppSpacing.md)
-        .opacity(isRead ? 0.6 : 1.0)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isRead ? [.isButton, .isSelected] : .isButton)
+        .accessibilityValue(isRead ? "Opened" : "Not opened")
     }
 
     @ViewBuilder
     private var thumbnail: some View {
-        if let urlString = article.imageURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable().aspectRatio(contentMode: .fill)
-                default:
-                    EditionPalette.paperSecondary
-                }
-            }
+        if let url = article.displayImageURL {
+            ArticleRemoteImage(url: url, pixelSize: Int(80 * displayScale))
         } else {
             EditionPalette.paperSecondary
         }

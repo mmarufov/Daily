@@ -21,7 +21,11 @@ struct ContentView: View {
                     .transition(.opacity)
             case .authenticated:
                 MainTabView()
+                    .id(auth.sessionGeneration)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
+            case .savedAccount(let userID):
+                SavedEditionView(userID: userID, auth: auth)
+                    .id(auth.sessionGeneration)
             case .unauthenticated:
                 AuthView()
                     .transition(.move(edge: .top).combined(with: .opacity))

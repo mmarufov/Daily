@@ -13,36 +13,51 @@ final class BackendService {
     private let baseURL: URL
     private let urlSession: URLSession
 
+    /// Detail reads must fail into the reader's recoverable state instead of
+    /// leaving a metadata-less spinner waiting indefinitely for connectivity.
+    private let articleSession: URLSession = {
+        let config = URLSessionConfiguration.ephemeral
+        config.timeoutIntervalForRequest = 5
+        config.timeoutIntervalForResource = 8
+        config.waitsForConnectivity = false
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        return URLSession(configuration: config)
+    }()
+
     /// ISO8601 date decoder that handles fractional seconds (from PostgreSQL's `now()`).
-    static let iso8601Decoder: JSONDecoder = {
+    /// JSONDecoder is mutable and not safe to share across foreground and
+    /// background requests, so each access receives a fresh configured decoder.
+    nonisolated static var iso8601Decoder: JSONDecoder {
         let decoder = JSONDecoder()
-        let withFractional = ISO8601DateFormatter()
-        withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let withoutFractional = ISO8601DateFormatter()
-        withoutFractional.formatOptions = [.withInternetDateTime]
-        // Fallback for microsecond-precision dates from Python's datetime.isoformat()
-        let microFmt = DateFormatter()
-        microFmt.locale = Locale(identifier: "en_US_POSIX")
-        microFmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX"
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let string = try container.decode(String.self)
+            // These mutable formatters belong to this decode invocation, never
+            // to a Sendable closure shared by independently scheduled decoders.
+            let withFractional = ISO8601DateFormatter()
+            withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            let withoutFractional = ISO8601DateFormatter()
+            withoutFractional.formatOptions = [.withInternetDateTime]
+            let microFmt = DateFormatter()
+            microFmt.locale = Locale(identifier: "en_US_POSIX")
+            microFmt.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX"
             if let date = withFractional.date(from: string) { return date }
             if let date = withoutFractional.date(from: string) { return date }
             if let date = microFmt.date(from: string) { return date }
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date: \(string)")
         }
         return decoder
-    }()
+    }
 
     /// Session with extended timeout for AI-scored feed requests.
     /// Caching is disabled so pull-to-refresh always hits the network
     /// instead of returning stale responses from URLCache.
     private let feedSession: URLSession = {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 300
-        config.timeoutIntervalForResource = 300
-        config.waitsForConnectivity = true
+        config.timeoutIntervalForRequest = 25
+        config.timeoutIntervalForResource = 30
+        config.waitsForConnectivity = false
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         config.urlCache = nil
         return URLSession(configuration: config)
@@ -55,11 +70,32 @@ final class BackendService {
 
     // MARK: - Feed Endpoints (new architecture)
 
+    nonisolated private static func decodeDelivery<T: Decodable & Sendable>(_ type: T.Type, data: Data) async throws -> T {
+        guard data.count <= 2_000_000 else { throw URLError(.dataLengthExceedsMaximum) }
+        let result = try await Task.detached(priority: .userInitiated) {
+            try iso8601Decoder.decode(type, from: data)
+        }.value
+        try Task.checkCancellation()
+        return result
+    }
+
+    /// Advertise immutable edition/receipt and transient-status support only on feed requests.
+    static func editionRequest(url: URL, accessToken: String, method: String) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("1", forHTTPHeaderField: "X-Daily-Edition-Version")
+        request.setValue("1", forHTTPHeaderField: "X-Daily-Delivery-Version")
+        return request
+    }
+
     func fetchFeedState(
         accessToken: String,
         limit: Int = 50
     ) async throws -> FeedResponse {
         let endpoint = baseURL.appendingPathComponent("/feed")
+        let authGeneration = AuthService.shared.sessionGeneration
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
         let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
         components?.queryItems = queryItems
@@ -68,12 +104,8 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let (data, response) = try await feedSession.data(for: request)
+        let request = Self.editionRequest(url: url, accessToken: accessToken, method: "GET")
+        let (data, response) = try await articleSession.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
             throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
@@ -84,10 +116,8 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
-        if let feedRequestId = feedResponse.feedRequestId {
-            ReadingEventTracker.shared.setFeedRequestId(feedRequestId)
-        }
+        guard authGeneration == AuthService.shared.sessionGeneration else { throw CancellationError() }
+        let feedResponse = try await Self.decodeDelivery(FeedResponse.self, data: data)
         return feedResponse
     }
 
@@ -100,16 +130,19 @@ final class BackendService {
         return response.articles
     }
 
-    /// Fetch a single article with full content (extracts on-demand if needed).
+    /// Fetch a single article presentation. Extraction is background-only;
+    /// this request never asks the server to scrape synchronously.
     func fetchFeedArticle(id: String, accessToken: String) async throws -> NewsArticle {
         let endpoint = baseURL.appendingPathComponent("/feed/\(id)")
+        let authGeneration = AuthService.shared.sessionGeneration
 
         var request = URLRequest(url: endpoint)
         request.httpMethod = "GET"
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("1", forHTTPHeaderField: "X-Daily-Delivery-Version")
 
-        let (data, response) = try await urlSession.data(for: request)
+        let (data, response) = try await articleSession.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
             throw NSError(domain: "BackendService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
@@ -120,7 +153,10 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        return try Self.iso8601Decoder.decode(NewsArticle.self, from: data)
+        try Task.checkCancellation()
+        guard authGeneration == AuthService.shared.sessionGeneration else { throw CancellationError() }
+        guard data.count <= 2_000_000 else { throw URLError(.dataLengthExceedsMaximum) }
+        return try await Self.decodeDelivery(NewsArticle.self, data: data)
     }
 
     func buildFeed(
@@ -128,6 +164,7 @@ final class BackendService {
         limit: Int = 50
     ) async throws -> FeedResponse {
         let endpoint = baseURL.appendingPathComponent("/feed/build")
+        let authGeneration = AuthService.shared.sessionGeneration
         let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
         components?.queryItems = queryItems
@@ -136,11 +173,7 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        let request = Self.editionRequest(url: url, accessToken: accessToken, method: "POST")
         let (data, response) = try await feedSession.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
@@ -152,10 +185,8 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
-        if let feedRequestId = feedResponse.feedRequestId {
-            ReadingEventTracker.shared.setFeedRequestId(feedRequestId)
-        }
+        guard authGeneration == AuthService.shared.sessionGeneration else { throw CancellationError() }
+        let feedResponse = try await Self.decodeDelivery(FeedResponse.self, data: data)
         return feedResponse
     }
 
@@ -165,6 +196,7 @@ final class BackendService {
         limit: Int = 50
     ) async throws -> FeedResponse {
         let endpoint = baseURL.appendingPathComponent("/feed/refresh")
+        let authGeneration = AuthService.shared.sessionGeneration
         let queryItems = [URLQueryItem(name: "limit", value: "\(limit)")]
         var components = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
         components?.queryItems = queryItems
@@ -173,11 +205,7 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
 
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        let request = Self.editionRequest(url: url, accessToken: accessToken, method: "POST")
         let (data, response) = try await feedSession.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {
@@ -189,10 +217,8 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: http.statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
 
-        let feedResponse = try Self.iso8601Decoder.decode(FeedResponse.self, from: data)
-        if let feedRequestId = feedResponse.feedRequestId {
-            ReadingEventTracker.shared.setFeedRequestId(feedRequestId)
-        }
+        guard authGeneration == AuthService.shared.sessionGeneration else { throw CancellationError() }
+        let feedResponse = try await Self.decodeDelivery(FeedResponse.self, data: data)
         return feedResponse
     }
 
@@ -231,7 +257,9 @@ final class BackendService {
         action: String,
         accessToken: String,
         feedRequestID: String? = nil,
-        position: Int? = nil
+        position: Int? = nil,
+        eventID: String? = nil,
+        readerGeneration: Int? = nil
     ) async throws {
         let endpoint = baseURL.appendingPathComponent("/feed/feedback")
 
@@ -240,12 +268,9 @@ final class BackendService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        var body: [String: Any] = [
-            "article_id": articleID,
-            "action": action
-        ]
-        if let feedRequestID { body["feed_request_id"] = feedRequestID }
-        if let position { body["position"] = position }
+        let body = Self.feedFeedbackBody(articleID: articleID, action: action,
+            feedRequestID: feedRequestID, position: position, eventID: eventID,
+            readerGeneration: readerGeneration)
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await urlSession.data(for: request)
@@ -254,6 +279,20 @@ final class BackendService {
             throw NSError(domain: "BackendService", code: (response as? HTTPURLResponse)?.statusCode ?? -1,
                           userInfo: [NSLocalizedDescriptionKey: errorMessage])
         }
+    }
+
+    /// Shared by the transport and wire-contract tests; never infer receipt position.
+    static func feedFeedbackBody(articleID: String, action: String, feedRequestID: String?,
+                                 position: Int?, eventID: String?, readerGeneration: Int?) -> [String: Any] {
+        var body: [String: Any] = [
+            "article_id": articleID,
+            "action": action
+        ]
+        if let feedRequestID { body["feed_request_id"] = feedRequestID }
+        if let position { body["position"] = position }
+        if let eventID { body["event_id"] = eventID }
+        if let readerGeneration { body["reader_generation"] = readerGeneration }
+        return body
     }
 
     // MARK: - Chat Endpoints
@@ -503,13 +542,16 @@ final class BackendService {
         let categories: [CategoryCount]
     }
 
-    enum FeedStatus: String, Decodable {
+    nonisolated enum FeedStatus: String, Decodable, Sendable {
         case ready
+        case building
+        case unavailable
         case needsBuild = "needs_build"
         case needsDiscovery = "needs_discovery"
+        case needsReaderReview = "needs_reader_review"
     }
 
-    struct FeedResponse: Decodable {
+    nonisolated struct FeedResponse: Decodable, Sendable {
         let status: FeedStatus
         let articles: [NewsArticle]
         let feedRequestId: String?
@@ -517,6 +559,9 @@ final class BackendService {
         let qualityMet: Bool?
         let buildTimeSeconds: Double?
         let profileSpecificity: String?
+        var delivery: DeliveryMetadata? = nil
+        var reason: String? = nil
+        var retryAfterSeconds: Int? = nil
 
         enum CodingKeys: String, CodingKey {
             case status
@@ -526,6 +571,8 @@ final class BackendService {
             case qualityMet = "quality_met"
             case buildTimeSeconds = "build_time_seconds"
             case profileSpecificity = "profile_specificity"
+            case delivery, reason
+            case retryAfterSeconds = "retry_after_seconds"
         }
     }
 
@@ -855,23 +902,29 @@ final class BackendService {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
+        request.httpBody = try JSONSerialization.data(withJSONObject: Self.readingEventsBody(events))
+
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw NSError(domain: "BackendService", code: (response as? HTTPURLResponse)?.statusCode ?? -1,
+                          userInfo: [NSLocalizedDescriptionKey: "Reading events were not acknowledged."])
+        }
+    }
+
+    static func readingEventsBody(_ events: [ReadingEventTracker.ReadingEvent]) -> [String: Any] {
         let eventsPayload = events.map { event -> [String: Any] in
             var dict: [String: Any] = [
+                "event_id": event.eventId,
                 "article_id": event.articleId,
                 "type": event.type
             ]
             if let duration = event.durationSeconds { dict["duration_seconds"] = duration }
             if let feedReqId = event.feedRequestId { dict["feed_request_id"] = feedReqId }
             if let position = event.position { dict["position"] = position }
+            if let hash = event.readContentHash { dict["read_content_hash"] = hash }
             return dict
         }
-        let body: [String: Any] = ["events": eventsPayload]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (_, response) = try await urlSession.data(for: request)
-        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            return // Silent failure — reading events are non-critical
-        }
+        return ["events": eventsPayload]
     }
 
     // MARK: - Briefing
