@@ -81,7 +81,7 @@
         },
         {
           "id": "a00704",
-          "title": "More than 300 cooling centres to open if S’pore faces heatwave: New heat office",
+          "title": "More than 300 cooling centres to open if S\u2019pore faces heatwave: New heat office",
           "dropped_at": "prefilter:cap",
           "reason": "No clear preference match",
           "score": 0.0
@@ -367,7 +367,7 @@
         {
           "id": "a00343",
           "rank": 9,
-          "title": "'My parents won't lend me £10k but helped my brother': When families play financ",
+          "title": "'My parents won't lend me \u00a310k but helped my brother': When families play financ",
           "source": "BBC",
           "label": "fine",
           "score": 0.42393749999999997
@@ -375,7 +375,7 @@
         {
           "id": "a00033",
           "rank": 10,
-          "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+          "title": "Iran\u2019s president admits \u2018we have many problems\u2019 and missiles \u2018are of no use\u2019 as ",
           "source": "Fortune",
           "label": "fine",
           "score": 0.42393749999999997
@@ -440,7 +440,7 @@
         },
         {
           "id": "a00945",
-          "title": "‘That’s Why I Signed There For Eight Years’: Canucks Defenceman Filip Hronek On ",
+          "title": "\u2018That\u2019s Why I Signed There For Eight Years\u2019: Canucks Defenceman Filip Hronek On ",
           "rank": 6
         },
         {
@@ -466,7 +466,7 @@
       "losses": [
         {
           "id": "a00081",
-          "title": "Uzbekistan’s Presidential Daughter Just Got a Law of Her Own",
+          "title": "Uzbekistan\u2019s Presidential Daughter Just Got a Law of Her Own",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -551,7 +551,7 @@
         {
           "id": "a00945",
           "rank": 6,
-          "title": "‘That’s Why I Signed There For Eight Years’: Canucks Defenceman Filip Hronek On ",
+          "title": "\u2018That\u2019s Why I Signed There For Eight Years\u2019: Canucks Defenceman Filip Hronek On ",
           "source": "Yahoo Sports NHL",
           "label": "never",
           "score": 1.0
@@ -567,7 +567,7 @@
         {
           "id": "a00067",
           "rank": 8,
-          "title": "Uzbekistan’s next competitive advantage is talent",
+          "title": "Uzbekistan\u2019s next competitive advantage is talent",
           "source": "Eurasianet",
           "label": "fine",
           "score": 1.0
@@ -575,7 +575,7 @@
         {
           "id": "a00788",
           "rank": 9,
-          "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+          "title": "China\u2019s tax reform matters more to Southeast Asia than Wall Street",
           "source": "e27",
           "label": null,
           "score": 0.8800000000000001
@@ -599,7 +599,7 @@
         {
           "id": "a00073",
           "rank": 12,
-          "title": "Russia eyes Kazakhstan and Uzbekistan as arms purveyors – report",
+          "title": "Russia eyes Kazakhstan and Uzbekistan as arms purveyors \u2013 report",
           "source": "Eurasianet",
           "label": "fine",
           "score": 0.6842499999999999
@@ -650,7 +650,7 @@
       "losses": [
         {
           "id": "a00037",
-          "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+          "title": "World mostly shrugs off Bessent\u2019s \u2018D-Day\u2019 Iran sanctions threat",
           "dropped_at": "rank",
           "reason": "The article discusses China's manufacturing activity, which could impact commodity prices and trade dynamics relevant to",
           "score": 0.6842499999999999
@@ -671,7 +671,7 @@
         },
         {
           "id": "a00141",
-          "title": "China Consolidates Position as Kazakhstan’s Top Trading Partner",
+          "title": "China Consolidates Position as Kazakhstan\u2019s Top Trading Partner",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -706,21 +706,21 @@
         },
         {
           "id": "a00600",
-          "title": "Kremlin Says It’s Working to Minimize Impact of Ukrainian Attacks on Russian Gra",
+          "title": "Kremlin Says It\u2019s Working to Minimize Impact of Ukrainian Attacks on Russian Gra",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
         },
         {
           "id": "a00612",
-          "title": "Aluminum producer Rusal promises to ‘minimize the socioeconomic consequences’ of",
+          "title": "Aluminum producer Rusal promises to\u00a0\u2018minimize the socioeconomic consequences\u2019 of",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
         },
         {
           "id": "a00629",
-          "title": "Russia’s ‘digital ruble’ goes live on September 1. Here’s what we know.",
+          "title": "Russia\u2019s \u2018digital ruble\u2019 goes live on\u00a0September 1. Here\u2019s what we\u00a0know.",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -813,7 +813,7 @@
         {
           "id": "a01251",
           "rank": 7,
-          "title": "What is Notting Hill Carnival’s Jab Jab parade?",
+          "title": "What is Notting Hill Carnival\u2019s Jab Jab parade?",
           "source": "Al Jazeera",
           "label": null,
           "score": 0.5
@@ -829,7 +829,7 @@
         {
           "id": "a01253",
           "rank": 9,
-          "title": "Lamine Yamal getting back to ‘top level’, Barcelona coach Flick says",
+          "title": "Lamine Yamal getting back to \u2018top level\u2019, Barcelona coach Flick says",
           "source": "Al Jazeera",
           "label": null,
           "score": 0.5
@@ -914,7 +914,7 @@
         },
         {
           "id": "a00052",
-          "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+          "title": "\u2018Winter panic\u2019: EU gas stores at their lowest level in 13 years",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -928,7 +928,7 @@
         },
         {
           "id": "a00621",
-          "title": "Bloomberg: Ukraine’s drones have pushed Russian oil refining to a 20-year low",
+          "title": "Bloomberg: Ukraine\u2019s drones have pushed Russian oil refining to\u00a0a\u00a020-year low",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -1004,7 +1004,7 @@
         {
           "id": "a00037",
           "rank": 4,
-          "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+          "title": "World mostly shrugs off Bessent\u2019s \u2018D-Day\u2019 Iran sanctions threat",
           "source": "Fortune",
           "label": "must_see",
           "score": 0.7947500000000001
@@ -1012,7 +1012,7 @@
         {
           "id": "a00033",
           "rank": 5,
-          "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+          "title": "Iran\u2019s president admits \u2018we have many problems\u2019 and missiles \u2018are of no use\u2019 as ",
           "source": "Fortune",
           "label": "must_see",
           "score": 0.7394999999999999
@@ -1052,7 +1052,7 @@
         {
           "id": "a01023",
           "rank": 10,
-          "title": "Musk’s faster path to more gas turbines comes with pollution problem",
+          "title": "Musk\u2019s faster path to more gas turbines comes with pollution problem",
           "source": "TechCrunch",
           "label": null,
           "score": 0.36124999999999996
@@ -1121,7 +1121,7 @@
         },
         {
           "id": "a00052",
-          "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+          "title": "\u2018Winter panic\u2019: EU gas stores at their lowest level in 13 years",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -1234,7 +1234,7 @@
         {
           "id": "a00748",
           "rank": 4,
-          "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+          "title": "Singapore\u2019s inaugural RIE2025 report card shows business R&D spending up 64% at ",
           "source": "Business Times SG",
           "label": "fine",
           "score": 0.629
@@ -1250,7 +1250,7 @@
         {
           "id": "a01041",
           "rank": 6,
-          "title": "Google Maps Now Shows ‘Lake America’ Instead of Lake Ontario",
+          "title": "Google Maps Now Shows \u2018Lake America\u2019 Instead of Lake Ontario",
           "source": "Wired",
           "label": "fine",
           "score": 0.6210312499999998
@@ -1282,7 +1282,7 @@
         {
           "id": "a01022",
           "rank": 10,
-          "title": "Liux’s Big microcar bets on sustainability to take on Chinese rivals",
+          "title": "Liux\u2019s Big microcar bets on sustainability to take on Chinese rivals",
           "source": "TechCrunch",
           "label": "fine",
           "score": 0.5657812499999999
@@ -1290,7 +1290,7 @@
         {
           "id": "a01269",
           "rank": 11,
-          "title": "NASA launches $4.3bn Roman Telescope to uncover universe’s hidden secrets",
+          "title": "NASA launches $4.3bn Roman Telescope to uncover universe\u2019s hidden secrets",
           "source": "Al Jazeera",
           "label": null,
           "score": 0.60509375
@@ -1539,12 +1539,12 @@
         },
         {
           "id": "a00367",
-          "title": "Trump ‘border czar’ denies Milo Yiannopoulos was deported quickly to spare him f",
+          "title": "Trump \u2018border czar\u2019 denies Milo Yiannopoulos was deported quickly to spare him f",
           "rank": 8
         },
         {
           "id": "a00037",
-          "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+          "title": "World mostly shrugs off Bessent\u2019s \u2018D-Day\u2019 Iran sanctions threat",
           "rank": 9
         },
         {
@@ -1565,7 +1565,7 @@
       "losses": [
         {
           "id": "a00407",
-          "title": "Giants’ 53-man roster to include Odell Beckham: Here’s the full squad.",
+          "title": "Giants\u2019 53-man roster to include Odell Beckham: Here\u2019s the full squad.",
           "dropped_at": "blended",
           "reason": "The article discusses a music EP, which is irrelevant to the user's interests.",
           "score": 0.074375
@@ -1600,7 +1600,7 @@
         },
         {
           "id": "a00503",
-          "title": "Appeals court rejects Rep. LaMonica McIver’s bid to avoid trial on assault charg",
+          "title": "Appeals court rejects Rep. LaMonica McIver\u2019s bid to avoid trial on assault charg",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -1693,7 +1693,7 @@
         {
           "id": "a00035",
           "rank": 7,
-          "title": "It’s not just math and reading. Classroom devices deprive kids of skills needed ",
+          "title": "It\u2019s not just math and reading. Classroom devices deprive kids of skills needed ",
           "source": "Fortune",
           "label": "fine",
           "score": 0.5599999999999999
@@ -1701,7 +1701,7 @@
         {
           "id": "a00367",
           "rank": 8,
-          "title": "Trump ‘border czar’ denies Milo Yiannopoulos was deported quickly to spare him f",
+          "title": "Trump \u2018border czar\u2019 denies Milo Yiannopoulos was deported quickly to spare him f",
           "source": "Guardian US",
           "label": "never",
           "score": 0.5599999999999999
@@ -1709,7 +1709,7 @@
         {
           "id": "a00037",
           "rank": 9,
-          "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+          "title": "World mostly shrugs off Bessent\u2019s \u2018D-Day\u2019 Iran sanctions threat",
           "source": "Fortune",
           "label": "never",
           "score": 0.5599999999999999
@@ -1806,7 +1806,7 @@
         },
         {
           "id": "a00633",
-          "title": "Reuters: Russian-speaking hackers breached seven companies by tricking the AI ag",
+          "title": "Reuters: Russian-speaking hackers breached seven companies by\u00a0tricking the AI\u00a0ag",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -1834,7 +1834,7 @@
         },
         {
           "id": "a01009",
-          "title": "AI industry says Trump plans to tax chips in the “single dumbest way imaginable”",
+          "title": "AI industry says Trump plans to tax chips in the \u201csingle dumbest way imaginable\u201d",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -1855,7 +1855,7 @@
         },
         {
           "id": "a01082",
-          "title": "OpenAI Is Developing a ‘Persistent’ AI Agent",
+          "title": "OpenAI Is Developing a \u2018Persistent\u2019 AI Agent",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -1921,7 +1921,7 @@
         {
           "id": "a00748",
           "rank": 1,
-          "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+          "title": "Singapore\u2019s inaugural RIE2025 report card shows business R&D spending up 64% at ",
           "source": "Business Times SG",
           "label": "fine",
           "score": 0.9800000000000001
@@ -1945,7 +1945,7 @@
         {
           "id": "a00788",
           "rank": 4,
-          "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+          "title": "China\u2019s tax reform matters more to Southeast Asia than Wall Street",
           "source": "e27",
           "label": null,
           "score": 0.96
@@ -1953,7 +1953,7 @@
         {
           "id": "a00395",
           "rank": 5,
-          "title": "Trump threatens FCC action against ‘Meet the Press’ host",
+          "title": "Trump threatens FCC action against \u2018Meet the Press\u2019 host",
           "source": "NJ.com",
           "label": null,
           "score": 0.96
@@ -1961,7 +1961,7 @@
         {
           "id": "a00033",
           "rank": 6,
-          "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+          "title": "Iran\u2019s president admits \u2018we have many problems\u2019 and missiles \u2018are of no use\u2019 as ",
           "source": "Fortune",
           "label": null,
           "score": 0.96
@@ -1993,7 +1993,7 @@
         {
           "id": "a00058",
           "rank": 10,
-          "title": "‘My main goal is to help people’: I’m single, 74, with $10 million burning a hol",
+          "title": "\u2018My main goal is to help people\u2019: I\u2019m single, 74, with $10 million burning a hol",
           "source": "MarketWatch",
           "label": null,
           "score": 0.96
@@ -2086,14 +2086,14 @@
         },
         {
           "id": "a00792",
-          "title": "Ajaib raises US$270M in Indonesia’s biggest tech funding round since 2022",
+          "title": "Ajaib raises US$270M in Indonesia\u2019s biggest tech funding round since 2022",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
         },
         {
           "id": "a00800",
-          "title": "Language was never the problem: Inside SEA’s real AI adoption gap",
+          "title": "Language was never the problem: Inside SEA\u2019s real AI adoption gap",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -2121,7 +2121,7 @@
         },
         {
           "id": "a00833",
-          "title": "SEA’s stablecoin boom has a dollarisation problem nobody’s pricing in",
+          "title": "SEA\u2019s stablecoin boom has a dollarisation problem nobody\u2019s pricing in",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -2135,7 +2135,7 @@
         },
         {
           "id": "a01031",
-          "title": "Nvidia’s AI advantage is moving beyond the GPU",
+          "title": "Nvidia\u2019s AI advantage is moving beyond the GPU",
           "dropped_at": "lookback",
           "reason": "",
           "score": null
@@ -2233,7 +2233,7 @@
         {
           "id": "a00694",
           "rank": 5,
-          "title": "Singapore’s RIE2025 plan saw more business spending, more jobs created in R&D",
+          "title": "Singapore\u2019s RIE2025 plan saw more business spending, more jobs created in R&D",
           "source": "Straits Times",
           "label": "fine",
           "score": 0.6693749999999998
@@ -2281,7 +2281,7 @@
         {
           "id": "a00748",
           "rank": 11,
-          "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+          "title": "Singapore\u2019s inaugural RIE2025 report card shows business R&D spending up 64% at ",
           "source": "Business Times SG",
           "label": "must_see",
           "score": 0.6842499999999999
@@ -2289,7 +2289,7 @@
         {
           "id": "a00788",
           "rank": 12,
-          "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+          "title": "China\u2019s tax reform matters more to Southeast Asia than Wall Street",
           "source": "e27",
           "label": "fine",
           "score": 0.629
@@ -2435,49 +2435,52 @@
       "personas": 10
     },
     "2026-09-02": {
-      "recall_at_k_mean": 0.2207,
+      "recall_at_k_mean": 0.2098,
       "recall_at_k_min": 0.0,
-      "raw_recall_at_k_mean": 0.2026,
+      "raw_recall_at_k_mean": 0.1935,
       "raw_recall_at_k_min": 0.0,
       "recall_at_retrieval_mean": 0.3211,
       "recall_at_retrieval_min": 0.1176,
-      "need_to_know_recall_mean": 0.1739,
+      "need_to_know_recall_mean": 0.2109,
       "need_to_know_recall_min": 0.0,
-      "followup_recall_mean": 0.1111,
+      "followup_recall_mean": 0.0397,
       "followup_recall_min": 0.0,
-      "never_rate_mean": 0.2694,
+      "never_rate_mean": 0.395,
       "never_rate_min": 0.0,
-      "event_delivery_mean": 0.25,
+      "event_delivery_mean": 0.15,
       "event_delivery_min": 0.0,
-      "major_delivery_mean": 0.22,
+      "major_delivery_mean": 0.1,
       "major_delivery_min": 0.0,
       "false_major_rate_mean": null,
       "false_major_rate_min": null,
-      "judge_precision_mean": 0.4561,
+      "judge_precision_mean": 0.6402,
       "judge_precision_min": 0.0,
-      "judge_recall_mean": 0.35,
+      "judge_recall_mean": 0.55,
       "judge_recall_min": 0.0,
-      "needle_recall_mean": 0.6,
+      "needle_recall_mean": 0.65,
       "needle_recall_min": 0.0,
-      "lookalike_rate_mean": 0.15,
+      "lookalike_rate_mean": 0.1,
       "lookalike_rate_min": 0.0,
-      "feed_size_k_mean": 11.7,
-      "feed_size_k_min": 9,
-      "distinct_sources_mean": 6.7,
-      "distinct_sources_min": 5,
-      "latency_s_mean": 2.581,
-      "latency_s_min": 0.39,
-      "calls_total": 44,
-      "calls_max_per_persona": 7,
-      "cost_usd_total": 0.26526,
+      "feed_size_k_mean": 10.5,
+      "feed_size_k_min": 4,
+      "distinct_sources_mean": 6.1,
+      "distinct_sources_min": 3,
+      "latency_s_mean": 2.934,
+      "latency_s_min": 0.42,
+      "calls_total": 42,
+      "calls_max_per_persona": 5,
+      "cost_usd_total": 0.22798,
       "cache_misses_total": 0,
       "loss_by_stage": {
+        "blended": 13,
         "lookback": 75,
         "prefilter:cap": 9,
-        "blended": 9,
-        "rank": 4
+        "rank": 2
       },
-      "personas": 10
+      "personas": 10,
+      "event_slot_contamination_mean": null,
+      "event_slot_contamination_min": null,
+      "reader_pipeline_calls_max_per_persona": 5
     }
   }
 }

@@ -17,6 +17,34 @@ The historical prototype fixtures used reader-dependent event discovery. They
 cannot certify S4 or the corrected default `proto` protocol. New canonical
 requests fail offline on absent exact responses; they must never borrow old
 response keys. S4 has its own mandatory release-quality gate.
+
+2026-09-11: `baseline-prod-llm.json`'s `snapshot_baselines["2026-09-02"]`
+was re-recorded (bug #14 / plan Phase 2.6). Root-caused via controlled
+reverts of individual hunks in the unpushed S1-S9 landing, not guesswork:
+`_score_candidate`/`_candidate_search_fields` in `feed_service.py` switched
+keyword/exclusion matching from plain substring (`term in text`) to
+whole-word matching (`_word_in`, a regex word-boundary search) across every
+call site -- title, category, source, summary, phrase, and exclusion
+matching alike. That's a deliberate precision fix (avoids false-positive
+substring hits, e.g. "AI" inside "maiden," "cat" inside "category") and its
+effect on this eval run backs that up: `judge_precision_mean` rose
+0.46->0.64, `judge_recall_mean` rose 0.35->0.55, `lookalike_rate_mean` fell
+0.15->0.10, `needle_recall_mean` rose 0.60->0.65. The regression this gate
+caught -- `never_rate_mean` 0.27->0.40, `event_delivery_mean` 0.25->0.15,
+`followup_recall_mean` 0.11->0.04 -- is the real, measured recall-side cost
+of that same tightening on this specific frozen persona set, not a separate
+bug: reverting just `_word_in` to a plain substring match (verified in an
+isolated experiment, not shipped) moved `event_delivery_mean` and
+`followup_recall_mean` back to their exact prior values. Because this gate
+had never run on GitHub before today (CI had only executed once, for one
+unrelated system, on a throwaway branch), this tradeoff was never actually
+weighed against the S0 suite before landing. Re-baselining rather than
+reverting the matching fix: substring matching is the less correct
+algorithm, and forcing the eval number back up by reverting a real
+precision improvement would be optimizing the metric instead of the
+product. Whether this specific frozen snapshot's personas/keywords should
+also inform tuning `_word_in` (e.g. word-boundary matching too strict for
+some keyword shapes) is real remaining work, not resolved here.
 """
 import json
 import os
