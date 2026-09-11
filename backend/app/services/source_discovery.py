@@ -368,37 +368,62 @@ def _match_seed_sources(conn, interests: dict, profile_specificity: str, ai_prof
     return candidates
 
 
+def _discovery_fetch_policy():
+    from app.services.safe_http import SafeFetchPolicy
+
+    # Candidate URLs here can come straight from an LLM suggestion
+    # (_ai_suggest_feeds) built from user-supplied interest text -- this is
+    # the one feed-discovery fetch path that sees genuinely untrusted URLs,
+    # not just a fixed source registry, so it goes through the SSRF-safe
+    # fetcher rather than a bare httpx client.
+    return SafeFetchPolicy(
+        timeout_seconds=10.0,
+        max_redirects=5,
+        max_wire_bytes=5_000_000,
+        max_decoded_bytes=5_000_000,
+        allowed_content_types=None,
+    )
+
+
 async def _validate_feed(client: httpx.AsyncClient, url: str) -> bool:
-    """Validate a feed URL: GET request + parse at least 1 entry."""
+    """Validate a feed URL: GET request + parse at least 1 entry.
+
+    ``client`` remains for caller compatibility but is intentionally unused;
+    see ``_fetch_feed_sample`` below for why.
+    """
+    from app.services.safe_http import SafeFetchError, safe_fetch
+
     try:
-        resp = await client.get(
-            url,
-            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
-            timeout=10.0,
-        )
-        if resp.status_code != 200:
-            return False
-        feed = feedparser.parse(resp.text)
-        return len(feed.entries) > 0
+        fetched = await safe_fetch(url, policy=_discovery_fetch_policy())
+    except SafeFetchError:
+        return False
     except Exception:
         return False
+    feed = feedparser.parse(fetched.text)
+    return len(feed.entries) > 0
 
 
 async def _fetch_feed_sample(client: httpx.AsyncClient, url: str) -> tuple[bool, list[str]]:
-    """Fetch a feed and sample a few titles for discovery scoring."""
+    """Fetch a feed and sample a few titles for discovery scoring.
+
+    ``client`` remains for caller compatibility but is intentionally unused:
+    an ordinary httpx client with ``follow_redirects=True`` can hop from a
+    public URL to a private/internal address on any redirect hop without
+    re-validating it, and candidate feed URLs here are not limited to a
+    fixed source registry (see ``_discovery_fetch_policy``). Every fetch
+    goes through the shared SSRF-safe fetcher instead.
+    """
+    from app.services.safe_http import SafeFetchError, safe_fetch
+
     try:
-        resp = await client.get(
-            url,
-            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
-            timeout=10.0,
-        )
-        if resp.status_code != 200:
-            return False, []
-        feed = feedparser.parse(resp.text)
-        titles = [str(entry.get("title", "")).strip() for entry in feed.entries[:5] if str(entry.get("title", "")).strip()]
-        return bool(feed.entries), titles
+        fetched = await safe_fetch(url, policy=_discovery_fetch_policy())
+    except SafeFetchError:
+        return False, []
     except Exception:
         return False, []
+    feed = feedparser.parse(fetched.text)
+    titles = [str(entry.get("title", "")).strip() for entry in feed.entries[:5] if str(entry.get("title", "")).strip()]
+    return bool(feed.entries), titles
 
 
 async def _ai_suggest_feeds(openai_svc, interests: dict, ai_profile: str) -> list[dict]:

@@ -194,8 +194,15 @@ def _parse_date(entry: dict) -> Optional[datetime]:
     parsed = entry.get("published_parsed") or entry.get("updated_parsed")
     if parsed:
         try:
-            from time import mktime
-            return datetime.fromtimestamp(mktime(parsed), tz=timezone.utc)
+            # feedparser's *_parsed struct_time is already UTC (it normalizes
+            # every feed's timezone/offset before handing it back). mktime()
+            # instead interprets a struct_time as *local* time and converts
+            # to a local epoch -- on any host not running in UTC, that silently
+            # shifts every parsed date by the host's UTC offset, then the
+            # result gets mislabeled `tz=timezone.utc` on top of that.
+            # calendar.timegm() is the UTC-correct inverse of gmtime().
+            from calendar import timegm
+            return datetime.fromtimestamp(timegm(parsed), tz=timezone.utc)
         except (ValueError, OverflowError, OSError):
             pass
     return None
@@ -235,20 +242,43 @@ def _extract_feed_content(entry: dict) -> Optional[str]:
 
 
 async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[dict]:
-    """Fetch and parse a single RSS feed, returning list of article dicts."""
+    """Fetch and parse a single RSS feed, returning list of article dicts.
+
+    ``client`` remains for caller compatibility but is intentionally unused:
+    an ordinary httpx client with ``follow_redirects=True`` (as both callers
+    of this function construct) can hop from a public feed URL to a
+    private/internal address on any redirect hop without re-validating it.
+    Every recurring feed fetch goes through the shared SSRF-safe fetcher
+    instead, matching every other outbound fetch in this codebase (see
+    ``_resolve_redirect_urls`` above for the same pattern and reasoning).
+    """
+    from app.services.safe_http import SafeFetchError, SafeFetchPolicy, safe_fetch
+
     articles = []
     try:
-        response = await client.get(
-            feed_url,
-            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
-        )
-        if response.status_code != 200:
-            print(f"RSS: HTTP {response.status_code} for {feed_url}")
+        try:
+            fetched = await safe_fetch(
+                feed_url,
+                policy=SafeFetchPolicy(
+                    timeout_seconds=15.0,
+                    max_redirects=5,
+                    max_wire_bytes=5_000_000,
+                    max_decoded_bytes=5_000_000,
+                    # Feed content-type headers are inconsistent across
+                    # publishers (rss+xml, atom+xml, xml, even text/html on
+                    # misconfigured servers); the safety property that
+                    # matters here is DNS-pinning and redirect
+                    # re-validation, not content-type gating.
+                    allowed_content_types=None,
+                ),
+            )
+        except SafeFetchError as exc:
+            print(f"RSS: {exc.code} ({exc.status_code or '-'}) for {feed_url}")
             return []
 
-        feed = feedparser.parse(response.text)
+        feed = feedparser.parse(fetched.text)
         category = _guess_category(feed_url)
-        fetched_feed_url = str(getattr(response, "url", None) or feed_url)
+        fetched_feed_url = fetched.url
 
         for entry in feed.entries:
             link = entry.get("link", "").strip()
