@@ -476,7 +476,8 @@ async def _security_headers(request: Request, call_next):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "DENY")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-    response.headers.pop("Server", None)
+    if "Server" in response.headers:
+        del response.headers["Server"]
     return response
 
 
