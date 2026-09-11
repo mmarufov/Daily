@@ -58,6 +58,21 @@ _LOCK_KEYS = {
 _LEADER_OF: set[str] = set()
 
 
+def _stable_advisory_lock_key(value: str) -> int:
+    """A pg_advisory_lock key that's identical across processes and restarts.
+
+    Python's `hash()` for str is randomized per-process (PYTHONHASHSEED)
+    unless pinned, so `abs(hash(user_id)) % (2**31)` computed a different
+    key in each of the app's `--workers 2` processes for the same value --
+    two concurrent requests for the same user routed to different workers
+    took the "same" lock under different keys and both succeeded, so the
+    "already in progress" 409 could silently fail to serialize. SHA-256 is
+    deterministic across processes and Python versions.
+    """
+    digest = hashlib.sha256(value.encode("utf-8")).digest()
+    return int.from_bytes(digest[:8], "big") % (2**63)
+
+
 class _NotLeader(Exception):
     """Raised inside a loop tick when another worker holds the lock."""
 
@@ -887,6 +902,9 @@ def _ensure_tables(conn, force: bool = False) -> None:
         # The per-user refresh loop filters on it; the column was referenced
         # before it was ever created, which silently disabled that loop.
         cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_active_at timestamptz;")
+        # S1 2.3: cluster-wide discovery cooldown (was a per-process dict,
+        # ineffective across --workers 2).
+        cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_discovery_at timestamptz;")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS public.user_identities (
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2264,7 +2282,14 @@ IMPORTANT:
 # ---------------------------------------------------------------------------
 
 _DISCOVERY_COOLDOWN_SECONDS = 300  # 5-minute cooldown between discoveries
-_discovery_last_run: dict[str, float] = {}  # user_id -> timestamp
+# Backed by public.users.last_discovery_at, not an in-process dict: this
+# gates real OpenAI spend (discover_sources_for_user calls _ai_suggest_feeds),
+# and with --workers 2 a per-process dict lets a user get roughly 2x the
+# intended allowance depending on which worker each request lands on. The
+# general per-IP rate limiter below (_RL_BUCKETS) has the same per-process
+# limitation but is accepted as-is: it gates request volume, not spend, and
+# it sits in front of every request, where a DB round-trip is a real latency
+# and cost tradeoff this app's current traffic doesn't justify.
 
 
 @app.post("/sources/discover")
@@ -2273,8 +2298,6 @@ async def discover_sources(
     conn=Depends(get_db),
 ):
     """Discover the source graph for the authenticated user."""
-    import time
-
     token = _require_auth(Authorization)
     user_id = _get_user_id_from_token(conn, token)
 
@@ -2284,14 +2307,20 @@ async def discover_sources(
         from app.services.reader_source_reconcile import reconcile_reader_sources
         return reconcile_reader_sources(conn, user_id, reader)
 
-    # Cooldown: max 1 discovery per 5 minutes per user
-    last_run = _discovery_last_run.get(user_id, 0)
-    if time.time() - last_run < _DISCOVERY_COOLDOWN_SECONDS:
-        remaining = int(_DISCOVERY_COOLDOWN_SECONDS - (time.time() - last_run))
-        raise HTTPException(
-            status_code=429,
-            detail=f"Source discovery cooling down. Try again in {remaining}s.",
-        )
+    # Cooldown: max 1 discovery per 5 minutes per user, tracked in Postgres
+    # so it's enforced cluster-wide rather than per worker process.
+    with conn.cursor() as cur:
+        cur.execute("SELECT last_discovery_at FROM public.users WHERE id = %s", (user_id,))
+        row = cur.fetchone()
+    last_run_at = row["last_discovery_at"] if row else None
+    if last_run_at is not None:
+        elapsed = (datetime.now(timezone.utc) - last_run_at).total_seconds()
+        if elapsed < _DISCOVERY_COOLDOWN_SECONDS:
+            remaining = int(_DISCOVERY_COOLDOWN_SECONDS - elapsed)
+            raise HTTPException(
+                status_code=429,
+                detail=f"Source discovery cooling down. Try again in {remaining}s.",
+            )
 
     try:
         from app.services.source_discovery import discover_sources_for_user
@@ -2299,7 +2328,7 @@ async def discover_sources(
         _ensure_tables(conn)
 
         # Advisory lock: prevent concurrent discovery for same user
-        lock_key = abs(hash(user_id)) % (2**31)
+        lock_key = _stable_advisory_lock_key(user_id)
         with conn.cursor() as cur:
             cur.execute("SELECT pg_try_advisory_lock(%s)", (lock_key,))
             acquired = cur.fetchone()["pg_try_advisory_lock"]
@@ -2334,7 +2363,11 @@ async def discover_sources(
                 user_profile_v2=user_profile_v2,
                 source_selection_brief=source_selection_brief,
             )
-            _discovery_last_run[user_id] = time.time()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE public.users SET last_discovery_at = now() WHERE id = %s",
+                    (user_id,),
+                )
             return result
         finally:
             # Always release the advisory lock

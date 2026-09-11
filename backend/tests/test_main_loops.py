@@ -279,5 +279,46 @@ class TestArticleDetailAuthentication(unittest.TestCase):
         self.assertIn("embedding_content_version = a.analysis_content_version", source)
 
 
+class TestStableAdvisoryLockKey(unittest.TestCase):
+    """S1 2.2: /sources/discover's duplicate-request guard used
+    `abs(hash(user_id)) % (2**31)` as its pg_advisory_lock key. Python's
+    hash() for str is randomized per-process (PYTHONHASHSEED) unless
+    pinned, and the app runs `--workers 2` -- two concurrent requests for
+    the same user landing on different workers computed different keys for
+    "the same" lock, so the 409 could silently fail to serialize.
+    """
+
+    def test_key_is_identical_across_simulated_processes(self):
+        # A subprocess with a different (or unset/random) PYTHONHASHSEED is
+        # the real-world case this bug depended on; hash() itself is not
+        # patchable in-process (it's a builtin), so this drives the actual
+        # concern directly: does the key computation ever consult the `hash`
+        # builtin at all? It must not, for any input, for the guarantee to
+        # hold. Checked at the bytecode level (co_names), not by grepping
+        # source text, so a mention of "hash(" in a comment/docstring can't
+        # produce a false failure here.
+        self.assertNotIn("hash", app_main._stable_advisory_lock_key.__code__.co_names)
+        self.assertIn("sha256", app_main._stable_advisory_lock_key.__code__.co_names)
+
+        user_id = "11111111-2222-3333-4444-555555555555"
+        key_a = app_main._stable_advisory_lock_key(user_id)
+        key_b = app_main._stable_advisory_lock_key(user_id)
+        self.assertEqual(key_a, key_b)
+
+    def test_key_is_a_valid_bigint_and_differs_across_users(self):
+        key = app_main._stable_advisory_lock_key("user-a")
+        self.assertIsInstance(key, int)
+        self.assertGreaterEqual(key, 0)
+        self.assertLess(key, 2**63)  # pg_advisory_lock takes a signed bigint
+        self.assertNotEqual(key, app_main._stable_advisory_lock_key("user-b"))
+
+    def test_discover_sources_uses_the_stable_key_not_hash(self):
+        import inspect
+
+        source = inspect.getsource(app_main.discover_sources)
+        self.assertIn("_stable_advisory_lock_key(user_id)", source)
+        self.assertNotIn("hash(user_id)", source)
+
+
 if __name__ == "__main__":
     unittest.main()
