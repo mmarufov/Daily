@@ -71,6 +71,13 @@ class _Conn:
         return _Cursor(self)
 
 
+async def _hang_until_cancelled():
+    """Stands in for a background loop in a full-lifespan test: must reach
+    `yield` in lifespan() without any loop's real body (which imports heavy
+    service modules and touches the DB/network) ever actually running."""
+    await asyncio.Event().wait()
+
+
 class _Pool:
     """Stands in for the psycopg pool, sharing one lock registry across conns."""
 
@@ -138,7 +145,7 @@ class TestLeaderElection(unittest.TestCase):
         """A new loop that forgets the guard would silently double every fetch."""
         import inspect
         for name in ("_ingestion_loop", "_source_quality_loop",
-                     "_interest_evolution_loop", "_per_user_refresh_loop"):
+                     "_interest_evolution_loop", "_per_user_refresh_loop", "_prewarm_loop"):
             source = inspect.getsource(getattr(app_main, name))
             with self.subTest(loop=name):
                 self.assertIn("_leader(", source)
@@ -288,6 +295,69 @@ class TestDrainShadowObservationTasks(unittest.TestCase):
     def test_no_pending_tasks_returns_immediately(self):
         app_main._shadow_observation_tasks.clear()
         asyncio.run(app_main._drain_shadow_observation_tasks(timeout=5))  # must not hang
+
+
+class TestPrewarm(unittest.TestCase):
+    """S6's lexical retrieval hot set (articles + its GIN index) is loaded
+    into shared_buffers explicitly at startup and re-loaded periodically,
+    rather than relying on real request traffic to keep it resident -- see
+    _prewarm_relations's docstring for the measured sizes and why this
+    should stay resident under normal load without help.
+    """
+
+    def test_prewarm_relations_loads_both_known_relations(self):
+        pool = _Pool()
+        conn = _Conn(pool.registry, pool.executed)
+        app_main._prewarm_relations(conn)
+        prewarmed = [params[0] for q, params in pool.executed if "pg_prewarm" in q]
+        self.assertEqual(prewarmed, list(app_main._PREWARM_RELATIONS))
+
+    def test_a_failing_relation_does_not_stop_the_rest(self):
+        class FlakyCursor(_Cursor):
+            def execute(self, query, params=None):
+                if params and params[0] == "public.articles":
+                    raise RuntimeError("relation renamed or extension missing")
+                return super().execute(query, params)
+
+        class FlakyConn(_Conn):
+            def cursor(self):
+                return FlakyCursor(self)
+
+        pool = _Pool()
+        conn = FlakyConn(pool.registry, pool.executed)
+        app_main._prewarm_relations(conn)  # must not raise
+        prewarmed = [params[0] for q, params in pool.executed if "pg_prewarm" in q]
+        self.assertIn("public.reader_article_lexical_v2", prewarmed)
+
+    def test_startup_prewarm_failure_does_not_block_app_startup(self):
+        """Unlike a schema-setup failure (fatal, see test_startup_fails_closed_
+        when_schema_setup_raises), a pg_prewarm failure is a latency
+        optimization, not a dependency -- lifespan must still reach its
+        background loops and yield.
+        """
+        class StartupPool(_Pool):
+            def close(self):
+                pass
+
+        pool = StartupPool()
+
+        async def start():
+            async with app_main.lifespan(None):
+                return "started"
+
+        with patch.object(app_main, "ConnectionPool", return_value=pool), patch.object(
+            app_main, "_prewarm_relations", side_effect=RuntimeError("boom")
+        ), patch.object(app_main, "_ingestion_loop", _hang_until_cancelled), patch.object(
+            app_main, "_source_quality_loop", _hang_until_cancelled
+        ), patch.object(
+            app_main, "_interest_evolution_loop", _hang_until_cancelled
+        ), patch.object(
+            app_main, "_per_user_refresh_loop", _hang_until_cancelled
+        ), patch.object(
+            app_main, "_prewarm_loop", _hang_until_cancelled
+        ):
+            result = asyncio.run(asyncio.wait_for(start(), timeout=5))
+        self.assertEqual(result, "started")
 
 
 class TestBuildIdentity(unittest.TestCase):

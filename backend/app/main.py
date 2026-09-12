@@ -54,6 +54,7 @@ _LOCK_KEYS = {
     "source_quality": 811_002,
     "interest_evolution": 811_003,
     "per_user_refresh": 811_004,
+    "prewarm": 811_005,
 }
 _LEADER_OF: set[str] = set()
 
@@ -276,6 +277,46 @@ async def _ingestion_loop():
 
 pool: ConnectionPool | None = None
 
+_PREWARM_RELATIONS = ("public.articles", "public.reader_article_lexical_v2")
+
+
+def _prewarm_relations(conn):
+    """Load S6 lexical retrieval's hot set into shared_buffers explicitly,
+    rather than relying on real traffic to keep it resident.
+
+    Measured live: articles is 114MB, reader_article_lexical_v2 (the GIN
+    index _s6_page's lexical leg reads) is 9.3MB -- both comfortably under
+    this instance's 224MB shared_buffers, so nothing here should get evicted
+    under normal load. A failure (extension not installed, relation renamed)
+    must never break startup or the periodic loop that calls this -- this is
+    a latency optimization, not a correctness dependency.
+    """
+    for relation in _PREWARM_RELATIONS:
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT pg_prewarm(%s::regclass)", (relation,))
+        except Exception:
+            logger.exception("pg_prewarm failed for %s", relation)
+
+
+async def _prewarm_loop():
+    """Background task: re-warm the lexical retrieval hot set periodically.
+
+    The one-time prewarm at startup (see lifespan()) can't guarantee pages
+    never get evicted over hours of runtime under memory pressure elsewhere
+    on the instance -- this is the safety net for that, not the primary fix.
+    """
+    await asyncio.sleep(60)
+    while True:
+        try:
+            with _leader("prewarm") as conn:
+                _prewarm_relations(conn)
+        except _NotLeader:
+            pass
+        except Exception:
+            logger.exception("Prewarm loop error")
+        await asyncio.sleep(900)  # 15 minutes
+
 
 async def _source_quality_loop():
     """Background task: update global source quality scores every 30 min."""
@@ -441,6 +482,16 @@ async def lifespan(app):
         pool.close()
         raise
 
+    # A latency optimization, not a schema dependency: failure here (extension
+    # unavailable, permissions) must never block startup. See _prewarm_relations.
+    try:
+        with pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("CREATE EXTENSION IF NOT EXISTS pg_prewarm")
+            _prewarm_relations(conn)
+    except Exception:
+        logger.exception("pg_prewarm setup failed at startup; continuing without it")
+
     from app.services.retrieval_runtime import startup as start_retrieval
     if not start_retrieval():
         logger.warning("S6 shadow remains unavailable while previous workers drain")
@@ -448,8 +499,9 @@ async def lifespan(app):
     quality_task = asyncio.create_task(_source_quality_loop())
     evolution_task = asyncio.create_task(_interest_evolution_loop())
     per_user_task = asyncio.create_task(_per_user_refresh_loop())
+    prewarm_task = asyncio.create_task(_prewarm_loop())
     yield
-    for t in (ingestion_task, quality_task, evolution_task, per_user_task):
+    for t in (ingestion_task, quality_task, evolution_task, per_user_task, prewarm_task):
         t.cancel()
         try:
             await t
