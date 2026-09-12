@@ -398,7 +398,12 @@ def api(monkeypatch):
 def test_api_default_off_does_not_log_or_borrow(api, monkeypatch):
     runner = Mock()
     monkeypatch.setattr(runtime, '_runner', runner)
-    assert asyncio.run(api._observe_s6_retrieval('private reader ID')) is None
+
+    async def scenario():
+        task = await api._observe_s6_retrieval('private reader ID')
+        await task
+
+    asyncio.run(scenario())
     api.pool.connection.assert_not_called()
     runner.run.assert_not_called()
     api.logger.info.assert_not_called()
@@ -424,7 +429,8 @@ def test_api_logs_real_runtime_aggregates_without_profile_or_article_data(api, d
     monkeypatch.setattr(api, 'pool', pool)
 
     async def scenario():
-        assert await api._observe_s6_retrieval('private reader ID') is None
+        task = await api._observe_s6_retrieval('private reader ID')
+        await task
         assert await runner.aclose()
 
     asyncio.run(scenario())
@@ -440,13 +446,23 @@ def test_api_logs_real_runtime_aggregates_without_profile_or_article_data(api, d
 
 @pytest.mark.parametrize('endpoint', ['build_feed', 'get_feed', 'refresh_feed'])
 @pytest.mark.parametrize('enabled', [False, True])
-def test_api_observation_precedes_final_fences_and_never_changes_feed(api, monkeypatch, endpoint, enabled):
+def test_api_observation_never_blocks_the_feed_and_never_changes_it(api, monkeypatch, endpoint, enabled):
+    """Shadow observation used to be awaited in front of the real feed build,
+    so a cold pooled connection's ~900ms first-query tax (see
+    reader_retrieval.warm_lexical_plan) sat directly in front of every real
+    request. `observe` here stays blocked until after the endpoint call has
+    already returned, proving the real feed never waits on it: against the
+    old synchronous code this deadlocks (and `asyncio.wait_for` turns that
+    into a fast failure instead of hanging the suite) rather than passing.
+    """
     from app.services import user_source_pipeline, event_integration, reader_integration
     order = []
     feed = {'status': 'ready', 'articles': [{'id': 'final article'}], 'feed_request_id': 'fixed'}
+    shadow_may_finish = asyncio.Event()
 
     async def observe(pool, user_id):
         assert pool is api.pool and user_id == 'private reader ID'
+        await shadow_may_finish.wait()
         order.append('shadow')
         return {'status': 'degraded', 'candidates': 300} if enabled else {'status': 'disabled'}
 
@@ -472,13 +488,69 @@ def test_api_observation_precedes_final_fences_and_never_changes_feed(api, monke
     monkeypatch.setattr(user_source_pipeline, 'get_feed_state', pipeline)
     monkeypatch.setattr(event_integration, 'compose_feed', compose)
     monkeypatch.setattr(reader_integration, 'finalize_feed', finalize)
-    result = asyncio.run(getattr(api, endpoint)(Authorization='token', limit=50, conn=object(),
-                                                event_expiry='1'))
-    assert order == ['shadow', 'pipeline', 'compose', 'finalize']
+
+    async def scenario():
+        result = await getattr(api, endpoint)(Authorization='token', limit=50, conn=object(),
+                                              event_expiry='1')
+        # Shadow is still blocked on shadow_may_finish here: the feed above
+        # completed without it.
+        assert order == ['pipeline', 'compose', 'finalize']
+        shadow_may_finish.set()
+        for task in list(api._shadow_observation_tasks):
+            await task
+        return result
+
+    result = asyncio.run(asyncio.wait_for(scenario(), timeout=5))
+    assert order == ['pipeline', 'compose', 'finalize', 'shadow']
     assert result is feed
     assert result == {'status': 'ready', 'articles': [{'id': 'final article'}], 'feed_request_id': 'fixed'}
     if not enabled:
         api.logger.info.assert_not_called()
+
+
+def test_api_background_observation_failure_is_logged_not_raised(api, monkeypatch):
+    """Shadow observation is fire-and-forget: nothing awaits its task except
+    the app's own done-callback bookkeeping, so an exception inside it can
+    only ever surface via logging -- if it went unhandled instead, asyncio
+    would print "Task exception was never retrieved" and the failure would be
+    invisible to anyone not reading stderr.
+    """
+    broken = AsyncMock(side_effect=RuntimeError('boom'))
+    monkeypatch.setattr(runtime, 'shadow', broken)
+
+    async def scenario():
+        task = await api._observe_s6_retrieval('private reader ID')
+        await task
+
+    asyncio.run(scenario())  # must not raise
+    assert api.logger.exception.call_args[0][0] == 'S6/S7 shadow observation failed for user_id=%s'
+    assert api.logger.exception.call_args[0][1] == 'private reader ID'
+
+
+def test_api_observation_task_is_tracked_until_it_finishes(api, monkeypatch):
+    """asyncio.create_task's result must be kept referenced somewhere for as
+    long as it runs, or the task can be garbage-collected mid-flight -- a
+    well-known asyncio footgun. _shadow_observation_tasks is that reference;
+    this proves it both holds the task while running and releases it after.
+    """
+    started, may_finish = asyncio.Event(), asyncio.Event()
+
+    async def observe(pool, user_id):
+        started.set()
+        await may_finish.wait()
+        return {'status': 'disabled'}
+
+    monkeypatch.setattr(runtime, 'shadow', observe)
+
+    async def scenario():
+        task = await api._observe_s6_retrieval('private reader ID')
+        await started.wait()
+        assert task in api._shadow_observation_tasks
+        may_finish.set()
+        await task
+        assert task not in api._shadow_observation_tasks
+
+    asyncio.run(asyncio.wait_for(scenario(), timeout=5))
 
 
 @pytest.mark.parametrize('endpoint', ['build_feed', 'get_feed', 'refresh_feed'])

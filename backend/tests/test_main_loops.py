@@ -240,6 +240,116 @@ class TestSchemaGuard(unittest.TestCase):
                 asyncio.run(start())
         self.assertTrue(startup_pool.closed)
 
+    def test_startup_wires_the_lexical_warmup_probe_into_the_pool(self):
+        """Regression: the pool must warm S6's lexical query plan on every
+        newly opened connection (see reader_retrieval.warm_lexical_plan), or
+        a real request drawing a fresh connection eats the ~900ms first-use
+        cost itself. Stops right after pool construction, before schema setup,
+        so this doesn't need a real database.
+        """
+        from app.services.reader_retrieval import warm_lexical_plan
+
+        class StartupPool(_Pool):
+            def close(self):
+                pass
+
+        captured = {}
+
+        def fake_pool(*args, **kwargs):
+            captured.update(kwargs)
+            return StartupPool()
+
+        async def start():
+            async with app_main.lifespan(None):
+                self.fail("lifespan must not yield after schema failure")
+
+        with patch.object(app_main, "ConnectionPool", fake_pool), patch.object(
+            app_main, "_ensure_tables", side_effect=RuntimeError("stop after pool construction")
+        ):
+            with self.assertRaisesRegex(RuntimeError, "stop after pool construction"):
+                asyncio.run(start())
+        self.assertIs(captured.get("configure"), warm_lexical_plan)
+
+    def test_startup_pool_is_fixed_size_so_configure_never_blocks_a_live_request(self):
+        """Regression: psycopg_pool only runs configure() (and therefore
+        warm_lexical_plan's ~900ms probe) for free, without a caller blocked
+        waiting, when it opens the initial min_size batch at pool
+        construction. Any later growth toward max_size runs configure()
+        synchronously in front of whichever live request's own connection
+        checkout triggered that growth -- min_size == max_size means the pool
+        never grows past startup, so that path is never taken.
+        """
+        class StartupPool(_Pool):
+            def close(self):
+                pass
+
+        captured = {}
+
+        def fake_pool(*args, **kwargs):
+            captured.update(kwargs)
+            return StartupPool()
+
+        async def start():
+            async with app_main.lifespan(None):
+                self.fail("lifespan must not yield after schema failure")
+
+        with patch.object(app_main, "ConnectionPool", fake_pool), patch.object(
+            app_main, "_ensure_tables", side_effect=RuntimeError("stop after pool construction")
+        ):
+            with self.assertRaisesRegex(RuntimeError, "stop after pool construction"):
+                asyncio.run(start())
+        self.assertEqual(captured.get("min_size"), captured.get("max_size"))
+        self.assertIsNotNone(captured.get("min_size"))
+
+
+class TestDrainShadowObservationTasks(unittest.TestCase):
+    """_drain_shadow_observation_tasks runs in lifespan()'s shutdown, right
+    before pool.close(): a fire-and-forget shadow-observation task left
+    running when the pool closes gets a swallowed PoolClosed error instead of
+    a clean result -- see the comment at its call site in lifespan().
+    """
+
+    def test_waits_for_a_pending_task_to_finish(self):
+        async def scenario():
+            finished = asyncio.Event()
+
+            async def slow():
+                await asyncio.sleep(0.01)
+                finished.set()
+
+            task = asyncio.create_task(slow())
+            app_main._shadow_observation_tasks.add(task)
+            task.add_done_callback(app_main._shadow_observation_tasks.discard)
+            await app_main._drain_shadow_observation_tasks(timeout=5)
+            self.assertTrue(finished.is_set())
+            self.assertNotIn(task, app_main._shadow_observation_tasks)
+
+        asyncio.run(scenario())
+
+    def test_gives_up_after_its_own_timeout_without_raising(self):
+        async def scenario():
+            async def stuck():
+                await asyncio.sleep(10)
+
+            task = asyncio.create_task(stuck())
+            app_main._shadow_observation_tasks.add(task)
+            try:
+                await app_main._drain_shadow_observation_tasks(timeout=0.01)  # must not raise
+                self.assertFalse(task.done())
+            finally:
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+                app_main._shadow_observation_tasks.discard(task)
+
+        asyncio.run(scenario())
+
+    def test_no_pending_tasks_returns_immediately(self):
+        app_main._shadow_observation_tasks.clear()
+        asyncio.run(app_main._drain_shadow_observation_tasks(timeout=5))  # must not hang
+
 
 class TestBuildIdentity(unittest.TestCase):
 

@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 import os
 import secrets
 import uuid
+from unittest.mock import patch
 
 import pytest
 
@@ -188,6 +189,45 @@ def test_real_lexical_query_preserves_unicode_and_requires_every_term(db):
     article(db, 2, title="Новости мира")
     article(db, 3, title="Таджикистана спорт")
     assert [item.article_id for item in build(db, profile("Новости Таджикистана")).candidates] == [expected]
+
+
+def test_warm_lexical_plan_runs_cleanly_against_the_real_schema(db):
+    article(db, 1)
+    retrieval.warm_lexical_plan(db)
+    assert db.info.transaction_status == TransactionStatus.IDLE
+
+
+def test_warm_lexical_plan_never_raises_even_against_a_broken_connection(db):
+    with patch.object(type(db), "execute", side_effect=RuntimeError("boom")):
+        retrieval.warm_lexical_plan(db)  # must not raise: a latency optimization, not a dependency
+
+
+def test_warm_lexical_plan_matches_the_real_s6_page_lexical_sql(db):
+    """warm_lexical_plan hand-mirrors _s6_page's lexical/no-cursor SQL rather
+    than sharing code with it (see warm_lexical_plan's docstring for why).
+    This is what keeps the two from silently drifting apart: it captures
+    _s6_page's actual generated SQL for that exact scenario and diffs it,
+    normalized for whitespace only, against the warm-up copy.
+    """
+    captured = []
+    real_execute = type(db).execute
+
+    def recording(self, statement, params=None, **kwargs):
+        captured.append((statement, params))
+        return real_execute(self, statement, params, **kwargs)
+
+    request = request_for()
+    state = {"leg": "lexical", "query": "warm probe", "cursor": None}
+    with patch.object(type(db), "execute", recording):
+        with db.transaction():
+            db.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+            retrieval._s6_page(db, state, request=request, recipe=None, count=1,
+                               config=retrieval.retrieval_configuration())
+    real_sql, real_values = captured[-1]
+    warm_sql, warm_values = retrieval._warm_lexical_probe_query()
+    normalize = lambda text: " ".join(text.split())
+    assert normalize(warm_sql) == normalize(real_sql)
+    assert len(warm_values) == len(real_values)
 
 
 def test_keyset_pages_are_tie_stable_and_disjoint(db):

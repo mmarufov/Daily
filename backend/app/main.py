@@ -413,11 +413,22 @@ async def lifespan(app):
     """Start connection pool and background tasks on startup."""
     global pool, _schema_ready
     _schema_ready = False
+    from app.services.reader_retrieval import warm_lexical_plan
+    # min_size == max_size: psycopg_pool only warms connections for free (no
+    # caller blocked waiting) when it opens the initial min_size batch at
+    # construction time. Any later growth toward max_size runs configure()
+    # -- and therefore warm_lexical_plan's ~900ms probe -- synchronously in
+    # front of whichever live request's own connection checkout triggered
+    # that growth (psycopg_pool's _connect() only unblocks a waiting caller
+    # after configure() returns), which would have defeated this fix for any
+    # endpoint, not just S6 shadow. A fixed-size pool never grows past
+    # startup, so that path is never taken.
     pool = ConnectionPool(
         DATABASE_URL,
-        min_size=2,
+        min_size=10,
         max_size=10,
         kwargs={"row_factory": dict_row, "autocommit": True},
+        configure=warm_lexical_plan,
     )
     # Schema once, at startup, before any handler or loop can need it.
     try:
@@ -458,6 +469,14 @@ async def lifespan(app):
     from app.services.retrieval_runtime import shutdown as shutdown_retrieval
     if not await shutdown_retrieval():
         logger.warning("S6 workers are still draining; their connections remain exclusively owned")
+    # Fire-and-forget shadow observation tasks (_observe_s6_retrieval) are not
+    # covered by shutdown_retrieval: that only drains ShadowRunner's own S6
+    # thread pool, not main.py's own Task objects or the S7 ranking_service
+    # path (which has its own ~20s internal deadline). Without this, pool.close()
+    # below can run while one is still mid-query, which psycopg_pool answers
+    # with PoolClosed -- silently swallowed by _run_shadow_observation's own
+    # except Exception, but a real, avoidable race on every deploy/restart.
+    await _drain_shadow_observation_tasks()
     pool.close()
 
 
@@ -2404,19 +2423,53 @@ async def list_sources(
     return {"sources": _load_user_sources_snapshot(conn, user_id)}
 
 
+_shadow_observation_tasks = set()
+
+
+async def _drain_shadow_observation_tasks(timeout=5):
+    """Give in-flight background shadow observations a bounded chance to
+    finish before lifespan() closes the pool they depend on -- see the
+    comment at this function's call site for why that race exists. Bounded:
+    shutdown must not hang indefinitely for observation-only work.
+    """
+    if not _shadow_observation_tasks:
+        return
+    _done, pending = await asyncio.wait(list(_shadow_observation_tasks), timeout=timeout)
+    if pending:
+        logger.warning("%d shadow observation task(s) still running at shutdown", len(pending))
+
+
 async def _observe_s6_retrieval(user_id):
     # S6 is candidate generation, not a replacement editorial ranker. A flag
     # cannot turn retrieval scores into relevance or bypass the S7 release gate.
+    # This is a fail-closed gate, not instrumentation: it must stay synchronous,
+    # in the request path, ahead of any real feed work -- unlike the shadow
+    # observation below, it is never allowed to run in the background.
     if os.getenv("S6_SERVING_ENABLED", "false").lower() == "true":
         raise HTTPException(status_code=503, detail="S6 serving requires a reviewed S7 adapter")
-    from app.services.ranking_service import shadow_enabled, build_feed as rank_feed
-    if shadow_enabled():
-        observation = await rank_feed(pool, user_id, shadow=True)
-        logger.info("S7 shadow: %s", observation)
-    from app.services.retrieval_runtime import shadow
-    observation = await shadow(pool, user_id)
-    if observation['status'] != 'disabled':
-        logger.info("S6 shadow: %s", observation)
+    # Shadow observation only measures; it must never add latency to a real
+    # feed-build response. A freshly opened pooled connection's first S6 query
+    # can cost close to a second (see reader_retrieval.warm_lexical_plan), and
+    # that used to sit directly in front of every real feed build. Schedule it
+    # in the background instead; failures are logged, never raised here.
+    task = asyncio.create_task(_run_shadow_observation(user_id))
+    _shadow_observation_tasks.add(task)
+    task.add_done_callback(_shadow_observation_tasks.discard)
+    return task
+
+
+async def _run_shadow_observation(user_id):
+    try:
+        from app.services.ranking_service import shadow_enabled, build_feed as rank_feed
+        if shadow_enabled():
+            observation = await rank_feed(pool, user_id, shadow=True)
+            logger.info("S7 shadow: %s", observation)
+        from app.services.retrieval_runtime import shadow
+        observation = await shadow(pool, user_id)
+        if observation['status'] != 'disabled':
+            logger.info("S6 shadow: %s", observation)
+    except Exception:
+        logger.exception("S6/S7 shadow observation failed for user_id=%s", user_id)
 
 
 @app.post("/feed/build")
