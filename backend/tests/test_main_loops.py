@@ -240,67 +240,6 @@ class TestSchemaGuard(unittest.TestCase):
                 asyncio.run(start())
         self.assertTrue(startup_pool.closed)
 
-    def test_startup_wires_the_lexical_warmup_probe_into_the_pool(self):
-        """Regression: the pool must warm S6's lexical query plan on every
-        newly opened connection (see reader_retrieval.warm_lexical_plan), or
-        a real request drawing a fresh connection eats the ~900ms first-use
-        cost itself. Stops right after pool construction, before schema setup,
-        so this doesn't need a real database.
-        """
-        from app.services.reader_retrieval import warm_lexical_plan
-
-        class StartupPool(_Pool):
-            def close(self):
-                pass
-
-        captured = {}
-
-        def fake_pool(*args, **kwargs):
-            captured.update(kwargs)
-            return StartupPool()
-
-        async def start():
-            async with app_main.lifespan(None):
-                self.fail("lifespan must not yield after schema failure")
-
-        with patch.object(app_main, "ConnectionPool", fake_pool), patch.object(
-            app_main, "_ensure_tables", side_effect=RuntimeError("stop after pool construction")
-        ):
-            with self.assertRaisesRegex(RuntimeError, "stop after pool construction"):
-                asyncio.run(start())
-        self.assertIs(captured.get("configure"), warm_lexical_plan)
-
-    def test_startup_pool_is_fixed_size_so_configure_never_blocks_a_live_request(self):
-        """Regression: psycopg_pool only runs configure() (and therefore
-        warm_lexical_plan's ~900ms probe) for free, without a caller blocked
-        waiting, when it opens the initial min_size batch at pool
-        construction. Any later growth toward max_size runs configure()
-        synchronously in front of whichever live request's own connection
-        checkout triggered that growth -- min_size == max_size means the pool
-        never grows past startup, so that path is never taken.
-        """
-        class StartupPool(_Pool):
-            def close(self):
-                pass
-
-        captured = {}
-
-        def fake_pool(*args, **kwargs):
-            captured.update(kwargs)
-            return StartupPool()
-
-        async def start():
-            async with app_main.lifespan(None):
-                self.fail("lifespan must not yield after schema failure")
-
-        with patch.object(app_main, "ConnectionPool", fake_pool), patch.object(
-            app_main, "_ensure_tables", side_effect=RuntimeError("stop after pool construction")
-        ):
-            with self.assertRaisesRegex(RuntimeError, "stop after pool construction"):
-                asyncio.run(start())
-        self.assertEqual(captured.get("min_size"), captured.get("max_size"))
-        self.assertIsNotNone(captured.get("min_size"))
-
 
 class TestDrainShadowObservationTasks(unittest.TestCase):
     """_drain_shadow_observation_tasks runs in lifespan()'s shutdown, right

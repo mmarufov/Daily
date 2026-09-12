@@ -413,22 +413,11 @@ async def lifespan(app):
     """Start connection pool and background tasks on startup."""
     global pool, _schema_ready
     _schema_ready = False
-    from app.services.reader_retrieval import warm_lexical_plan
-    # min_size == max_size: psycopg_pool only warms connections for free (no
-    # caller blocked waiting) when it opens the initial min_size batch at
-    # construction time. Any later growth toward max_size runs configure()
-    # -- and therefore warm_lexical_plan's ~900ms probe -- synchronously in
-    # front of whichever live request's own connection checkout triggered
-    # that growth (psycopg_pool's _connect() only unblocks a waiting caller
-    # after configure() returns), which would have defeated this fix for any
-    # endpoint, not just S6 shadow. A fixed-size pool never grows past
-    # startup, so that path is never taken.
     pool = ConnectionPool(
         DATABASE_URL,
-        min_size=10,
+        min_size=2,
         max_size=10,
         kwargs={"row_factory": dict_row, "autocommit": True},
-        configure=warm_lexical_plan,
     )
     # Schema once, at startup, before any handler or loop can need it.
     try:
@@ -2448,10 +2437,10 @@ async def _observe_s6_retrieval(user_id):
     if os.getenv("S6_SERVING_ENABLED", "false").lower() == "true":
         raise HTTPException(status_code=503, detail="S6 serving requires a reviewed S7 adapter")
     # Shadow observation only measures; it must never add latency to a real
-    # feed-build response. A freshly opened pooled connection's first S6 query
-    # can cost close to a second (see reader_retrieval.warm_lexical_plan), and
-    # that used to sit directly in front of every real feed build. Schedule it
-    # in the background instead; failures are logged, never raised here.
+    # feed-build response. Retrieval can cost up to its own internal deadline
+    # (see reader_retrieval.build_candidate_batch), and that used to sit
+    # directly in front of every real feed build. Schedule it in the
+    # background instead; failures are logged, never raised here.
     task = asyncio.create_task(_run_shadow_observation(user_id))
     _shadow_observation_tasks.add(task)
     task.add_done_callback(_shadow_observation_tasks.discard)

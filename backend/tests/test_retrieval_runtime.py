@@ -448,12 +448,12 @@ def test_api_logs_real_runtime_aggregates_without_profile_or_article_data(api, d
 @pytest.mark.parametrize('enabled', [False, True])
 def test_api_observation_never_blocks_the_feed_and_never_changes_it(api, monkeypatch, endpoint, enabled):
     """Shadow observation used to be awaited in front of the real feed build,
-    so a cold pooled connection's ~900ms first-query tax (see
-    reader_retrieval.warm_lexical_plan) sat directly in front of every real
-    request. `observe` here stays blocked until after the endpoint call has
-    already returned, proving the real feed never waits on it: against the
-    old synchronous code this deadlocks (and `asyncio.wait_for` turns that
-    into a fast failure instead of hanging the suite) rather than passing.
+    so its own latency (S6/S7 retrieval can cost up to their internal
+    deadlines) sat directly in front of every real request. `observe` here
+    stays blocked until after the endpoint call has already returned, proving
+    the real feed never waits on it: against the old synchronous code this
+    deadlocks (and `asyncio.wait_for` turns that into a fast failure instead
+    of hanging the suite) rather than passing.
     """
     from app.services import user_source_pipeline, event_integration, reader_integration
     order = []

@@ -395,49 +395,6 @@ def _s6_page(conn, state, *, request, recipe, count, config):
     return conn.execute(sql, values).fetchall()
 
 
-def _warm_lexical_probe_query():
-    """The SQL/values _s6_page builds for a lexical, first-page (no cursor)
-    query, mirrored here by hand rather than shared: _s6_page's construction
-    is a single pipeline converging four leg types, and carving the lexical
-    case out of it for reuse would touch code already covered by its own
-    dispatch tests for no benefit to them. Kept honest by
-    test_warm_lexical_plan_matches_the_real_s6_page_lexical_sql instead.
-    """
-    from datetime import datetime, timedelta, timezone
-    now = datetime.now(timezone.utc)
-    sql = '''SELECT * FROM (SELECT a.id,ts_rank_cd(a.title_summary_tsv,plainto_tsquery('simple',%s))::double precision AS score
-        FROM public.articles a WHERE a.ingested_at<=%s
-          AND COALESCE(a.published_at,a.ingested_at)<=%s
-          AND COALESCE(a.published_at,a.ingested_at)>%s
-          AND NOT(a.id::text=ANY(%s::text[]))
-          AND a.title_summary_tsv @@ plainto_tsquery('simple',%s)) ranked
-        ORDER BY score DESC,id LIMIT %s'''
-    values = ['warm probe', now, now, now - timedelta(days=14), [], 'warm probe', 1]
-    return sql, values
-
-
-def warm_lexical_plan(conn):
-    """Pay S6 lexical retrieval's first-execution cost once, when a pooled
-    connection is opened, instead of on whichever real request draws it.
-
-    Measured live against production: the first execution of this query on a
-    fresh Postgres session costs ~900ms (building the plan, touching
-    articles' title_summary_tsv GIN index for the first time); every later
-    execution of the same query text on that connection costs ~15-130ms. That
-    ~900ms first-use tax used to land directly in front of whichever S6
-    shadow/serving request happened to draw a freshly opened connection,
-    consuming nearly half of the 2-second retrieval deadline by itself. A
-    failure here (e.g. articles not migrated yet on a brand new database)
-    must never block a new connection from serving real traffic -- this is a
-    latency optimization, not a correctness dependency.
-    """
-    try:
-        sql, values = _warm_lexical_probe_query()
-        conn.execute(sql, values).fetchall()
-    except Exception:
-        pass
-
-
 def _s6_hydrate(conn, identifiers, recipe):
     from .understanding_repository import load_current_batch
     import uuid
