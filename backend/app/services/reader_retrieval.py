@@ -242,7 +242,30 @@ class RetrievalDeadline(TimeoutError):
     pass
 
 
+def _deadline_check(deadline, clock):
+    """The cheap half of _remaining: raise if the deadline has already
+    passed. Pure Python, no round trip -- safe to call once per state in a
+    tight per-state loop, unlike _remaining itself (see its docstring)."""
+    if deadline - clock() <= 0:
+        raise RetrievalDeadline('retrieval deadline')
+
+
 def _remaining(conn, deadline, clock):
+    """Check the deadline, then tighten statement_timeout/lock_timeout to
+    whatever's left, in one round trip.
+
+    Called once per round (not once per state) in build_candidate_batch's
+    round loop: measured live, calling this per state added a SET-config
+    round trip for every one of a real profile's ~15 intents, on top of the
+    per-state savepoint _s6_page already needs (roughly doubling the round
+    trip count for that loop). Per-state deadline enforcement during the
+    loop itself uses the cheaper _deadline_check instead -- pure Python, no
+    round trip -- so a round that's actually out of time still stops
+    promptly; only the Postgres-side timeout refresh moved to once per
+    round. The outer asyncio.wait_for deadline (retrieval_runtime.py) is
+    the enforcement that can never be loosened by this; this one only
+    bounds how long any single query is allowed to run.
+    """
     remaining = deadline - clock()
     if remaining <= 0:
         raise RetrievalDeadline('retrieval deadline')
@@ -548,6 +571,10 @@ def build_candidate_batch(conn, user_id, snapshot, *, limit=300, as_of=None, dea
             available = [s for s in states if s['status'] == 'available']
             if not available:
                 break
+            # Tighten the Postgres-side timeout once per round, not once per
+            # state: see _remaining's docstring. Per-state enforcement below
+            # still uses the free, pure-Python _deadline_check every time.
+            _remaining(conn, deadline, clock)
             # Round-level fair shares prevent the first broad interest exhausting
             # the raw budget. More query variants never earn more per-intent work.
             active_keys = {s['intent'] for s in available}
@@ -556,46 +583,76 @@ def build_candidate_batch(conn, user_id, snapshot, *, limit=300, as_of=None, dea
             count_by_intent = {key: sum(s['intent'] == key for s in available) for key in active_keys}
             pending = []
             try:
-                for state in available:
-                    _remaining(conn, deadline, clock)
-                    row_budget = 7200 - diagnostics['rows_returned']
-                    state['row_allowance'] = row_budget
-                    state['unique_allowance'] = 2400 - len(examined)
-                    count = min(300, max(1, per_intent // count_by_intent[state['intent']]), row_budget,
-                                state['unique_allowance'])
-                    if count <= 0 or len(examined) >= 2400:
-                        diagnostics['stop_reason'] = 'raw_budget'
-                        break
-                    if state['leg'] == 'dense' and config['ann'] and min(row_budget, state['unique_allowance']) <= state['depth']:
-                        state['status'] = 'budget_limited'
-                        continue
+                # All states this round share one savepoint, not one each:
+                # every leg here is a read-only SELECT (the outer transaction
+                # is REPEATABLE READ READ ONLY), so a savepoint's only job is
+                # recovering from Postgres marking the transaction aborted
+                # after one query errors/cancels -- it is not undoing any
+                # data change. Measured live: a real 15-intent profile paid
+                # a SAVEPOINT+RELEASE round trip per state, on top of the
+                # actual query, roughly doubling the round trip count for
+                # this loop. On any single state's failure, only that state
+                # is blamed (matching the prior per-state behavior exactly);
+                # every other state's results, already computed and already
+                # applied to diagnostics/examined/pending before the failure,
+                # are untouched by the rollback and are not recomputed --
+                # only the remaining, not-yet-attempted states retry, under a
+                # fresh savepoint.
+                remaining_states = list(available)
+                stop_round = False
+                while remaining_states and not stop_round:
                     try:
                         with conn.transaction():
-                            hits = _s6_page(conn, state, request=request, recipe=recipe, count=count, config=config)
+                            while remaining_states:
+                                state = remaining_states[0]
+                                _deadline_check(deadline, clock)
+                                row_budget = 7200 - diagnostics['rows_returned']
+                                state['row_allowance'] = row_budget
+                                state['unique_allowance'] = 2400 - len(examined)
+                                count = min(300, max(1, per_intent // count_by_intent[state['intent']]), row_budget,
+                                            state['unique_allowance'])
+                                if count <= 0 or len(examined) >= 2400:
+                                    diagnostics['stop_reason'] = 'raw_budget'
+                                    stop_round = True
+                                    break
+                                if state['leg'] == 'dense' and config['ann'] and min(row_budget, state['unique_allowance']) <= state['depth']:
+                                    state['status'] = 'budget_limited'
+                                    remaining_states.pop(0)
+                                    continue
+                                hits = _s6_page(conn, state, request=request, recipe=recipe, count=count, config=config)
+                                remaining_states.pop(0)  # only after _s6_page succeeds
+                                diagnostics['rows_returned'] += len(hits)
+                                full_page = len(hits) >= (state['depth'] if state['leg'] == 'dense' and config['ann'] else count)
+                                if not full_page:
+                                    state['status'] = 'exhausted'
+                                if hits:
+                                    state['cursor'] = (hits[-1]['score'], str(hits[-1]['id']))
+                                for hit in hits:
+                                    key = str(hit['id'])
+                                    if key not in examined and len(examined) >= 2400:
+                                        diagnostics['stop_reason'] = 'raw_budget'
+                                        stop_round = True
+                                        break
+                                    examined.add(key)
+                                    if key in state['seen']:
+                                        continue
+                                    state['seen'].add(key)
+                                    state['rank'] += 1
+                                    if state['leg'] == 'dense' and hit['score'] < config['min_similarity']:
+                                        continue
+                                    pending.append((state, hit, state['rank']))
+                    except RetrievalDeadline:
+                        raise
                     except Exception as exc:
                         # SQL rollback completes before continuing any other leg.
+                        # remaining_states[0] is always the state that was being
+                        # attempted: it's only popped after _s6_page succeeds, so
+                        # if _s6_page (or anything above it in this savepoint's
+                        # current iteration) raised, it's still at index 0.
                         from psycopg.errors import QueryCanceled
-                        state['status'] = 'timed_out' if isinstance(exc, (QueryCanceled, TimeoutError)) else 'failed'
-                        continue
-                    diagnostics['rows_returned'] += len(hits)
-                    full_page = len(hits) >= (state['depth'] if state['leg'] == 'dense' and config['ann'] else count)
-                    if not full_page:
-                        state['status'] = 'exhausted'
-                    if hits:
-                        state['cursor'] = (hits[-1]['score'], str(hits[-1]['id']))
-                    for hit in hits:
-                        key = str(hit['id'])
-                        if key not in examined and len(examined) >= 2400:
-                            diagnostics['stop_reason'] = 'raw_budget'
-                            break
-                        examined.add(key)
-                        if key in state['seen']:
-                            continue
-                        state['seen'].add(key)
-                        state['rank'] += 1
-                        if state['leg'] == 'dense' and hit['score'] < config['min_similarity']:
-                            continue
-                        pending.append((state, hit, state['rank']))
+                        if remaining_states:
+                            failed_state = remaining_states.pop(0)
+                            failed_state['status'] = 'timed_out' if isinstance(exc, (QueryCanceled, TimeoutError)) else 'failed'
                 missing = list(dict.fromkeys(str(hit['id']) for _, hit, _ in pending if str(hit['id']) not in hydration))
                 for start in range(0, len(missing), 300):
                     _remaining(conn, deadline, clock)

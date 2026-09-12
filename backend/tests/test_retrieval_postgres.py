@@ -328,6 +328,123 @@ def test_failed_sql_leg_rolls_back_before_another_intent_runs(db, monkeypatch):
     assert db.info.transaction_status == TransactionStatus.IDLE
 
 
+def test_timeout_is_tightened_once_per_round_not_once_per_state(db, monkeypatch):
+    """A real multi-intent profile measured live at ~15 states in round 1
+    was paying one SET-config round trip per state on top of _s6_page's own
+    per-state savepoint -- roughly doubling the round trip count for the
+    loop. _remaining (the SET-config half) now runs once per round;
+    _deadline_check (the free, no-round-trip half) still runs every state,
+    so a round that's genuinely out of time still stops immediately.
+
+    Asserts the one invariant that actually matters -- no set_config call
+    lands between two consecutive _s6_page calls in the same round -- rather
+    than a total call count, which also depends on how many rounds the
+    fair-share/budget math above happens to take and on the pre-existing,
+    separately-called hydration-chunk tightening, neither of which this
+    change touches.
+    """
+    article(db, 1, title="Satellite launch")
+    article(db, 2, title="Robotics breakthrough")
+    article(db, 3, title="Wildfire spreads")
+    events = []
+    original_execute = type(db).execute
+    original_page = retrieval._s6_page
+
+    def counting_execute(self, query, *args, **kwargs):
+        if "statement_timeout" in query:
+            events.append("set_config")
+        return original_execute(self, query, *args, **kwargs)
+
+    def counting_page(conn, state, **kwargs):
+        events.append("s6_page")
+        return original_page(conn, state, **kwargs)
+
+    monkeypatch.setattr(type(db), "execute", counting_execute)
+    monkeypatch.setattr(retrieval, "_s6_page", counting_page)
+    batch = build(db, profile("Satellite", "Robotics", "Wildfire"))
+    assert batch.status == "complete"
+    assert len(batch.candidates) == 3
+    assert events.count("s6_page") == 3
+    page_indices = [i for i, e in enumerate(events) if e == "s6_page"]
+    consecutive_pairs = list(zip(page_indices, page_indices[1:]))
+    assert consecutive_pairs, "expected at least two _s6_page calls to compare"
+    for start, end in consecutive_pairs:
+        assert "set_config" not in events[start + 1:end], (
+            "a set_config call was re-issued between two _s6_page calls in "
+            f"the same round: {events}"
+        )
+
+
+def test_successful_states_in_a_round_share_one_savepoint(db, monkeypatch):
+    """The other half of the round-trip reduction: when every state in a
+    round succeeds (the common case now that lexical queries are cheap --
+    see reader_retrieval.lexical_rows), conn.transaction() (a SAVEPOINT) is
+    entered once for the whole round, not once per state. Counts actual
+    conn.transaction() calls rather than SQL text, since psycopg issues
+    SAVEPOINT/RELEASE below the level of Connection.execute -- this is the
+    same signal a live cProfile run used to first find the per-state
+    overhead (psycopg/transaction.py __enter__/__exit__ call counts)."""
+    article(db, 1, title="Satellite launch")
+    article(db, 2, title="Robotics breakthrough")
+    article(db, 3, title="Wildfire spreads")
+    transaction_starts = []
+    original_transaction = type(db).transaction
+
+    def counting_transaction(self, *args, **kwargs):
+        transaction_starts.append(1)
+        return original_transaction(self, *args, **kwargs)
+
+    monkeypatch.setattr(type(db), "transaction", counting_transaction)
+    batch = build(db, profile("Satellite", "Robotics", "Wildfire"))
+    assert batch.status == "complete"
+    assert len(batch.candidates) == 3
+    # One savepoint per round attempt (plus the two structural ones this
+    # function always takes regardless of state count: the outer isolation-
+    # level transaction, and _s6_vectors' own nested one) -- not one per
+    # state. 3 states succeeding under one shared savepoint per round beats
+    # what pre-batching code would have needed (3, one per state) even
+    # across a couple of rounds.
+    assert transaction_starts, "expected conn.transaction() to be used at all"
+    assert len(transaction_starts) < 2 + 3, (
+        f"expected far fewer than one savepoint per state (3 states), got {len(transaction_starts)}"
+    )
+
+
+def test_a_mid_round_failure_only_costs_one_extra_savepoint(db, monkeypatch):
+    """The failure-path complement: one bad state forces exactly one retry
+    (a fresh savepoint for whatever's left), not a savepoint per remaining
+    state -- the batching still pays off even when something goes wrong."""
+    article(db, 1, title="Satellite launch")
+    good_a = article(db, 2, title="Robotics breakthrough")
+    good_b = article(db, 3, title="Wildfire spreads")
+    original_page = retrieval._s6_page
+
+    def failing_once(conn, state, **kwargs):
+        if state.get("query") == "Satellite":
+            conn.execute("SELECT * FROM public.deliberately_missing_s6_test_relation")
+        return original_page(conn, state, **kwargs)
+
+    transaction_starts = []
+    original_transaction = type(db).transaction
+
+    def counting_transaction(self, *args, **kwargs):
+        transaction_starts.append(1)
+        return original_transaction(self, *args, **kwargs)
+
+    monkeypatch.setattr(retrieval, "_s6_page", failing_once)
+    monkeypatch.setattr(type(db), "transaction", counting_transaction)
+    batch = build(db, profile("Satellite", "Robotics", "Wildfire"))
+    assert batch.status == "degraded"
+    assert {item.article_id for item in batch.candidates} == {good_a, good_b}
+    assert any(leg["status"] == "failed" for leg in batch.diagnostics["legs"])
+    # 2 structural (outer isolation-level + _s6_vectors) + 1 first attempt
+    # (fails on "Satellite") + 1 retry for the remaining 2 states = 4; still
+    # nowhere near one-per-state-per-attempt.
+    assert len(transaction_starts) <= 5, (
+        f"expected roughly one retry, not one per remaining state, got {len(transaction_starts)}"
+    )
+
+
 def test_exact_dense_sql_orders_cosine_pages_and_restores_index_setting(db, promoted_recipe):
     vectors = ([1.0, 0.0], [0.8, 0.6], [0.0, 1.0])
     expected = []
