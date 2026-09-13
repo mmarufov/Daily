@@ -338,38 +338,43 @@ Phase 9  Dogfood daily; only now does S0/S10 evaluation start meaning anything.
 
 ## 5. Phased implementation plan (file-scoped, for the next pass)
 
-### Phase 0 — Land the foundation (no code changes, pure ops/git hygiene)
+### Phase 0 — Land the foundation (no code changes, pure ops/git hygiene) — ✅ DONE (2026-09-11)
 
-- **0.1** Commit the working tree in logical, reviewable chunks (not one giant commit) — e.g.
+- [x] **0.1** Commit the working tree in logical, reviewable chunks (not one giant commit) — e.g.
   by system (S1 fixes, S2, S3, S4, S5-S9, S10, docs) — and push to a real branch. *This is the
   single highest-leverage action available and should happen before anything else in this
   plan, including reading further.*
-- **0.2** Open a PR (or push directly per house convention) and get `backend-tests.yml`'s
+- [x] **0.2** Open a PR (or push directly per house convention) and get `backend-tests.yml`'s
   offline job green on GitHub for the first time.
-- **0.3** Get the `postgres-contracts` job green on GitHub for the first time — this repo has
+- [x] **0.3** Get the `postgres-contracts` job green on GitHub for the first time — this repo has
   never seen it execute; my local run proves the tests pass, but "runs on GitHub" and "runs on
   my machine" are different facts worth establishing separately, once.
-- **0.4** Take a manual Supabase/Postgres backup/snapshot before anything in Phase 1, given the
+- [x] **0.4** Take a manual Supabase/Postgres backup/snapshot before anything in Phase 1, given the
   5-month gap and however many additive migrations are about to run against real (if sparse)
   user data for the first time.
 
 *Acceptance:* `git log` on the pushed branch shows this work; a GitHub Actions run (both jobs)
 shows green; a DB backup exists and its restore path has been sanity-checked at least once.
 
-### Phase 1 — Redeploy current `main` to production
+*Landed:* pushed to `mmarufov/sydney-v7` (PR #54 against `main`); both `backend-tests.yml` jobs
+(`test`, `postgres-contracts`) have been green on every push since, repeatedly, across many
+follow-on commits (not just once). Manual Supabase backup taken before the first production
+deploy in 5 months (Phase 1).
 
-- **1.1** Rebuild the Docker image locally first (`docker build .` or `fly deploy --build-only`
+### Phase 1 — Redeploy current `main` to production — ✅ DONE (2026-09-11)
+
+- [x] **1.1** Rebuild the Docker image locally first (`docker build .` or `fly deploy --build-only`
   if supported) to catch dependency/build issues before touching the live machine — note
   `requirements.txt`'s new pins (`tiktoken`, `httpcore`, `pydantic`) need to actually be in the
   image.
-- **1.2** `fly deploy` with `--build-arg GIT_SHA=$(git rev-parse --short HEAD)` (the Dockerfile
+- [x] **1.2** `fly deploy` with `--build-arg GIT_SHA=$(git rev-parse --short HEAD)` (the Dockerfile
   already supports this — it's just never been passed).
-- **1.3** Confirm `/healthz` returns 200 with the expected `git_sha` and `/readyz` returns 200
+- [x] **1.3** Confirm `/healthz` returns 200 with the expected `git_sha` and `/readyz` returns 200
   (not the 404s both currently return).
-- **1.4** Confirm the 3-minute ingestion loop resumes and the schema migration
+- [x] **1.4** Confirm the 3-minute ingestion loop resumes and the schema migration
   (`_ensure_tables`) completes cleanly against the real, 5-months-stale production schema —
   watch logs for the first few cycles.
-- **1.5** All S3–S10 flags remain at their coded defaults (`false`) through this phase — this
+- [x] **1.5** All S3–S10 flags remain at their coded defaults (`false`) through this phase — this
   step is *only* about getting current, correct legacy-path code running in production, not
   about turning anything new on yet.
 
@@ -377,60 +382,126 @@ shows green; a DB backup exists and its restore path has been sanity-checked at 
 `content_quality`, `feed_build_log`, and every S2–S10 table that doesn't yet exist; ingestion
 resumes; no new error volume in Fly logs over 24h.
 
-### Phase 2 — Fix the concrete, flag-independent bugs
+*Landed:* deployed via `fly deploy --build-arg GIT_SHA=... --strategy rolling`; `/healthz`
+confirmed reporting the deployed commit on every redeploy since. Two real, previously-undiscovered
+production bugs surfaced and were fixed immediately: `_security_headers` middleware called
+`MutableHeaders.pop()`, which doesn't exist on Starlette's response headers (every request was
+500ing); and `_per_user_refresh_loop` compared a `text` column to a real `uuid` column
+(`UndefinedColumn`, silently crashing the loop every tick). Both have regression tests
+(`test_app_middleware.py`, `test_main_loops.py`/`test_main_loops_postgres.py`).
+
+### Phase 2 — Fix the concrete, flag-independent bugs — ✅ DONE (2026-09-11)
 
 Each is a self-contained, testable fix; sequence doesn't matter within this phase.
 
-- **2.1** SSRF-safe fetch for the recurring feed-content fetch and discovery-time feed
+- [x] **2.1** SSRF-safe fetch for the recurring feed-content fetch and discovery-time feed
   validation (`news_ingestion.py:_fetch_single_feed`, `source_discovery.py:_validate_feed`/
   `_fetch_feed_sample`) — route both through `safe_http.safe_fetch`, matching every other
   outbound fetch in this codebase.
-- **2.2** Pin `PYTHONHASHSEED` (or switch the discovery advisory-lock key to a stable hash,
+- [x] **2.2** Pin `PYTHONHASHSEED` (or switch the discovery advisory-lock key to a stable hash,
   e.g. `hashlib.sha256(user_id).digest()[:8]` truncated to an int) so the duplicate-discovery
-  guard actually serializes across the app's 2 worker processes.
-- **2.3** Move per-process rate-limit/cooldown state to a shared store (Postgres row or Redis)
+  guard actually serializes across the app's 2 worker processes. Landed as
+  `_stable_advisory_lock_key` (SHA-256-based), not a `PYTHONHASHSEED` pin.
+- [x] **2.3** Move per-process rate-limit/cooldown state to a shared store (Postgres row or Redis)
   — or accept and document that the effective allowance is ~2x the stated number, if that's
-  judged acceptable at current traffic.
-- **2.4** Add the missing behavioral test for the Tavily cross-source-text guarantee (mock a
+  judged acceptable at current traffic. Landed as a new `users.last_discovery_at` column.
+- [x] **2.4** Add the missing behavioral test for the Tavily cross-source-text guarantee (mock a
   Tavily response with `ENRICH_CROSS_SOURCE_ANALYSIS=True`, assert it lands in
   `record_analysis_context`/`analysis_text`, never in `updates["content"]`).
-- **2.5** Fix `_parse_date`'s local-time bug (`calendar.timegm`, not `mktime`); add a test.
-- **2.6** Actually investigate and fix (or explicitly, deliberately accept and re-baseline) the
+- [x] **2.5** Fix `_parse_date`'s local-time bug (`calendar.timegm`, not `mktime`); add a test.
+- [x] **2.6** Actually investigate and fix (or explicitly, deliberately accept and re-baseline) the
   3 standing S0 eval-gate regressions — they've been failing unchanged for over a week; "known
-  pre-existing" shouldn't mean "permanently ignored."
-- **2.7** Swap S3's `DEFAULT_RECIPE` model constant to the pilot's actual winner
+  pre-existing" shouldn't mean "permanently ignored." Root-caused (not guessed) to a word-boundary-
+  matching precision fix in `feed_service._word_in`, via controlled revert experiments; re-baselined
+  2026-09-11 with the reasoning documented in `test_eval_gate.py`.
+- [x] **2.7** Swap S3's `DEFAULT_RECIPE` model constant to the pilot's actual winner
   (`gpt-4o-mini-2024-07-18`), or add a comment loud enough that nobody copy-pastes the loser.
 
 *Acceptance:* one test per fix, all passing; no regression in the full suite.
 
-### Phase 3 — S2: make native reading possible for at least one real source
+*Landed:* all 7 verified directly against the current code (not just recalled) — see
+`app/main.py` (`_stable_advisory_lock_key`, `last_discovery_at`), `app/services/news_ingestion.py`
+and `source_discovery.py` (`safe_fetch` call sites), `tests/test_enrichment.py` (Tavily test),
+`app/services/understanding_contract.py` (`DEFAULT_RECIPE`), `tests/test_eval_gate.py` (re-baseline
+reasoning).
 
-- **3.1** Pick 3–5 real sources the 3 actual users' interests are likely to hit; run
+### Phase 3 — S2: make native reading possible for at least one real source — ✅ DONE (2026-09-11)
+
+- [x] **3.1** Pick 3–5 real sources the 3 actual users' interests are likely to hit; run
   `manage_s2_source_policy.py grant` for each with real `--reviewed-by`/`--rights-basis`
   values, not placeholders.
-- **3.2** Verify at least one real article resolves to `native_full_text` end-to-end after
+- [x] **3.2** Verify at least one real article resolves to `native_full_text` end-to-end after
   Phase 1's redeploy.
 
 *Acceptance:* a real, current article in production actually renders as native full text on
 device, not `source_web`.
 
-### Phase 4 — S6/S7 shadow, then serving, together
+*Landed:* granted `native_full_text` to 3 sources (`lilianweng.github.io`,
+`blog.pragmaticengineer.com`, `marktechpost.com`) via `manage_s2_source_policy.py grant --apply`
+with `--rights-basis publisher-rss-full-text` and a real `--reviewed-by`. A real, current
+production article was confirmed rendering as native full text end-to-end, not `source_web`.
 
-- **4.1** `manage_s7_ranking.py install --apply`, then `configure --apply --recipe-file ...
+### Phase 4 — S6/S7 shadow, then serving, together — 🟡 IN PROGRESS (4.1/4.2 done, 4.3/4.4 not started)
+
+- [x] **4.1** `manage_s7_ranking.py install --apply`, then `configure --apply --recipe-file ...
   --approve` (serving/provider still false).
-- **4.2** `S6_SHADOW_ENABLED=true` and `S7_SHADOW_ENABLED=true` together; watch the
+- [x] **4.2** `S6_SHADOW_ENABLED=true` and `S7_SHADOW_ENABLED=true` together; watch the
   `"S6 shadow: %s"` / `"S7 shadow: %s"` log lines against real (if sparse) traffic for a
   meaningful period.
-- **4.3** In one deploy, `S6_SERVING_ENABLED=true` **and** `S7_SERVING_ENABLED=true` (never S6
+- [ ] **4.3** In one deploy, `S6_SERVING_ENABLED=true` **and** `S7_SERVING_ENABLED=true` (never S6
   alone — landmine #9), `configure --apply --serve` (provider still false — baseline judgment
-  only, zero spend).
-- **4.4** Only after that's stable: `configure --apply --serve --provider --daily-usd <X>
+  only, zero spend). **Not started, and deliberately not started yet** — see below.
+- [ ] **4.4** Only after that's stable: `configure --apply --serve --provider --daily-usd <X>
   --account-daily-usd <Y>` with real, small, deliberately-chosen budgets, and
   `S7_PROVIDER_ENABLED=true`.
 
 *Acceptance:* shadow logs show sane candidate/judgment counts before any serving flag flips;
 real spend, once enabled, stays within budget and the circuit breaker is exercised at least
 once in a controlled test (deliberately trip it, confirm serving auto-disables).
+
+*Landed (4.1/4.2), plus reliability hardening beyond the original plan:* `S6_SHADOW_ENABLED` and
+`S7_SHADOW_ENABLED` are both set in production. Three real bugs were found and fixed against this
+path, each with a regression test proven to fail against the reverted code first:
+
+1. `ShadowRunner` was discarding already-completed, valid results as false timeouts (a stray
+   wall-clock recheck *after* the result already existed) — fixed at both the `_worker` and
+   `run()` layers.
+2. S6 retrieval's lexical query recomputed `to_tsvector(...)` inline per query (~900ms for a
+   single moderately common term, measured via `EXPLAIN ANALYZE`); replaced with a generated/
+   stored `title_summary_tsv` column reused by both the index and `ts_rank_cd`, cutting the same
+   query to ~10ms (93x, also verified via `EXPLAIN ANALYZE` before/after).
+3. The per-round retrieval loop was opening one savepoint and re-tightening the SQL statement
+   timeout per *state* instead of per *round*, roughly doubling round-trip count for a realistic
+   15-intent profile; restructured to share one savepoint and one timeout-tightening call per
+   round (commit `c7a0cbc`).
+4. `_observe_s6_retrieval` was `await`-ed synchronously in front of the real `/feed/build`
+   response, so S6/S7's own retrieval latency sat directly in front of every real request. Now
+   scheduled as a tracked, fire-and-forget `asyncio` task; the `S6_SERVING_ENABLED` fail-closed
+   gate itself stays synchronous (commit `1111fdf`).
+
+**A remaining, *unresolved* reliability gap, found only by re-verifying live rather than trusting
+clean-looking test results:** against the one real 15-intent reader profile available for
+testing, S6 shadow calls still complete only ~2/6 of the time; the rest hit the 2-second
+retrieval deadline. Root cause (confirmed via direct `pg_buffercache` inspection, not guessed):
+this Supabase project's free-tier compute gives Postgres only 224MB of `shared_buffers`, not
+enough to keep the ~123MB lexical working set (`articles` + its GIN index) reliably cache-resident
+under contention from the rest of the database's activity — see
+`tasks/s6-lexical-cache-limitation.md` for the full investigation, including a first attempt
+(a per-connection warm-up probe) that was tried, deployed, and reverted after live verification
+disproved it (commits `53633d3`, `cf4955f`, and the follow-up `pg_prewarm`-based mitigation).
+A 15-minute periodic re-warm loop (`_prewarm_loop` in `app/main.py`) is deployed as a free,
+partial mitigation; the complete fix (a paid Supabase compute upgrade) is *deliberately deferred*
+— see that file for why.
+
+**4.3/4.4 status, precisely:** not flag-flipped, and the honest evidence for readiness isn't
+there yet. Checked directly (`fly logs` has no historical query, only a live buffer — this is
+the full window available at the time of checking): the log buffer shows zero `"S6 shadow: %s"`
+/ `"S7 shadow: %s"` lines and zero real requests to any `/feed/*` endpoint, ever, in the window
+checked — only `/healthz` and background RSS ingestion. Structurally, this isn't surprising: no
+iOS client has been released yet (Phase 5 is explicitly gated on that), so there is no source of
+real traffic for shadow mode to observe. Flipping 4.3 before either (a) a real client exists and
+has generated some real shadow volume, or (b) the S6 lexical reliability gap above is closed,
+would mean serving on evidence that doesn't exist yet.
 
 ### Phase 5 — S8, gated on a client release
 
