@@ -90,8 +90,36 @@ def _reauthorize_ordinary(conn, result, policy, profile, score_candidate):
     return output
 
 
+def _delivery_is_attributable():
+    """Can this request's edition be receipted and echoed back by the client?
+
+    S4's whole promise -- "tell us you already knew this and we will stop
+    showing it" -- runs through the seen-development join, which matches a
+    client-sent `reading_events.feed_request_id` against the
+    `event_delivery_receipts` row written below. The client only sends one for
+    a card carrying all four of feed_request_id / delivery_position /
+    reader_generation / reader_revision, and only the S5 and S7 publication
+    paths stamp those. With both off, `finalize_feed` is a no-op, the cards go
+    out bare, `/reading-events` has no `reader_delivery_receipts` row to
+    validate against, and the join can only ever compare NULL to a real uuid.
+
+    So injecting priority here without one of them delivers a suppression
+    control that silently does nothing. Fail closed instead -- the same
+    judgement `finalize_feed` already makes when it refuses to hand back an
+    unranked result while S7 is serving. Stated as a capability rather than a
+    flag name so it stays true if attribution ever moves somewhere else.
+    """
+    from .ranking_service import enabled as ranking_enabled
+    from .reader_integration import enabled as reader_enabled
+    return reader_enabled() or ranking_enabled()
+
+
 def compose_feed(conn, user_id, result, *, capability=None, limit=50):
     if os.getenv('S4_CONSUMERS_ENABLED', 'false').lower() != 'true' or capability != '1':
+        return result
+    if not _delivery_is_attributable():
+        logger.warning('S4 priority withheld: this edition cannot be receipted, so its '
+                       '"already knew" control could not suppress anything')
         return result
     if type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError('S4 edition limit must be 1..100')

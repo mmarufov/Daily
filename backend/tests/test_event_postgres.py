@@ -560,6 +560,13 @@ def _receipt_integration(db, recipes, monkeypatch):
         return SimpleNamespace(payload={"articles": [{"id": str(article), "event_delivery": metadata}]},
                                decisions=[{"reason": "reserved"}], major_candidates=[])
     monkeypatch.setenv("S4_CONSUMERS_ENABLED", "true")
+    # S4 priority is only composed onto an edition something will receipt and
+    # the client can echo back; with no publication path enabled the "already
+    # knew" control this fixture is about could never suppress anything, so
+    # `compose_feed` now declines to promise it. See
+    # `event_integration._delivery_is_attributable` and
+    # tests/test_event_suppression_loop_postgres.py.
+    monkeypatch.setenv("S5_READER_ENABLED", "true")
     monkeypatch.setattr(feed_service, "_load_user_preferences_full", lambda *args: ("", {}, {}, None, None))
     monkeypatch.setattr(feed_service, "_build_preference_profile", lambda *args, **kwargs: {})
     monkeypatch.setattr(repo, "load_candidates", lambda *args, **kwargs: [])

@@ -101,9 +101,20 @@ def finalize_feed(conn, user_id, result):
         articles = filter_articles(snapshot, result.get("articles", []))
         request_id = result.get("feed_request_id") or str(uuid.uuid4())
         record_delivery(conn, user_id, request_id, snapshot, articles)
+        # `delivery_position` has to be stamped here, on the same enumeration of
+        # the same post-filter list `record_delivery` just wrote as
+        # `final_position`. Without it the card is incomplete and the client's
+        # `NewsArticle.deliveryReceipt` stays nil (it requires all four of
+        # feed_request_id / delivery_position / reader_generation /
+        # reader_revision), so every tap, read and "already knew" on this path
+        # arrived with feed_request_id: null -- unattributable, and unable to
+        # match S4's `ON r.feed_request_id = d.feed_request_id` suppression join.
+        # S7's `_public` has always done exactly this; the legacy S5 path never did.
         public = [{**{k: v for k, v in a.items() if not k.startswith("_reader_")},
                    "feed_request_id": request_id, "reader_generation": snapshot["generation"],
-                   "reader_revision": snapshot["revision"]} for a in articles]
+                   "reader_revision": snapshot["revision"],
+                   "delivery_position": a.get("delivery_position", position)}
+                  for position, a in enumerate(articles)]
         return {**result, "articles": public, "article_count": len(public), "feed_request_id": request_id}
 
 

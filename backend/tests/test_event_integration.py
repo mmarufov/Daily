@@ -61,6 +61,10 @@ class Connection:
 @pytest.fixture
 def wiring(monkeypatch):
     monkeypatch.setenv('S4_CONSUMERS_ENABLED', 'true')
+    # S4 priority is only composed onto an edition something will receipt and
+    # the client can echo back -- otherwise its "already knew" suppression is
+    # decorative. See `_delivery_is_attributable` and the tests below.
+    monkeypatch.setenv('S5_READER_ENABLED', 'true')
     from app.services import feed_service
     monkeypatch.setattr(feed_service, '_load_user_preferences_full', lambda *a: ('profile', {}, {}, None, None))
     monkeypatch.setattr(feed_service, '_build_preference_profile', lambda *a, **k: 'profile')
