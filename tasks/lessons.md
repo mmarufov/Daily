@@ -338,3 +338,32 @@ unless something will stamp the edition. Expressed as a capability check
 intentional?" has an answer that outlives whoever asks it. `app/services/retention.py` holds the
 constant *and* the argument for it *and* the upgrade path if it ever stops being right — which
 is what makes the next person's version of the question cheap to answer.
+
+## Staging has to be tested cold (2026-09-13)
+
+**A post-deploy smoke test that only runs while the machines are warm does not test the
+deploy.** Staging's nine checks passed immediately after `fly deploy` and again twelve hours
+later they would not have: with `min_machines_running = 0` the machines auto-stop, and on
+wake every uvicorn child died on spawn, the port never opened, and Fly answered 503 after
+~59s. The deploy left the machines running, so the smoke run never touched the cold path
+that this configuration guarantees will be the *normal* path. Stop the machines, then smoke.
+
+**Do not shrink staging away from production's shape to save money.** `fly.staging.toml`
+opened by declaring itself "deliberately identical to production apart from the marked
+lines" and then set `shared-cpu-1x` against production's `shared-cpu-2x`. Same image, same
+1gb, same hardcoded `--workers 2`: two vCPUs works, one kills every worker child. The cost
+lever that is actually safe is `min_machines_running`, which changes *when* you pay, not
+what you are rehearsing.
+
+**Diagnose by elimination against the known-good twin.** The 503 looked like a database
+problem (new Neon project, pooled endpoint, and prior worry about transaction-mode pooling
+breaking advisory locks and prepared statements). It was not: Neon connected, and
+`_ensure_tables`' ~100 DDL statements completed. Nor memory — 805MB free, `oom_killed=false`.
+`--workers 1` booted cleanly, which isolated it to the multiprocess path, and production
+running the identical image on a bigger VM named the variable. Having a working twin to
+diff against is most of the value of having staging at all.
+
+**A build context is an exfiltration path, not just a slow upload.** `backend/` had no
+`.dockerignore`, so every deploy shipped 265MB to the remote builder — 213MB of local venv,
+44MB of eval corpora, and `backend/.env` containing a live `OPENAI_API_KEY`. The Dockerfile
+never COPYed it, which is why nobody noticed. Now 12.6kB.

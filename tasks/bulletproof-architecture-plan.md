@@ -519,12 +519,12 @@ would mean serving on evidence that doesn't exist yet.
 - **6.2** `manage_s5_reader.py migrate/index/budget --apply`, then deploy the worker process,
   then `S5_READER_ENABLED=true`.
 
-### Phase 7 — Foundational hardening (parallel track, not blocking on the above) — 🟡 IN PROGRESS (7.1, 7.2, 7.4, 7.5 done; 7.3 blocked on a database choice)
+### Phase 7 — Foundational hardening (parallel track, not blocking on the above) — ✅ DONE (2026-09-13)
 
 - [x] **7.1** Account deletion endpoint + server-side sign-out/session revocation.
 - [x] **7.2** Crash reporting for iOS (Crashlytics or a lighter-weight alternative — this app
   already avoids heavy dependencies elsewhere, pick accordingly).
-- [ ] **7.3** A cheap staging environment (a second, small Fly app pointed at a disposable DB) so
+- [x] **7.3** A cheap staging environment (a second, small Fly app pointed at a disposable DB) so
   Phase 1-style "first deploy in months" risk never recurs.
 - [x] **7.4** S4's suppression-join bug (bug #11) — fix before S4 consumers are ever turned on.
 - [x] **7.5** `reading_events`' de-facto 14-day retention ceiling (tied to article GC) — decide
@@ -602,9 +602,13 @@ given the whole app contains exactly one trap site (`AppConfig.swift:23`).
   devices, and frames are addresses needing the build's dSYM. For this app that buys the thing
   that matters — a crash happened, in this build, this often — at zero dependency cost.
 
-#### 7.3 — Staging environment — 🟡 BLOCKED on one decision
+#### 7.3 — Staging environment — ✅ DONE (2026-09-13)
 
-Everything except the database is landed and committed:
+Live at `https://daily-backend-staging.fly.dev`, on a free Neon project (`daily-staging`,
+pg 16.15 + pgvector 0.8.0, us-east-1) in its own organisation, entirely separate from
+production's Supabase. All nine smoke checks pass **from a fully cold start**, twice.
+
+What is committed:
 
 - `backend/fly.staging.toml` — `daily-backend-staging`, `iad`, `shared-cpu-1x`,
   `min_machines_running = 0` (the only safe cost lever), `ENVIRONMENT=staging` to expose
@@ -620,16 +624,37 @@ Everything except the database is landed and committed:
   `_ensure_tables`' ~100 DDL statements completed), a non-`/healthz` request (the
   `MutableHeaders.pop` bug was in middleware common to *all* requests, so `/healthz` alone would
   not have caught it), security headers, and the new deletion/revocation routes answering 401.
-- The Fly app `daily-backend-staging` exists (no machines yet, so $0).
+- `backend/.dockerignore` — the build context was **265MB**, of which 213MB was the local
+  `venv/` and 44MB eval corpora, and it included `backend/.env` with a live `OPENAI_API_KEY`.
+  The Dockerfile never `COPY`s that file, which is why nobody noticed it was being uploaded to
+  the remote builder on every deploy. Context is now **12.6kB**.
 
-**The open decision — where the staging database lives.** The Supabase org is on the *free*
-plan with both of its two allowed projects already active (`Daily`, `toj-staging`), so a third
-Supabase project means Pro at ~$25/mo. Options, cheapest first: Neon free tier ($0, pg16/17 +
-pgvector, but a third vendor); Fly Managed Postgres Basic (~$5/mo, same vendor, `fly mpg create`,
-private networking); Supabase Pro (~$25/mo, highest fidelity — identical pooler semantics, which
-matters because this code depends on session-scoped state: `pg_try_advisory_lock` leader
-election and psycopg3's default server-side prepared statements). Not decided unilaterally
-because it is recurring money.
+**What staging caught on its first day — and it caught it about itself.** The initial deploy
+passed all nine checks, then twelve hours later the app would not come back at all: `/healthz`
+503'd after ~59s and every uvicorn child process died on spawn. Two real lessons, both now in
+`tasks/lessons.md`:
+
+1. **The smoke test only ever ran warm.** `fly deploy` leaves the machines running, so the
+   suite never exercised the cold-start path that `min_machines_running = 0` makes the *normal*
+   path. Verified now by stopping both machines first — 9.8s to HTTP 200, nine of nine green,
+   twice.
+2. **`shared-cpu-1x` was the cause, and it was my cost optimisation.** This file opens by
+   declaring itself "identical to production apart from the marked lines" and then set one
+   vCPU against production's two. Same image, same 1gb, same hardcoded `--workers 2`: two
+   vCPUs works, one kills every child. Diagnosed by elimination against the working twin —
+   not the database (Neon's pooled endpoint connects and `_ensure_tables`' ~100 DDL statements
+   complete, so the transaction-pooling worry below did not materialise), not memory (805MB
+   free, `oom_killed=false`), and `--workers 1` booted cleanly. Staging now matches
+   production's VM shape; `min_machines_running` remains the one safe cost lever, because it
+   changes *when* you pay rather than what you are rehearsing.
+
+*Cost:* Neon is Free; Fly bills the staging machines only while they are awake.
+
+*Residual risk worth stating:* Neon's pooled endpoint is PgBouncer in transaction mode, so
+`pg_try_advisory_lock` leader election and psycopg3's default server-side prepared statements
+are not exercised the way production's Supabase pooler exercises them. Nothing has failed on
+it, but staging is a deploy/migration rehearsal — do not read a green staging run as proof
+about the background loops' locking behaviour.
 
 #### 7.4 — S4 suppression join — ✅ DONE (2026-09-12)
 

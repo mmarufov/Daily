@@ -1,0 +1,43 @@
+# The Dockerfile copies exactly four things: requirements.txt, app/, scripts/,
+# and evals/events/. Everything else in this directory was being uploaded to
+# the builder for no reason -- 265MB of context, of which 213MB was the local
+# virtualenv and 44MB was eval corpora and snapshots.
+#
+# The one that matters beyond speed: backend/.env holds a real OPENAI_API_KEY,
+# and while the Dockerfile never COPYs it, it was still being shipped to the
+# remote builder on every deploy. It should never have left the machine.
+
+# Local virtualenv -- the image installs its own from requirements.txt, and a
+# macOS venv would not work in a linux container anyway.
+venv/
+.venv/
+
+# Secrets. Never in a build context.
+.env
+.env.*
+!.env.example
+
+# Test suite and its fixtures: the image runs the app, not the tests.
+tests/
+
+# Eval corpora, labels, snapshots and cached model responses. Only
+# evals/events is copied (S4 reads it for offline report validation), so
+# exclude the directory wholesale and re-include that one subtree.
+evals/*
+!evals/events/
+
+# Build and tool artefacts.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Deployment configs are read by flyctl from outside the image.
+fly.toml
+fly.*.toml
+
+# Logs and local scratch.
+*.log
+.DS_Store

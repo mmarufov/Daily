@@ -621,3 +621,35 @@ Phase 2 wires the Phase 1 components into `NewsView`. Substitution is mechanical
 - [x] Produce interview-defensible Google/Meta, Apple/iOS, backend, and applied-AI resume variants.
 - [x] Recommend Daily's resume position and whether it should replace LookMatch or YConstruction.
 - [x] Save and validate the complete report at `.context/resume-evidence-daily.md` without editing product code.
+
+## Neon staging provisioning — 2026-09-12
+
+- [x] Create isolated `daily-staging` Neon project in the separate Free organization; do not touch the old production database.
+- [x] Obtain its pooled connection URL and validate PostgreSQL/pgvector against the empty staging database.
+- [x] Stage only `daily-backend-staging` credentials using the existing provisioning script.
+- [x] Deploy current checkout with its Git SHA and run the staging smoke script.
+- [x] Record live verification and provide a credential-free handoff; leave production unchanged.
+
+Evidence: `.context/staging-provision.log` and `.context/staging-provision-result.json`;
+script exited 0, all nine smoke checks passed, both staging Fly machines healthy.
+Deployed `mmarufov/sydney-v7` at `3cbffb25ec64a3c71b1641fb676329afd3ee80f6`.
+This verifies deployment/readiness/auth guards, not all product flows or production readiness.
+
+### Follow-up, 2026-09-13: the first deploy was healthy only while warm
+
+- [x] Re-verify staging independently after the machines had auto-stopped. They did not
+  come back: `/healthz` returned 503 after ~59s, and every uvicorn child process died on
+  spawn. The first smoke run passed because the deploy had left the machines warm, so it
+  never exercised the cold-start path that `min_machines_running = 0` guarantees.
+- [x] Diagnose. Not the database (Neon pooler connects, `_ensure_tables` completes), not
+  memory (805MB free, `oom_killed=false`), not the app (`--workers 1` boots cleanly). The
+  differentiator was the VM: `shared-cpu-1x`, which I had set to save money. Production
+  runs the same image, same 1gb, same `--workers 2` on `shared-cpu-2x` and is fine.
+- [x] Fix: staging now matches production's VM shape. Cold start from fully stopped is
+  9.8s / HTTP 200, and all nine smoke checks pass from cold, twice.
+- [x] Add `backend/.dockerignore`: the build context was 265MB, 213MB of it the local
+  venv, and it included `backend/.env` with a live `OPENAI_API_KEY`. Now 12.6kB.
+
+Lesson, recorded in `tasks/lessons.md`: a deploy smoke test that only ever runs while the
+machines are warm does not test the deploy, and shrinking staging away from production's
+shape means rehearsing something that is not production.

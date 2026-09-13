@@ -8,8 +8,9 @@
 # against a database it has never seen, and /healthz + /readyz answer, before
 # any of that happens to production. See scripts/provision_staging.sh.
 #
-# Deliberately identical to production apart from the four marked lines. A
-# staging environment that differs in shape does not rehearse anything.
+# Deliberately identical to production apart from the two marked lines. A
+# staging environment that differs in shape does not rehearse anything -- a
+# lesson this file learned the hard way, see the [[vm]] note at the bottom.
 app = "daily-backend-staging"
 primary_region = "iad"
 
@@ -41,8 +42,14 @@ primary_region = "iad"
     path = "/healthz"
 
 [[vm]]
-  # Cheaper CPU than production's shared-cpu-2x; a rehearsal is not load-bearing.
-  size = "shared-cpu-1x"
+  # Matches production, and must. shared-cpu-1x was tried here and broke the
+  # app: with the Dockerfile's hardcoded `--workers 2`, every uvicorn child
+  # process died on spawn on a single shared vCPU, the port never opened, and
+  # Fly's proxy answered 503. Same image, same 1gb, same command, two vCPUs --
+  # fine. Whatever the precise mechanism, the lesson is the one stated at the
+  # top of this file: a staging environment that differs in shape from
+  # production does not rehearse production, it rehearses something else.
+  size = "shared-cpu-2x"
   # NOT a cost lever, do not lower. Measured at ~154MB import-time RSS per
   # uvicorn worker (tiktoken, trafilatura/lxml, pgvector, Pillow, google-genai)
   # and the Dockerfile hardcodes `--workers 2`, so ~310MB is resident before a
