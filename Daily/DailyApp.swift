@@ -41,6 +41,11 @@ struct DailyApp: App {
         // update (for example when ArticleDetailView creates TuneViewModel).
         _ = ImageCacheService.shared
         _ = AuthService.shared
+
+        // Subscribe to MetricKit before anything else can crash. Payloads are
+        // delivered on a launch *after* the crash, so starting here is what
+        // makes the previous run's crash reachable at all.
+        DiagnosticsService.shared.start()
         
         // Configure Google Sign-In if SDK is available
         #if canImport(GoogleSignIn)
@@ -67,6 +72,9 @@ struct DailyApp: App {
                     if newPhase == .background {
                         // Flush reading events when app goes to background
                         Task { await ReadingEventTracker.shared.flush() }
+                        // Any crash report MetricKit delivered this session is
+                        // already on disk; this is the chance to ship it.
+                        Task { await DiagnosticsService.shared.flush() }
                     }
                 }
         }

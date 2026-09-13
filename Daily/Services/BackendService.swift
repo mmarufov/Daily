@@ -927,6 +927,44 @@ final class BackendService {
         return ["events": eventsPayload]
     }
 
+    // MARK: - Client Diagnostics
+
+    func submitDiagnostics(_ reports: [DiagnosticReport], accessToken: String) async throws {
+        let endpoint = baseURL.appendingPathComponent("/client-diagnostics")
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Crash payloads are large and this is never on a path a reader waits
+        // on, so it gets a longer budget than the 5s default.
+        request.timeoutInterval = 30
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: Self.diagnosticsBody(reports))
+
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw NSError(domain: "BackendService", code: (response as? HTTPURLResponse)?.statusCode ?? -1,
+                          userInfo: [NSLocalizedDescriptionKey: "Diagnostics were not acknowledged."])
+        }
+    }
+
+    static func diagnosticsBody(_ reports: [DiagnosticReport]) -> [String: Any] {
+        let formatter = ISO8601DateFormatter()
+        return ["reports": reports.map { report -> [String: Any] in
+            [
+                "report_id": report.reportId,
+                "captured_at": formatter.string(from: report.capturedAt),
+                "app_version": report.appVersion,
+                "build_number": report.buildNumber,
+                "os_version": report.osVersion,
+                "kinds": report.kinds,
+                "payload": report.payload,
+                "truncated": report.truncated,
+            ]
+        }]
+    }
+
     // MARK: - Briefing
 
     func fetchBriefing(accessToken: String) async throws -> BriefingResponse {
