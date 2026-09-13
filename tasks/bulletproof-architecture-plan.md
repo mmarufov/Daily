@@ -311,6 +311,8 @@ currently a no-op with S5/S7 both off).
 | 15 | No account deletion or server-side sign-out revocation anywhere in the app | account lifecycle | High | Yes (gap, not a regression) |
 | 16 | No crash reporting or analytics anywhere in the iOS app | ops | Medium | Yes (gap) |
 | 17 | No staging environment; the only Fly app is production itself | ops | Medium | Yes (gap) |
+| 18 | `reader_delivery_receipts`' declared 30-day window is really 14, via the article cascade | S5 | Low (declared-vs-enforced) | Yes, harmless today |
+| 19 | `delivery_position` never stamped on the legacy S5 path — no legacy telemetry could be attributed to an edition | S5 | High | Only with S5 on; fixed in 7.4 |
 
 ---
 
@@ -517,17 +519,169 @@ would mean serving on evidence that doesn't exist yet.
 - **6.2** `manage_s5_reader.py migrate/index/budget --apply`, then deploy the worker process,
   then `S5_READER_ENABLED=true`.
 
-### Phase 7 — Foundational hardening (parallel track, not blocking on the above)
+### Phase 7 — Foundational hardening (parallel track, not blocking on the above) — 🟡 IN PROGRESS (7.1, 7.2, 7.4, 7.5 done; 7.3 blocked on a database choice)
 
-- **7.1** Account deletion endpoint + server-side sign-out/session revocation.
-- **7.2** Crash reporting for iOS (Crashlytics or a lighter-weight alternative — this app
+- [x] **7.1** Account deletion endpoint + server-side sign-out/session revocation.
+- [x] **7.2** Crash reporting for iOS (Crashlytics or a lighter-weight alternative — this app
   already avoids heavy dependencies elsewhere, pick accordingly).
-- **7.3** A cheap staging environment (a second, small Fly app pointed at a disposable DB) so
+- [ ] **7.3** A cheap staging environment (a second, small Fly app pointed at a disposable DB) so
   Phase 1-style "first deploy in months" risk never recurs.
-- **7.4** S4's suppression-join bug (bug #11) — fix before S4 consumers are ever turned on.
-- **7.5** `reading_events`' de-facto 14-day retention ceiling (tied to article GC) — decide
+- [x] **7.4** S4's suppression-join bug (bug #11) — fix before S4 consumers are ever turned on.
+- [x] **7.5** `reading_events`' de-facto 14-day retention ceiling (tied to article GC) — decide
   explicitly whether behavioral-learning signal should outlive the article it's about, rather
   than have this be an accidental side effect.
+
+*Acceptance:* an account can be deleted from inside the app and leaves no row behind; sign-out
+revokes the server session; a crash in a shipped build is visible without a device in hand;
+a deploy can be rehearsed somewhere that is not production; S4's suppression control works the
+first time it is switched on, not the second.
+
+#### 7.1 — Account lifecycle — ✅ DONE (2026-09-12)
+
+`users.is_deleted` had five readers (`reader_repository._user_guard`,
+`ranking_repository.claim_build`/`reserve`/`latest`, `reader_worker._current_reader`) and no
+writer, which made every `ON DELETE CASCADE` FK pointing at `public.users` unreachable code.
+Sign-out was client-only: `AuthService` deleted its Keychain copy and the `public.sessions`
+row survived its full 30 days.
+
+- `app/services/account_lifecycle.py`. Deletion is **two durable steps**, not one transaction.
+  Step 1 takes the `users` row lock first — the order `ranking_repository.py:132` and
+  `reader_worker.py:81` already document — marks the row deleted, scrubs `email`/`display_name`/
+  `photo_url`, and drops every session and identity. After it commits the account is
+  unauthenticatable and unlinkable. Step 2 hard-deletes the row (~25 cascading tables) and is
+  retried by a sweeper if it loses a race with an in-flight S5/S7 write. That split is what
+  gives `is_deleted` an actual job: it is the tombstone covering the window between the commits.
+- `feed_build_log` (no FK at all) and `ranking_budget` (text `account` column, covered only by a
+  trigger that exists on databases where the optional S7 schema was installed) are deleted
+  explicitly, `to_regclass`-guarded.
+- `DELETE /auth/session`, `DELETE /auth/sessions`, `DELETE /user/account` — all idempotent;
+  deletion rate-limited to 5/min.
+- `is_deleted` is now honoured by `_get_user_id_from_token`, `/me`, `_active_users_with_sources`
+  and `_refresh_s7_background`. **None of them checked it**, so a tombstone would have kept
+  authenticating and kept having feeds built for it (i.e. kept spending).
+- `_account_maintenance_loop` (own advisory-lock key `811_006`) retries deferred purges and
+  expires dead sessions hourly. Nothing had ever deleted from `public.sessions`; expired rows
+  were only filtered at read time, so the table grew without bound.
+- iOS: `signOut()` fires `DELETE /auth/session` *before* wiping the Keychain and never awaits it
+  (an unreachable server must not leave a reader signed in); `deleteAccount()` awaits and
+  rethrows, because "your account is gone" is not a claim to make on a request that failed.
+  `ProfileView` gains the Delete Account entry point Apple requires of any app offering account
+  creation (Guideline 5.1.1(v)).
+- The load-bearing test is `test_no_user_scoped_table_survives_deletion`: it walks
+  `pg_constraint` for the transitive cascade closure of `public.users` and checks it against
+  every base table carrying a `user_id`/`account` column. Adding a user-scoped table without
+  wiring it into deletion now fails the build instead of orphaning rows. Verified it detects a
+  deliberately introduced orphan.
+
+#### 7.2 — iOS crash reporting — ✅ DONE (2026-09-12)
+
+**MetricKit, not a vendor SDK.** The app has exactly one direct SPM dependency (GoogleSignIn,
+7 transitive pins) and no privacy manifest; `firebase-ios-sdk` would roughly triple that graph
+and add a dSYM-upload build phase, and Sentry is lighter but still a real SDK with its own
+network stack and vendor account. `MXMetricManager` is in the SDK, needs no availability guard
+at this deployment target (26.0), and catches what the app cannot observe from inside its own
+process — signals, watchdog terminations, hangs — which is most of what would actually kill it,
+given the whole app contains exactly one trap site (`AppConfig.swift:23`).
+
+- `Daily/Services/DiagnosticsService.swift` + `DiagnosticStore`: one JSON file per report,
+  written through immediately (a crash report has to outlive the process that made it, so the
+  in-memory pattern `ReadingEventTracker` uses would not do), pruned by age and count.
+- Upload is gated on a bearer token rather than using an unauthenticated ingest endpoint: an
+  open crash sink is an abuse target, and MetricKit payloads are historical anyway, so waiting
+  for sign-in costs nothing but time. Batching is bounded by **total payload bytes**, not just
+  count — five near-maximum reports batched by count alone would exceed the backend's 1MB body
+  cap, return 413, and be discarded as a permanent rejection, losing exactly the biggest reports.
+- A permanently-rejected batch (4xx that isn't 401/403/429) is dropped rather than retried
+  forever, so one malformed report cannot wedge every later one behind it.
+- Backend: `app/services/client_diagnostics.py`, `POST /client-diagnostics` (idempotent on a
+  client-minted `report_id`, so a retried upload cannot double-count a crash),
+  `GET /admin/client-diagnostics` for the rollup by build/version/kind, 30-day retention swept
+  on the existing hourly maintenance tick. Payloads are stored as opaque text — MetricKit's
+  schema is Apple's to change, and this is a record of what the device said, not a model of it.
+- Known trade, stated rather than hidden: payloads arrive on a **later launch**, only on real
+  devices, and frames are addresses needing the build's dSYM. For this app that buys the thing
+  that matters — a crash happened, in this build, this often — at zero dependency cost.
+
+#### 7.3 — Staging environment — 🟡 BLOCKED on one decision
+
+Everything except the database is landed and committed:
+
+- `backend/fly.staging.toml` — `daily-backend-staging`, `iad`, `shared-cpu-1x`,
+  `min_machines_running = 0` (the only safe cost lever), `ENVIRONMENT=staging` to expose
+  `/docs`. **`memory = "1gb"` is not a cost lever and must not be lowered**: ~154MB import-time
+  RSS per uvicorn worker × the Dockerfile's hardcoded `--workers 2` ≈ 310MB resident before a
+  single request, which is how this app has OOMed before (`b19e932`, then `b5c6a2f`). Also note
+  `fly scale memory` does not stick while a `[[vm]]` block exists — the next deploy reverts it.
+- `backend/scripts/provision_staging.sh` — idempotent create + secrets + deploy. Refuses to run
+  against `daily-backend` or the production Supabase project ref, and pre-flights the target
+  database for Postgres ≥16 and `CREATE EXTENSION vector` (without which startup aborts).
+- `backend/scripts/smoke_staging.sh` — every check maps to something that actually broke:
+  `/healthz` 200 + `git_sha` matches HEAD, `/readyz` 200 (the only check that proves
+  `_ensure_tables`' ~100 DDL statements completed), a non-`/healthz` request (the
+  `MutableHeaders.pop` bug was in middleware common to *all* requests, so `/healthz` alone would
+  not have caught it), security headers, and the new deletion/revocation routes answering 401.
+- The Fly app `daily-backend-staging` exists (no machines yet, so $0).
+
+**The open decision — where the staging database lives.** The Supabase org is on the *free*
+plan with both of its two allowed projects already active (`Daily`, `toj-staging`), so a third
+Supabase project means Pro at ~$25/mo. Options, cheapest first: Neon free tier ($0, pg16/17 +
+pgvector, but a third vendor); Fly Managed Postgres Basic (~$5/mo, same vendor, `fly mpg create`,
+private networking); Supabase Pro (~$25/mo, highest fidelity — identical pooler semantics, which
+matters because this code depends on session-scoped state: `pg_try_advisory_lock` leader
+election and psycopg3's default server-side prepared statements). Not decided unilaterally
+because it is recurring money.
+
+#### 7.4 — S4 suppression join — ✅ DONE (2026-09-12)
+
+The trace in §2/S4 was right about the join but stopped one hop short of the cause. The full
+picture, verified against a real server:
+
+1. The client's `NewsArticle.deliveryReceipt` requires **all four** of `feed_request_id`,
+   `delivery_position`, `reader_generation`, `reader_revision` (`NewsArticle+Reader.swift:18-25`).
+2. `reader_integration.finalize_feed` stamped only three of them — `delivery_position` was never
+   stamped on the legacy S5 path at all, though `record_delivery` had already written the
+   matching `final_position`. S7's `_public` has always stamped all four; the legacy path never
+   did.
+3. So the receipt was nil, every event went out with `feed_request_id: null`, and
+   `ON r.feed_request_id = d.feed_request_id` compared NULL to a uuid. **This broke far more
+   than S4** — it meant no telemetry on the legacy+S5 path could be attributed to an edition at
+   all.
+
+Fixes: (a) `finalize_feed` stamps `delivery_position` from the same enumeration of the same
+post-filter list `record_delivery` just recorded; (b) `compose_feed` refuses to inject priority
+when nothing will receipt the edition (`_delivery_is_attributable`) — the same fail-closed
+judgement `finalize_feed` already makes when it declines to hand back an unranked result while
+S7 is serving. Stated as a capability, not a flag name, so it stays true if attribution moves.
+
+`tests/test_event_suppression_loop_postgres.py` walks the whole loop against a real server using
+the production functions at every hop, and includes `test_the_pre_fix_shape_cannot_suppress` as
+a negative control so the suite cannot pass for free. `test_suppression_sql_matches_production`
+fails if `compose_feed`'s inline CTE and the test's copy ever drift.
+
+#### 7.5 — `reading_events` retention — ✅ DECIDED: intentional (2026-09-12)
+
+Decision record: `backend/app/services/retention.py`. The effective retention of a behavioural
+event is `article.ingested_at + ARTICLE_RETENTION_DAYS`, **not** `created_at + 14 days` — a tap
+logged five minutes ago on an article ingested 14 days and one minute ago dies with it. Keep the
+coupling, because: every aggregate consumer (`source_quality`, `interest_evolution`,
+`_recompute_behavior_signals`) joins `articles` to interpret the event at all, so an orphan row
+makes no consumer smarter; the 14 days was *already* chosen for this reason (the GC's own
+comment says "extended for behavioral learning"); and the suppression consumers key on article
+id, which a re-ingested article does not reuse, so orphaning would not rescue them either.
+
+The constant now has one home instead of six hardcoded `interval '14 days'` literals, the
+`reading_events` DDL says what its real retention is, and
+`test_gcing_an_article_takes_its_reading_events_with_it` executes the coupling against a real
+server. **If longer-horizon learning is ever wanted, the answer is to denormalise category and
+source domain onto `reading_events` at write time — not to drop the FK.**
+
+**New finding, surfaced not silently changed:** `reader_delivery_receipts` declares a 30-day
+window in two places (`record_delivery`'s cleanup, `ingest_events`' validation) but also cascades
+from `articles`, so its rows really live 14 days — the last 16 days of that window are
+unreachable. It is a declared-vs-enforced mismatch rather than a live defect (a client cannot
+echo a receipt for a card it stopped holding two weeks ago), and restructuring an append-only
+receipt table that S8's `reader_edition_reads` composite-FKs onto is a bigger decision than this
+phase owns. Recorded as bug #18 below.
 
 ### Phase 8 — Dogfood
 

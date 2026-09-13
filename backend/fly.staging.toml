@@ -1,0 +1,53 @@
+# Staging twin of fly.toml. Deploy with:
+#
+#   fly deploy --config fly.staging.toml \
+#     --build-arg GIT_SHA=$(git rev-parse --short HEAD) --strategy rolling
+#
+# Its whole job is to make "first deploy in five months" impossible to repeat:
+# a place where the image builds, `_ensure_tables` runs its ~100 DDL statements
+# against a database it has never seen, and /healthz + /readyz answer, before
+# any of that happens to production. See scripts/provision_staging.sh.
+#
+# Deliberately identical to production apart from the four marked lines. A
+# staging environment that differs in shape does not rehearse anything.
+app = "daily-backend-staging"
+primary_region = "iad"
+
+[build]
+
+[env]
+  # Exposes /docs, /redoc and /openapi.json (main.py gates them on this being
+  # anything other than "production"). Useful here, never there.
+  ENVIRONMENT = "staging"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  # The cost lever, and the only safe one. Production keeps a machine warm;
+  # staging wakes on request and stops again, so an idle month is ~free.
+  # Consequence to remember: the background loops (ingestion, prewarm, account
+  # maintenance) only run while something is keeping the machine up, so staging
+  # is a deploy/migration rehearsal, not a place to observe the loops.
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/healthz"
+
+[[vm]]
+  # Cheaper CPU than production's shared-cpu-2x; a rehearsal is not load-bearing.
+  size = "shared-cpu-1x"
+  # NOT a cost lever, do not lower. Measured at ~154MB import-time RSS per
+  # uvicorn worker (tiktoken, trafilatura/lxml, pgvector, Pillow, google-genai)
+  # and the Dockerfile hardcodes `--workers 2`, so ~310MB is resident before a
+  # single request. 512MB is how this app has OOMed before -- see b5c6a2f, and
+  # b19e932 for the time it had to be fixed in code because the VM couldn't
+  # grow. Also note `fly scale memory` does not stick while a [[vm]] block
+  # exists: the next deploy reads this file and reverts it.
+  memory = "1gb"

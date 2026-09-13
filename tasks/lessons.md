@@ -290,3 +290,51 @@ all, so a "does rejection work" test against a cold-start-shaped persona proves 
 an empty/wrong result from a frozen-snapshot harness by printing every executed statement
 before suspecting the harness's SQL-dispatch logic — the actual production code path is often
 taking a documented, correct, different branch than assumed.
+
+## Phase 7 foundational hardening (2026-09-12)
+
+**A flag that is read in five places and written in none is not a feature, it is a comment.**
+`users.is_deleted` had guards in `reader_repository`, `ranking_repository` and `reader_worker`,
+and a login-path filter — and nothing ever set it. Every `ON DELETE CASCADE` pointing at
+`public.users` was therefore unreachable code, and the three auth paths that mattered most
+(`_get_user_id_from_token`, `/me`, the two background user enumerations) never consulted the
+flag at all. When adding the writer, the work was not "write the endpoint"; it was finding every
+reader that had been silently agreeing with a value that could never change.
+
+**Prove deletion is complete by reading the schema, not a list.** A hand-maintained table of
+"things to delete" is correct exactly once. `account_lifecycle.user_scoped_tables()` walks
+`pg_constraint` for the transitive cascade closure of `public.users` and diffs it against every
+base table carrying a `user_id`/`account` column; the test asserts the leftover set is empty.
+Verified by adding an orphan table and watching it fail. The same shape applies to any
+"did we handle all of X" question where the database already knows the answer.
+
+**A bug found at the join is usually not a bug in the join.** S4's suppression was traced to
+`ON r.feed_request_id = d.feed_request_id` comparing NULL to a uuid. The actual cause was four
+hops upstream: `finalize_feed` stamped three of the four fields the iOS client requires before
+it will build a delivery receipt, so the client sent null — which meant *no* legacy+S5 telemetry
+could be attributed to an edition, not just S4's. Fixing the join's inputs fixed a much larger
+problem than the one reported. Trace to the first place the data is wrong, not the first place
+it is noticed.
+
+**Batch by the limit you will actually be judged against.** The diagnostics uploader batched
+crash reports five at a time; five near-maximum payloads exceed the backend's 1MB body cap,
+return 413, and — because 413 is a permanent rejection — discard exactly the five biggest crash
+reports. A count-based batch size is a guess; a byte-based one is the constraint. Writing a test
+that *pinned* the broken relationship was the moment to notice it was broken.
+
+**When a test passes alone and fails in the suite, suspect module identity before logic.**
+`test_app_middleware.py` evicts and re-imports every `app.*` module at collection so it can use
+the real FastAPI. A module-level `from app import main` in a new test binds the pre-eviction
+object while the code under test resolves the post-eviction one, so `monkeypatch` lands on a
+module nobody calls. Resolve `app.*` through `sys.modules` inside a fixture instead.
+
+**Fail closed on a promise you cannot keep.** S4 could have been made to deliver critical-event
+cards on a path that cannot receipt them — the reader would see the story, and the "I already
+knew this" control would silently do nothing. `compose_feed` now declines to inject priority
+unless something will stamp the edition. Expressed as a capability check
+(`_delivery_is_attributable`), not `if S5_READER_ENABLED`, so it survives attribution moving.
+
+**Decide the retention question in a file, not a commit message.** "Is this 14-day coupling
+intentional?" has an answer that outlives whoever asks it. `app/services/retention.py` holds the
+constant *and* the argument for it *and* the upgrade path if it ever stops being right — which
+is what makes the next person's version of the question cheap to answer.
