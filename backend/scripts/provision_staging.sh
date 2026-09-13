@@ -56,15 +56,26 @@ OPENAI_KEY="${OPENAI_API_KEY:-$(grep -E '^OPENAI_API_KEY=' .env 2>/dev/null | cu
 [ -n "$OPENAI_KEY" ] || die "Set OPENAI_API_KEY (or put it in backend/.env)"
 
 step "Checking the staging database"
-python3 - <<'PY' || die "Staging database is not usable; see the error above"
+# Prefer the project venv: the system python3 has no psycopg on a typical dev
+# machine, and a pre-flight that silently skips itself is worse than none --
+# the whole point is to fail here rather than in a boot loop on Fly.
+PYTHON=""
+if [ -x venv/bin/python ] && venv/bin/python -c "import psycopg" 2>/dev/null; then
+  PYTHON="venv/bin/python"
+elif python3 -c "import psycopg" 2>/dev/null; then
+  PYTHON="python3"
+else
+  printf '\033[33m%s\033[0m\n' \
+    "No psycopg available, skipping the pre-flight. The app still fails loudly at boot if" \
+    "the database is wrong; pip install -r requirements.txt into ./venv to check it here."
+fi
+
+if [ -n "$PYTHON" ]; then
+"$PYTHON" - <<'PYEOF' || die "Staging database is not usable; see the error above"
 import os
 import sys
-try:
-    import psycopg
-except ImportError:
-    print("psycopg not importable; skipping the pre-flight check "
-          "(the app will still fail loudly at boot if the database is wrong)")
-    sys.exit(0)
+
+import psycopg
 
 url = os.environ["STAGING_DATABASE_URL"]
 with psycopg.connect(url, autocommit=True, connect_timeout=15) as conn:
@@ -84,10 +95,16 @@ with psycopg.connect(url, autocommit=True, connect_timeout=15) as conn:
     if tables > 50:
         print("\033[33mWarning: this database already has a large schema. "
               "Staging is meant to be disposable -- is this the right one?\033[0m")
-PY
+PYEOF
+fi
 
 step "Creating the app if it does not exist"
-if fly apps list 2>/dev/null | grep -qE "^\s*$APP\s"; then
+# Capture first, then match. `fly apps list | grep -q` looks right and is not:
+# grep -q exits on the first match, fly gets SIGPIPE, and under `set -o
+# pipefail` the pipeline reports failure even though the app was found -- so
+# the script would try to re-create an app that already exists, and die.
+APP_LIST="$(fly apps list 2>/dev/null || true)"
+if printf '%s\n' "$APP_LIST" | grep -qE "^[[:space:]]*$APP[[:space:]]"; then
   echo "$APP already exists"
 else
   fly apps create "$APP" --org personal

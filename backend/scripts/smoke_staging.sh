@@ -76,8 +76,11 @@ else
 fi
 
 headers="$(curl -fsS -D - -o /dev/null --max-time 20 "$BASE/healthz" 2>/dev/null || true)"
+# Lower-cased once, then matched without a pipe into `grep -q` -- see the
+# SIGPIPE-under-pipefail note in provision_staging.sh.
+lowered="$(printf '%s' "$headers" | tr 'A-Z' 'a-z')"
 for header in "x-content-type-options" "x-frame-options" "strict-transport-security"; do
-  if printf '%s' "$headers" | tr 'A-Z' 'a-z' | grep -q "^$header:"; then
+  if grep -q "^$header:" <<<"$lowered"; then
     pass "$header present"
   else
     fail "$header missing"
