@@ -202,7 +202,8 @@ final class AuthServiceTests: XCTestCase {
     private func makeService(
         tokenStore: TestAuthTokenStore,
         recorder: CleanupRecorder,
-        providerSignOut: (any AuthProviderSigningOut)? = nil
+        providerSignOut: (any AuthProviderSigningOut)? = nil,
+        accountAPI: (any AccountAPI)? = nil
     ) -> AuthService {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [AuthURLProtocolStub.self]
@@ -212,8 +213,88 @@ final class AuthServiceTests: XCTestCase {
             tokenStore: tokenStore,
             identityCleanup: recorder,
             providerSignOut: providerSignOut ?? ProviderSignOutRecorder(),
-            restoresSession: false
+            restoresSession: false,
+            accountAPI: accountAPI ?? NoopAccountAPI()
         )
+    }
+
+    // MARK: - Phase 7.1: server-side revocation and account deletion
+
+    func testSignOutRevokesTheServerSessionUsingTheTokenItIsAboutToDelete() async {
+        let tokenStore = TestAuthTokenStore(["app_token": "token-a", "app_user_id": "user-a"])
+        let api = AccountAPIRecorder()
+        let service = makeService(tokenStore: tokenStore, recorder: CleanupRecorder(), accountAPI: api)
+
+        service.signOut()
+
+        // The revoke call is fired before the Keychain wipe -- if it read the
+        // token afterwards there would be nothing left to revoke.
+        await waitUntilAsync { await api.revokedTokens == ["token-a"] }
+        XCTAssertEqual(service.state, .unauthenticated)
+        XCTAssertNil(tokenStore.values["app_token"])
+    }
+
+    /// An unreachable backend must never leave a reader signed in.
+    func testSignOutStillCompletesLocallyWhenRevocationFails() async {
+        let tokenStore = TestAuthTokenStore(["app_token": "token-a", "app_user_id": "user-a"])
+        let providerSignOut = ProviderSignOutRecorder()
+        let api = AccountAPIRecorder(revokeError: URLError(.notConnectedToInternet))
+        let service = makeService(tokenStore: tokenStore, recorder: CleanupRecorder(),
+                                  providerSignOut: providerSignOut, accountAPI: api)
+
+        service.signOut()
+
+        XCTAssertEqual(service.state, .unauthenticated)
+        XCTAssertNil(tokenStore.values["app_token"])
+        XCTAssertNil(tokenStore.values["app_user_id"])
+        XCTAssertEqual(providerSignOut.count, 1)
+    }
+
+    func testDeletingTheAccountCallsTheEndpointAndThenSignsOut() async throws {
+        let tokenStore = TestAuthTokenStore(["app_token": "token-a", "app_user_id": "user-a"])
+        let recorder = CleanupRecorder()
+        let providerSignOut = ProviderSignOutRecorder()
+        let api = AccountAPIRecorder()
+        let service = makeService(tokenStore: tokenStore, recorder: recorder,
+                                  providerSignOut: providerSignOut, accountAPI: api)
+
+        try await service.deleteAccount()
+
+        let deleted = await api.deletedTokens
+        XCTAssertEqual(deleted, ["token-a"])
+        XCTAssertEqual(service.state, .unauthenticated)
+        XCTAssertNil(tokenStore.values["app_token"])
+        XCTAssertNil(tokenStore.values["app_user_id"])
+        XCTAssertEqual(recorder.bookmarksAndReads, 1)
+        XCTAssertEqual(providerSignOut.count, 1)
+    }
+
+    /// Signing the reader out here would claim a deletion that did not happen,
+    /// and would destroy their local state for nothing.
+    func testAFailedDeletionLeavesTheAccountAndCredentialsIntact() async {
+        let tokenStore = TestAuthTokenStore(["app_token": "token-a", "app_user_id": "user-a"])
+        let recorder = CleanupRecorder()
+        let api = AccountAPIRecorder(deleteError: AccountAPIError.requestFailed(500))
+        let service = makeService(tokenStore: tokenStore, recorder: recorder, accountAPI: api)
+
+        await XCTAssertThrowsErrorAsync { try await service.deleteAccount() }
+
+        XCTAssertEqual(tokenStore.values["app_token"], "token-a")
+        XCTAssertEqual(tokenStore.values["app_user_id"], "user-a")
+        XCTAssertNotEqual(service.state, .unauthenticated)
+        XCTAssertEqual(recorder.bookmarksAndReads, 0)
+    }
+
+    func testDeletingWithNoStoredCredentialJustSignsOut() async throws {
+        let tokenStore = TestAuthTokenStore()
+        let api = AccountAPIRecorder()
+        let service = makeService(tokenStore: tokenStore, recorder: CleanupRecorder(), accountAPI: api)
+
+        try await service.deleteAccount()
+
+        let deleted = await api.deletedTokens
+        XCTAssertEqual(deleted, [], "Nothing to delete server-side without a token")
+        XCTAssertEqual(service.state, .unauthenticated)
     }
 
     private func XCTAssertThrowsErrorAsync(
@@ -248,6 +329,19 @@ final class AuthServiceTests: XCTestCase {
         }
         XCTFail("Timed out waiting for asynchronous auth transition")
     }
+
+    /// `signOut()` fires revocation on a detached task, so the assertion has to
+    /// poll an actor rather than read a synchronously-updated counter.
+    private func waitUntilAsync(
+        timeoutIterations: Int = 200,
+        condition: @escaping () async -> Bool
+    ) async {
+        for _ in 0..<timeoutIterations {
+            if await condition() { return }
+            try? await Task.sleep(nanoseconds: 5_000_000)
+        }
+        XCTFail("Timed out waiting for an asynchronous account-lifecycle call")
+    }
 }
 
 @MainActor
@@ -260,6 +354,28 @@ private final class CleanupRecorder: AuthIdentityCleaning {
         bookmarksAndReads += 1
         readingEvents += 1
         backgroundCache += 1
+    }
+}
+
+private actor AccountAPIRecorder: AccountAPI {
+    private(set) var revokedTokens: [String] = []
+    private(set) var deletedTokens: [String] = []
+    private let revokeError: Error?
+    private let deleteError: Error?
+
+    init(revokeError: Error? = nil, deleteError: Error? = nil) {
+        self.revokeError = revokeError
+        self.deleteError = deleteError
+    }
+
+    func revokeSession(accessToken: String) async throws {
+        revokedTokens.append(accessToken)
+        if let revokeError { throw revokeError }
+    }
+
+    func deleteAccount(accessToken: String) async throws {
+        if let deleteError { throw deleteError }
+        deletedTokens.append(accessToken)
     }
 }
 

@@ -26,7 +26,8 @@ final class AuthService: ObservableObject {
         tokenStore: KeychainHelper(),
         identityCleanup: LiveAuthIdentityCleaner(),
         providerSignOut: GoogleAuthProviderSigner(),
-        restoresSession: restoresLiveSession
+        restoresSession: restoresLiveSession,
+        accountAPI: LiveAccountAPI(baseURL: AppConfig.backendURL, urlSession: makeSession())
     )
 
     private static var restoresLiveSession: Bool {
@@ -48,6 +49,7 @@ final class AuthService: ObservableObject {
     private let tokenStore: any AuthTokenStoring
     private let identityCleanup: any AuthIdentityCleaning
     private let providerSignOut: any AuthProviderSigningOut
+    private let accountAPI: any AccountAPI
     private let tokenKey = "app_token"
     private let userIDKey = "app_user_id"
     private let logger = Logger(subsystem: "com.daily.app", category: "auth")
@@ -72,13 +74,15 @@ final class AuthService: ObservableObject {
         tokenStore: any AuthTokenStoring,
         identityCleanup: any AuthIdentityCleaning,
         providerSignOut: any AuthProviderSigningOut,
-        restoresSession: Bool
+        restoresSession: Bool,
+        accountAPI: any AccountAPI = NoopAccountAPI()
     ) {
         self.baseURL = baseURL
         self.urlSession = urlSession
         self.tokenStore = tokenStore
         self.identityCleanup = identityCleanup
         self.providerSignOut = providerSignOut
+        self.accountAPI = accountAPI
         if restoresSession {
             restoreSession()
         } else {
@@ -98,7 +102,41 @@ final class AuthService: ObservableObject {
         )
     }
 
+    /// Sign out locally *and* tell the server to revoke this session.
+    ///
+    /// Local sign-out happens unconditionally and immediately — a reader who
+    /// taps Sign Out must never be left signed in because the network was down.
+    /// The revocation call is therefore fired first (so it still has the token)
+    /// but never awaited: it is what makes an extracted token stop working,
+    /// which matters, but it is not something the reader should have to wait
+    /// for. An unreachable server leaves the session to expire on its own
+    /// 30-day schedule, exactly as it did before revocation existed.
     func signOut() {
+        if let token = tokenStore.read(key: tokenKey) {
+            let api = accountAPI
+            let log = logger
+            Task.detached {
+                do {
+                    try await api.revokeSession(accessToken: token)
+                } catch {
+                    log.error("Session revocation failed; token expires on its server schedule")
+                }
+            }
+        }
+        transitionToUnauthenticated(signOutProvider: true)
+    }
+
+    /// Permanently delete the signed-in account, then sign out locally.
+    ///
+    /// Unlike `signOut()` this awaits and rethrows: "your account is gone" is a
+    /// claim the app must not make on the strength of a request that failed.
+    /// Local state is cleared only after the server confirms.
+    func deleteAccount() async throws {
+        guard let token = tokenStore.read(key: tokenKey) else {
+            transitionToUnauthenticated(signOutProvider: true)
+            return
+        }
+        try await accountAPI.deleteAccount(accessToken: token)
         transitionToUnauthenticated(signOutProvider: true)
     }
 
@@ -283,6 +321,68 @@ struct LiveAuthIdentityCleaner: AuthIdentityCleaning {
         BackgroundNewsFetcher.shared.invalidatePendingWrites()
         BookmarkService.shared.activate(userID: userID, sessionGeneration: sessionGeneration)
     }
+}
+
+/// Account-lifecycle calls that are deliberately *not* routed through
+/// `BackendService`: they must keep working while the app is tearing its own
+/// authenticated state down, and they are the only two requests whose whole
+/// purpose is to invalidate the credential they carry.
+protocol AccountAPI: Sendable {
+    func revokeSession(accessToken: String) async throws
+    func deleteAccount(accessToken: String) async throws
+}
+
+enum AccountAPIError: LocalizedError {
+    case requestFailed(Int)
+    case invalidResponse
+
+    var errorDescription: String? {
+        switch self {
+        case .requestFailed(401), .requestFailed(403):
+            return "Your session has expired. Sign in again to delete your account."
+        case .requestFailed(429):
+            return "Too many attempts. Try again in a minute."
+        case .requestFailed:
+            return "Couldn't reach the server. Please try again."
+        case .invalidResponse:
+            return "Couldn't reach the server. Please try again."
+        }
+    }
+}
+
+struct LiveAccountAPI: AccountAPI {
+    let baseURL: URL
+    let urlSession: URLSession
+
+    func revokeSession(accessToken: String) async throws {
+        try await send(path: "/auth/session", accessToken: accessToken, timeout: 8)
+    }
+
+    func deleteAccount(accessToken: String) async throws {
+        // Deletion fans out across ~25 cascading tables server-side. The shared
+        // auth session's 5s request timeout is tuned for sign-in and is too
+        // tight here; a per-request timeout overrides it without loosening the
+        // budget for everything else.
+        try await send(path: "/user/account", accessToken: accessToken, timeout: 20)
+    }
+
+    private func send(path: String, accessToken: String, timeout: TimeInterval) async throws {
+        var request = URLRequest(url: baseURL.appendingPathComponent(path))
+        request.httpMethod = "DELETE"
+        request.timeoutInterval = timeout
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        let (_, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse else { throw AccountAPIError.invalidResponse }
+        guard (200..<300).contains(http.statusCode) else {
+            throw AccountAPIError.requestFailed(http.statusCode)
+        }
+    }
+}
+
+/// Default for tests and previews: never touches the network.
+struct NoopAccountAPI: AccountAPI {
+    func revokeSession(accessToken: String) async throws {}
+    func deleteAccount(accessToken: String) async throws {}
 }
 
 @MainActor

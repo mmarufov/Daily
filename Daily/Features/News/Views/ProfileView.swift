@@ -12,6 +12,9 @@ struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showPersonalizationSettings = false
     @State private var showSignOutConfirmation = false
+    @State private var showDeleteConfirmation = false
+    @State private var isDeleting = false
+    @State private var deleteErrorMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -73,6 +76,8 @@ struct ProfileView: View {
                         .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
                     }
 
+                    deleteAccountButton
+
                     // Version
                     Text("Daily v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
                         .font(AppTypography.caption2)
@@ -104,6 +109,56 @@ struct ProfileView: View {
                 }
             } message: {
                 Text("Are you sure you want to sign out?")
+            }
+            .alert("Delete Account", isPresented: $showDeleteConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete", role: .destructive) { deleteAccount() }
+            } message: {
+                Text("This permanently deletes your account, your saved stories and everything Daily has learned about your reading. It can't be undone.")
+            }
+            .alert("Couldn't Delete Account",
+                   isPresented: Binding(get: { deleteErrorMessage != nil },
+                                        set: { if !$0 { deleteErrorMessage = nil } })) {
+                Button("OK", role: .cancel) { deleteErrorMessage = nil }
+            } message: {
+                Text(deleteErrorMessage ?? "")
+            }
+        }
+    }
+
+    /// Apple requires an in-app path to delete the account for any app that
+    /// offers account creation (App Store Review Guideline 5.1.1(v)). Kept
+    /// visually quieter than Sign Out — destructive, but not a trap.
+    private var deleteAccountButton: some View {
+        Button {
+            HapticService.impact(.medium)
+            showDeleteConfirmation = true
+        } label: {
+            HStack(spacing: AppSpacing.xs) {
+                if isDeleting {
+                    ProgressView().controlSize(.small)
+                }
+                Text(isDeleting ? "Deleting…" : "Delete Account")
+                    .font(AppTypography.footnote)
+            }
+            .foregroundColor(BrandColors.textTertiary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, AppSpacing.sm)
+        }
+        .disabled(isDeleting)
+        .accessibilityHint("Permanently deletes your account and all of its data")
+    }
+
+    private func deleteAccount() {
+        isDeleting = true
+        Task {
+            defer { isDeleting = false }
+            do {
+                try await auth.deleteAccount()
+                dismiss()
+            } catch {
+                deleteErrorMessage = (error as? LocalizedError)?.errorDescription
+                    ?? "Couldn't reach the server. Please try again."
             }
         }
     }

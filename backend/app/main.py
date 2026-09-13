@@ -55,6 +55,7 @@ _LOCK_KEYS = {
     "interest_evolution": 811_003,
     "per_user_refresh": 811_004,
     "prewarm": 811_005,
+    "account_maintenance": 811_006,
 }
 _LEADER_OF: set[str] = set()
 
@@ -318,6 +319,33 @@ async def _prewarm_loop():
         await asyncio.sleep(900)  # 15 minutes
 
 
+async def _account_maintenance_loop():
+    """Background task: finish deferred account purges and expire dead sessions.
+
+    Both halves are idempotent and cheap. The purge half is the retry path for
+    `delete_account`'s inline step 2 -- if that lost a race with an in-flight
+    S5/S7 write, the account is already unusable but its rows are still there,
+    and this is what finally removes them. The session half is plain hygiene:
+    nothing had ever deleted an expired session row.
+    """
+    from app.services.account_lifecycle import purge_expired_sessions, purge_pending_accounts
+
+    await asyncio.sleep(90)  # Let startup settle.
+    while True:
+        try:
+            with _leader("account_maintenance") as conn:
+                purged = purge_pending_accounts(conn)
+                expired = purge_expired_sessions(conn)
+                if purged or expired:
+                    logger.info("Account maintenance: purged=%d accounts, expired=%d sessions",
+                                purged, expired)
+        except _NotLeader:
+            pass
+        except Exception:
+            logger.exception("Account maintenance loop error")
+        await asyncio.sleep(3600)  # 1 hour
+
+
 async def _source_quality_loop():
     """Background task: update global source quality scores every 30 min."""
     from app.services.source_quality import update_source_quality
@@ -373,6 +401,7 @@ def _active_users_with_sources(conn) -> list[str]:
             AND EXISTS (
                 SELECT 1 FROM public.users u
                 WHERE u.id = us.user_id
+                AND NOT COALESCE(u.is_deleted, false)
                 AND COALESCE(u.last_active_at, u.last_login)
                     > now() - interval '24 hours'
             )
@@ -438,7 +467,8 @@ async def _refresh_s7_background():
             with conn.cursor() as cur:
                 cur.execute("SET LOCAL statement_timeout = '2000ms'")
                 cur.execute("""SELECT id::text AS user_id FROM public.users
-                    WHERE COALESCE(last_active_at, last_login) > now() - interval '24 hours'
+                    WHERE NOT COALESCE(is_deleted, false)
+                      AND COALESCE(last_active_at, last_login) > now() - interval '24 hours'
                     ORDER BY COALESCE(last_active_at, last_login) DESC LIMIT 100""")
                 return [row["user_id"] for row in cur.fetchall()]
 
@@ -500,8 +530,9 @@ async def lifespan(app):
     evolution_task = asyncio.create_task(_interest_evolution_loop())
     per_user_task = asyncio.create_task(_per_user_refresh_loop())
     prewarm_task = asyncio.create_task(_prewarm_loop())
+    account_task = asyncio.create_task(_account_maintenance_loop())
     yield
-    for t in (ingestion_task, quality_task, evolution_task, per_user_task, prewarm_task):
+    for t in (ingestion_task, quality_task, evolution_task, per_user_task, prewarm_task, account_task):
         t.cancel()
         try:
             await t
@@ -575,6 +606,9 @@ _RL_BUCKETS: dict[tuple[str, str], list[float]] = {}
 _RL_RULES: tuple[tuple[str, int, int], ...] = (
     # (path-prefix, max_requests, window_seconds)
     ("/auth/", 30, 60),
+    # Deletion fans out across ~25 cascading tables. Nothing legitimate calls it
+    # more than once, and a retry storm would be the expensive kind.
+    ("/user/account", 5, 60),
     ("/chat", 60, 60),
     ("/search/", 60, 60),
     ("/sources/discover", 10, 60),
@@ -979,6 +1013,11 @@ def _ensure_tables(conn, force: bool = False) -> None:
         # S1 2.3: cluster-wide discovery cooldown (was a per-process dict,
         # ineffective across --workers 2).
         cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_discovery_at timestamptz;")
+        # Phase 7.1: when the account was deleted. `is_deleted` had readers but
+        # no writer until account_lifecycle existed; this records *when*, so the
+        # purge sweeper can order its work and an operator can tell a tombstone
+        # awaiting purge from one that has been sitting around.
+        cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS deleted_at timestamptz;")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS public.user_identities (
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1001,6 +1040,11 @@ def _ensure_tables(conn, force: bool = False) -> None:
                 expires_at timestamptz
             );
         """)
+        # Phase 7.1: sign-out and account deletion both delete by user_id, and
+        # the expiry sweep scans by expires_at. Neither had an index -- the only
+        # ones here are the PK and the token_hash UNIQUE the auth path uses.
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON public.sessions (user_id);")
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_sessions_expires ON public.sessions (expires_at) WHERE expires_at IS NOT NULL;")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS public.user_preferences (
                 id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1757,7 +1801,15 @@ def _require_auth(authorization: str | None) -> str:
 
 
 def _get_user_id_from_token(conn, token: str) -> str:
-    """Resolve user_id (UUID as string) from session token"""
+    """Resolve user_id (UUID as string) from session token.
+
+    The `is_deleted` filter is belt-and-braces: `soft_delete_account` already
+    deletes every session row in the same transaction that sets the flag, so a
+    deleted account has no token left to present. It is here anyway because this
+    is the one chokepoint every authenticated route passes through, the join it
+    rides on is already being executed, and a tombstone that can still
+    authenticate is the exact failure mode `is_deleted` exists to prevent.
+    """
     token_hash = hashlib.sha256(token.encode()).hexdigest()
     with conn.cursor() as cur:
         cur.execute(
@@ -1766,6 +1818,7 @@ def _get_user_id_from_token(conn, token: str) -> str:
             FROM public.sessions s
             JOIN public.users u ON u.id = s.user_id
             WHERE s.token_hash = %s AND (s.expires_at IS NULL OR s.expires_at > now())
+              AND NOT COALESCE(u.is_deleted, false)
             """,
             (token_hash,),
         )
@@ -1879,6 +1932,7 @@ async def me(Authorization: str | None = Header(default=None), conn=Depends(get_
             FROM public.sessions s
             JOIN public.users u ON u.id = s.user_id
             WHERE s.token_hash = %s AND (s.expires_at IS NULL OR s.expires_at > now())
+              AND NOT COALESCE(u.is_deleted, false)
             """,
             (token_hash,),
         )
@@ -1891,6 +1945,56 @@ async def me(Authorization: str | None = Header(default=None), conn=Depends(get_
             "display_name": row.get("display_name"),
             "photo_url": row.get("photo_url"),
         }
+
+
+@app.delete("/auth/session")
+async def revoke_current_session(
+    Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """Sign out: revoke the session this request authenticated with.
+
+    Sign-out used to be entirely client-side -- the app deleted its Keychain copy
+    of the token and the server row lived on for its full 30 days, so a token
+    captured before sign-out kept working. Idempotent by design: a client that
+    retries, or that signs out with a token the server already dropped, gets 200
+    and `revoked: false` rather than an error it would have to special-case.
+    """
+    token = _require_auth(Authorization)
+    from app.services.account_lifecycle import revoke_session
+
+    return {"revoked": revoke_session(conn, token)}
+
+
+@app.delete("/auth/sessions")
+async def revoke_all_user_sessions(
+    Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """Sign out everywhere: revoke every session for this account."""
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    from app.services.account_lifecycle import revoke_all_sessions
+
+    return {"revoked": revoke_all_sessions(conn, user_id)}
+
+
+@app.delete("/user/account")
+async def delete_user_account(
+    Authorization: str | None = Header(default=None), conn=Depends(get_db)
+):
+    """Delete the authenticated account and everything keyed to it.
+
+    Returns once the account is durably dead (sessions and identities gone,
+    `is_deleted` set, identifying columns cleared). The cascading row purge is
+    attempted inline and retried by `_account_maintenance_loop` if it doesn't
+    complete, so `purged: false` means "finishing shortly", never "kept".
+    """
+    token = _require_auth(Authorization)
+    user_id = _get_user_id_from_token(conn, token)
+    from app.services.account_lifecycle import delete_account
+
+    outcome = delete_account(conn, user_id)
+    logger.info("Account deletion requested for %s... purged=%s", user_id[:8], outcome["purged"])
+    return outcome
 
 
 @app.post("/chat")
