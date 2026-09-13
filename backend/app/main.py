@@ -17,6 +17,20 @@ from fastapi import FastAPI, HTTPException, Header, Depends, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+# Nothing ever configured logging, so the root logger sat at its WARNING
+# default with no handlers and every `logger.info` in this application was a
+# silent no-op in production. That hid both S6 and S7 shadow observations --
+# the entire output shadow mode exists to produce -- plus the per-request S9
+# response line, while `logger.exception` still came through, which made the
+# logs look healthy rather than half-missing. Confirmed live on 2026-09-13:
+# logging.getLogger('app.main').getEffectiveLevel() was WARNING on the
+# deployed machine. uvicorn configures only its own `uvicorn*` loggers and
+# leaves root alone, so this is additive and does not duplicate its access log.
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    format="%(levelname)s %(name)s: %(message)s",
+)
+
 logger = logging.getLogger(__name__)
 import psycopg
 from psycopg.rows import dict_row
@@ -57,6 +71,10 @@ _LOCK_KEYS = {
     "prewarm": 811_005,
     "account_maintenance": 811_006,
 }
+
+#: Guards `_ensure_tables`. Distinct from the loop keys above and from the
+#: S5/S7/S8 installers' own keys (73405303, 811505, 73405701, 73405801).
+_SCHEMA_LOCK_KEY = 811_100
 _LEADER_OF: set[str] = set()
 
 
@@ -1011,485 +1029,503 @@ def _ensure_tables(conn, force: bool = False) -> None:
     global _schema_ready
     if _schema_ready and not force:
         return
+    # `CREATE INDEX IF NOT EXISTS` is not atomic against a concurrent identical
+    # CREATE: both sessions see it missing, both proceed, and the loser raises
+    # UniqueViolation on pg_class. With the Dockerfile's `--workers 2` both
+    # workers run this at startup, so every deploy that introduces a new index
+    # has been a coin flip on one worker dying with "Application startup
+    # failed" and being respawned. Observed live on the 2026-09-13 production
+    # deploy, on idx_sessions_user. Self-healing, but needless noise on exactly
+    # the deploys you are watching most closely.
+    #
+    # Same advisory-lock discipline the S5/S7/S8 schema installers already use.
+    # The lock is session-scoped, so a worker that dies holding it releases it
+    # when its connection drops -- no risk of wedging the others.
     with conn.cursor() as cur:
-        # Core user tables
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.users (
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                email text,
-                display_name text,
-                photo_url text,
-                is_deleted boolean DEFAULT false,
-                last_login timestamptz,
-                created_at timestamptz DEFAULT now(),
-                updated_at timestamptz DEFAULT now()
-            );
-        """)
-        # `last_active_at` tracks any authenticated request, not just sign-in.
-        # The per-user refresh loop filters on it; the column was referenced
-        # before it was ever created, which silently disabled that loop.
-        cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_active_at timestamptz;")
-        # S1 2.3: cluster-wide discovery cooldown (was a per-process dict,
-        # ineffective across --workers 2).
-        cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_discovery_at timestamptz;")
-        # Phase 7.1: when the account was deleted. `is_deleted` had readers but
-        # no writer until account_lifecycle existed; this records *when*, so the
-        # purge sweeper can order its work and an operator can tell a tombstone
-        # awaiting purge from one that has been sitting around.
-        cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS deleted_at timestamptz;")
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.user_identities (
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                provider text NOT NULL,
-                provider_user_id text NOT NULL,
-                email text,
-                raw_profile jsonb,
-                created_at timestamptz DEFAULT now(),
-                UNIQUE (provider, provider_user_id)
-            );
-        """)
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.sessions (
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                token_hash text NOT NULL UNIQUE,
-                created_at timestamptz DEFAULT now(),
-                last_seen_at timestamptz DEFAULT now(),
-                expires_at timestamptz
-            );
-        """)
-        # Phase 7.1: sign-out and account deletion both delete by user_id, and
-        # the expiry sweep scans by expires_at. Neither had an index -- the only
-        # ones here are the PK and the token_hash UNIQUE the auth path uses.
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON public.sessions (user_id);")
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_sessions_expires ON public.sessions (expires_at) WHERE expires_at IS NOT NULL;")
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.user_preferences (
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id uuid NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
-                interests text,
-                ai_profile text,
-                user_profile_v2 text,
-                source_selection_brief text,
-                completed boolean DEFAULT false,
-                completed_at timestamptz,
-                created_at timestamptz DEFAULT now(),
-                updated_at timestamptz DEFAULT now()
-            );
-        """)
-        cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS user_profile_v2 text;")
-        cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS source_selection_brief text;")
-
-        # Shared articles pool
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.articles (
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-                url text NOT NULL UNIQUE,
-                title text NOT NULL,
-                summary text,
-                content text,
-                author text,
-                source_name text,
-                image_url text,
-                published_at timestamptz,
-                ingested_at timestamptz NOT NULL DEFAULT now(),
-                category text,
-                content_extracted boolean DEFAULT false
-            );
-        """)
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_published ON public.articles (published_at DESC);")
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_ingested ON public.articles (ingested_at DESC);")
-
-        # Per-user feed cache
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.user_feed_cache (
-                user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                article_id uuid NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
-                relevance_score float NOT NULL,
-                relevant boolean DEFAULT false,
-                relevance_reason text,
-                created_at timestamptz NOT NULL DEFAULT now(),
-                PRIMARY KEY (user_id, article_id)
-            );
-        """)
-        # Migration: add columns for existing databases
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevant boolean DEFAULT false;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevance_reason text;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS feed_role text;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS why_this_story text;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS why_now text;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS matched_profile_signals jsonb DEFAULT '[]'::jsonb;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS cluster_id text;")
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS importance_score float DEFAULT 0.0;")
-        # S10 A1/A4 (legacy loop, L4): without this, the edition id minted at the
-        # endpoint (below) is never persisted per article, so legacy telemetry can
-        # never bind feedback to the edition that actually served it -- the client
-        # always echoes null, and the reading_events dedup index (which keys on
-        # feed_request_id) can never detect a real duplicate. See tasks/s10-learning-audit.md.
-        cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS feed_request_id uuid;")
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_user_feed_cache_user_created ON public.user_feed_cache (user_id, created_at DESC);")
-
-        # One row per feed build: the funnel counts, what was shown, what it cost.
-        # This is the production half of evaluation — it turns real usage into
-        # labels later and makes a post-deploy regression visible.
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.feed_build_log (
-                id bigserial PRIMARY KEY,
-                user_id uuid NOT NULL,
-                git_sha text,
-                model text,
-                candidates_loaded integer,
-                prefiltered integer,
-                scored integer,
-                kept integer,
-                dropped_by_stage jsonb DEFAULT '{}'::jsonb,
-                feed_ids jsonb DEFAULT '[]'::jsonb,
-                calls integer DEFAULT 0,
-                cost_usd_est float,
-                latency_ms integer,
-                created_at timestamptz NOT NULL DEFAULT now()
-            );
-        """)
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_feed_build_log_user_created ON public.feed_build_log (user_id, created_at DESC);")
-
-        # Phase 7.2: iOS crash/hang reports, from MetricKit rather than a vendor
-        # SDK (see Daily/Services/DiagnosticsService.swift). `payload` is stored
-        # as opaque text on purpose -- MetricKit's schema is Apple's to change,
-        # and this is a record of what the device said, not a model of it.
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.client_diagnostics (
-                report_id uuid PRIMARY KEY,
-                user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                captured_at timestamptz NOT NULL,
-                received_at timestamptz NOT NULL DEFAULT now(),
-                app_version text NOT NULL,
-                build_number text NOT NULL,
-                os_version text NOT NULL,
-                kinds jsonb NOT NULL DEFAULT '[]'::jsonb,
-                payload text NOT NULL,
-                truncated boolean NOT NULL DEFAULT false
-            );
-        """)
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_client_diagnostics_received ON public.client_diagnostics (received_at DESC);")
-
-        # Migration: add enrichment tracking columns
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_attempts integer DEFAULT 0;")
-
-        # Migration: track content extractor version for re-extraction
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_extractor_version integer DEFAULT 1;")
-
-        # Migration: content quality score for feed ranking
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_quality float DEFAULT 0.0;")
-
-        # Migration: per-article extraction outcome (Phase 1 telemetry)
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_method text;")
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_attempt_count smallint DEFAULT 0;")
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_domain text;")
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_extraction_domain ON public.articles (extraction_domain);")
-
-        # Per-attempt extraction history (Phase 1 telemetry)
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.extraction_attempts (
-                id bigserial PRIMARY KEY,
-                article_id uuid REFERENCES public.articles(id) ON DELETE CASCADE,
-                domain text NOT NULL,
-                method text NOT NULL,
-                char_count integer NOT NULL DEFAULT 0,
-                duration_ms integer,
-                error text,
-                created_at timestamptz NOT NULL DEFAULT now()
-            );
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_extraction_attempts_domain_created
-            ON public.extraction_attempts (domain, created_at DESC);
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_extraction_attempts_created
-            ON public.extraction_attempts (created_at DESC);
-        """)
-
-        # Migration: pgvector for semantic search
-        cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-        cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS embedding vector(1536);")
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_articles_embedding
-            ON public.articles USING hnsw (embedding vector_cosine_ops);
-        """)
-
-        # Migration: behavior_cache on user_preferences (ENG-5)
-        cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS behavior_cache text;")
-
-        # Durable preference weights learned from explicit feedback. Without
-        # this, "not relevant" had nowhere to go and the article came back.
-        # user_id is uuid with a real FK, matching every other reader-owned
-        # table -- a bare TEXT column with no FK previously meant these rows
-        # were orphaned forever on any future user delete (S10 A3).
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.user_feedback_signals (
-                user_id    uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                kind       TEXT NOT NULL,        -- topic | source | category
-                value      TEXT NOT NULL,
-                weight     REAL NOT NULL DEFAULT 0,
-                events     INTEGER NOT NULL DEFAULT 0,
-                updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-                PRIMARY KEY (user_id, kind, value)
-            );
-        """)
-        # Migration for a database created before this fix: only touch it if
-        # user_id is still the old bare-text shape. Casting requires every
-        # existing value to already be a valid UUID string (true for every
-        # writer of this table, which has always passed the id string
-        # unchanged) and requires no orphaned user_id (checked explicitly
-        # rather than letting a bad ADD CONSTRAINT fail opaquely).
-        cur.execute("""
-            SELECT data_type FROM information_schema.columns
-            WHERE table_schema='public' AND table_name='user_feedback_signals' AND column_name='user_id'
-        """)
-        _ufs_col = cur.fetchone()
-        if _ufs_col and _ufs_col["data_type"] == "text":
+        cur.execute("SELECT pg_advisory_lock(%s)", (_SCHEMA_LOCK_KEY,))
+    try:
+        with conn.cursor() as cur:
+            # Core user tables
             cur.execute("""
-                SELECT count(*) AS n FROM public.user_feedback_signals ufs
-                WHERE NOT EXISTS (SELECT 1 FROM public.users u WHERE u.id::text = ufs.user_id)
+                CREATE TABLE IF NOT EXISTS public.users (
+                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    email text,
+                    display_name text,
+                    photo_url text,
+                    is_deleted boolean DEFAULT false,
+                    last_login timestamptz,
+                    created_at timestamptz DEFAULT now(),
+                    updated_at timestamptz DEFAULT now()
+                );
             """)
-            if cur.fetchone()["n"] == 0:
-                cur.execute("ALTER TABLE public.user_feedback_signals ALTER COLUMN user_id TYPE uuid USING user_id::uuid;")
+            # `last_active_at` tracks any authenticated request, not just sign-in.
+            # The per-user refresh loop filters on it; the column was referenced
+            # before it was ever created, which silently disabled that loop.
+            cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_active_at timestamptz;")
+            # S1 2.3: cluster-wide discovery cooldown (was a per-process dict,
+            # ineffective across --workers 2).
+            cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_discovery_at timestamptz;")
+            # Phase 7.1: when the account was deleted. `is_deleted` had readers but
+            # no writer until account_lifecycle existed; this records *when*, so the
+            # purge sweeper can order its work and an operator can tell a tombstone
+            # awaiting purge from one that has been sitting around.
+            cur.execute("ALTER TABLE public.users ADD COLUMN IF NOT EXISTS deleted_at timestamptz;")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.user_identities (
+                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    provider text NOT NULL,
+                    provider_user_id text NOT NULL,
+                    email text,
+                    raw_profile jsonb,
+                    created_at timestamptz DEFAULT now(),
+                    UNIQUE (provider, provider_user_id)
+                );
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.sessions (
+                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    token_hash text NOT NULL UNIQUE,
+                    created_at timestamptz DEFAULT now(),
+                    last_seen_at timestamptz DEFAULT now(),
+                    expires_at timestamptz
+                );
+            """)
+            # Phase 7.1: sign-out and account deletion both delete by user_id, and
+            # the expiry sweep scans by expires_at. Neither had an index -- the only
+            # ones here are the PK and the token_hash UNIQUE the auth path uses.
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON public.sessions (user_id);")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_sessions_expires ON public.sessions (expires_at) WHERE expires_at IS NOT NULL;")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.user_preferences (
+                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id uuid NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
+                    interests text,
+                    ai_profile text,
+                    user_profile_v2 text,
+                    source_selection_brief text,
+                    completed boolean DEFAULT false,
+                    completed_at timestamptz,
+                    created_at timestamptz DEFAULT now(),
+                    updated_at timestamptz DEFAULT now()
+                );
+            """)
+            cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS user_profile_v2 text;")
+            cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS source_selection_brief text;")
+
+            # Shared articles pool
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.articles (
+                    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                    url text NOT NULL UNIQUE,
+                    title text NOT NULL,
+                    summary text,
+                    content text,
+                    author text,
+                    source_name text,
+                    image_url text,
+                    published_at timestamptz,
+                    ingested_at timestamptz NOT NULL DEFAULT now(),
+                    category text,
+                    content_extracted boolean DEFAULT false
+                );
+            """)
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_published ON public.articles (published_at DESC);")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_ingested ON public.articles (ingested_at DESC);")
+
+            # Per-user feed cache
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.user_feed_cache (
+                    user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    article_id uuid NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+                    relevance_score float NOT NULL,
+                    relevant boolean DEFAULT false,
+                    relevance_reason text,
+                    created_at timestamptz NOT NULL DEFAULT now(),
+                    PRIMARY KEY (user_id, article_id)
+                );
+            """)
+            # Migration: add columns for existing databases
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevant boolean DEFAULT false;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS relevance_reason text;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS feed_role text;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS why_this_story text;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS why_now text;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS matched_profile_signals jsonb DEFAULT '[]'::jsonb;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS cluster_id text;")
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS importance_score float DEFAULT 0.0;")
+            # S10 A1/A4 (legacy loop, L4): without this, the edition id minted at the
+            # endpoint (below) is never persisted per article, so legacy telemetry can
+            # never bind feedback to the edition that actually served it -- the client
+            # always echoes null, and the reading_events dedup index (which keys on
+            # feed_request_id) can never detect a real duplicate. See tasks/s10-learning-audit.md.
+            cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS feed_request_id uuid;")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_user_feed_cache_user_created ON public.user_feed_cache (user_id, created_at DESC);")
+
+            # One row per feed build: the funnel counts, what was shown, what it cost.
+            # This is the production half of evaluation — it turns real usage into
+            # labels later and makes a post-deploy regression visible.
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.feed_build_log (
+                    id bigserial PRIMARY KEY,
+                    user_id uuid NOT NULL,
+                    git_sha text,
+                    model text,
+                    candidates_loaded integer,
+                    prefiltered integer,
+                    scored integer,
+                    kept integer,
+                    dropped_by_stage jsonb DEFAULT '{}'::jsonb,
+                    feed_ids jsonb DEFAULT '[]'::jsonb,
+                    calls integer DEFAULT 0,
+                    cost_usd_est float,
+                    latency_ms integer,
+                    created_at timestamptz NOT NULL DEFAULT now()
+                );
+            """)
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_feed_build_log_user_created ON public.feed_build_log (user_id, created_at DESC);")
+
+            # Phase 7.2: iOS crash/hang reports, from MetricKit rather than a vendor
+            # SDK (see Daily/Services/DiagnosticsService.swift). `payload` is stored
+            # as opaque text on purpose -- MetricKit's schema is Apple's to change,
+            # and this is a record of what the device said, not a model of it.
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.client_diagnostics (
+                    report_id uuid PRIMARY KEY,
+                    user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    captured_at timestamptz NOT NULL,
+                    received_at timestamptz NOT NULL DEFAULT now(),
+                    app_version text NOT NULL,
+                    build_number text NOT NULL,
+                    os_version text NOT NULL,
+                    kinds jsonb NOT NULL DEFAULT '[]'::jsonb,
+                    payload text NOT NULL,
+                    truncated boolean NOT NULL DEFAULT false
+                );
+            """)
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_client_diagnostics_received ON public.client_diagnostics (received_at DESC);")
+
+            # Migration: add enrichment tracking columns
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_attempts integer DEFAULT 0;")
+
+            # Migration: track content extractor version for re-extraction
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_extractor_version integer DEFAULT 1;")
+
+            # Migration: content quality score for feed ranking
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS content_quality float DEFAULT 0.0;")
+
+            # Migration: per-article extraction outcome (Phase 1 telemetry)
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_method text;")
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_attempt_count smallint DEFAULT 0;")
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS extraction_domain text;")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_articles_extraction_domain ON public.articles (extraction_domain);")
+
+            # Per-attempt extraction history (Phase 1 telemetry)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.extraction_attempts (
+                    id bigserial PRIMARY KEY,
+                    article_id uuid REFERENCES public.articles(id) ON DELETE CASCADE,
+                    domain text NOT NULL,
+                    method text NOT NULL,
+                    char_count integer NOT NULL DEFAULT 0,
+                    duration_ms integer,
+                    error text,
+                    created_at timestamptz NOT NULL DEFAULT now()
+                );
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_extraction_attempts_domain_created
+                ON public.extraction_attempts (domain, created_at DESC);
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_extraction_attempts_created
+                ON public.extraction_attempts (created_at DESC);
+            """)
+
+            # Migration: pgvector for semantic search
+            cur.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+            cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS embedding vector(1536);")
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_articles_embedding
+                ON public.articles USING hnsw (embedding vector_cosine_ops);
+            """)
+
+            # Migration: behavior_cache on user_preferences (ENG-5)
+            cur.execute("ALTER TABLE public.user_preferences ADD COLUMN IF NOT EXISTS behavior_cache text;")
+
+            # Durable preference weights learned from explicit feedback. Without
+            # this, "not relevant" had nowhere to go and the article came back.
+            # user_id is uuid with a real FK, matching every other reader-owned
+            # table -- a bare TEXT column with no FK previously meant these rows
+            # were orphaned forever on any future user delete (S10 A3).
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.user_feedback_signals (
+                    user_id    uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    kind       TEXT NOT NULL,        -- topic | source | category
+                    value      TEXT NOT NULL,
+                    weight     REAL NOT NULL DEFAULT 0,
+                    events     INTEGER NOT NULL DEFAULT 0,
+                    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                    PRIMARY KEY (user_id, kind, value)
+                );
+            """)
+            # Migration for a database created before this fix: only touch it if
+            # user_id is still the old bare-text shape. Casting requires every
+            # existing value to already be a valid UUID string (true for every
+            # writer of this table, which has always passed the id string
+            # unchanged) and requires no orphaned user_id (checked explicitly
+            # rather than letting a bad ADD CONSTRAINT fail opaquely).
+            cur.execute("""
+                SELECT data_type FROM information_schema.columns
+                WHERE table_schema='public' AND table_name='user_feedback_signals' AND column_name='user_id'
+            """)
+            _ufs_col = cur.fetchone()
+            if _ufs_col and _ufs_col["data_type"] == "text":
                 cur.execute("""
-                    ALTER TABLE public.user_feedback_signals
-                    ADD CONSTRAINT user_feedback_signals_user_id_fkey
-                    FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+                    SELECT count(*) AS n FROM public.user_feedback_signals ufs
+                    WHERE NOT EXISTS (SELECT 1 FROM public.users u WHERE u.id::text = ufs.user_id)
                 """)
-            else:
-                logger.warning(
-                    "user_feedback_signals has orphaned/non-UUID user_id rows; "
-                    "skipping the uuid+FK migration until they are resolved"
-                )
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_user_feedback_signals_user
-            ON public.user_feedback_signals (user_id);
-        """)
+                if cur.fetchone()["n"] == 0:
+                    cur.execute("ALTER TABLE public.user_feedback_signals ALTER COLUMN user_id TYPE uuid USING user_id::uuid;")
+                    cur.execute("""
+                        ALTER TABLE public.user_feedback_signals
+                        ADD CONSTRAINT user_feedback_signals_user_id_fkey
+                        FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+                    """)
+                else:
+                    logger.warning(
+                        "user_feedback_signals has orphaned/non-UUID user_id rows; "
+                        "skipping the uuid+FK migration until they are resolved"
+                    )
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_user_feedback_signals_user
+                ON public.user_feedback_signals (user_id);
+            """)
 
-        # S10 D: bounded per-(user, topic) impression counter for repeated-
-        # exposure discounting (Lee et al. 2014 KDD "impression discounting").
-        # A single evolving window per key, not daily buckets: the CASE in the
-        # UPSERT below resets count and window_start once the window is more
-        # than 14 days old, matching the lookback window interest_evolution.py
-        # already uses elsewhere in this codebase for topic engagement.
-        # topic_key is the confirmed S5 intent_id (uuid text) for a
-        # receipt-attributed impression; there is currently no equivalent
-        # attribution for the legacy (S5-off) serving path, so this table is
-        # populated only when S5 receipts exist. See tasks/s10-learning-audit.md.
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.reader_topic_exposure (
-                user_id      uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                topic_key    TEXT NOT NULL,
-                count        INTEGER NOT NULL DEFAULT 0 CHECK (count >= 0),
-                window_start TIMESTAMPTZ NOT NULL DEFAULT now(),
-                updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
-                PRIMARY KEY (user_id, topic_key)
-            );
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_reader_topic_exposure_user
-            ON public.reader_topic_exposure (user_id);
-        """)
+            # S10 D: bounded per-(user, topic) impression counter for repeated-
+            # exposure discounting (Lee et al. 2014 KDD "impression discounting").
+            # A single evolving window per key, not daily buckets: the CASE in the
+            # UPSERT below resets count and window_start once the window is more
+            # than 14 days old, matching the lookback window interest_evolution.py
+            # already uses elsewhere in this codebase for topic engagement.
+            # topic_key is the confirmed S5 intent_id (uuid text) for a
+            # receipt-attributed impression; there is currently no equivalent
+            # attribution for the legacy (S5-off) serving path, so this table is
+            # populated only when S5 receipts exist. See tasks/s10-learning-audit.md.
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.reader_topic_exposure (
+                    user_id      uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    topic_key    TEXT NOT NULL,
+                    count        INTEGER NOT NULL DEFAULT 0 CHECK (count >= 0),
+                    window_start TIMESTAMPTZ NOT NULL DEFAULT now(),
+                    updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+                    PRIMARY KEY (user_id, topic_key)
+                );
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_reader_topic_exposure_user
+                ON public.reader_topic_exposure (user_id);
+            """)
 
-        # S10 D: passive (non-explicit) engagement, folded into scoring at read
-        # time only -- never written through the explicit-feedback path, and
-        # never itself reader_learned_signals. A qualified (dwell + verified
-        # native-body) read nudges this up a little; a quick-back (opened then
-        # abandoned in seconds) nudges it down a little. Deliberately a
-        # separate table from reader_learned_signals: passive telemetry must
-        # never become a second, unfenced writer to the table explicit
-        # feedback owns (see reader_feedback.py's module docstring and
-        # test_telemetry_cannot_be_second_explicit_learning_writer).
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.reader_topic_engagement (
-                user_id     uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                topic_key   TEXT NOT NULL,
-                net_reward  DOUBLE PRECISION NOT NULL DEFAULT 0,
-                updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-                PRIMARY KEY (user_id, topic_key)
-            );
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_reader_topic_engagement_user
-            ON public.reader_topic_engagement (user_id);
-        """)
+            # S10 D: passive (non-explicit) engagement, folded into scoring at read
+            # time only -- never written through the explicit-feedback path, and
+            # never itself reader_learned_signals. A qualified (dwell + verified
+            # native-body) read nudges this up a little; a quick-back (opened then
+            # abandoned in seconds) nudges it down a little. Deliberately a
+            # separate table from reader_learned_signals: passive telemetry must
+            # never become a second, unfenced writer to the table explicit
+            # feedback owns (see reader_feedback.py's module docstring and
+            # test_telemetry_cannot_be_second_explicit_learning_writer).
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.reader_topic_engagement (
+                    user_id     uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    topic_key   TEXT NOT NULL,
+                    net_reward  DOUBLE PRECISION NOT NULL DEFAULT 0,
+                    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+                    PRIMARY KEY (user_id, topic_key)
+                );
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_reader_topic_engagement_user
+                ON public.reader_topic_engagement (user_id);
+            """)
 
-        # Curated seed sources (global, maintained by system)
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.seed_sources (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                url TEXT UNIQUE NOT NULL,
-                name TEXT NOT NULL,
-                category TEXT,
-                quality_tier TEXT DEFAULT 'standard',
-                active BOOLEAN DEFAULT true,
-                failure_count INTEGER DEFAULT 0,
-                last_validated_at TIMESTAMPTZ,
-                created_at TIMESTAMPTZ DEFAULT now()
-            );
-        """)
+            # Curated seed sources (global, maintained by system)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.seed_sources (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    url TEXT UNIQUE NOT NULL,
+                    name TEXT NOT NULL,
+                    category TEXT,
+                    quality_tier TEXT DEFAULT 'standard',
+                    active BOOLEAN DEFAULT true,
+                    failure_count INTEGER DEFAULT 0,
+                    last_validated_at TIMESTAMPTZ,
+                    created_at TIMESTAMPTZ DEFAULT now()
+                );
+            """)
 
-        # Per-user discovered sources
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.user_sources (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                source_url TEXT NOT NULL,
-                source_name TEXT,
-                category TEXT,
-                discovery_method TEXT DEFAULT 'seed',
-                active BOOLEAN DEFAULT true,
-                failure_count INTEGER DEFAULT 0,
-                last_fetched_at TIMESTAMPTZ,
-                validated_at TIMESTAMPTZ,
-                next_fetch_at TIMESTAMPTZ DEFAULT now(),
-                etag TEXT,
-                last_modified TEXT,
-                created_at TIMESTAMPTZ DEFAULT now(),
-                UNIQUE(user_id, source_url)
-            );
-        """)
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS scope TEXT DEFAULT 'supporting';")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS source_kind TEXT DEFAULT 'publisher';")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_targets JSONB DEFAULT '[]'::jsonb;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS discovery_score FLOAT DEFAULT 0.0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS selection_rank INTEGER DEFAULT 0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_discovered_at TIMESTAMPTZ;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS selection_reason TEXT;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS coverage_role TEXT DEFAULT 'adjacent';")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_topics JSONB DEFAULT '[]'::jsonb;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_entities JSONB DEFAULT '[]'::jsonb;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS precision_score FLOAT DEFAULT 0.0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS breadth_score FLOAT DEFAULT 0.0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_article_yield INTEGER DEFAULT 0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_relevant_yield INTEGER DEFAULT 0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS article_diversity FLOAT DEFAULT 0.0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS duplicate_rate FLOAT DEFAULT 0.0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS image_coverage FLOAT DEFAULT 0.0;")
-        cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS engagement_yield FLOAT DEFAULT 0.0;")
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_user_sources_user_active
-            ON public.user_sources (user_id, active) WHERE active = true;
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_user_sources_next_fetch
-            ON public.user_sources (next_fetch_at) WHERE active = true;
-        """)
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.article_source_links (
-                article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
-                source_url TEXT NOT NULL,
-                fetched_at TIMESTAMPTZ DEFAULT now(),
-                published_at TIMESTAMPTZ,
-                PRIMARY KEY (article_id, source_url)
-            );
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_article_source_links_source
-            ON public.article_source_links (source_url, fetched_at DESC);
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_article_source_links_article
-            ON public.article_source_links (article_id);
-        """)
+            # Per-user discovered sources
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.user_sources (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    source_url TEXT NOT NULL,
+                    source_name TEXT,
+                    category TEXT,
+                    discovery_method TEXT DEFAULT 'seed',
+                    active BOOLEAN DEFAULT true,
+                    failure_count INTEGER DEFAULT 0,
+                    last_fetched_at TIMESTAMPTZ,
+                    validated_at TIMESTAMPTZ,
+                    next_fetch_at TIMESTAMPTZ DEFAULT now(),
+                    etag TEXT,
+                    last_modified TEXT,
+                    created_at TIMESTAMPTZ DEFAULT now(),
+                    UNIQUE(user_id, source_url)
+                );
+            """)
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS scope TEXT DEFAULT 'supporting';")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS source_kind TEXT DEFAULT 'publisher';")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_targets JSONB DEFAULT '[]'::jsonb;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS discovery_score FLOAT DEFAULT 0.0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS selection_rank INTEGER DEFAULT 0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_discovered_at TIMESTAMPTZ;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS selection_reason TEXT;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS coverage_role TEXT DEFAULT 'adjacent';")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_topics JSONB DEFAULT '[]'::jsonb;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS matched_entities JSONB DEFAULT '[]'::jsonb;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS precision_score FLOAT DEFAULT 0.0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS breadth_score FLOAT DEFAULT 0.0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_article_yield INTEGER DEFAULT 0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS last_relevant_yield INTEGER DEFAULT 0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS article_diversity FLOAT DEFAULT 0.0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS duplicate_rate FLOAT DEFAULT 0.0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS image_coverage FLOAT DEFAULT 0.0;")
+            cur.execute("ALTER TABLE public.user_sources ADD COLUMN IF NOT EXISTS engagement_yield FLOAT DEFAULT 0.0;")
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_user_sources_user_active
+                ON public.user_sources (user_id, active) WHERE active = true;
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_user_sources_next_fetch
+                ON public.user_sources (next_fetch_at) WHERE active = true;
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.article_source_links (
+                    article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+                    source_url TEXT NOT NULL,
+                    fetched_at TIMESTAMPTZ DEFAULT now(),
+                    published_at TIMESTAMPTZ,
+                    PRIMARY KEY (article_id, source_url)
+                );
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_article_source_links_source
+                ON public.article_source_links (source_url, fetched_at DESC);
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_article_source_links_article
+                ON public.article_source_links (article_id);
+            """)
 
-        # Reading events for behavioral learning
-        # Retention note (Phase 7.5): this table has no sweep of its own. The
-        # `article_id` cascade below means a row lives until its article is
-        # GC'd, i.e. `article.ingested_at + retention.ARTICLE_RETENTION_DAYS`,
-        # NOT `created_at + 14 days`. That is deliberate -- every consumer of
-        # this table joins `articles` to interpret the event -- and the
-        # reasoning, plus the upgrade path if longer horizons are ever needed,
-        # is written out in app/services/retention.py.
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.reading_events (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
-                event_type TEXT NOT NULL,
-                duration_seconds INTEGER,
-                feed_request_id UUID,
-                position_in_feed INTEGER,
-                created_at TIMESTAMPTZ DEFAULT now()
-            );
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_reading_events_user
-            ON public.reading_events (user_id, created_at DESC);
-        """)
-        cur.execute("ALTER TABLE public.reading_events ADD COLUMN IF NOT EXISTS client_event_id uuid")
-        cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS reading_event_client_id ON public.reading_events(user_id,client_event_id) WHERE client_event_id IS NOT NULL")
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_reading_events_article
-            ON public.reading_events (article_id);
-        """)
-        cur.execute("""
-            CREATE UNIQUE INDEX IF NOT EXISTS idx_reading_events_dedup
-            ON public.reading_events (user_id, article_id, event_type, feed_request_id);
-        """)
+            # Reading events for behavioral learning
+            # Retention note (Phase 7.5): this table has no sweep of its own. The
+            # `article_id` cascade below means a row lives until its article is
+            # GC'd, i.e. `article.ingested_at + retention.ARTICLE_RETENTION_DAYS`,
+            # NOT `created_at + 14 days`. That is deliberate -- every consumer of
+            # this table joins `articles` to interpret the event -- and the
+            # reasoning, plus the upgrade path if longer horizons are ever needed,
+            # is written out in app/services/retention.py.
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.reading_events (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    article_id UUID NOT NULL REFERENCES public.articles(id) ON DELETE CASCADE,
+                    event_type TEXT NOT NULL,
+                    duration_seconds INTEGER,
+                    feed_request_id UUID,
+                    position_in_feed INTEGER,
+                    created_at TIMESTAMPTZ DEFAULT now()
+                );
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_reading_events_user
+                ON public.reading_events (user_id, created_at DESC);
+            """)
+            cur.execute("ALTER TABLE public.reading_events ADD COLUMN IF NOT EXISTS client_event_id uuid")
+            cur.execute("CREATE UNIQUE INDEX IF NOT EXISTS reading_event_client_id ON public.reading_events(user_id,client_event_id) WHERE client_event_id IS NOT NULL")
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_reading_events_article
+                ON public.reading_events (article_id);
+            """)
+            cur.execute("""
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_reading_events_dedup
+                ON public.reading_events (user_id, article_id, event_type, feed_request_id);
+            """)
 
-        # Global source quality scoring
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.source_quality (
-                source_domain TEXT PRIMARY KEY,
-                impressions INTEGER DEFAULT 0,
-                taps INTEGER DEFAULT 0,
-                reads INTEGER DEFAULT 0,
-                avg_read_duration FLOAT DEFAULT 0,
-                quality_score FLOAT DEFAULT 0.5,
-                updated_at TIMESTAMPTZ DEFAULT now()
-            );
-        """)
+            # Global source quality scoring
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.source_quality (
+                    source_domain TEXT PRIMARY KEY,
+                    impressions INTEGER DEFAULT 0,
+                    taps INTEGER DEFAULT 0,
+                    reads INTEGER DEFAULT 0,
+                    avg_read_duration FLOAT DEFAULT 0,
+                    quality_score FLOAT DEFAULT 0.5,
+                    updated_at TIMESTAMPTZ DEFAULT now()
+                );
+            """)
 
-        # Entity pins for tracking people/companies/topics
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.entity_pins (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                entity_name TEXT NOT NULL,
-                entity_type TEXT NOT NULL DEFAULT 'topic',
-                created_at TIMESTAMPTZ DEFAULT now(),
-                UNIQUE(user_id, entity_name)
-            );
-        """)
-        cur.execute("""
-            CREATE INDEX IF NOT EXISTS idx_entity_pins_user
-            ON public.entity_pins (user_id);
-        """)
+            # Entity pins for tracking people/companies/topics
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.entity_pins (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    entity_name TEXT NOT NULL,
+                    entity_type TEXT NOT NULL DEFAULT 'topic',
+                    created_at TIMESTAMPTZ DEFAULT now(),
+                    UNIQUE(user_id, entity_name)
+                );
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_entity_pins_user
+                ON public.entity_pins (user_id);
+            """)
 
-        # Briefing cache
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.briefing_cache (
-                user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
-                content TEXT NOT NULL,
-                source_article_ids UUID[],
-                generated_at TIMESTAMPTZ DEFAULT now()
-            );
-        """)
+            # Briefing cache
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.briefing_cache (
+                    user_id UUID PRIMARY KEY REFERENCES public.users(id) ON DELETE CASCADE,
+                    content TEXT NOT NULL,
+                    source_article_ids UUID[],
+                    generated_at TIMESTAMPTZ DEFAULT now()
+                );
+            """)
 
-        # Interest evolution suggestions
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS public.interest_suggestions (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-                topic TEXT NOT NULL,
-                confidence FLOAT NOT NULL,
-                source_articles UUID[],
-                status TEXT DEFAULT 'pending',
-                created_at TIMESTAMPTZ DEFAULT now(),
-                UNIQUE(user_id, topic)
-            );
-        """)
-    from app.services.article_content import ensure_article_content_schema
+            # Interest evolution suggestions
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS public.interest_suggestions (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                    topic TEXT NOT NULL,
+                    confidence FLOAT NOT NULL,
+                    source_articles UUID[],
+                    status TEXT DEFAULT 'pending',
+                    created_at TIMESTAMPTZ DEFAULT now(),
+                    UNIQUE(user_id, topic)
+                );
+            """)
+        from app.services.article_content import ensure_article_content_schema
 
-    ensure_article_content_schema(conn)
-    chat_repository.ensure_chat_tables(conn)
-    _schema_ready = True
+        ensure_article_content_schema(conn)
+        chat_repository.ensure_chat_tables(conn)
+        _schema_ready = True
+    finally:
+        with conn.cursor() as cur:
+            cur.execute("SELECT pg_advisory_unlock(%s)", (_SCHEMA_LOCK_KEY,))
 
 
 async def _verify_google_id_token(id_token: str) -> dict:

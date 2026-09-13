@@ -15,6 +15,8 @@ The bugs these pin down were all silent:
 import os
 import sys
 import asyncio
+import inspect
+import logging
 import unittest
 from unittest.mock import patch
 
@@ -450,3 +452,54 @@ class TestStableAdvisoryLockKey(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SchemaSetupConcurrencyTests(unittest.TestCase):
+    """`_ensure_tables` runs in both uvicorn workers at once.
+
+    `CREATE INDEX IF NOT EXISTS` is not atomic against a concurrent identical
+    CREATE -- both sessions see it missing, both proceed, the loser raises
+    UniqueViolation on pg_class, and lifespan re-raises, so that worker exits
+    with "Application startup failed". Observed live on the 2026-09-13
+    production deploy (idx_sessions_user). Self-healing via respawn, but it
+    means every deploy adding an index is a coin flip on a startup crash.
+    """
+
+    def test_schema_setup_is_serialized_by_an_advisory_lock(self):
+        source = " ".join(inspect.getsource(app_main._ensure_tables).split())
+        self.assertIn("pg_advisory_lock", source)
+        self.assertIn("pg_advisory_unlock", source)
+
+    def test_the_lock_is_released_even_when_the_ddl_raises(self):
+        """A worker that fails mid-DDL must not wedge every other worker."""
+        source = " ".join(inspect.getsource(app_main._ensure_tables).split())
+        self.assertIn("finally:", source)
+
+    def test_the_schema_key_collides_with_no_loop_key(self):
+        self.assertNotIn(app_main._SCHEMA_LOCK_KEY, set(app_main._LOCK_KEYS.values()))
+
+
+class LoggingConfigurationTests(unittest.TestCase):
+    """Nothing configured logging, so root sat at WARNING with no handlers and
+    every `logger.info` was a silent no-op in production -- including both
+    shadow observations, which is the entire output shadow mode exists to
+    produce. Confirmed live: `logging.getLogger('app.main').getEffectiveLevel()`
+    was WARNING on the deployed machine."""
+
+    # Asserted against the module source rather than the live logger: pytest's
+    # own logging plugin installs a root handler, which makes `basicConfig` a
+    # no-op and the runtime level an artefact of the test harness rather than
+    # of production. The source is what ships.
+    def test_logging_is_configured_at_import(self):
+        source = open(app_main.__file__).read()
+        self.assertIn("logging.basicConfig(", source)
+
+    def test_it_defaults_to_info_so_shadow_observations_are_visible(self):
+        source = open(app_main.__file__).read()
+        self.assertIn('os.getenv("LOG_LEVEL", "INFO")', source)
+
+    def test_shadow_observations_are_logged_at_that_level(self):
+        """If these ever move above INFO the default stops being useful."""
+        source = " ".join(inspect.getsource(app_main._run_shadow_observation).split())
+        self.assertIn('logger.info("S7 shadow', source)
+        self.assertIn('logger.info("S6 shadow', source)
