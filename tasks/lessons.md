@@ -367,3 +367,35 @@ diff against is most of the value of having staging at all.
 `.dockerignore`, so every deploy shipped 265MB to the remote builder — 213MB of local venv,
 44MB of eval corpora, and `backend/.env` containing a live `OPENAI_API_KEY`. The Dockerfile
 never COPYed it, which is why nobody noticed. Now 12.6kB.
+
+## Deploying is a test, and logging is part of the product (2026-09-13)
+
+**A `logger.info` that nothing configured is a comment.** `app/main.py` never called
+`basicConfig` or `dictConfig`, so the root logger sat at its WARNING default with no
+handlers and every `logger.info` in the application was discarded in production.
+`logger.exception` still came through, and the RSS progress lines are `print()`, so the
+logs looked healthy rather than half-missing. The cost: S6 and S7 shadow observations are
+emitted with `logger.info` and nothing else, so **shadow mode was unobservable by
+construction for its entire existence** — a second cause, entirely independent of the "no
+traffic has ever reached /feed/*" one everybody was working from. When a diagnostic system
+appears to produce nothing, check that its output can physically reach you before
+concluding the system did not run.
+
+**The tell was the line that should have been there.** Grepping for "S6 shadow" and
+finding nothing is ambiguous — maybe it never ran. Noticing that `S9 response`, which
+middleware emits for *every* `/feed` request, was also missing while the uvicorn access
+log line was present is not ambiguous at all. Look for the control you already know should
+be present, not only the thing you are hunting.
+
+**`CREATE INDEX IF NOT EXISTS` is not atomic.** Two sessions both see it missing, both
+proceed, and the loser gets a UniqueViolation on `pg_class`. With `--workers 2` both
+workers run `_ensure_tables` at startup, so every deploy introducing a new index is a coin
+flip on one worker exiting with "Application startup failed". It self-heals via respawn,
+which is exactly why it survived unnoticed. The codebase already had the answer in three
+places — the S5/S7/S8 installers each take an advisory lock before their DDL — and
+`_ensure_tables`, the one that runs on every boot, did not.
+
+**Turning logging on has a blast radius.** Root INFO also enabled httpx's
+one-line-per-request logging, and article extraction makes hundreds of requests per
+ingestion cycle; the first log after the fix was screens of NYT 403s with the shadow
+observations buried underneath. Fixing visibility means choosing what stays quiet too.

@@ -313,6 +313,8 @@ currently a no-op with S5/S7 both off).
 | 17 | No staging environment; the only Fly app is production itself | ops | Medium | Yes (gap) |
 | 18 | `reader_delivery_receipts`' declared 30-day window is really 14, via the article cascade | S5 | Low (declared-vs-enforced) | Yes, harmless today |
 | 19 | `delivery_position` never stamped on the legacy S5 path — no legacy telemetry could be attributed to an edition | S5 | High | Only with S5 on; fixed in 7.4 |
+| 20 | Logging never configured — root at WARNING with no handlers, so every `logger.info` was discarded, including both shadow observations | ops | High | Yes, always; fixed 2026-09-13 |
+| 21 | `_ensure_tables` had no lock — concurrent `CREATE INDEX IF NOT EXISTS` across `--workers 2` crashes one worker on any deploy adding an index | all | Medium | Yes, per-deploy; fixed 2026-09-13 |
 
 ---
 
@@ -707,6 +709,63 @@ unreachable. It is a declared-vs-enforced mismatch rather than a live defect (a 
 echo a receipt for a card it stopped holding two weeks ago), and restructuring an append-only
 receipt table that S8's `reader_edition_reads` composite-FKs onto is a bigger decision than this
 phase owns. Recorded as bug #18 below.
+
+### Phase 7.6 — Production deploy of Phase 7, and the first real feed traffic — ✅ DONE (2026-09-13)
+
+Production ran `53633d3` until today; none of Phase 7 was live. Deployed through
+staging first (`cb62b66` green there before production), then
+`fly deploy --build-arg GIT_SHA=... --app daily-backend --strategy rolling`.
+Production is now `07da730`, `/readyz` 200, all Phase 7 routes answering,
+`client_diagnostics` / `users.deleted_at` / both session indexes migrated.
+
+Verified live, not just deployed:
+
+- **`purge_expired_sessions` did real work on its first tick** — production had 6
+  sessions, all 6 already past expiry, and the maintenance loop swept them.
+- **`DELETE /auth/session` returns `{"revoked": true}` and the token 401s
+  immediately afterwards.** Server-side revocation confirmed end to end against
+  production, not just in tests.
+- **Every `/feed` card now carries all four receipt fields** — `feed_request_id`,
+  `delivery_position`, `reader_generation`, `reader_revision`. `S5_READER_ENABLED`
+  is `true` in production, so the 7.4 fix was load-bearing the moment it shipped,
+  not a latent S4 concern: before it the iOS client's `deliveryReceipt` was nil on
+  every card and no legacy telemetry could be attributed to an edition at all.
+
+**Two new bugs found by deploying** (#20, #21 above), both fixed in the same pass:
+
+- `_ensure_tables` crashed one uvicorn worker on `idx_sessions_user` —
+  `CREATE INDEX IF NOT EXISTS` is not atomic against a concurrent identical
+  CREATE, and both workers run schema setup at startup. Self-healing via respawn,
+  but a coin flip on every deploy that adds an index. Now takes the same
+  session-scoped advisory lock the S5/S7/S8 installers already use.
+- **Nothing had ever configured logging.** Root sat at WARNING with no handlers,
+  so every `logger.info` was discarded in production while `logger.exception`
+  still came through — logs that looked healthy rather than half-missing. This is
+  the second, independent reason shadow mode had never been observed: the
+  observations are emitted with `logger.info` and nothing else, so they were
+  invisible *whether or not* traffic reached `/feed/*`.
+
+**First real S6/S7 shadow observations, ever** (full record:
+`.context/s6-s7-first-production-shadow.md`):
+
+```
+S7 shadow: {'status': 'degraded', 'candidates': 300, 'accepted': 0, 'provider_calls': 0}
+S6 shadow: {'status': 'complete', 'candidates': 300,
+            'legs': {'disabled': 15, 'budget_limited': 12, 'exhausted': 3},
+            'unique_examined': 632, 'rows_returned': 695, 'rounds': 1}
+S6 shadow: {'status': 'timed_out'}
+```
+
+S6 completes roughly two calls in three, failing with the timeout the 224MB
+`shared_buffers` limitation predicts. S7 is `degraded` on every call: 300
+candidates in, zero accepted. Interpretation belongs to whoever owns S6/S7 —
+what changed today is that there is finally evidence to interpret.
+
+*Not done:* onboarding through the iOS UI. The app builds, launches against
+production and reaches the sign-in screen, but Google Sign-In needs real
+credentials. The `/feed` traffic above was generated with a short-lived session
+minted directly for the one production account that has a reader profile, then
+revoked.
 
 ### Phase 8 — Dogfood
 
