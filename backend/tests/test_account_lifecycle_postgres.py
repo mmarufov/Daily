@@ -404,3 +404,48 @@ def test_a_deleted_reader_signing_in_again_gets_a_fresh_account(conn):
 
     assert second["id"] != first["id"]
     account_lifecycle.delete_account(conn, second["id"])
+
+
+# ---------------------------------------------------------------------------
+# Retention (Phase 7.5) -- the article GC is also the behavioural-signal policy
+# ---------------------------------------------------------------------------
+
+
+def test_gcing_an_article_takes_its_reading_events_with_it(conn):
+    """The coupling `app/services/retention.py` documents, executed for real.
+
+    A source-level test can assert the FK text; only a server can prove the
+    cascade fires, and that the surviving event is the one whose article is
+    still in the pool -- the distinction the decision record turns on.
+    """
+    from app.services.retention import ARTICLE_RETENTION_DAYS
+
+    user_id = _make_user(conn)
+    old_article, fresh_article = str(uuid.uuid4()), str(uuid.uuid4())
+    with conn.cursor() as cur:
+        for article_id, age_days in ((old_article, ARTICLE_RETENTION_DAYS + 1), (fresh_article, 1)):
+            cur.execute(
+                "INSERT INTO public.articles (id, title, url, ingested_at) "
+                "VALUES (%s, %s, %s, now() - make_interval(days => %s))",
+                (article_id, "Seed", f"https://example.com/{secrets.token_hex(6)}", age_days),
+            )
+            cur.execute(
+                "INSERT INTO public.reading_events (user_id, article_id, event_type, created_at) "
+                "VALUES (%s, %s, 'tap', now())",
+                (user_id, article_id),
+            )
+        # Exactly the ingestion loop's statement.
+        cur.execute(
+            "DELETE FROM public.articles WHERE ingested_at < now() - make_interval(days => %s)",
+            (ARTICLE_RETENTION_DAYS,),
+        )
+        cur.execute(
+            "SELECT article_id::text AS article_id FROM public.reading_events WHERE user_id = %s",
+            (user_id,),
+        )
+        surviving = [row["article_id"] for row in cur.fetchall()]
+
+    # The tap on the aged-out article is gone even though it was logged seconds
+    # ago: retention is keyed on the article's age, never the event's.
+    assert surviving == [fresh_article]
+    account_lifecycle.delete_account(conn, user_id)

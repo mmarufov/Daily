@@ -254,17 +254,32 @@ async def _ingestion_loop():
                         enrichment_stats.get('images_generated', 0),
                     )
 
-                # 4. Clean up articles older than 14 days (extended for behavioral learning)
+                # 4. Clean up old articles. This statement is also, by way of
+                # ON DELETE CASCADE, the retention policy for every user-signal
+                # table keyed to an article -- reading_events above all. That
+                # coupling is intentional and is argued out in
+                # app/services/retention.py; the constant lives there so the
+                # decision has one home instead of six hardcoded intervals.
+                from app.services.retention import (
+                    ARTICLE_RETENTION_DAYS,
+                    EXTRACTION_ATTEMPT_RETENTION_DAYS,
+                )
                 with conn.cursor() as cur:
                     cur.execute(
-                        "DELETE FROM public.articles WHERE ingested_at < now() - interval '14 days'"
+                        "DELETE FROM public.articles "
+                        "WHERE ingested_at < now() - make_interval(days => %s)",
+                        (ARTICLE_RETENTION_DAYS,),
                     )
                     if cur.rowcount > 0:
                         logger.info(f"Ingestion: Cleaned up {cur.rowcount} old articles")
-                    # Trim extraction_attempts history to 30 days (orphans only;
-                    # ON DELETE CASCADE already removes rows for deleted articles).
+                    # Diagnostics only, and its own sweep: extraction_attempts
+                    # has no user signal in it, so it doesn't inherit the
+                    # article window (ON DELETE CASCADE already removes rows
+                    # for articles that are gone; this catches the orphans).
                     cur.execute(
-                        "DELETE FROM public.extraction_attempts WHERE created_at < now() - interval '30 days'"
+                        "DELETE FROM public.extraction_attempts "
+                        "WHERE created_at < now() - make_interval(days => %s)",
+                        (EXTRACTION_ATTEMPT_RETENTION_DAYS,),
                     )
 
         except _NotLeader:
@@ -329,6 +344,7 @@ async def _account_maintenance_loop():
     nothing had ever deleted an expired session row.
     """
     from app.services.account_lifecycle import purge_expired_sessions, purge_pending_accounts
+    from app.services.client_diagnostics import purge_expired as purge_diagnostics
 
     await asyncio.sleep(90)  # Let startup settle.
     while True:
@@ -336,9 +352,12 @@ async def _account_maintenance_loop():
             with _leader("account_maintenance") as conn:
                 purged = purge_pending_accounts(conn)
                 expired = purge_expired_sessions(conn)
-                if purged or expired:
-                    logger.info("Account maintenance: purged=%d accounts, expired=%d sessions",
-                                purged, expired)
+                # Same hourly leader tick rather than its own loop: it is one
+                # bounded DELETE and does not deserve a sixth advisory lock.
+                diagnostics = purge_diagnostics(conn)
+                if purged or expired or diagnostics:
+                    logger.info("Account maintenance: purged=%d accounts, expired=%d sessions, "
+                                "%d diagnostics", purged, expired, diagnostics)
         except _NotLeader:
             pass
         except Exception:
@@ -1134,6 +1153,26 @@ def _ensure_tables(conn, force: bool = False) -> None:
         """)
         cur.execute("CREATE INDEX IF NOT EXISTS idx_feed_build_log_user_created ON public.feed_build_log (user_id, created_at DESC);")
 
+        # Phase 7.2: iOS crash/hang reports, from MetricKit rather than a vendor
+        # SDK (see Daily/Services/DiagnosticsService.swift). `payload` is stored
+        # as opaque text on purpose -- MetricKit's schema is Apple's to change,
+        # and this is a record of what the device said, not a model of it.
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS public.client_diagnostics (
+                report_id uuid PRIMARY KEY,
+                user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+                captured_at timestamptz NOT NULL,
+                received_at timestamptz NOT NULL DEFAULT now(),
+                app_version text NOT NULL,
+                build_number text NOT NULL,
+                os_version text NOT NULL,
+                kinds jsonb NOT NULL DEFAULT '[]'::jsonb,
+                payload text NOT NULL,
+                truncated boolean NOT NULL DEFAULT false
+            );
+        """)
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_client_diagnostics_received ON public.client_diagnostics (received_at DESC);")
+
         # Migration: add enrichment tracking columns
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_completed boolean DEFAULT false;")
         cur.execute("ALTER TABLE public.articles ADD COLUMN IF NOT EXISTS enrichment_attempts integer DEFAULT 0;")
@@ -1360,6 +1399,13 @@ def _ensure_tables(conn, force: bool = False) -> None:
         """)
 
         # Reading events for behavioral learning
+        # Retention note (Phase 7.5): this table has no sweep of its own. The
+        # `article_id` cascade below means a row lives until its article is
+        # GC'd, i.e. `article.ingested_at + retention.ARTICLE_RETENTION_DAYS`,
+        # NOT `created_at + 14 days`. That is deliberate -- every consumer of
+        # this table joins `articles` to interpret the event -- and the
+        # reasoning, plus the upgrade path if longer horizons are ever needed,
+        # is written out in app/services/retention.py.
         cur.execute("""
             CREATE TABLE IF NOT EXISTS public.reading_events (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2919,6 +2965,37 @@ async def submit_reading_events(
     if result["inserted"] and not reader_enabled():
         _recompute_behavior_signals(conn, user_id)
     return result
+
+@app.post("/client-diagnostics")
+async def submit_client_diagnostics(
+    payload: dict,
+    Authorization: str | None = Header(default=None),
+    conn=Depends(get_db),
+):
+    """Accept a batch of MetricKit crash/hang reports from the iOS client."""
+    user_id = _get_user_id_from_token(conn, _require_auth(Authorization))
+    from app.services.client_diagnostics import DiagnosticsRejected, ingest
+
+    try:
+        return ingest(conn, user_id, payload)
+    except DiagnosticsRejected as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.get("/admin/client-diagnostics")
+async def admin_client_diagnostics(
+    request: Request,
+    days: int = Query(default=7, ge=1, le=30),
+    limit: int = Query(default=50, ge=1, le=200),
+    conn=Depends(get_db),
+):
+    """What broke, in which build, how often. Crash reports nobody can read
+    aren't crash reporting; this is the read path, guarded by ADMIN_API_KEY."""
+    _require_admin(request)
+    from app.services.client_diagnostics import summary
+
+    return summary(conn, days=days, limit=limit)
+
 
 @app.post("/feed/feedback")
 async def submit_feed_feedback(
