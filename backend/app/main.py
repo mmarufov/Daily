@@ -30,6 +30,11 @@ logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
     format="%(levelname)s %(name)s: %(message)s",
 )
+# httpx logs one INFO line per request, and article extraction makes hundreds
+# per ingestion cycle -- turning root INFO on without this buries every
+# application log line, shadow observations included, in NYT 403s.
+for _noisy in ("httpx", "httpcore", "urllib3"):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 import psycopg
