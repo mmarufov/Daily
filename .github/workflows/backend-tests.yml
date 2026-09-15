@@ -30,7 +30,7 @@ jobs:
           import subprocess
           import sys
           paths = sorted(str(path) for path in Path("tests").glob("test_event_*.py")
-                         if path.name != "test_event_postgres.py")
+                         if not path.name.endswith("_postgres.py"))
           paths += sorted(str(path) for path in Path("tests").glob("test_s4_*.py"))
           paths += ["tests/test_eval_event_pipeline.py", "tests/test_global_events.py"]
           subprocess.run([sys.executable, "-m", "pytest", *paths, "-q",
@@ -46,7 +46,7 @@ jobs:
           import xml.etree.ElementTree as ET
           cases = ET.parse("s4-contract-results.xml").getroot().findall(".//testcase")
           required = {path.stem for path in Path("tests").glob("test_event_*.py")
-                      if path.stem != "test_event_postgres"}
+                      if not path.stem.endswith("_postgres")}
           required |= {path.stem for path in Path("tests").glob("test_s4_*.py")}
           required |= {"test_eval_event_pipeline", "test_global_events"}
           assert required and cases, "S4 deterministic tests were not collected"
@@ -66,7 +66,7 @@ jobs:
           import sys
           import xml.etree.ElementTree as ET
           paths = sorted(path for path in Path("tests").glob("test_retrieval_*.py")
-                         if path.name != "test_retrieval_postgres.py")
+                         if not path.name.endswith("_postgres.py"))
           paths += sorted(Path("tests").glob("test_s6_*.py"))
           required = {"test_retrieval_candidates", "test_retrieval_evidence", "test_retrieval_eval",
                       "test_retrieval_runtime", "test_retrieval_handoff", "test_s6_management"}
@@ -90,7 +90,7 @@ jobs:
           import sys
           import xml.etree.ElementTree as ET
           paths = sorted(path for path in Path("tests").glob("test_ranking_*.py")
-                         if path.name != "test_ranking_postgres.py")
+                         if not path.name.endswith("_postgres.py"))
           paths += sorted(Path("tests").glob("test_s7_*.py"))
           required = {"test_ranking_repository", "test_ranking_provider", "test_ranking_feedback",
                       "test_ranking_service", "test_ranking_eval", "test_ranking_integration",
@@ -115,7 +115,7 @@ jobs:
           import sys
           import xml.etree.ElementTree as ET
           paths = sorted(path for path in Path("tests").glob("test_assembly_*.py")
-                         if path.name != "test_assembly_postgres.py")
+                         if not path.name.endswith("_postgres.py"))
           paths += sorted(Path("tests").glob("test_s8_*.py"))
           required = {"test_assembly_contract", "test_assembly_service", "test_assembly_repository", "test_assembly_adversarial",
                       "test_assembly_integration", "test_assembly_eval", "test_s8_management"}
@@ -196,6 +196,7 @@ jobs:
           python -m pytest tests/test_main_loops_postgres.py
           tests/test_article_content_postgres.py
           tests/test_understanding_postgres.py tests/test_event_postgres.py
+          tests/test_event_suppression_loop_postgres.py
           tests/test_retrieval_postgres.py tests/test_ranking_postgres.py
           tests/test_assembly_postgres.py
           -q --junitxml=postgres-results.xml
@@ -205,7 +206,7 @@ jobs:
           import xml.etree.ElementTree as ET
           root = ET.parse("postgres-results.xml").getroot()
           cases = root.findall(".//testcase")
-          for module in ("test_main_loops_postgres", "test_article_content_postgres", "test_understanding_postgres", "test_event_postgres", "test_retrieval_postgres", "test_ranking_postgres", "test_assembly_postgres"):
+          for module in ("test_main_loops_postgres", "test_article_content_postgres", "test_understanding_postgres", "test_event_postgres", "test_event_suppression_loop_postgres", "test_retrieval_postgres", "test_ranking_postgres", "test_assembly_postgres"):
               selected = [case for case in cases if module in case.get("classname", "")]
               assert selected, f"No tests executed for {module}"
               assert not any(case.find("skipped") is not None for case in selected), f"Skipped tests in {module}"
