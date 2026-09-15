@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "b7b30a49a77493fdd79db0b88cf413577a2154e0eed31ade9512598e6d5dd863",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: I'm a huge tennis fan, especially the WTA tour and Canadian players like Leylah Fernandez and Bianca Andreescu. I also follo"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"User is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\",\n  \"interests\": {\n    \"topics\": [\"tennis\", \"WTA tour\", \"horse racing\", \"climate\", \"clean energy\"],\n    \"people\": [\"Leylah Fernandez\", \"Bianca Andreescu\"],\n    \"locations\": [\"Toronto\"],\n    \"industries\": [\"solar energy\"],\n    \"excluded_topics\": [\"gambling\", \"sports betting\", \"partisan politics\"],\n    \"notes\": \"User works at a solar company and is particularly interested in climate policy.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [\"tennis\", \"horse racing\", \"climate\", \"clean energy\"],\n    \"current_interests\": [\"WTA tour\", \"Canadian players\", \"big horse races\"],\n    \"people\": [\"Leylah Fernandez\", \"Bianca Andreescu\"],\n    \"locations\": [\"Toronto\"],\n    \"industries\": [\"solar energy\"],\n    \"excluded_topics\": [\"gambling\", \"sports betting\", \"partisan politics\"],\n    \"utility_priorities\": [\"environmental impact\", \"sports updates\"],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [\"informative\", \"concise\"],\n    \"life_context\": \"User works in the solar industry and values climate-related news.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [\"tennis\", \"climate policy\", \"clean energy\"],\n      \"must_cover_entities\": [\"Leylah Fernandez\", \"Bianca Andreescu\"],\n      \"must_avoid_topics\": [\"gambling\", \"sports betting\", \"partisan politics\"],\n      \"preferred_source_types\": [\"sports news\", \"environmental news\"],\n      \"coverage_targets\": [\"WTA tour\", \"major horse races\"],\n      \"specificity_level\": \"mixed\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 464,
+  "completion_tokens": 395
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9cb87bb387da511caf9ec4858e2bf05e6a1e31a1d4a3ce5f5180914cba64b858",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00614\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"No relevance to Central Asia trade or Russia sanctions.\"}, {\"id\": \"a00615\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Latvia's ban on Russian books is peripheral but relates to Russia sanctions.\"}, {\"id\": \"a00616\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"trade_routes\", \"logistics\"], \"confidence\": 0.95, \"rationale\": \"Ozon shifting logistics to Kazakhstan affects regional trade routes and import-export.\"}, {\"id\": \"a00617\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Russia\", \"Russia sanctions\"], \"confidence\": 0.8, \"rationale\": \"Russia finance minister at G20 relevant but no direct impact on trade or sanctions.\"}, {\"id\": \"a00618\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Military drone attacks on Kyiv unrelated to reader's business interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4355,
+  "completion_tokens": 267
+ }
+}

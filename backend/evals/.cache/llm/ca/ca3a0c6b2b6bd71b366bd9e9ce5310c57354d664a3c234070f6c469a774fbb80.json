@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ab1d50eb378aa08ee8694aa66e45a43a26a5b2872628e11ad1ae3a6cc8ed0446",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01156\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to AI industry but focused on virtualization market, not primary AI entities.\"}, {\"id\": \"a01158\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI coding policy relevant but not about primary AI companies or model releases.\"}, {\"id\": \"a01163\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Security vulnerability in Anthropic's Claude Code directly impacts AI product safety.\"}, {\"id\": \"a01164\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Innovative tech relevant to AI hardware but not about primary AI companies or models.\"}, {\"id\": \"a01165\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Cloud service satire relevant to AI infrastructure but not primary AI companies or models.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3457,
+  "completion_tokens": 264
+ }
+}

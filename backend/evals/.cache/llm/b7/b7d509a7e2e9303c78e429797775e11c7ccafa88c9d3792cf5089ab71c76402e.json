@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "78baab061258ca9b1db10c06493700d4db64bded26cf4cd92aa55346910294e2",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00820\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Southeast Asia fintech but about wealth legacy, not core fintech regulation or engineering.\"}, {\"id\": \"a00821\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Biotech wound care unrelated to fintech, cloud, AI, or Singapore tech scene.\"}, {\"id\": \"a00823\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\", \"primary\"], \"confidence\": 0.95, \"rationale\": \"AI impact on Asia Pacific economy including Singapore and Southeast Asia tech supply chain.\"}, {\"id\": \"a00824\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.7, \"rationale\": \"Southeast Asia investment context relevant but not deep tech or fintech regulation.\"}, {\"id\": \"a00826\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Lifestyle article about wearables and wine, unrelated to reader's tech or fintech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3971,
+  "completion_tokens": 282
+ }
+}

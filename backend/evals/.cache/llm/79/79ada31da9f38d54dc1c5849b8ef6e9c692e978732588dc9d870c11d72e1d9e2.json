@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bf955bdf10e810e9530e4bdfa479dcf17c57abac3535fba0f5ce0e205aa4cc6e",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00014\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"company use of AI\", \"model releases\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major OpenAI move, affects industry and model access; primary interest and real news value.\"\n    },\n    {\n      \"id\": \"a00023\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Industry analysis, relevant but not urgent or directly actionable for Tom.\"\n    },\n    {\n      \"id\": \"a00047\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI regulation\", \"AI industry\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Discussion of AI's impact on jobs and regulation; relevant but not must_see.\"\n    },\n    {\n      \"id\": \"a00201\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"need_to_know\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Security issue with Anthropic's Claude; direct relevance and potential impact for Tom's work.\"\n    },\n    {\n      \"id\": \"a00214\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"model releases\", \"major_event\", \"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Large-scale attack involving OpenAI models; major event for AI industry and security.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1189,
+  "completion_tokens": 359
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b8c80a673ead9de0f9c9d9e73695dbad526fd32fbb6cb4c5064b50a5023a1044",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00664\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Routine science health update, no direct consumer impact.\"}, {\"id\": \"a00665\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\", \"consumer impact\"], \"confidence\": 0.9, \"rationale\": \"AI innovation in manufacturing could impact tech and consumer products.\"}, {\"id\": \"a00666\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Interesting science but no direct consumer or local impact.\"}, {\"id\": \"a00667\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Scientific discovery with no immediate consumer or UK relevance.\"}, {\"id\": \"a00670\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Promising medical tech but early stage, no direct consumer impact yet.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1272,
+  "completion_tokens": 258
+ }
+}

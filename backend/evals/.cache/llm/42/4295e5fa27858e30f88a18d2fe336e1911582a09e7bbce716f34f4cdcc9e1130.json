@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6088c4cd9da108d4fd0a87c2ffaa96d2da74f88ce97d62fe24cc4238791b7f38",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00189\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Stablecoins and crypto banking unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00196\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"followup\"], \"confidence\": 0.95, \"rationale\": \"Iran strikes impact oil prices and energy security, core interests for reader.\"}, {\"id\": \"a00197\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"UK stock onchain news unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00199\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Bitcoin and Fed bets are economic but secondary to primary energy focus.\"}, {\"id\": \"a00203\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Political ban unrelated to energy, economics, or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1000,
+  "completion_tokens": 254
+ }
+}

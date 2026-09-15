@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1b447defb116cfa6c9743dbf43ba07fb4bcca28f38731ba9dc73fd6c8d41e54f",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00001\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"China's G20 stance relevant to trade but not directly about Central Asia or sanctions affecting reader.\"}, {\"id\": \"a00004\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US government shutdown unrelated to Central Asia or reader's trade interests.\"}, {\"id\": \"a00005\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Australia GDP growth is global business news but not directly impacting Central Asia trade.\"}, {\"id\": \"a00006\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Apple CEO and AI challenges unrelated to reader's interests.\"}, {\"id\": \"a00008\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Used car market in general unrelated to Central Asia trade or reader's business.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1264,
+  "completion_tokens": 254
+ }
+}

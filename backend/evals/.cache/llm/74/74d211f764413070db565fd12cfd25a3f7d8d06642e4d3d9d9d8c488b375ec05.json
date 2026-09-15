@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d039744b45b39b62ade7b3a0004130722b95efbff31f53ad5f3e87c1d157c1d8",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00020\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Rising oil prices and Middle East tensions directly impact energy security and inflation.\"}, {\"id\": \"a00021\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Job creation data is economic but less directly relevant to energy security focus.\"}, {\"id\": \"a00022\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Crypto legislation unrelated to energy markets or geopolitical energy issues.\"}, {\"id\": \"a00023\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Fed rate hike comments relevant to economics but secondary to energy security.\"}, {\"id\": \"a00024\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Softbank IPO and AI dependency unrelated to energy markets or security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1090,
+  "completion_tokens": 258
+ }
+}

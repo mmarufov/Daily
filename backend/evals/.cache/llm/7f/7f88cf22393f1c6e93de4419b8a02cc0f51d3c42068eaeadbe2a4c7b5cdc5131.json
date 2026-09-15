@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "fff5eed3846a92bdf4c5218050c9bd6f7d5ec9d3f617b6ddbaa3d5973d2f0d16",
+  "preview": "READER PROFILE:\nREADER: User is open to any important news.\nDEPTH: balanced\n\nWANTS:\n\nDOES NOT WANT:\n\nCANDIDATES:\n0. [Guardian World] US strikes Iranian launchers in strait of Hormuz, sparking reprisal"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 0,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"international conflict\",\n      \"kind\": \"direct\",\n      \"why\": \"US-Iran tensions are significant global news.\"\n    },\n    {\n      \"id\": 1,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Space telescope launch is not a priority.\"\n    },\n    {\n      \"id\": 2,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Routine coverage of floods lacks urgency.\"\n    },\n    {\n      \"id\": 3,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"international conflict\",\n      \"kind\": \"direct\",\n      \"why\": \"Russian strikes in Ukraine are critical news.\"\n    },\n    {\n      \"id\": 4,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Name change is trivial news.\"\n    },\n    {\n      \"id\": 5,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"international disaster\",\n      \"kind\": \"direct\",\n      \"why\": \"Ferry capsizing is a significant tragedy.\"\n    },\n    {\n      \"id\": 6,\n      \"keep\": true,\n      \"score\": 0.5,\n      \"matched\": \"crime and safety\",\n      \"kind\": \"direct\",\n      \"why\": \"Shooting at rave is alarming news.\"\n    },\n    {\n      \"id\": 7,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Money laundering case lacks broader relevance.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1107,
+  "completion_tokens": 434
+ }
+}

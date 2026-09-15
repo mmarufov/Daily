@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1771099ca339fb61be1dee4e2794a59adae30667893a888927eebc53f7771fbe",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00094\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Covers Kazakhstan politics and Tokayev, a primary interest, but is routine parliamentary news.\"\n    },\n    {\n      \"id\": \"a00117\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on global leaders' education, not relevant to Central Asian trade or business.\"\n    },\n    {\n      \"id\": \"a00126\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Kazakhstan politics and Tokayev are primary interests, but this is routine political coverage.\"\n    },\n    {\n      \"id\": \"a00142\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Iran war disrupting Eurasian trade routes directly impacts reader's business and logistics.\"\n    },\n    {\n      \"id\": \"a00145\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"SCO cooperation on trade and transport is relevant, but not urgent or directly life-changing today.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1805,
+  "completion_tokens": 326
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bff50fe4344b269d8b1f928dfe2beb3ed9b6800a78f7901860028f30a2874b9a",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00293\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Video game news unrelated to AI or reader's interests.\"}, {\"id\": \"a00305\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Industry commentary on AI impact in gaming, secondary interest but not core AI product news.\"}, {\"id\": \"a00324\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.7, \"rationale\": \"AI use in game development, some relevance but not about AI products or companies.\"}, {\"id\": \"a00325\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Local political news in Boston, secondary interest but no AI relevance.\"}, {\"id\": \"a00344\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Medical news unrelated to AI or reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2679,
+  "completion_tokens": 261
+ }
+}

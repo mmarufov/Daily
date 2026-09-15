@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8a95d98106043d78987d178f6e7a78f8dc5e94984c6d2ea1ea1c42a9632b423c",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00046\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment/sex scandal unrelated to energy or economics.\"}, {\"id\": \"a00048\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Job market for teaching abroad unrelated to energy or economics.\"}, {\"id\": \"a00049\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"US treasury handling Iran sanctions relevant but routine analysis.\"}, {\"id\": \"a00051\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Fast-fashion stock market news unrelated to energy or economics.\"}, {\"id\": \"a00052\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"energy\", \"European energy security\"], \"confidence\": 0.95, \"rationale\": \"EU gas stores at lowest in 13 years directly impact European energy security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1541,
+  "completion_tokens": 259
+ }
+}

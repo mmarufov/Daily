@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4cdaedec72c23fb1262ff7b4de602224ae36ddbc9b62feb132f5e14de7fcb9cf",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00984\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Sports article, excluded topic for this reader.\"}, {\"id\": \"a00991\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"technology\"], \"confidence\": 0.8, \"rationale\": \"Tech history leak interesting but not urgent or major news.\"}, {\"id\": \"a00992\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.7, \"rationale\": \"NASA mission update relevant to science interest, but not urgent.\"}, {\"id\": \"a00993\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Tech automation in data centers impacts industry and labor costs.\"}, {\"id\": \"a00994\", \"label\": \"must_see\", \"tags\": [\"consumer impact\", \"need_to_know\", \"technology\"], \"confidence\": 0.95, \"rationale\": \"Consumer data privacy and rights directly affect reader's work and interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2383,
+  "completion_tokens": 264
+ }
+}

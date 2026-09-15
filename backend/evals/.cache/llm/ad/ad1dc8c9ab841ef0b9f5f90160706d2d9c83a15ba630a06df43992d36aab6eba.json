@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ffdb4d873f0e73427206e6f49c0a346a32e55c9bbae50e29a9403fea1d4ab780",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00622\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Stock drop and airspace warning are notable but not major_event for a general audience.\"\n    },\n    {\n      \"id\": \"a00623\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Airspace safety warning is significant but not a must_see major_event for all adults.\"\n    },\n    {\n      \"id\": \"a00649\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Interesting science news, but not a must_see major_event for a general audience.\"\n    },\n    {\n      \"id\": \"a00651\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Medical advance is notable but not a must_see for all; relevant mainly to those with sleep apnea.\"\n    },\n    {\n      \"id\": \"a00704\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Local Singapore road closure is irrelevant for a general global audience.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2039,
+  "completion_tokens": 305
+ }
+}

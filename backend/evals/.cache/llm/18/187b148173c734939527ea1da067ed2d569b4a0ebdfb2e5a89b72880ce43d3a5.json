@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dbd37f10cca944a754fca011d1f540758e111d3f3107277fda9ab0bdeed01a9b",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00483\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NYC weather is not relevant to Newark, NJ reader's daily life or interests.\"\n    },\n    {\n      \"id\": \"a00486\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NYC subway service changes do not affect NJ Transit commuter; not relevant.\"\n    },\n    {\n      \"id\": \"a00491\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major NJ crime event; not local to Newark but relevant as state news.\"\n    },\n    {\n      \"id\": \"a00502\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"direct\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New law directly affects NJ residents' utility bills and property rights.\"\n    },\n    {\n      \"id\": \"a00504\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Legal ruling on telehealth licensing is relevant NJ policy, but not urgent for most.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2116,
+  "completion_tokens": 310
+ }
+}

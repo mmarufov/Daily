@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3b879381c61d686548ddff104400890d6e3e75317ce9a8b9acda20eab0a56b7a",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00529\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI skeptic predictions are interesting but not primary or urgent news.\"}, {\"id\": \"a00535\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Safari extension hiding YouTube AI videos is off-topic and not relevant.\"}, {\"id\": \"a00538\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"ChatGPT/Codex app bundling LibreOffice is mildly interesting AI product news.\"}, {\"id\": \"a00540\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Job matching tool directly relates to job and money utility priorities.\"}, {\"id\": \"a00541\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"New humanoid robot is AI industry news but not primary or urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 968,
+  "completion_tokens": 255
+ }
+}

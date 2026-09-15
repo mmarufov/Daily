@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5546e5e681c7cfb58aa4c6a3bfb2bf53439287b979c6081210ec098d995bfede",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00775\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly impacts parenting, work-life balance, and government schemes for parents.\"\n    },\n    {\n      \"id\": \"a00776\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Childcare subsidies and sector changes affect cost, access, and quality for parents.\"\n    },\n    {\n      \"id\": \"a00778\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Local angle but not relevant to daily life, parenting, or health priorities.\"\n    },\n    {\n      \"id\": \"a00779\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"General local news roundup; may contain relevant items but not targeted or essential.\"\n    },\n    {\n      \"id\": \"a00780\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"International legal news unrelated to parenting, health, or daily living.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1091,
+  "completion_tokens": 314
+ }
+}

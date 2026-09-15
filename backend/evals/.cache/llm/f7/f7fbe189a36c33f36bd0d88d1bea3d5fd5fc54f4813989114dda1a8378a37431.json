@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "f6f67c56d43801db54cf6758841d17195e4e6f1951ec6e06a56c1bacae86bc10",
+  "preview": "User Profile:\nFree-form profile:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about the sale of the Angels, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses an NFL rule, which is not directly relevant to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a reality show, which falls under the excluded topics of celebrity gossip and entertainment.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a change in a tech company's mapping service, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a startup raising funds for AI chip packaging, which does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a development project in Singapore, which is not relevant to the user's local interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a soccer match that is routine coverage, not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a boys soccer match that is routine coverage, not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article previews a girls soccer season, which does not intersect with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article previews a girls soccer team, which is not relevant to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a boys soccer match, which is routine coverage and not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a court case in Honduras, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article previews a girls soccer team, which does not intersect with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a field hockey match, which is routine coverage and not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a boys soccer match, which is routine coverage and not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a volleyball match, which is routine coverage and not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses funding for built environment research, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a field hockey match, which is routine coverage and not a major event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a volleyball match, which is routine coverage and not a major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1952,
+  "completion_tokens": 616
+ }
+}

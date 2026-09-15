@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3c4072969dd06d9ac1c2e45ffb86bb98571830f1db28327b83100f3b96dbd4d9",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01041\",\n      \"label\": \"fine\",\n      \"tags\": [\"Toronto\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Toronto geo-interest; odd news, but not primary or need_to_know.\"\n    },\n    {\n      \"id\": \"a01053\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"No sports, climate, or Toronto relevance; tech/business politics focus.\"\n    },\n    {\n      \"id\": \"a01253\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Soccer article; not tennis, horse racing, or climate-related.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 947,
+  "completion_tokens": 186
+ }
+}

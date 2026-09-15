@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b5843a8dafd3201759dc55f881da4e237232799a3cbc4637b00588211abf9c87",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01028\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Health data reporting affects public awareness but not immediate consumer impact.\"}, {\"id\": \"a01029\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech update on Android features is interesting but not critical news.\"}, {\"id\": \"a01030\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"FTC lawsuit against Amazon impacts marketing and consumer trust significantly.\"}, {\"id\": \"a01032\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"NASA heat shield success is science news but not urgent or consumer-impacting.\"}, {\"id\": \"a01033\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"NASA Mars drone plans are interesting science but not urgent or consumer-impacting.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2170,
+  "completion_tokens": 257
+ }
+}

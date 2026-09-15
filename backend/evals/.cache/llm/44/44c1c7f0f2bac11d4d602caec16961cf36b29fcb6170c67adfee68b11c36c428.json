@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "04888b589484bc283c8e03b92022f31ed498931a75d80bd714788835ef976055",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00984\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Flyers prospects are irrelevant to Devils/Giants/NJ/Essex interests.\"\n    },\n    {\n      \"id\": \"a00995\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Islanders front office news is not relevant to reader's teams or local interests.\"\n    },\n    {\n      \"id\": \"a01003\",\n      \"label\": \"never\",\n      \"tags\": [\"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Columbus Blue Jackets jersey history; 'Jersey' is not about New Jersey or Devils.\"\n    },\n    {\n      \"id\": \"a01007\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Mentions Devils trade, but focus is on Calgary/Canucks; minor Devils connection.\"\n    },\n    {\n      \"id\": \"a01008\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Montreal Canadiens docuseries is not relevant to reader's teams or local news.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4048,
+  "completion_tokens": 313
+ }
+}

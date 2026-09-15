@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "7cbf4fc0f2842e81d2cd58413804c6d29199be521f372c6d6a5ddee68e1f0b90",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses nuclear talks and is unrelated to the user's interests in technology or fintech.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article focuses on Iran's economic issues and U.S. relations, which do not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The content is about a video game and does not relate to the user's technical or fintech interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers Trump's media relations, which is outside the user's excluded topics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about GTA 6 and gaming, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses U.S. sanctions on Iran, which is irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The job posting is not relevant to the user's interests in technology or fintech.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article about Petrobras exporting LNG to Asia does not connect with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a movie and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The content is about a shark attack and is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Emmy nominations and is irrelevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a TV show and does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses audio quality on Apple CarPlay, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a video game and does not connect with the user's technical or fintech interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a video game and does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a personal finance scenario and is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a tragic boating incident and is unrelated to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2707,
+  "completion_tokens": 530
+ }
+}

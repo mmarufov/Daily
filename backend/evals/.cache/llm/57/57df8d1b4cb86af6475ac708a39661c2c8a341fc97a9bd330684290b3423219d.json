@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "87b62801cfe2581f4a91c2f2bd1d1cf7d43cbc67231137dfe341c0efc8612731",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00202\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto/celebrity news excluded; no NJ/local relevance.\"\n    },\n    {\n      \"id\": \"a00205\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto/finance in Ireland is irrelevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00236\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity/entertainment news; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00412\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local NJ high school sports; plausible secondary interest but not must_see.\"\n    },\n    {\n      \"id\": \"a00426\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"NJ high school volleyball; local sports, plausible secondary interest.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1110,
+  "completion_tokens": 300
+ }
+}

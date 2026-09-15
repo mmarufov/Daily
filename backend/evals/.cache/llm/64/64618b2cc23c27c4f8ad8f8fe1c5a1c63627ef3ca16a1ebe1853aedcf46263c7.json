@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6fd36eaf8710a2d2c7bc8e0145c0a551b4a00513de5ff3e9d9bfe9b1ff9f8257",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00010\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Fuel distributor lawsuit relevant to energy markets but not primary or urgent.\"}, {\"id\": \"a00011\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Fed and oil market linkage interesting but secondary to primary interests.\"}, {\"id\": \"a00012\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Iceland EU vote unrelated to energy security or primary interests.\"}, {\"id\": \"a00013\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Retail tariff refunds unrelated to energy or geopolitical developments.\"}, {\"id\": \"a00014\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"OpenAI and SpaceX acquisition unrelated to energy or economic security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1123,
+  "completion_tokens": 241
+ }
+}

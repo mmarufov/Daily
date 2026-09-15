@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0d4d931838a4976c72c5e3fef0eac20e1b4be4fc790306993b83483c4ee5cd8d",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00912\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"US college football history irrelevant to Uzbek sports or politics.\"}, {\"id\": \"a00913\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"US college football teams not relevant to Uzbek interests.\"}, {\"id\": \"a00914\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Croatian boxing unrelated to Uzbek sports or politics.\"}, {\"id\": \"a00915\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Little League World Series and US hero irrelevant to Uzbek reader.\"}, {\"id\": \"a00916\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"NFL and GoPro use on QBs unrelated to Uzbek interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1185,
+  "completion_tokens": 247
+ }
+}

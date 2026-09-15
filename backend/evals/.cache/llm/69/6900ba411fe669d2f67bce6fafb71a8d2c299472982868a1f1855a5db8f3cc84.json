@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9e9b42be6de5572700080df56e89272a01150b94e09de7a295ee6467623a3ef3",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00389\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NFL protest history irrelevant to NJ local interests or reader's preferences.\"}, {\"id\": \"a00392\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Federal immigration policy unrelated to NJ local news or reader's interests.\"}, {\"id\": \"a00402\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"High school soccer in Toms River unrelated to Newark or Essex County interests.\"}, {\"id\": \"a00406\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Montclair Kimberley and West Essex soccer not relevant to Newark or primary interests.\"}, {\"id\": \"a00409\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Westfield field hockey unrelated to Newark, Devils, Giants, or NJ Transit.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1488,
+  "completion_tokens": 252
+ }
+}

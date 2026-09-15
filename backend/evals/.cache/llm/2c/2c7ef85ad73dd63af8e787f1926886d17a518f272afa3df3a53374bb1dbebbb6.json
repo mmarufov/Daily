@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "40955fe59e96f1f6392680797e36d50db0b034cd42a210498b41bcac040f67b2",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00764\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news but no direct UK or consumer impact.\"}, {\"id\": \"a00769\", \"label\": \"fine\", \"tags\": [\"business\", \"consumer_impact\"], \"confidence\": 0.7, \"rationale\": \"Business news with potential consumer impact, but Singapore-focused.\"}, {\"id\": \"a00770\", \"label\": \"fine\", \"tags\": [\"business\", \"economy\"], \"confidence\": 0.7, \"rationale\": \"Economic forecast relevant to business interest, but Singapore-centric.\"}, {\"id\": \"a00771\", \"label\": \"must_see\", \"tags\": [\"technology\", \"marketing\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Important AI transformation insights relevant to marketing and tech interests.\"}, {\"id\": \"a00772\", \"label\": \"must_see\", \"tags\": [\"technology\", \"marketing\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Key discussion on AI's impact on business and workforce, highly relevant.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1013,
+  "completion_tokens": 264
+ }
+}

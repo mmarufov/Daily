@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "380c20a595ebeedb432ab71956095e1f272cd0c151c87d50c518dd2fe2fc68ae",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00834\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Interesting AI tech news but focused on Thailand, less relevant for London marketing consumer impact.\"}, {\"id\": \"a00838\", \"label\": \"fine\", \"tags\": [\"business\", \"marketing\", \"workplace\"], \"confidence\": 0.7, \"rationale\": \"Relevant to marketing work environment and productivity, but not urgent or major.\"}, {\"id\": \"a00839\", \"label\": \"fine\", \"tags\": [\"business\", \"world_news\", \"consumer_impact\"], \"confidence\": 0.75, \"rationale\": \"Insightful business analysis on Southeast Asia markets, useful but not primary interest or UK focused.\"}, {\"id\": \"a00842\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\", \"consumer_impact\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Important ethical and product decisions on AI impact, relevant to tech and consumer impact interests.\"}, {\"id\": \"a00848\", \"label\": \"fine\", \"tags\": [\"business\", \"world_news\", \"consumer_impact\"], \"confidence\": 0.7, \"rationale\": \"Agritech business insights in Southeast Asia, interesting but secondary and less relevant to London.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3742,
+  "completion_tokens": 305
+ }
+}

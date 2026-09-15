@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6cde0717ac7ed369e3163994d7583f172c061fcf2c69af07c9aa0fa17a773764",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00234\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity news, not relevant to AI, tech, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00244\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Film marketing story, unrelated to AI, tech, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00288\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming news, explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a00293\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming industry news, not relevant to AI or reader's interests.\"\n    },\n    {\n      \"id\": \"a00322\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"Google\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Google is a primary interest, but this is a political/cultural story, not core industry news.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2306,
+  "completion_tokens": 314
+ }
+}

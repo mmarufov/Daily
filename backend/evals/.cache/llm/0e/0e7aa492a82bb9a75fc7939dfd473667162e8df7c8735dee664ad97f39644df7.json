@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2b252bc760c432cd06fa57a708cc681c79311cc47ae50e7b4fff8c07b0e7704d",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00667\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major breakthrough in quantum computing; primary tech/science interest and global significance.\"\n    },\n    {\n      \"id\": \"a00670\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Science/health update; relevant but not urgent or directly impactful for this reader.\"\n    },\n    {\n      \"id\": \"a00687\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"UK science/consumer health angle; interesting for staying informed, but not urgent.\"\n    },\n    {\n      \"id\": \"a00693\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Science/tech breakthrough; relevant to primary interests but not immediately impactful.\"\n    },\n    {\n      \"id\": \"a00706\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major world event, but not directly relevant to reader's life or primary interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1166,
+  "completion_tokens": 302
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "07bffb2b9ad967bdcd4c4a74ab5d2cb8de72fd04f1586856596316e1cd2e54ea",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00874\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting tech/science but no direct consumer impact or urgent news.\"}, {\"id\": \"a00875\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Scientific discovery, interesting but not urgent or consumer-impacting.\"}, {\"id\": \"a00881\", \"label\": \"must_see\", \"tags\": [\"technology\", \"science\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Major NASA launch with broad science and tech impact, relevant to tech interest.\"}, {\"id\": \"a00909\", \"label\": \"never\", \"tags\": [\"sports\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sports content, explicitly excluded by reader.\"}, {\"id\": \"a00910\", \"label\": \"never\", \"tags\": [\"sports\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Sports transfer rumors, excluded topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2632,
+  "completion_tokens": 261
+ }
+}

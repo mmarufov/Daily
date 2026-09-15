@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d26539590aa5a4ac524d362aab8b09a98a18b02157690fed1f9e0259a32a9988",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00871\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Space telescope article unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00876\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Historical spaceflight story unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00910\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.99, \"rationale\": \"Sports transfer rumors irrelevant to energy or economics.\"}, {\"id\": \"a00940\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.99, \"rationale\": \"NHL contract news unrelated to reader's interests.\"}, {\"id\": \"a00948\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.99, \"rationale\": \"NHL video game ratings irrelevant to energy or geopolitical topics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2452,
+  "completion_tokens": 231
+ }
+}

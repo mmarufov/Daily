@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bf69e9da8c62ed2371dbe10acffe2284b70d46d1b9215d9440b38139ccaf5c71",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00816\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about AI adoption in Southeast Asia, unrelated to energy or geopolitical topics.\"}, {\"id\": \"a00818\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Battery industry development in Southeast Asia is secondary interest, relevant to energy but not primary.\"}, {\"id\": \"a00819\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Agritech business models unrelated to energy markets or geopolitical developments.\"}, {\"id\": \"a00823\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Asia Pacific AI economy impact is economic background, not directly about energy security or OPEC.\"}, {\"id\": \"a00830\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Taiwan-Thailand tech collaboration unrelated to energy or geopolitical security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3747,
+  "completion_tokens": 256
+ }
+}

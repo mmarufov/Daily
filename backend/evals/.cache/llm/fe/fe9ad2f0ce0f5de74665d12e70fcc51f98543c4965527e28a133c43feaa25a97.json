@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f895000a308b81dcc3654096fc501d79216f5c8f996fe36656544f8c1f004cf5",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00107\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to sports, environment, or reader interests.\"}, {\"id\": \"a00116\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Political protests unrelated to reader's interests.\"}, {\"id\": \"a00119\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Legal framework in China unrelated to reader's interests.\"}, {\"id\": \"a00130\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environment\"], \"confidence\": 0.8, \"rationale\": \"Climate crisis and environmental impact relevant but not primary.\"}, {\"id\": \"a00131\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Afghanistan women's situation unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1104,
+  "completion_tokens": 232
+ }
+}

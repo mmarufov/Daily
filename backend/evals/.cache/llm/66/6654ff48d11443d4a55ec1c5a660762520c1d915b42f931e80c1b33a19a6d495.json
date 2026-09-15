@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "39fe0a592afec1e6a5d2918d690b9312956091b8eea384f7a0d5a83db52f8410",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01108\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"cybersecurity\"], \"confidence\": 0.8, \"rationale\": \"Relevant to AI and cybersecurity but not Singapore or MAS specific.\"}, {\"id\": \"a01110\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI engineering\"], \"confidence\": 0.7, \"rationale\": \"Discusses AI safety concerns, relevant but general and US-centric.\"}, {\"id\": \"a01111\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI\", \"cloud infrastructure\"], \"confidence\": 0.75, \"rationale\": \"UK AI market power issue; relevant to cloud and AI but not Singapore or MAS.\"}, {\"id\": \"a01121\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI girlfriend review site security breach irrelevant to reader interests.\"}, {\"id\": \"a01122\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"developer tools\", \"cloud infrastructure\"], \"confidence\": 0.8, \"rationale\": \"Android memory optimization relevant to developer tooling but not regional or fintech.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3525,
+  "completion_tokens": 273
+ }
+}

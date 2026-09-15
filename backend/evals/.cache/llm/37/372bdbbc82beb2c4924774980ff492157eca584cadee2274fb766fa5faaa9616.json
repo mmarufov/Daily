@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2733dd9147c5cccdb4f15b50154c1a19272be2323d9c5aee639f27bf47ecd08c",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01060\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer impact\"], \"confidence\": 0.8, \"rationale\": \"Relevant tech topic with consumer data implications, but not urgent.\"}, {\"id\": \"a01061\", \"label\": \"must_see\", \"tags\": [\"technology\", \"business\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Tech automation affecting jobs, relevant to consumer and worker impact.\"}, {\"id\": \"a01062\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer impact\"], \"confidence\": 0.7, \"rationale\": \"Useful tech info but routine and missable.\"}, {\"id\": \"a01063\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Product review, not relevant to primary or secondary interests.\"}, {\"id\": \"a01064\", \"label\": \"must_see\", \"tags\": [\"technology\", \"consumer impact\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Data privacy and consumer rights issue affecting users directly.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1054,
+  "completion_tokens": 264
+ }
+}

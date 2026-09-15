@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0de7e1c40ba2e20af8f500cdb85b35a62d957bb226878f8624cd87321238d7f4",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01053\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"direct\", \"company use of AI\", \"AI safety\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major OpenAI incident, cybersecurity, and industry discourse; highly relevant to reader's primary interests.\"\n    },\n    {\n      \"id\": \"a01055\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"direct\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Legal battle involving OpenAI and Apple; significant industry development for an AI product manager.\"\n    },\n    {\n      \"id\": \"a01059\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Not a primary company, but notable AI industry funding news; interesting but not essential.\"\n    },\n    {\n      \"id\": \"a01060\",\n      \"label\": \"must_see\",\n      \"tags\": [\"OpenAI\", \"model releases\", \"direct\"],\n      \"confidence\": 0.98,\n      \"rationale\": \"OpenAI model release with security implications; squarely about a primary interest and industry impact.\"\n    },\n    {\n      \"id\": \"a01064\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"model releases\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Anthropic model release; directly relevant to reader's primary interests in model releases and Anthropic.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1456,
+  "completion_tokens": 361
+ }
+}

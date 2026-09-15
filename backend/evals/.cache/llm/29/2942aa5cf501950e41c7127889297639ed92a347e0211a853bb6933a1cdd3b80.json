@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "00f153c946282789fc62467b4f01892272fbb1548e98f425165ea25cef7e2a3b",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00816\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about AI adoption in Southeast Asia, unrelated to reader's interests.\"}, {\"id\": \"a00817\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Focus on AI in Southeast Asian retail, no relevance to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00818\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"environmental impact\"], \"confidence\": 0.8, \"rationale\": \"Battery industry development relevant to clean energy and environment, but not primary interest.\"}, {\"id\": \"a00819\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"environmental impact\"], \"confidence\": 0.8, \"rationale\": \"Agritech business models relate to environment and sustainability, secondary interest.\"}, {\"id\": \"a00824\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Japanese investment in Southeast Asia unrelated to reader's sports or solar energy interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3773,
+  "completion_tokens": 274
+ }
+}

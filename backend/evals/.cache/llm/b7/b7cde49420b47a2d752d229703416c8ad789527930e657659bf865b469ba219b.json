@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d63a04affd2cb4cb6990fd0c277afaa6b6bd0bb90f4c26b5971fb970a45f1321",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00895\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major NASA launch is notable but not a must_see for a general audience; not a global major_event.\"\n    },\n    {\n      \"id\": \"a00961\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL contract speculation is niche sports news, not general interest or major_event.\"\n    },\n    {\n      \"id\": \"a00962\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL legal case update is niche sports news, not general interest or major_event.\"\n    },\n    {\n      \"id\": \"a00963\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL player injury update is niche sports news, not general interest or major_event.\"\n    },\n    {\n      \"id\": \"a00964\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL injury roster move is niche sports news, not general interest or major_event.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1544,
+  "completion_tokens": 310
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1255ee65b02896dd035c2ba84f89875c957cc385e426fcee1291e580ba208494",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00351\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"UK politics and weather records are solid general news, but not global must-know.\"\n    },\n    {\n      \"id\": \"a00355\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major international human rights case, but not a global must-know for all readers.\"\n    },\n    {\n      \"id\": \"a00371\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"US voting system and tariffs are important, but not must-know for a general global audience.\"\n    },\n    {\n      \"id\": \"a00373\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"US legal and LGBTQ+ rights news; significant but not a global must-know event.\"\n    },\n    {\n      \"id\": \"a00380\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Escalating US-Iran hostilities could impact global security; must-know for all informed adults.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1216,
+  "completion_tokens": 314
+ }
+}

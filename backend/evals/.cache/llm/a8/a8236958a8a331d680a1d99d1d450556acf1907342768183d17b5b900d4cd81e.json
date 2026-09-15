@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "97c800a67bfdf51ea3817139b04225c833bd4a444fe1e9280c5d7c38306ed9e8",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00605\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"CIA visit to Moscow is geopolitical but not directly about Central Asia or trade.\"}, {\"id\": \"a00606\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Mobile phone border prep is personal security, not related to trade or Central Asia.\"}, {\"id\": \"a00609\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"European view on CIA visit is geopolitical background, not directly affecting trade.\"}, {\"id\": \"a00610\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Antidepressant sales in Russia unrelated to reader's business interests.\"}, {\"id\": \"a00612\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Rusal plant mothballing affects Russian industry, trade routes, and regional economy.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4221,
+  "completion_tokens": 260
+ }
+}

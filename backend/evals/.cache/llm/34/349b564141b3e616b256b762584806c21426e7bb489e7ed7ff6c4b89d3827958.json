@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "45f6f0eb556b19a7b4ccdaaa341199be1844858ab79bdab1069cce8a5628aa3a",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01034\", \"label\": \"fine\", \"tags\": [\"technology\", \"science\"], \"confidence\": 0.8, \"rationale\": \"Interesting tech/science topic but speculative, no immediate consumer impact.\"}, {\"id\": \"a01035\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"Luxury car review unrelated to tech, science, or marketing; off-topic for reader.\"}, {\"id\": \"a01036\", \"label\": \"fine\", \"tags\": [\"need_to_know\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Health research cutback relevant to consumer safety but US-focused, less direct impact.\"}, {\"id\": \"a01037\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Promotional content for Ars Technica forums, not news.\"}, {\"id\": \"a01038\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"Entertainment/film review, celebrity-related, excluded topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2078,
+  "completion_tokens": 266
+ }
+}

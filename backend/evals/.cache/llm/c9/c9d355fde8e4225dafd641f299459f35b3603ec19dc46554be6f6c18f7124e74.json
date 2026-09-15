@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "15223651e565b768cc662da6b09ee5bacdabccc277c774b27b3c29d0faf0d084",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00016\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.9, \"rationale\": \"Relevant tech investment news, but routine business update.\"}, {\"id\": \"a00017\", \"label\": \"fine\", \"tags\": [\"world news\", \"consumer impact\"], \"confidence\": 0.8, \"rationale\": \"Community concerns about AI data centers relevant but regional US focus.\"}, {\"id\": \"a00018\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.85, \"rationale\": \"AI token price trends relevant to tech interest, missable.\"}, {\"id\": \"a00019\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer impact\"], \"confidence\": 0.9, \"rationale\": \"Data retention policy change affects customers, relevant to tech and consumer impact.\"}, {\"id\": \"a00020\", \"label\": \"fine\", \"tags\": [\"business\", \"world news\"], \"confidence\": 0.7, \"rationale\": \"Economic update relevant but no direct UK or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1003,
+  "completion_tokens": 249
+ }
+}

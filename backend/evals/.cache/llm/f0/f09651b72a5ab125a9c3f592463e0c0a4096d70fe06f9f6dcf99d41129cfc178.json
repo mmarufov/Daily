@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "11f92f1f88a4025c35d19f97738849098925397f7946f0040a7b215f10744b8f",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01143\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine tech help, general interest but not urgent or major news.\"}, {\"id\": \"a01144\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Common tech troubleshooting, useful but not critical news.\"}, {\"id\": \"a01145\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine tech advice, minor interest for general reader.\"}, {\"id\": \"a01146\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Data leak notable but niche tech news, not major event for general reader.\"}, {\"id\": \"a01153\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Sports streaming options are niche and promotional, off-topic for general news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 914,
+  "completion_tokens": 241
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2f2759ebd17f933c3b3c6fc0e963480c80461b36f61ef36b596cba446266c9de",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00699\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Science research is relevant to Singapore but not directly tied to reader's daily life or primary interests.\"\n    },\n    {\n      \"id\": \"a00704\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Heatwave response affects health, safety, and daily life, especially for a new mother with asthma.\"\n    },\n    {\n      \"id\": \"a00709\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Inspiring local education story; relevant to parenting but not essential or urgent for daily life.\"\n    },\n    {\n      \"id\": \"a00717\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Local safety incident; relevant but not directly impacting reader unless in affected area.\"\n    },\n    {\n      \"id\": \"a00720\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Environmental regulation is local news, but not urgent or directly impactful for reader's daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1104,
+  "completion_tokens": 325
+ }
+}

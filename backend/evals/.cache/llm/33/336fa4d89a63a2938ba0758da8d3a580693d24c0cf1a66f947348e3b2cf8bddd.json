@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c54f443184097d7bcf9c9cc9fede365361046e53fb24ac4b911079c11b704dab",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01035\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Deep AI engineering topic, but not directly about production use or regional context.\"\n    },\n    {\n      \"id\": \"a01054\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US domestic politics/celebrity legal news; not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a01083\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming hardware review; not relevant to engineering, fintech, or regional interests.\"\n    },\n    {\n      \"id\": \"a01093\",\n      \"label\": \"must_see\",\n      \"tags\": [\"cloud infrastructure\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep dive into AWS networking innovation; highly relevant to cloud infrastructure and backend engineering.\"\n    },\n    {\n      \"id\": \"a01107\",\n      \"label\": \"fine\",\n      \"tags\": [\"cybersecurity\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Routine but insightful on software security; relevant to engineering, but not urgent or region-specific.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2205,
+  "completion_tokens": 316
+ }
+}

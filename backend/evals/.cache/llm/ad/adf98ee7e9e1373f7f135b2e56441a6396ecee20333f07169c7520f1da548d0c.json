@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d961e53eb74484c704267059f63465f49654a8c8c0f27e4284bea363b93bf48e",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00959\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Chicago Blackhawks, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00960\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL contract news unrelated to NJ Devils or Giants or local interests.\"}, {\"id\": \"a00961\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Los Angeles Kings goalie prospect, no NJ or local relevance.\"}, {\"id\": \"a00962\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"St. Louis Blues prospect ranking, no NJ or local relevance.\"}, {\"id\": \"a00963\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Vancouver Canucks contract discussion, no NJ or local relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3772,
+  "completion_tokens": 248
+ }
+}

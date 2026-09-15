@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a4e587a1ff5f73329e485d0f22d5b0ec0dee3231f232bbd4a83fe898b1216c36",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01269\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\", \"environmental impact\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major climate disaster with environmental impact; relevant to reader's climate interests but not must_see.\"\n    },\n    {\n      \"id\": \"a01271\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Routine climate disaster coverage; relevant but not directly impactful or primary for reader.\"\n    },\n    {\n      \"id\": \"a01281\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Not relevant to reader's interests; title is a lookalike, not about Toronto or relevant topics.\"\n    },\n    {\n      \"id\": \"a01291\",\n      \"label\": \"never\",\n      \"tags\": [\"lookalike\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"About soccer player Enzo Fernandez, not tennis player Leylah Fernandez; off-topic lookalike.\"\n    },\n    {\n      \"id\": \"a01298\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"No connection to reader's interests or priorities; off-topic.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1399,
+  "completion_tokens": 331
+ }
+}

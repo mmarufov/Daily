@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9c1fc540f3d54fb9077fb2ac50c71e1a9e11b822d337307b0a04c4de9aef41d0",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01287\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Significant US military action with international implications.\"}, {\"id\": \"a01288\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Important policy news but less urgent for general audience.\"}, {\"id\": \"a01289\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Civilian casualties in a conflict zone are major news.\"}, {\"id\": \"a01299\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Civilian deaths in Gaza are major international news.\"}, {\"id\": \"a01301\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Human rights issues important but less urgent for general feed.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 926,
+  "completion_tokens": 243
+ }
+}

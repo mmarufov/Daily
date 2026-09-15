@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "135970ce79e02ad36380e81c8fbac47aa616f0037a18d889489540a75b672a6d",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00811\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"climate\"], \"confidence\": 0.9, \"rationale\": \"Relevant climate tech but not directly impacting reader's life or primary sports interests.\"}, {\"id\": \"a00812\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"climate\"], \"confidence\": 0.85, \"rationale\": \"General Southeast Asia economic and infrastructure news, secondary interest in clean energy.\"}, {\"id\": \"a00813\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"clean_energy\"], \"confidence\": 0.85, \"rationale\": \"Energy infrastructure relevant to clean energy interest but no direct impact or primary sports topic.\"}, {\"id\": \"a00814\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"AI procurement and startup eligibility unrelated to sports or climate interests.\"}, {\"id\": \"a00815\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"AI trustworthiness ranking unrelated to sports or climate interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3910,
+  "completion_tokens": 262
+ }
+}

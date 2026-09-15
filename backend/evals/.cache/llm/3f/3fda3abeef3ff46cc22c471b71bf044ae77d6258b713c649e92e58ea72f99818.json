@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5164a3d47a7d76e6b212fe6d76e5ee3d9e87147037fd6f9c87b76ac01b18515c",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00970\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL betting article; gambling is excluded and NFL is off-topic for this reader.\"\n    },\n    {\n      \"id\": \"a00976\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Carolina Hurricanes NHL broadcast news; not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00977\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NHL trade news unrelated to reader's teams or interests; not relevant for this reader.\"\n    },\n    {\n      \"id\": \"a00978\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Detroit Red Wings history; not related to reader's teams, sports, or environmental interests.\"\n    },\n    {\n      \"id\": \"a00979\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NHL trade news not involving reader's teams or primary/secondary interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2855,
+  "completion_tokens": 310
+ }
+}

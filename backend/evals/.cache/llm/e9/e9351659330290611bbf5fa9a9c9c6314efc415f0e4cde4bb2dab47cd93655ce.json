@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5bcceda974a94ae33b0c1611c675020d89c8026fdc8787cbf84a6e14d725fe1f",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00659\",\n      \"label\": \"fine\",\n      \"tags\": [\"childcare\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to childcare and parenting, but not Singapore-specific or urgent for daily life.\"\n    },\n    {\n      \"id\": \"a00694\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"General local government/economy update; not directly impacting daily life or primary interests.\"\n    },\n    {\n      \"id\": \"a00695\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Government grant news; relevant to local government but not directly affecting reader's priorities.\"\n    },\n    {\n      \"id\": \"a00696\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Routine news roundup; may contain relevant updates but not must_see without specific impact.\"\n    },\n    {\n      \"id\": \"a00698\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"MOH, healthcare, and local impact; new hospital in the east could affect healthcare access.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1138,
+  "completion_tokens": 324
+ }
+}

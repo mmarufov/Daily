@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "89835f1ebfe5dd7bcaaf5f1167c3ec415b5059fed58086a87f9b17604f629ec6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00110\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Relevant world news but not directly impacting reader's interests or life.\"}, {\"id\": \"a00114\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Geopolitical impact relevant to world news interest, but not urgent or primary.\"}, {\"id\": \"a00119\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.8, \"rationale\": \"Cross-border business laws relevant to marketing and business interest.\"}, {\"id\": \"a00126\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.6, \"rationale\": \"Political summit news relevant to world news but not directly affecting reader.\"}, {\"id\": \"a00130\", \"label\": \"fine\", \"tags\": [\"world_news\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Climate crisis and corruption impact consumer and societal issues.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1077,
+  "completion_tokens": 251
+ }
+}

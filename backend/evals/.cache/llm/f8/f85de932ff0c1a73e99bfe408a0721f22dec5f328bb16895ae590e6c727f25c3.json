@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4dd2e5f9a885cdfb412afd162c168d6a6b08eb2cbbe7caa1d47b1f67e826a848",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00894\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL roster news is irrelevant to Singaporean parenting, health, or local life.\"\n    },\n    {\n      \"id\": \"a00984\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL roster construction is unrelated to reader's interests or Singapore context.\"\n    },\n    {\n      \"id\": \"a00986\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US football preseason results are irrelevant to reader's life or interests.\"\n    },\n    {\n      \"id\": \"a00991\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"tech industry news\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"PC gaming leak is tech/gaming news, explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a00995\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US court ruling on sports betting has no relevance to Singaporean parenting or daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2635,
+  "completion_tokens": 302
+ }
+}

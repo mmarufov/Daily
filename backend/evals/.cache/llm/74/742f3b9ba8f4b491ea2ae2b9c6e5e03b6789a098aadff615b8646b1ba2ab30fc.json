@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d9e057d76b78b84456a0438fe5e7e08a2bed005ca627582958267c7a4ae388e7",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00500\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major local crime bust; notable but not a global must_see for general audience.\"\n    },\n    {\n      \"id\": \"a00505\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"National policy change affecting millions of children; major event for informed adults.\"\n    },\n    {\n      \"id\": \"a00523\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Death of a global cultural icon; widely relevant, major event.\"\n    },\n    {\n      \"id\": \"a00601\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Niche sports logistics for Russian athletes; not general news for broad audience.\"\n    },\n    {\n      \"id\": \"a00606\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"International diplomacy; notable but not a must_see absent major new developments.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2010,
+  "completion_tokens": 304
+ }
+}

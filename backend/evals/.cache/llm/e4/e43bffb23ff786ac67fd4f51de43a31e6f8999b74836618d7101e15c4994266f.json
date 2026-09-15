@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6347a881f15a7c6c6e8b7cbe011ff0a5b638a7343517b416389c22c5b751f017",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00011\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech stock and Fed analysis is relevant but routine; not directly impactful for UK consumer or tech interests.\"\n    },\n    {\n      \"id\": \"a00013\",\n      \"label\": \"fine\",\n      \"tags\": [\"consumer impact\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Retailer tariff handling affects consumers; relevant for marketing and consumer impact, but not urgent.\"\n    },\n    {\n      \"id\": \"a00014\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major tech development involving OpenAI, SpaceX, and coding tools; primary tech interest and global relevance.\"\n    },\n    {\n      \"id\": \"a00016\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Trade war and metals market news is relevant for world/business news, but not directly impactful for UK consumers.\"\n    },\n    {\n      \"id\": \"a00023\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI market analysis is on-topic for tech/marketing, but op-ed is background, not must-see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1071,
+  "completion_tokens": 344
+ }
+}

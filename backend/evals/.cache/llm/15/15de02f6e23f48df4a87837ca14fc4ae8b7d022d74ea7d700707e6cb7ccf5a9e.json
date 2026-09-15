@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "847899ef8e9b73e6d1518ec6f600be2aa267e1b8731b80e029e9f05e496e5c4c",
+  "preview": "EVENTS:\n13. \"AI has become how Southeast Asia finds you, but it still isn’t how the region decides\"\n   covered by 10 outlets across 4 sections / 4 regions: BleepingComputer, Business Times SG, Straits"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"events\": [\n    {\n      \"id\": 38,\n      \"tier\": \"world_critical\",\n      \"what\": \"Woman killed and five injured in Swiss rave shooting\"\n    },\n    {\n      \"id\": 5,\n      \"tier\": \"major\",\n      \"what\": \"Canada announces retaliatory tariffs on US goods\"\n    },\n    {\n      \"id\": 1,\n      \"tier\": \"major\",\n      \"what\": \"Trump's economic D-day against Iran raises stakes\"\n    },\n    {\n      \"id\": 0,\n      \"tier\": \"major\",\n      \"what\": \"Hackers breached seven companies using AI trickery\"\n    },\n    {\n      \"id\": 3,\n      \"tier\": \"routine\",\n      \"what\": \"Trump calls for punishment of NBC's Kristen Welker\"\n    },\n    {\n      \"id\": 41,\n      \"tier\": \"routine\",\n      \"what\": \"Milo Yiannopoulos deported from US to UK\"\n    },\n    {\n      \"id\": 2,\n      \"tier\": \"routine\",\n      \"what\": \"Fed chair emphasizes stable prices amid inflation\"\n    },\n    {\n      \"id\": 6,\n      \"tier\": \"routine\",\n      \"what\": \"Meta settles trial over teen addiction for $1\"\n    },\n    {\n      \"id\": 4,\n      \"tier\": \"routine\",\n      \"what\": \"Trump's rebranding of ‘Lake America’ criticized\"\n    },\n    {\n      \"id\": 7,\n      \"tier\": \"routine\",\n      \"what\": \"EU gas stores at lowest level in 13 years\"\n    },\n    {\n      \"id\": 8,\n      \"tier\": \"routine\",\n      \"what\": \"Australia sees higher-than-expected July inflation\"\n    },\n    {\n      \"id\": 9,\n      \"tier\": \"routine\",\n      \"what\": \"VW workers boo boss amid job cuts\"\n    },\n    {\n      \"id\": 11,\n      \"tier\": \"routine\",\n      \"what\": \"Kazakhstan's new leadership faces heavy agenda\"\n    },\n    {\n      \"id\": 14,\n      \"tier\": \"routine\",\n      \"what\": \"The Mecca Pact: What do we know?\"\n    },\n    {\n      \"id\": 15,\n      \"tier\": \"routine\",\n      \"what\": \"Severe flooding exposes corruption in Philippines\"\n    },\n    {\n      \"id\": 18,\n      \"tier\": \"routine\",\n      \"what\": \"SBI leads US$270M round in Indonesia's tech deal\"\n    },\n    {\n      \"id\": 19,\n      \"tier\": \"routine\",\n      \"what\": \"Manchester Airports hack claims 86 GB of data\"\n    },\n    {\n      \"id\": 21,\n      \"tier\": \"routine\",\n      \"what\": \"PaperCut releases emergency patch for flaws\"\n    },\n    {\n      \"id\": 22,\n      \"tier\": \"routine\",\n      \"what\": \"Windows 11 update released with 35 changes\"\n    },\n    {\n      \"id\": 43,\n      \"tier\": \"routine\",\n      \"what\": \"Tennis queens to play doubles at US Open\"\n    },\n    {\n      \"id\": 58,\n      \"tier\": \"routine\",\n      \"what\": \"Trump downplays CIA director's Moscow visit\"\n    },\n    {\n      \"id\": 37,\n      \"tier\": \"routine\",\n      \"what\": \"Captain arrested after Cyprus ferry disaster\"\n    },\n    {\n      \"id\": 48,\n      \"tier\": \"routine\",\n      \"what\": \"OBJ earns spot on Giants' roster\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1344,
+  "completion_tokens": 763
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7db9ab51b8e2798081410227995c6625fa3cc582a83c31e0181bea53d72f537f",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00613\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Russian exiled academics, unrelated to trade or Central Asia.\"}, {\"id\": \"a00614\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Personal story about Russian dissident's wife, no trade or regional relevance.\"}, {\"id\": \"a00619\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Russian oil terminal ownership dispute; relevant to Russia economy but indirect for reader.\"}, {\"id\": \"a00620\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.85, \"rationale\": \"Ukraine drone attacks on Russia military, no direct impact on reader's trade interests.\"}, {\"id\": \"a00621\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Ukraine strikes on Russian oil refining affect commodity prices indirectly.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3921,
+  "completion_tokens": 251
+ }
+}

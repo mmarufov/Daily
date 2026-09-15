@@ -13,6 +13,8 @@ import SwiftUI
 /// Full-bleed editorial hero. Provenance line appears ONLY here (hero only,
 /// high-confidence only). Earlier-today rows show no provenance.
 struct HeroStory: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.displayScale) private var displayScale
     let article: NewsArticle
     /// Pass `nil` to hide the provenance line. Pass an already-sanitized
     /// canonical-topic string when confidence is high. See `ProvenanceLine` for
@@ -36,10 +38,12 @@ struct HeroStory: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.smLg) {
-            heroImage
+            if article.displayImageURL != nil && !dynamicTypeSize.isAccessibilitySize {
+                heroImage
                 .frame(maxWidth: .infinity)
                 .frame(height: Self.imageHeight)
                 .clipped()
+            }
 
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
                 HStack(spacing: AppSpacing.xs) {
@@ -53,14 +57,14 @@ struct HeroStory: View {
                         .tracking(0.8)
                         .textCase(.uppercase)
                         .foregroundStyle(EditionPalette.inkBlue)
-                        .lineLimit(1)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                 }
 
                 Text(article.title)
                     .font(AppTypography.heroHeadline)
                     .tracking(-0.5)
                     .foregroundStyle(EditionPalette.ink)
-                    .lineLimit(3)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 3)
                     .lineSpacing(4)
                     .multilineTextAlignment(.leading)
 
@@ -69,7 +73,7 @@ struct HeroStory: View {
                         .font(AppTypography.dek)
                         .italic()
                         .foregroundStyle(EditionPalette.ink60)
-                        .lineLimit(2)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                         .lineSpacing(3)
                         .multilineTextAlignment(.leading)
                 }
@@ -84,18 +88,14 @@ struct HeroStory: View {
         .padding(.bottom, AppSpacing.md)
         .background(EditionPalette.paper)
         .accessibilityElement(children: .combine)
+        .accessibilityValue(isRead ? "Opened" : "Not opened")
     }
 
     @ViewBuilder
     private var heroImage: some View {
-        if let urlString = article.imageURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable().aspectRatio(contentMode: .fill)
-                default:
-                    EditionPalette.paperSecondary
-                }
+        if let url = article.displayImageURL {
+            GeometryReader { geometry in
+                ArticleRemoteImage(url: url, pixelSize: Int(max(geometry.size.width, Self.imageHeight) * displayScale))
             }
         } else {
             EditionPalette.paperSecondary

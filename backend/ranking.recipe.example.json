@@ -1,0 +1,15 @@
+{
+  "version": "s7-ranking-v1",
+  "rubric": "intent-grade-v1",
+  "ordering": "grade-priority-freshness-id-v1",
+  "central_identity": false,
+  "model": "gpt-4.1-mini-2025-04-14",
+  "pricing": {
+    "input_usd_per_million": 0.4,
+    "output_usd_per_million": 1.6
+  },
+  "max_attempts": 6,
+  "max_input_tokens": 12000,
+  "max_output_tokens": 6000,
+  "deadline_seconds": 20.0
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4940ce05061bc13f9138fec684645eef3a1038509fc7216456e3b5122163b6a2",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01128\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant to AI in production and cloud, but not a must-know development or urgent for daily work.\"\n    },\n    {\n      \"id\": \"a01129\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"cybersecurity\", \"direct\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Critical vulnerability in widely used dev tool; urgent for backend engineers to patch and investigate.\"\n    },\n    {\n      \"id\": \"a01141\",\n      \"label\": \"fine\",\n      \"tags\": [\"cloud infrastructure\", \"databases\", \"developer tools\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Interesting for deep tech and cloud, but not a major event or urgent for daily work.\"\n    },\n    {\n      \"id\": \"a01148\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Covers AI infra and virtualization, relevant but not essential or urgent for the reader.\"\n    },\n    {\n      \"id\": \"a01152\",\n      \"label\": \"fine\",\n      \"tags\": [\"software engineering\", \"cybersecurity\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Security of open source libraries is important, but this is a routine vendor announcement, not urgent.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3522,
+  "completion_tokens": 369
+ }
+}

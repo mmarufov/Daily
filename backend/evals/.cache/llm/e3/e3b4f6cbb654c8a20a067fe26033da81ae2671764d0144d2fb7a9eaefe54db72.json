@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "90440123c42c882741fed4648f996d3c16da9a8c7cee368429d2588a6a7be7ce",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00182\",\n      \"label\": \"fine\",\n      \"tags\": [\"oil and gas prices\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Mentions oil prices and yields, relevant but not primary focus or breaking news.\"\n    },\n    {\n      \"id\": \"a00184\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Stablecoin venture by banks is not relevant to energy markets or security.\"\n    },\n    {\n      \"id\": \"a00188\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Bitcoin price movements and seasonality are not relevant to energy security.\"\n    },\n    {\n      \"id\": \"a00189\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Stablecoin banking products are not relevant to energy markets or security.\"\n    },\n    {\n      \"id\": \"a00196\",\n      \"label\": \"must_see\",\n      \"tags\": [\"oil and gas prices\", \"Iran situation\", \"Strait of Hormuz\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Oil surge on Iran strikes is directly relevant to energy security and primary interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1007,
+  "completion_tokens": 320
+ }
+}

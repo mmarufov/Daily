@@ -13,10 +13,12 @@ struct PersonalizationSettingsView: View {
     @StateObject private var viewModel = NewsPersonalizationViewModel()
     @State private var showAIChat = false
     @State private var showAdvanced = false
+    @State private var confirmsReset = false
     @State private var newTopic = ""
     @State private var newCurrentInterest = ""
     @State private var newLocation = ""
     @State private var newExclusion = ""
+    @State private var newEntityPin = ""
     @State private var contentStyle: Double = 1 // 0=Breaking, 1=Balanced, 2=Deep
     @State private var expertiseLevel: Double = 1 // 0=Casual, 1=Intermediate, 2=Expert
 
@@ -28,6 +30,28 @@ struct PersonalizationSettingsView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                    if let reader = viewModel.reader {
+                        if reader.needsReview {
+                            Text("These interests were imported from your previous profile. Review them before enabling the new reader model.")
+                                .font(AppTypography.footnote)
+                            Toggle("I reviewed my interests and exclusions", isOn: $viewModel.confirmsMigration)
+                        }
+                        Button("Reset learned preferences") { confirmsReset = true }
+                            .disabled(viewModel.isSaving)
+                        Text("Keeps your explicit interests and exclusions; clears learned influence.")
+                            .font(AppTypography.caption1)
+                        if !reader.profile.policies.filter({ $0.kind != "lexical" && !viewModel.removedPolicyIDs.contains($0.id) }).isEmpty {
+                            sectionBlock(title: "Other Reader Rules") {
+                                ForEach(reader.profile.policies.filter { $0.kind != "lexical" && !viewModel.removedPolicyIDs.contains($0.id) }) { policy in
+                                    HStack {
+                                        Text("\(policy.kind): \(policy.value)").font(AppTypography.caption1)
+                                        Spacer()
+                                        Button("Remove") { viewModel.removedPolicyIDs.insert(policy.id) }
+                                    }
+                                }
+                            }
+                        }
+                    }
                     // Your Interests
                     sectionBlock(title: "Your Interests") {
                         ChipFlowView(
@@ -66,6 +90,66 @@ struct PersonalizationSettingsView: View {
                                 .font(AppTypography.labelMedium)
                                 .foregroundColor(BrandColors.primary)
                                 .disabled(newCurrentInterest.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        }
+                    }
+
+                    // S10 batch E: reachable for the first time -- the
+                    // backend and BackendService methods already existed.
+                    // Legacy-serving only (see viewModel.load()).
+                    if viewModel.reader == nil {
+                        sectionBlock(title: "Pinned People & Companies") {
+                            Text("A pinned entity gets a boost whenever it appears in a story's title or summary.")
+                                .font(AppTypography.caption1)
+                                .foregroundColor(BrandColors.textTertiary)
+                            if !viewModel.entityPins.isEmpty {
+                                ChipFlowView(
+                                    items: viewModel.entityPins.map(\.name),
+                                    onRemove: { name in
+                                        guard let pin = viewModel.entityPins.first(where: { $0.name == name }) else { return }
+                                        Task { await viewModel.removeEntityPin(pin) }
+                                    }
+                                )
+                            }
+                            HStack(spacing: AppSpacing.sm) {
+                                TextField("Add a person or company...", text: $newEntityPin)
+                                    .font(AppTypography.body)
+                                    .textFieldStyle(.roundedBorder)
+                                    .onSubmit { addEntityPin() }
+
+                                Button("Add") { addEntityPin() }
+                                    .font(AppTypography.labelMedium)
+                                    .foregroundColor(BrandColors.primary)
+                                    .disabled(newEntityPin.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                        || viewModel.entityPins.count >= 20)
+                            }
+                            if let entityError = viewModel.entityPinErrorMessage {
+                                Text(entityError)
+                                    .font(AppTypography.caption1)
+                                    .foregroundColor(BrandColors.error)
+                            }
+                        }
+
+                        if !viewModel.interestSuggestions.isEmpty {
+                            sectionBlock(title: "Noticed a pattern") {
+                                Text("Based on what you've been reading. Add it, or dismiss if it's not a real interest.")
+                                    .font(AppTypography.caption1)
+                                    .foregroundColor(BrandColors.textTertiary)
+                                ForEach(viewModel.interestSuggestions) { suggestion in
+                                    HStack {
+                                        Text(suggestion.topic)
+                                            .font(AppTypography.body)
+                                            .foregroundColor(BrandColors.textPrimary)
+                                        Spacer()
+                                        Button("Dismiss") { Task { await viewModel.dismissInterestSuggestion(suggestion) } }
+                                            .font(AppTypography.caption1)
+                                            .foregroundColor(BrandColors.textTertiary)
+                                        Button("Add") { Task { await viewModel.acceptInterestSuggestion(suggestion) } }
+                                            .font(AppTypography.labelMedium)
+                                            .foregroundColor(BrandColors.primary)
+                                    }
+                                    .padding(.vertical, AppSpacing.xs)
+                                }
+                            }
                         }
                     }
 
@@ -154,7 +238,11 @@ struct PersonalizationSettingsView: View {
                     }
 
                     // Excluded Topics
-                    sectionBlock(title: "Excluded Topics") {
+                    sectionBlock(title: viewModel.reader == nil ? "Excluded Topics" : "Hidden Phrases") {
+                        if viewModel.reader != nil {
+                            Text("Hides titles and summaries containing these exact phrases. This is not a semantic topic ban.")
+                                .font(AppTypography.caption1)
+                        }
                         if !viewModel.exclusions.isEmpty {
                             ChipFlowView(
                                 items: viewModel.exclusions,
@@ -176,7 +264,7 @@ struct PersonalizationSettingsView: View {
                     }
 
                     // Advanced — raw prompt
-                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    if viewModel.reader == nil { VStack(alignment: .leading, spacing: AppSpacing.sm) {
                         Button {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 showAdvanced.toggle()
@@ -204,7 +292,7 @@ struct PersonalizationSettingsView: View {
                                 .background(Color(.secondarySystemGroupedBackground))
                                 .clipShape(RoundedRectangle(cornerRadius: AppCornerRadius.medium, style: .continuous))
                         }
-                    }
+                    } }
 
                     // Refine with AI
                     Button {
@@ -253,7 +341,9 @@ struct PersonalizationSettingsView: View {
                             let success = await viewModel.save()
                             if success {
                                 // Trigger source re-discovery + feed rebuild (not just cache reload)
-                                NotificationCenter.default.post(name: .preferencesChanged, object: nil)
+                                if viewModel.reader == nil {
+                                    NotificationCenter.default.post(name: .preferencesChanged, object: nil)
+                                }
                                 dismiss()
                             }
                         }
@@ -266,7 +356,7 @@ struct PersonalizationSettingsView: View {
                                 .font(AppTypography.body)
                         }
                     }
-                    .disabled(viewModel.isSaving)
+                    .disabled(viewModel.isSaving || viewModel.isLoading)
                 }
             }
             .overlay {
@@ -286,6 +376,12 @@ struct PersonalizationSettingsView: View {
             OnboardingChatView {
                 Task { await viewModel.load() }
             }
+        }
+        .confirmationDialog("Reset learned preferences?", isPresented: $confirmsReset, titleVisibility: .visible) {
+            Button("Reset learned preferences", role: .destructive) { Task { await viewModel.resetLearning() } }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Your explicit interests and rules stay. Learned feedback and reading history used for personalization will be cleared.")
         }
     }
 
@@ -314,7 +410,16 @@ struct PersonalizationSettingsView: View {
         newExclusion = ""
     }
 
+    private func addEntityPin() {
+        let trimmed = newEntityPin.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        newEntityPin = ""
+        Task { await viewModel.addEntityPin(name: trimmed) }
+    }
+
     private func composePromptFromStructuredInputs() {
+        viewModel.contentDepth = ["breaking", "balanced", "deep"][Int(contentStyle)]
+        if viewModel.reader != nil { return }
         guard !showAdvanced else { return } // If advanced is open, user edits prompt directly
         var parts: [String] = []
 

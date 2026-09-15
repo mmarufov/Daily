@@ -23,12 +23,51 @@ final class DailyUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
+    func testS2NativeReaderShowsVerifiedBodyAndMetadata() throws {
+        let app = launchReader(scenario: "native")
+        XCTAssertTrue(app.staticTexts["S2 Reader Test Story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.textViews["article-native-body"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["article-source-button"].exists)
+    }
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    @MainActor
+    func testS2SourceReaderShowsPublisherHandoff() throws {
+        let app = launchReader(scenario: "source")
+        XCTAssertTrue(app.staticTexts["S2 Reader Test Story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Continue at the publisher"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["The publisher may require a subscription to read this story."].exists)
+        XCTAssertTrue(app.buttons["article-source-button"].exists)
+    }
+
+    @MainActor
+    func testS2MissingTokenPreservesStoryAndExplainsAuthentication() throws {
+        let app = launchReader(scenario: "no-token")
+        XCTAssertTrue(app.staticTexts["S2 Reader Test Story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Sign in required"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["article-retry-button"].exists)
+    }
+
+    @MainActor
+    func testS2OfflineAndTimeoutStatesRemainRetryable() throws {
+        var app = launchReader(scenario: "offline")
+        XCTAssertTrue(app.staticTexts["S2 Reader Test Story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["You're offline"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["article-retry-button"].exists)
+        app.terminate()
+
+        app = launchReader(scenario: "timeout")
+        XCTAssertTrue(app.staticTexts["S2 Reader Test Story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["The article request timed out. Please try again."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["article-retry-button"].exists)
+    }
+
+    @MainActor
+    func testS2InvalidOriginalURLFailsClosed() throws {
+        let app = launchReader(scenario: "invalid")
+        XCTAssertTrue(app.staticTexts["S2 Reader Test Story"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Original source link unavailable"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Article unavailable"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["article-source-button"].exists)
     }
 
     @MainActor
@@ -37,5 +76,13 @@ final class DailyUITests: XCTestCase {
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()
         }
+    }
+
+    @MainActor
+    private func launchReader(scenario: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--s2-reader-ui-test", scenario]
+        app.launch()
+        return app
     }
 }

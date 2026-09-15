@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d9fe5d1eac401784c5876931c2c28eec999f6f2ab636a685d3396e219c3d5114",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00751\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Public transport news relevant but about foreign metro, not local Singapore.\"}, {\"id\": \"a00753\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local real estate news, not directly impacting daily life or parenting.\"}, {\"id\": \"a00755\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Local public transport improvement affects daily commute and safety.\"}, {\"id\": \"a00756\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Corporate leadership change unrelated to reader's interests.\"}, {\"id\": \"a00760\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Accounting AI program unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1116,
+  "completion_tokens": 242
+ }
+}

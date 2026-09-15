@@ -1,0 +1,48 @@
+name: Bug report
+description: Something in the app or the backend behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - iOS app (SwiftUI)
+        - Backend API (FastAPI)
+        - Ingestion / sources
+        - Ranking / feed quality
+        - Evaluation harness (S0)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        iOS version / device or simulator:
+        Backend: hosted or local, commit SHA:
+        Python version (if local):
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or output
+      description: Redact tokens and personal data before pasting.
+      render: shell

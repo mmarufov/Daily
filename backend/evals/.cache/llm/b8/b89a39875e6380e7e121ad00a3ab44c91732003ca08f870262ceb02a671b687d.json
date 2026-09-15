@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c18b44da4752dd79aff573bae304deb50ea4cce669a8596f3f97a7b494da41ce",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00949\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL video game ratings, no direct relevance to Devils or NJ Transit.\"}, {\"id\": \"a00950\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL video game ratings for Islanders goalie, no relevance to Devils or NJ Transit.\"}, {\"id\": \"a00951\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"General NHL news unrelated to Devils, Giants, NJ Transit, or NJ politics.\"}, {\"id\": \"a00952\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Vancouver Canucks player preview unrelated to Devils, Giants, or NJ.\"}, {\"id\": \"a00953\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"NHL betting over/unders, no direct impact on reader's interests or life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3108,
+  "completion_tokens": 259
+ }
+}

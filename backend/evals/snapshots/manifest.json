@@ -1,0 +1,44 @@
+[
+ {
+  "name": "2026-08-31",
+  "file": "2026-08-31.json.gz",
+  "built_at": "2026-08-31T02:22:22.812477+00:00",
+  "frozen_now": "2026-08-31T02:22:22.812477+00:00",
+  "n_articles": 1328,
+  "sha256": "6950caf50c74b867208f7f962f612de5cb7711f70f7eb1218f4ce2bf64e66886",
+  "derived_from": null,
+  "removed_clusters": [],
+  "note": "first frozen corpus, 51 feeds; contains US-Iran war cluster"
+ },
+ {
+  "name": "2026-08-31-quiet",
+  "file": "2026-08-31-quiet.json.gz",
+  "built_at": "2026-08-31T02:22:22.812477+00:00",
+  "frozen_now": "2026-08-31T02:22:22.812477+00:00",
+  "n_articles": 1234,
+  "sha256": "e0f365f2a18bb852501262897c436333555d78b4a498c7d90353e284bd96d7e5",
+  "derived_from": "2026-08-31",
+  "removed_clusters": [
+   "ev-01",
+   "ev-02",
+   "ev-03",
+   "ev-04",
+   "ev-06",
+   "ev-08",
+   "ev-10",
+   "ev-13"
+  ],
+  "note": "quiet-day derivative: all agent-reviewed major and world-critical clusters removed"
+ },
+ {
+  "name": "2026-09-02",
+  "file": "2026-09-02.json.gz",
+  "built_at": "2026-09-02T05:06:49.958134+00:00",
+  "frozen_now": "2026-09-02T05:06:49.958134+00:00",
+  "n_articles": 1358,
+  "sha256": "73f93e5b8cc02c189823f0fc6bbf6b97c27e5bd5e44bcef9d79fa5a0045921b4",
+  "derived_from": null,
+  "removed_clusters": [],
+  "note": "second live RSS snapshot, 50+ hours after 2026-08-31"
+ }
+]

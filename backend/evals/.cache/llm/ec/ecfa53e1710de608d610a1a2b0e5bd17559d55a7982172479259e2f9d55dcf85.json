@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "53371edbd317c49e5b6bd52a545f174ab86bc3a3b84200d0ccc1d6fb995d9e38",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00204\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Tech browser update unrelated to reader's interests or local context.\"}, {\"id\": \"a00205\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"healthcare\"], \"confidence\": 0.8, \"rationale\": \"Healthcare data breach relevant to health but not local or immediate.\"}, {\"id\": \"a00206\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Software security patch unrelated to reader's interests or local context.\"}, {\"id\": \"a00208\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"UK IPTV piracy case unrelated to reader's interests or location.\"}, {\"id\": \"a00209\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI vulnerability discovery unrelated to reader's interests or local context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1218,
+  "completion_tokens": 244
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "831403ce0843834b3393334619d0715a4493d47c966260cfeaccd9b907dabc80",
+  "preview": "READER PROFILE:\nREADER: User is open to any important news.\nDEPTH: balanced\n\nWANTS:\n\nDOES NOT WANT:\n\nCANDIDATES:\n0. [Guardian World] Woman, 22, killed and five injured in shooting at Swiss rave\n   Man"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 0,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"important news\",\n      \"kind\": \"direct\",\n      \"why\": \"Tragic event with significant human impact.\"\n    },\n    {\n      \"id\": 1,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 2,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 3,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"important news\",\n      \"kind\": \"contextual\",\n      \"why\": \"Trade tensions affect economic landscape.\"\n    },\n    {\n      \"id\": 4,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 5,\n      \"keep\": true,\n      \"score\": 0.9,\n      \"matched\": \"important news\",\n      \"kind\": \"direct\",\n      \"why\": \"Significant maritime disaster with casualties.\"\n    },\n    {\n      \"id\": 6,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1002,
+  "completion_tokens": 375
+ }
+}

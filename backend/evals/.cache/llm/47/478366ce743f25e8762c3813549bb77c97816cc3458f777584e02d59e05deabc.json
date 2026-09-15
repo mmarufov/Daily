@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a424dc6badd331efb74a72caf6e483e7a28fbb486fd44205a7bbbb16945c5ecc",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00037\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Covers sanctions and global trade, but no direct impact on Central Asia or reader's business.\"\n    },\n    {\n      \"id\": \"a00042\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"US inflation and Fed policy are relevant background, but no direct Central Asia or trade impact.\"\n    },\n    {\n      \"id\": \"a00068\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Kazakhstan-Russia energy ties are relevant to regional trade context, but not urgent or must_see.\"\n    },\n    {\n      \"id\": \"a00075\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly involves Kazakhstan, Uzbekistan, tariffs, and China—core to reader's business interests.\"\n    },\n    {\n      \"id\": \"a00093\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Kazakhstan politics is a primary interest, but this is routine parliamentary coverage, not must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1805,
+  "completion_tokens": 326
+ }
+}

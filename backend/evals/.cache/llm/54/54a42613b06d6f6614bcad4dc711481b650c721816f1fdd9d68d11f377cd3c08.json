@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "97c6645d402740d494b764ac4cbb6df901d5afc3a881acc258651c5dfb93a2bf",
+  "preview": "READER PROFILE:\nREADER: User works in the solar industry and values climate-related news.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Leylah Fernandez  (entity)\n  [PRIMARY] Bianca Andreescu  (entity)\n  [PRIMA"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"verdicts\":[{\"id\":75,\"keep\":false,\"score\":0.0,\"matched\":null,\"kind\":\"direct\",\"why\":\"Not related to reader's interests.\"},{\"id\":76,\"keep\":true,\"score\":0.8,\"matched\":\"climate\",\"kind\":\"contextual\",\"why\":\"Discusses environmental impact of a major figure.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 675,
+  "completion_tokens": 75
+ }
+}

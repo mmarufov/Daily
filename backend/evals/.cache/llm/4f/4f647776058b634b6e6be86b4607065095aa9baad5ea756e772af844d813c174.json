@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "70df3f3a39c0c0c5fbe35e978070f01cd351d08dfd1d9787584300afa7bcbe87",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00706\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major disaster with high death toll and international aid; global significance.\"\n    },\n    {\n      \"id\": \"a00730\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Personal anecdote about a journalist; not general news or of broad importance.\"\n    },\n    {\n      \"id\": \"a00747\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Routine local policy update; relevant but not globally significant.\"\n    },\n    {\n      \"id\": \"a00821\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Unusual tech incident with global implications, but not a must-know for all adults.\"\n    },\n    {\n      \"id\": \"a00853\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Industry trend; relevant for business/tech readers, but not essential for all.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2088,
+  "completion_tokens": 298
+ }
+}

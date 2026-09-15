@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "307492f435a844128c755639c21524dc7d694fd50f2e60a4db8ed58db3d33c70",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00333\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"Strait of Hormuz\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Directly impacts Iran situation and regional energy security; critical for energy markets analyst.\"\n    },\n    {\n      \"id\": \"a00380\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"oil and gas prices\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"In-depth analysis of US economic pressure on Iran; highly relevant to energy security and markets.\"\n    },\n    {\n      \"id\": \"a00435\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Local NJ crime story; irrelevant to reader's interests or professional focus.\"\n    },\n    {\n      \"id\": \"a00499\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US regional health advisory; not relevant to Berlin-based energy analyst's needs.\"\n    },\n    {\n      \"id\": \"a00561\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"geopolitical developments\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Routine Ukraine conflict update; relevant as background for energy security but not urgent.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1744,
+  "completion_tokens": 332
+ }
+}

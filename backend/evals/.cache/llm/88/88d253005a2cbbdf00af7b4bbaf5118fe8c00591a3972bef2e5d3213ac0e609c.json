@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c388877d779b39610c8af8b17952b7a7fe396bdb27643e9ab9c659662d640aa4",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00285\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Gaming news, niche interest, not major event for general audience.\"}, {\"id\": \"a00287\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Game update delay, niche gaming interest, routine coverage.\"}, {\"id\": \"a00309\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Industry AI discussion, interesting but niche and not urgent.\"}, {\"id\": \"a00321\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Catastrophic floods with missing persons, major humanitarian event.\"}, {\"id\": \"a00322\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Political/cultural dispute, interesting but not major news globally.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2629,
+  "completion_tokens": 246
+ }
+}

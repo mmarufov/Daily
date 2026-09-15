@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d94b17f3caa1674af9b046d0c6ad6b7bfca55cfff6e9211275e211a5272fd35e",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00991\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"PC gaming leak unrelated to fintech, cloud, AI, or Singapore tech.\"}, {\"id\": \"a00992\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"US space agency event and US politics irrelevant to reader interests.\"}, {\"id\": \"a00993\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Robotics in data centers relevant to cloud infrastructure and AI engineering but not Singapore or fintech.\"}, {\"id\": \"a01002\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Meta AI glasses update relevant to AI engineering but not primary interests or region.\"}, {\"id\": \"a01003\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"cybersecurity\"], \"confidence\": 0.85, \"rationale\": \"Cybercrime arrests relevant to cybersecurity but not Singapore or fintech regulation.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2292,
+  "completion_tokens": 260
+ }
+}

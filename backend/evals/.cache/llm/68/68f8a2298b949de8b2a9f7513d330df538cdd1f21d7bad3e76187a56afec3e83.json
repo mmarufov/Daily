@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "77f06d8613b828df404157d623cbfc7e929603d04b374e1022e1f2ec945bdc7d",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00161\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Methane emissions in Turkmenistan have limited direct impact on reader's trade business.\"}, {\"id\": \"a00162\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"KazMunayGas bond issue affects Kazakhstan's economy and financing, relevant to trade and finance.\"}, {\"id\": \"a00163\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"New Uzbek migration laws impact labor and cross-border movement affecting trade and work.\"}, {\"id\": \"a00164\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.7, \"rationale\": \"SCO call on Afghanistan government is regional politics but less direct impact on trade.\"}, {\"id\": \"a00165\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Rahmon-Putin meeting on trade growth and currency use directly affects reader's business.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3732,
+  "completion_tokens": 294
+ }
+}

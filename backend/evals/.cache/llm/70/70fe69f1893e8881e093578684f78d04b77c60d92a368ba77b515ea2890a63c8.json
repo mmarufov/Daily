@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "ba0d9953704f937769434477673d9cecf1123fa54e3840e72ad8e4e2c44c9f57",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: I'm from Tashkent, Uzbekistan. I follow Uzbek football closely: Pakhtakor, Bunyodkor, the national team, and Eldor Shomurodo"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"User is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\",\n  \"interests\": {\n    \"topics\": [\"Uzbek football\", \"Uzbek politics\", \"Uzbek economy\", \"Shavkat Mirziyoyev's reforms\", \"som exchange rate\", \"Uzbekistan's relations with Russia\", \"Uzbekistan's relations with China\", \"Uzbekistan's relations with Afghanistan\"],\n    \"people\": [\"Eldor Shomurodov\", \"Abdukodir Khusanov\"],\n    \"locations\": [\"Tashkent\", \"Uzbekistan\"],\n    \"industries\": [\"sports\", \"politics\", \"economy\"],\n    \"excluded_topics\": [\"entertainment\", \"celebrity news\", \"American sports\"],\n    \"notes\": \"User is focused on local and national issues, particularly in sports and politics.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [\"Uzbek football\", \"Uzbek politics\", \"Uzbek economy\"],\n    \"current_interests\": [\"Pakhtakor\", \"Bunyodkor\", \"national team\", \"Shavkat Mirziyoyev's reforms\"],\n    \"people\": [\"Eldor Shomurodov\", \"Abdukodir Khusanov\"],\n    \"locations\": [\"Tashkent\", \"Uzbekistan\"],\n    \"industries\": [\"sports\", \"politics\", \"economy\"],\n    \"excluded_topics\": [\"entertainment\", \"celebrity news\", \"American sports\"],\n    \"utility_priorities\": [\"local news\", \"political updates\", \"economic information\"],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [\"informative\", \"concise\"],\n    \"life_context\": \"User is engaged in local affairs and follows sports closely.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [\"Uzbek football\", \"Uzbek politics\", \"Uzbek economy\"],\n      \"must_cover_entities\": [\"Shavkat Mirziyoyev\", \"Pakhtakor\", \"Bunyodkor\"],\n      \"must_avoid_topics\": [\"entertainment\", \"celebrity news\", \"American sports\"],\n      \"preferred_source_types\": [\"news articles\", \"analysis\", \"reports\"],\n      \"coverage_targets\": [\"Uzbekistan\", \"Central Asia\"],\n      \"specificity_level\": \"specific\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 464,
+  "completion_tokens": 505
+ }
+}

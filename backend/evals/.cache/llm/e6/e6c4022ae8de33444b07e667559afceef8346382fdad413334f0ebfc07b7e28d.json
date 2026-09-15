@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fe8ecb928e59d15ba5f10df4db3c7a0e250295c7ac8201754ebdc0a6d129e143",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00807\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"followup\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Strong coverage of SEA startup funding, a primary interest, but not urgent or transformative news.\"\n    },\n    {\n      \"id\": \"a00810\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Deep tech on AI hardware relevant to AI engineering, but not directly actionable or urgent for reader.\"\n    },\n    {\n      \"id\": \"a00811\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Focuses on marketing analytics, not engineering, fintech, or regional tech; off-topic for reader.\"\n    },\n    {\n      \"id\": \"a00812\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Creator economy and e-commerce distribution, not relevant to engineering, fintech, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00816\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major update on Singapore/SEA startup funding and MAS fintech push; core to reader's work and interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4058,
+  "completion_tokens": 332
+ }
+}

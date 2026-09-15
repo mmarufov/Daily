@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e727b26b4a959ed3af534b8bd4755a9b05ef82dccdb1f7b435c5ac57ce0ab066",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00014\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"model releases\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"OpenAI model release with major cybersecurity implications; primary interest and industry relevance.\"\n    },\n    {\n      \"id\": \"a00019\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"company use of AI\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Anthropic policy change is a significant industry development for a product manager in AI.\"\n    },\n    {\n      \"id\": \"a00024\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"OpenAI is mentioned, but focus is on SB Energy's IPO, not a primary industry development.\"\n    },\n    {\n      \"id\": \"a00034\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"model releases\", \"company use of AI\"],\n      \"confidence\": 0.98,\n      \"rationale\": \"Detailed coverage of OpenAI's Astra model, cybersecurity, and industry impact; highly relevant.\"\n    },\n    {\n      \"id\": \"a00042\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Anthropic lawsuit is notable but not critical for daily awareness; background industry context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1608,
+  "completion_tokens": 334
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e115f3feafc959421304a60375c798f2f669c83ee106496e69eb9baf08f17ee7",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01255\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Important international issue but not a major event for all adults.\"}, {\"id\": \"a01256\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Diplomatic news of regional interest, routine international relations.\"}, {\"id\": \"a01257\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Severe weather event with visual impact, relevant but not major worldwide.\"}, {\"id\": \"a01258\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Military attacks between Iran and US bases are major global news.\"}, {\"id\": \"a01259\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Historical/political tribute, important but not urgent or major globally.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 921,
+  "completion_tokens": 231
+ }
+}

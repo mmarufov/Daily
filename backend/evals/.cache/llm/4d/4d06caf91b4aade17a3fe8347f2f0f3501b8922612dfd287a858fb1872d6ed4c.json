@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f54e349678e4137adcc132131697e77384cc83935a3b53289af177efc9f6d872",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01054\",\n      \"label\": \"fine\",\n      \"tags\": [\"UK news\", \"world news\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"UK citizen in US news; relevant for world/UK news, but not primary or must-know.\"\n    },\n    {\n      \"id\": \"a01055\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"consumer impact\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech and consumer scam angle; relevant but not urgent for UK-based reader.\"\n    },\n    {\n      \"id\": \"a01057\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"technology\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI in medicine is a tech/science topic; interesting, not essential for daily life.\"\n    },\n    {\n      \"id\": \"a01061\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"business\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech/business development; relevant to interests, but not must-see or urgent.\"\n    },\n    {\n      \"id\": \"a01064\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"consumer impact\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Consumer data rights and tech; relevant, but US-specific and not need-to-know for UK reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1044,
+  "completion_tokens": 328
+ }
+}

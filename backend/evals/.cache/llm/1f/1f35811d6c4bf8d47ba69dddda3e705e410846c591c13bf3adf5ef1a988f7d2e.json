@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6a295a8fd6a2cd93a72f9438fa03cf6eba03d73da50db277d69222941b6c43ba",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00390\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Interesting political dispute but not a major event for general audience.\"}, {\"id\": \"a00393\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Sports rivalry and social media meltdown irrelevant to general news.\"}, {\"id\": \"a00394\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Tragic event but limited scope, not a major event for all readers.\"}, {\"id\": \"a00395\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Political controversy, relevant but not major event.\"}, {\"id\": \"a00396\", \"label\": \"fine\", \"tags\": [\"direct\", \"followup\"], \"confidence\": 0.7, \"rationale\": \"Ongoing legal matter, relevant but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1034,
+  "completion_tokens": 237
+ }
+}

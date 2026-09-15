@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c75bb70e1581606736ce803b88170c3ea98eae8b351f26219c087ae8661116b5",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00724\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Related to parenting and wellness but not urgent or directly impactful.\"}, {\"id\": \"a00727\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"International aid news unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00729\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local transport authority news but no direct impact on reader's daily life.\"}, {\"id\": \"a00730\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"New support initiative for caregivers relevant to family and healthcare interests.\"}, {\"id\": \"a00731\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.85, \"rationale\": \"Significant rise in suicide deaths affecting local community and mental health awareness.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1113,
+  "completion_tokens": 256
+ }
+}

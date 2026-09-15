@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9e0d002f66ae2da86156e3764ce255afa1257114c827799c9486252ad9ac2f58",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01312\", \"label\": \"fine\", \"tags\": [\"climate\", \"environmental impact\"], \"confidence\": 0.8, \"rationale\": \"Relevant climate change topic, interesting but not urgent for daily life.\"}, {\"id\": \"a01314\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Football news unrelated to tennis or horse racing interests.\"}, {\"id\": \"a01321\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Automotive industry news unrelated to reader's interests.\"}, {\"id\": \"a01322\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Sanctions on Iran unrelated to reader's interests.\"}, {\"id\": \"a01323\", \"label\": \"fine\", \"tags\": [\"climate\", \"environmental impact\"], \"confidence\": 0.85, \"rationale\": \"Urban tree protection relevant to environmental concerns, but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1098,
+  "completion_tokens": 244
+ }
+}

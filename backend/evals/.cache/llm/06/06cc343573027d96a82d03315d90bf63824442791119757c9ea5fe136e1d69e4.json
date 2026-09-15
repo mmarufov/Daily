@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8e8f73f4708dd49f8f0a8a115b8813c2f7ec3d8ed8fbcb23827db302b302e888",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01045\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Group chat advice unrelated to tech or fintech interests.\"}, {\"id\": \"a01049\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"cybersecurity\"], \"confidence\": 0.8, \"rationale\": \"Cybersecurity and AI risks relevant but US water systems less relevant to Singapore reader.\"}, {\"id\": \"a01050\", \"label\": \"fine\", \"tags\": [\"developer_tools\", \"ai_engineering\"], \"confidence\": 0.85, \"rationale\": \"Technical guide on running LLMs locally fits AI engineering interest.\"}, {\"id\": \"a01054\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.95, \"rationale\": \"US ICE political news unrelated to reader's interests.\"}, {\"id\": \"a01056\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US government office maintenance irrelevant to reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1160,
+  "completion_tokens": 252
+ }
+}

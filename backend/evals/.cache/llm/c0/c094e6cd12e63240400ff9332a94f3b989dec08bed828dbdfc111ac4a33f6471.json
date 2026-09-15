@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "aedec04ced3774d86f9f35b95f8fe5e01cbb152595fc94a1197cf50c0bad8704",
+  "preview": "EVENTS:\n18. \"At least 93,000 ‘in great need’ after Nepal-Tibet flash floods, says Red Cross\"\n   covered by 12 outlets across 5 sections / 8 regions: Al Jazeera, BBC, BBC World, DW, Gothamist, Guardian"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"events\": [\n    {\n      \"id\": 0,\n      \"tier\": \"world_critical\",\n      \"what\": \"US strikes Iranian launchers, sparking reprisal attacks\"\n    },\n    {\n      \"id\": 60,\n      \"tier\": \"world_critical\",\n      \"what\": \"At least 37 killed after Russian strike near Kyiv\"\n    },\n    {\n      \"id\": 18,\n      \"tier\": \"major\",\n      \"what\": \"93,000 in need after Nepal-Tibet flash floods\"\n    },\n    {\n      \"id\": 43,\n      \"tier\": \"major\",\n      \"what\": \"Woman killed, five injured in Swiss rave shooting\"\n    },\n    {\n      \"id\": 1,\n      \"tier\": \"routine\",\n      \"what\": \"Iceland rejects EU accession talks after referendum\"\n    },\n    {\n      \"id\": 5,\n      \"tier\": \"routine\",\n      \"what\": \"Dolly Parton unites divided Americans in discussion\"\n    },\n    {\n      \"id\": 17,\n      \"tier\": \"routine\",\n      \"what\": \"AI influences Southeast Asia's decision-making\"\n    },\n    {\n      \"id\": 40,\n      \"tier\": \"routine\",\n      \"what\": \"Nancy Grace Roman Space Telescope launches successfully\"\n    },\n    {\n      \"id\": 7,\n      \"tier\": \"routine\",\n      \"what\": \"Trump calls for punishment of NBC’s Kristen Welker\"\n    },\n    {\n      \"id\": 46,\n      \"tier\": \"routine\",\n      \"what\": \"15 missing after flash flood in Grand Canyon\"\n    },\n    {\n      \"id\": 49,\n      \"tier\": \"routine\",\n      \"what\": \"Tennis queens to play doubles at US Open\"\n    },\n    {\n      \"id\": 3,\n      \"tier\": \"routine\",\n      \"what\": \"Venezuela’s Rodríguez defends oil deal with Trump\"\n    },\n    {\n      \"id\": 47,\n      \"tier\": \"routine\",\n      \"what\": \"Milo Yiannopoulos deported from US to UK\"\n    },\n    {\n      \"id\": 2,\n      \"tier\": \"routine\",\n      \"what\": \"Hackers breach companies using AI trickery\"\n    },\n    {\n      \"id\": 8,\n      \"tier\": \"routine\",\n      \"what\": \"Trump's rebranding of ‘Lake America’ criticized\"\n    },\n    {\n      \"id\": 10,\n      \"tier\": \"routine\",\n      \"what\": \"Meta settles trial over teen addiction for $1\"\n    },\n    {\n      \"id\": 11,\n      \"tier\": \"routine\",\n      \"what\": \"EU gas stores at lowest level in 13 years\"\n    },\n    {\n      \"id\": 4,\n      \"tier\": \"routine\",\n      \"what\": \"Trump's economic D-day against Iran raises stakes\"\n    },\n    {\n      \"id\": 6,\n      \"tier\": \"routine\",\n      \"what\": \"Fed chair emphasizes stable prices amid inflation\"\n    },\n    {\n      \"id\": 9,\n      \"tier\": \"routine\",\n      \"what\": \"Canada announces retaliatory tariffs on US goods\"\n    },\n    {\n      \"id\": 42,\n      \"tier\": \"routine\",\n      \"what\": \"Captain arrested after ferry disaster in Cyprus\"\n    },\n    {\n      \"id\": 54,\n      \"tier\": \"routine\",\n      \"what\": \"OBJ makes Giants' initial 53-man roster\"\n    },\n    {\n      \"id\": 12,\n      \"tier\": \"routine\",\n      \"what\": \"Fears grow for rate hike after inflation in Australia\"\n    },\n    {\n      \"id\": 64,\n      \"tier\": \"routine\",\n      \"what\": \"Trump downplays CIA director's Moscow visit\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1421,
+  "completion_tokens": 807
+ }
+}

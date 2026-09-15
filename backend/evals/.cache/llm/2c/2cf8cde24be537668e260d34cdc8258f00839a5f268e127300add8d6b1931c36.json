@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7e722e89ed8ae9c91b920818bc19fcb7f1c182ef7680de4fdd9d3b4005f892a0",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00521\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Interesting tech innovation, but niche and not essential for staying informed or consumer impact.\"\n    },\n    {\n      \"id\": \"a00538\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Job posting, not news; irrelevant to reader's interests and priorities.\"\n    },\n    {\n      \"id\": \"a00549\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant tech/science update, but not a must-see unless it directly impacts consumers.\"\n    },\n    {\n      \"id\": \"a00640\",\n      \"label\": \"must_see\",\n      \"tags\": [\"science\", \"technology\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major breakthrough in quantum computing; significant for tech/science and staying informed.\"\n    },\n    {\n      \"id\": \"a00648\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Interesting science news, but not urgent or directly impactful for daily life or consumers.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1108,
+  "completion_tokens": 328
+ }
+}

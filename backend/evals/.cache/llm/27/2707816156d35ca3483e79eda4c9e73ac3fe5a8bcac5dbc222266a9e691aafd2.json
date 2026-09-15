@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b3ad4148b3f942e6f8e8ff07cf95cb11b49dae2fa8efc78d0d1b74c3a51c7ac8",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00147\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Central Asian politics, but not Uzbekistan-focused or a primary interest; relevant as background regional context.\"\n    },\n    {\n      \"id\": \"a00149\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Regional political developments; not directly about Uzbekistan or reader's primary interests, but plausible background.\"\n    },\n    {\n      \"id\": \"a00150\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Kazakhstan's political process is regional context; not directly relevant to Uzbek politics or reader's main interests.\"\n    },\n    {\n      \"id\": \"a00153\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Kyrgyz tourism project; not related to Uzbekistan, sports, or politics of interest to reader.\"\n    },\n    {\n      \"id\": \"a00154\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Sports policy in Kazakhstan; tangentially relevant as regional sports news, but not about Uzbek teams or athletes.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3627,
+  "completion_tokens": 328
+ }
+}

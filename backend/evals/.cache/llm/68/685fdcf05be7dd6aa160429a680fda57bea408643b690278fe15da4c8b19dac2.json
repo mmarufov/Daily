@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fed0da8e75f9a881997a4280478d378abc032a135eeed4585ab283134583b3eb",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00816\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI adoption in SEA unrelated to reader's interests or local life.\"}, {\"id\": \"a00817\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI in retail sector irrelevant to reader's priorities.\"}, {\"id\": \"a00818\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"ASEAN battery industry news unrelated to reader's local life or health.\"}, {\"id\": \"a00820\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Digital wills platform relevant to family and financial planning but not urgent.\"}, {\"id\": \"a00821\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"health\", \"local_news\"], \"confidence\": 0.95, \"rationale\": \"New synthetic wound care product impacts healthcare options in Singapore.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3776,
+  "completion_tokens": 252
+ }
+}

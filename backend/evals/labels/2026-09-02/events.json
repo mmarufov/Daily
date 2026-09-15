@@ -1,0 +1,451 @@
+{
+ "snapshot": "2026-09-02",
+ "threshold": 0.55,
+ "clusters": [
+  {
+   "id": "ev-01",
+   "title": "Trump says US will ‘hit Iran hard’ as hostilities resume – as it happened",
+   "what": "Trump says US will ‘hit Iran hard’",
+   "tier": "world_critical",
+   "spread": 25,
+   "sources": [
+    "Al Jazeera",
+    "BBC",
+    "CNBC",
+    "DW",
+    "Guardian US",
+    "Guardian World",
+    "bne IntelliNews"
+   ],
+   "article_ids": [
+    "a00000",
+    "a00180",
+    "a00335",
+    "a00380",
+    "a01264",
+    "a01265",
+    "a01266",
+    "a01280",
+    "a01285",
+    "a01287",
+    "a01289",
+    "a01290",
+    "a01303",
+    "a01306",
+    "a01309",
+    "a01318"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-02",
+   "title": "Russia targets Ukraine’s rail network as war enters deadly new phase",
+   "what": "Russia targets Ukraine’s rail network",
+   "tier": "world_critical",
+   "spread": 18,
+   "sources": [
+    "BBC World",
+    "DW",
+    "Guardian World",
+    "Meduza EN",
+    "Moscow Times",
+    "NPR World"
+   ],
+   "article_ids": [
+    "a00576",
+    "a00593",
+    "a00612",
+    "a00640",
+    "a00641",
+    "a01204",
+    "a01215",
+    "a01238",
+    "a01262",
+    "a01304"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-03",
+   "title": "Monday briefing: Nepal and Tibet’s floods are a warning for the future",
+   "what": "Nepal and Tibet’s floods are a warning",
+   "tier": "major",
+   "spread": 39,
+   "sources": [
+    "BBC",
+    "BBC World",
+    "DW",
+    "Gothamist",
+    "Guardian US",
+    "Guardian World",
+    "Moscow Times",
+    "NPR World",
+    "Straits Times",
+    "The Diplomat",
+    "Times of Cent.Asia"
+   ],
+   "article_ids": [
+    "a00092",
+    "a00133",
+    "a00134",
+    "a00137",
+    "a00155",
+    "a00358",
+    "a00388",
+    "a00499",
+    "a00603",
+    "a00706",
+    "a00739",
+    "a01202",
+    "a01224",
+    "a01237",
+    "a01268",
+    "a01269",
+    "a01271",
+    "a01310",
+    "a01315",
+    "a01343"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-04",
+   "title": "Thailand’s AI startup push gets OpenAI backing through new public-private accelerator",
+   "what": "Thailand’s AI startup push gets OpenAI backing",
+   "tier": "major",
+   "spread": 30,
+   "sources": [
+    "Al Jazeera",
+    "Business Times SG",
+    "CNA Singapore",
+    "CoinDesk",
+    "TechCrunch",
+    "The Diplomat",
+    "The Register",
+    "The Verge",
+    "Wired",
+    "e27"
+   ],
+   "article_ids": [
+    "a00121",
+    "a00132",
+    "a00138",
+    "a00198",
+    "a00768",
+    "a00771",
+    "a00772",
+    "a00795",
+    "a00796",
+    "a00806",
+    "a00809",
+    "a00815",
+    "a00825",
+    "a00829",
+    "a00833",
+    "a00834",
+    "a00835",
+    "a00837",
+    "a00842",
+    "a00845",
+    "a00851",
+    "a00852",
+    "a00853",
+    "a01053",
+    "a01073",
+    "a01120",
+    "a01143",
+    "a01145",
+    "a01175",
+    "a01288"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-05",
+   "title": "US officials defend Venezuela oil deal amid questions over rebuilding plan",
+   "what": "US officials defend Venezuela oil deal",
+   "tier": "major",
+   "spread": 24,
+   "sources": [
+    "Al Jazeera",
+    "BBC World",
+    "Guardian US",
+    "Meduza EN",
+    "NPR World",
+    "bne IntelliNews"
+   ],
+   "article_ids": [
+    "a00177",
+    "a00375",
+    "a00626",
+    "a01198",
+    "a01203",
+    "a01223",
+    "a01295"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-06",
+   "title": "Germany blames Russia for drone attack at Leipzig airport",
+   "what": "Germany blames Russia for drone attack",
+   "tier": "major",
+   "spread": 17,
+   "sources": [
+    "Al Jazeera",
+    "BBC World",
+    "DW",
+    "Guardian World",
+    "Meduza EN"
+   ],
+   "article_ids": [
+    "a00629",
+    "a01205",
+    "a01259",
+    "a01261",
+    "a01276",
+    "a01284",
+    "a01305"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-07",
+   "title": "Hong Kong pro-democracy activist Joshua Wong pleads guilty in second national security case",
+   "what": "Joshua Wong pleads guilty in security case",
+   "tier": "major",
+   "spread": 14,
+   "sources": [
+    "Al Jazeera",
+    "BBC",
+    "DW",
+    "Guardian World"
+   ],
+   "article_ids": [
+    "a00355",
+    "a01249",
+    "a01277",
+    "a01302"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-08",
+   "title": "Ontario premier unveils Lake Ontario sign in response to Trump’s ‘Lake America’ order – video",
+   "what": "",
+   "tier": "routine",
+   "spread": 23,
+   "sources": [
+    "Al Jazeera",
+    "Ars Technica",
+    "BBC",
+    "Engadget",
+    "Guardian US",
+    "Guardian World",
+    "TechCrunch",
+    "The Verge",
+    "Wired"
+   ],
+   "article_ids": [
+    "a00345",
+    "a00399",
+    "a01044",
+    "a01048",
+    "a01058",
+    "a01123",
+    "a01179",
+    "a01245",
+    "a01281"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-09",
+   "title": "John Ternus sends first memo as Apple CEO teasing a &#8216;huge launch next week&#8217;",
+   "what": "",
+   "tier": "routine",
+   "spread": 22,
+   "sources": [
+    "CNBC",
+    "DW",
+    "Fortune",
+    "NJ.com",
+    "TechCrunch",
+    "The Verge"
+   ],
+   "article_ids": [
+    "a00006",
+    "a00031",
+    "a00450",
+    "a01052",
+    "a01054",
+    "a01063",
+    "a01066",
+    "a01319"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-10",
+   "title": "US trade regulator and 22 states accuse Amazon of taking $20bn with secret surcharges",
+   "what": "",
+   "tier": "routine",
+   "spread": 18,
+   "sources": [
+    "Ars Technica",
+    "BBC World",
+    "Guardian Business",
+    "NJ Monitor"
+   ],
+   "article_ids": [
+    "a00039",
+    "a00507",
+    "a01030",
+    "a01218"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-11",
+   "title": "OpenAI delayed its new model’s development after the Hugging Face hack",
+   "what": "",
+   "tier": "routine",
+   "spread": 16,
+   "sources": [
+    "CNBC",
+    "Fortune",
+    "Hacker News",
+    "TechCrunch",
+    "The Verge",
+    "Wired"
+   ],
+   "article_ids": [
+    "a00014",
+    "a00034",
+    "a00543",
+    "a01050",
+    "a01060",
+    "a01090"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-12",
+   "title": "Putin says Zelensky’s warning to civilian airlines operating in Russian airspace ‘amounts to state terrorism’",
+   "what": "",
+   "tier": "routine",
+   "spread": 15,
+   "sources": [
+    "Al Jazeera",
+    "BBC",
+    "Meduza EN"
+   ],
+   "article_ids": [
+    "a00342",
+    "a00619",
+    "a00622",
+    "a00623",
+    "a01297"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-13",
+   "title": "Mark Carney tells US to ‘start being serious’ amid escalating trade war",
+   "what": "",
+   "tier": "routine",
+   "spread": 13,
+   "sources": [
+    "CNBC",
+    "DW",
+    "Guardian World"
+   ],
+   "article_ids": [
+    "a00002",
+    "a01244",
+    "a01248",
+    "a01323"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-14",
+   "title": "U.S. House votes to avoid government shutdown amid GOP hard-liner resistance",
+   "what": "U.S. House votes to avoid government shutdown",
+   "tier": "routine",
+   "spread": 13,
+   "sources": [
+    "Al Jazeera",
+    "CNBC",
+    "NPR"
+   ],
+   "article_ids": [
+    "a00004",
+    "a00327",
+    "a01293"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-15",
+   "title": "Times Square stabbing in NYC leaves 1 dead, assailant killed",
+   "what": "Times Square stabbing leaves 1 dead",
+   "tier": "routine",
+   "spread": 13,
+   "sources": [
+    "BBC World",
+    "DW",
+    "Gothamist"
+   ],
+   "article_ids": [
+    "a00465",
+    "a00472",
+    "a00476",
+    "a01217",
+    "a01320"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-16",
+   "title": "‘Dangerous power grab’: top Democrats decry USPS system that could thwart mail-in voting – as it happened",
+   "what": "",
+   "tier": "routine",
+   "spread": 12,
+   "sources": [
+    "Guardian US",
+    "NJ Monitor",
+    "NJ Spotlight",
+    "NPR"
+   ],
+   "article_ids": [
+    "a00333",
+    "a00371",
+    "a00458",
+    "a00501",
+    "a00513",
+    "a00518",
+    "a00525"
+   ],
+   "source": "model"
+  },
+  {
+   "id": "ev-17",
+   "title": "Trump's plan for economic D-day for Iran has one big hole: China",
+   "what": "Trump's plan for economic D-day for Iran",
+   "tier": "routine",
+   "spread": 11,
+   "sources": [
+    "Al Jazeera",
+    "CNBC",
+    "NPR World"
+   ],
+   "article_ids": [
+    "a00001",
+    "a01200",
+    "a01294"
+   ],
+   "source": "model"
+  }
+ ]
+}

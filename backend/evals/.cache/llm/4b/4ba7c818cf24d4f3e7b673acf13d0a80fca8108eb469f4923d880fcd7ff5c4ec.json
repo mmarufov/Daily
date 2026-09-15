@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "725c29552dd57f383b666a00064be2e4c3542db7730506f687732ed18a717a54",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01059\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\"], \"confidence\": 0.9, \"rationale\": \"Tech startup funding news relevant but not urgent for consumer impact.\"}, {\"id\": \"a01060\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Cybersecurity risks from new AI model critical for consumer safety.\"}, {\"id\": \"a01061\", \"label\": \"fine\", \"tags\": [\"technology\", \"consumer impact\"], \"confidence\": 0.85, \"rationale\": \"Android update affects many users but is routine tech news.\"}, {\"id\": \"a01062\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Security issues with X Money payments service directly affect consumers.\"}, {\"id\": \"a01063\", \"label\": \"fine\", \"tags\": [\"technology\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Apple event hype is routine tech news, no immediate consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1082,
+  "completion_tokens": 261
+ }
+}

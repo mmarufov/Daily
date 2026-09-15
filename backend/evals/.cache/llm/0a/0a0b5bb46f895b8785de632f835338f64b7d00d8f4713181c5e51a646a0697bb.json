@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0c36e9e148986e1760ee313d435056d938d6b65d183444a3487183a7438c4912",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00957\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL offseason rankings are sports news, which the reader wants to avoid.\"\n    },\n    {\n      \"id\": \"a00962\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL prospect rankings are sports content, which is excluded for this reader.\"\n    },\n    {\n      \"id\": \"a00970\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about NHL players and mental health, but still fundamentally sports news.\"\n    },\n    {\n      \"id\": \"a00978\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL preseason game recap is sports news, which the reader does not want.\"\n    },\n    {\n      \"id\": \"a00983\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL preseason game reaction is sports content, which is excluded for this reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3551,
+  "completion_tokens": 314
+ }
+}

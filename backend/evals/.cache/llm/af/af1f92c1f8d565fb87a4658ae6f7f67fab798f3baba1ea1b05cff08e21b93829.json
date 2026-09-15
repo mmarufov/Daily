@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "eedae4d0039fdd9259a5cb02cee8446ea22092b1c24dcac38d8d491e79d8f68a",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00672\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting science but not directly relevant to reader's primary interests or consumer impact.\"}, {\"id\": \"a00675\", \"label\": \"must_see\", \"tags\": [\"science\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Health risk from ultra-processed foods affects consumers, relevant to reader's interest in consumer impact.\"}, {\"id\": \"a00676\", \"label\": \"must_see\", \"tags\": [\"science\", \"technology\"], \"confidence\": 0.9, \"rationale\": \"New magnetic state discovery has potential tech applications, relevant to primary interests.\"}, {\"id\": \"a00678\", \"label\": \"fine\", \"tags\": [\"science\", \"technology\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"NASA telescope launch is interesting but routine science news, not urgent.\"}, {\"id\": \"a00679\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Quantum effect discovery is notable science but not urgent or consumer-impacting.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1280,
+  "completion_tokens": 280
+ }
+}

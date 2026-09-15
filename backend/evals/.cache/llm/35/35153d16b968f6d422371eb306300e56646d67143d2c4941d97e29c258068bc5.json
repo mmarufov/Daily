@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5a0f0d4f08204fbe7156b772128245368140a53e936fdb44498930f645529530",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00742\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Humanitarian aid unrelated to tech, fintech, or Singapore work context.\"}, {\"id\": \"a00745\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Crime news unrelated to reader's tech or fintech interests.\"}, {\"id\": \"a00748\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Gaming event unrelated to reader's tech or fintech interests.\"}, {\"id\": \"a00749\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Singapore\"], \"confidence\": 0.8, \"rationale\": \"Local business news in Singapore, minor relevance to fintech ecosystem.\"}, {\"id\": \"a00750\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Singapore\"], \"confidence\": 0.8, \"rationale\": \"Cultural program usage in Singapore, minor relevance to local context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1168,
+  "completion_tokens": 248
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8b912e81be9b5e2bdaa2f51f88c7d82d9c3596fb4215f0d61a76458f322f8794",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01250\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Major international conflict event important for any informed adult.\"}, {\"id\": \"a01251\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Cultural event coverage, interesting but not essential for general news.\"}, {\"id\": \"a01252\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.85, \"rationale\": \"International political event, relevant but not urgent for general audience.\"}, {\"id\": \"a01253\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Sports news, narrow niche for a general news reader.\"}, {\"id\": \"a01254\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Serious conflict-related civilian casualties, important global news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 928,
+  "completion_tokens": 246
+ }
+}

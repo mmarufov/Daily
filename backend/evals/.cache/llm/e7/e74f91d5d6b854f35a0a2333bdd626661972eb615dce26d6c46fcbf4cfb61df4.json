@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "7d24e197486dd0b4aec2eb4c3062e0e3ff058fa9d0a50514a5990f28cd641e0d",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: I'm a new mum in Singapore, on maternity leave from a job in HR. I rent an HDB flat in Tampines. I have asthma so haze and a"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"New mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\",\n  \"interests\": {\n    \"topics\": [\"government schemes for parents\", \"childcare\", \"healthcare\", \"cost of living\", \"rental rules\", \"public transport changes\", \"Singapore news\"],\n    \"people\": [],\n    \"locations\": [\"Singapore\", \"Tampines\"],\n    \"industries\": [\"healthcare\", \"public services\"],\n    \"excluded_topics\": [\"sports\", \"gaming\", \"crypto\", \"tech industry news\"],\n    \"notes\": \"User is a new mum with asthma, concerned about air quality.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [\"parenting\", \"healthcare\", \"local news\"],\n    \"current_interests\": [\"government schemes for parents\", \"childcare\", \"healthcare advisories\", \"cost of living\", \"public transport changes\"],\n    \"people\": [],\n    \"locations\": [\"Singapore\", \"Tampines\"],\n    \"industries\": [\"healthcare\", \"public services\"],\n    \"excluded_topics\": [\"sports\", \"gaming\", \"crypto\", \"tech industry news\"],\n    \"utility_priorities\": [\"health\", \"family\", \"cost of living\"],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [\"informative\", \"concise\"],\n    \"life_context\": \"New mother on maternity leave, managing asthma, living in a rented HDB flat.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [\"government schemes for parents\", \"healthcare\", \"cost of living\"],\n      \"must_cover_entities\": [\"Ministry of Health\", \"local government\"],\n      \"must_avoid_topics\": [\"sports\", \"gaming\", \"crypto\"],\n      \"preferred_source_types\": [\"local news outlets\", \"government announcements\"],\n      \"coverage_targets\": [\"Singapore\"],\n      \"specificity_level\": \"specific\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 475,
+  "completion_tokens": 407
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "572ba873f40c576325e089d229b6e9a6daeab9b66540df4e46854f3e27bbe892",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00456\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focused on New Jersey local news, not relevant to London or reader interests.\"}, {\"id\": \"a00458\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US election and postal service issue unrelated to UK or reader interests.\"}, {\"id\": \"a00459\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news, no relevance to reader's location or interests.\"}, {\"id\": \"a00461\", \"label\": \"fine\", \"tags\": [\"technology\", \"education\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI use in education is tech-related but US-specific and not directly consumer-impacting.\"}, {\"id\": \"a00464\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"NYC subway and MetroCard vending machines story irrelevant to London or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1160,
+  "completion_tokens": 261
+ }
+}

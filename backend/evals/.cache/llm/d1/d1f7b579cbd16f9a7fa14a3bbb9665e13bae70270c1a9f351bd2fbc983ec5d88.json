@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "673d178228461d4ff1d20675ce4b1b8719a93e0aa61d5cab6f74a9c85709fa07",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00378\", \"label\": \"never\", \"tags\": [\"off_topic\", \"us domestic politics\"], \"confidence\": 1.0, \"rationale\": \"US politics, vegan slur topic irrelevant to reader interests.\"}, {\"id\": \"a00390\", \"label\": \"never\", \"tags\": [\"off_topic\", \"us domestic politics\"], \"confidence\": 1.0, \"rationale\": \"US-Canada lake naming dispute unrelated to reader's tech and Singapore focus.\"}, {\"id\": \"a00396\", \"label\": \"never\", \"tags\": [\"off_topic\", \"us domestic politics\"], \"confidence\": 1.0, \"rationale\": \"SEC legal hearing unrelated to fintech regulation in Singapore or SEA.\"}, {\"id\": \"a00423\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Retail expansion in Ocean County unrelated to reader's tech or fintech interests.\"}, {\"id\": \"a00431\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Adidas pet jerseys are promotional and off-topic for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1407,
+  "completion_tokens": 262
+ }
+}

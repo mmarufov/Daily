@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aa3c05d69434ffaa7e4e32ec5f9a68e8f3f56483267037ad360fc490bb10e706",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00323\", \"label\": \"never\", \"tags\": [\"off_topic\", \"gaming\"], \"confidence\": 1.0, \"rationale\": \"Gaming leak unrelated to trade, politics, or Central Asia.\"}, {\"id\": \"a00337\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"UK political commentary irrelevant to reader's interests.\"}, {\"id\": \"a00338\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"UK borrowing costs unrelated to Central Asia or trade.\"}, {\"id\": \"a00361\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Health and CIA news unrelated to reader's business focus.\"}, {\"id\": \"a00363\", \"label\": \"never\", \"tags\": [\"off_topic\", \"entertainment\"], \"confidence\": 1.0, \"rationale\": \"Film adaptation and entertainment not wanted by reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1775,
+  "completion_tokens": 238
+ }
+}

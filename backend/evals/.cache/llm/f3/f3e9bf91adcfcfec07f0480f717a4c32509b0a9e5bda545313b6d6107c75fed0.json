@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "71d9b3bb91cb0efaa082e7ecf274342fa4349afcba0243e0e01ee777df316eaf",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00842\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Tech and ethics of AI are primary interests; environmental angle is relevant but not urgent.\"\n    },\n    {\n      \"id\": \"a00868\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Science/space news fits primary interests; routine mission update, not essential.\"\n    },\n    {\n      \"id\": \"a00870\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major science mission update; interesting for science/tech focus but not must_see.\"\n    },\n    {\n      \"id\": \"a00871\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.75,\n      \"rationale\": \"Space/tech news; launch delay is routine, not critical for this reader.\"\n    },\n    {\n      \"id\": \"a00939\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports content, which the reader explicitly wants to avoid.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3083,
+  "completion_tokens": 305
+ }
+}

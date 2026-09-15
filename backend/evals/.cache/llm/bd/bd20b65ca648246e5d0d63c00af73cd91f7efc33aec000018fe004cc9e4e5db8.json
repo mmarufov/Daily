@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4442439154aa0b6ed0a84792c01ad14edba0b16ec37f3cf8c7b7e60d86af8feb",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00726\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Legal dispute unrelated to AI or reader's interests.\"}, {\"id\": \"a00732\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Money laundering auction is financial but not directly relevant to AI or reader's job.\"}, {\"id\": \"a00748\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"R&D spending report relevant to tech industry but not AI-specific or urgent.\"}, {\"id\": \"a00749\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Mid-cap ROE analysis mentions AI but is general finance news.\"}, {\"id\": \"a00755\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI-powered transit update is interesting but Singapore-focused, not Boston or AI industry-wide.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1079,
+  "completion_tokens": 255
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a5163f1d287d7441f79d240a4d10cbcc736844e8cd9b4506df6db33c63e913a4",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00857\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Spacewalk news is unrelated to reader's interests in tech, AI, fintech, or Singapore.\"\n    },\n    {\n      \"id\": \"a00919\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"MLB playoff coverage is US sports, explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a01010\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL player workload is irrelevant; sports are excluded.\"\n    },\n    {\n      \"id\": \"a01013\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL player contracts are off-topic; sports are excluded.\"\n    },\n    {\n      \"id\": \"a01047\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major update to AI models relevant to AI engineering and production use; core reader interest.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3076,
+  "completion_tokens": 306
+ }
+}

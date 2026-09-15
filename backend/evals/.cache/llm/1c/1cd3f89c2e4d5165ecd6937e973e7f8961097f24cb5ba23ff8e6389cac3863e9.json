@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c7c8ff4d8cd4f31a3e174ca41057ded3b7b6d6f80aaf79ea8084fd21131efa57",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00480\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Transit system update affects daily commuters, generally useful information.\"}, {\"id\": \"a00484\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local government social media engagement, interesting but not urgent.\"}, {\"id\": \"a00488\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.75, \"rationale\": \"Local safety issue with street racing, relevant for urban residents.\"}, {\"id\": \"a00499\", \"label\": \"fine\", \"tags\": [\"major_event\"], \"confidence\": 0.6, \"rationale\": \"Serious flooding abroad, important but less direct impact for general reader.\"}, {\"id\": \"a00500\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Major drug bust in NYC, notable local crime news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1121,
+  "completion_tokens": 245
+ }
+}

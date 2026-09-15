@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cae562cdea33590a4e3650379e7d56cd61cb2a4bb461119d6b9c5bc748c86c28",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00623\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Significant geopolitical and safety warning affecting international aviation.\"}, {\"id\": \"a00626\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Important geopolitical economic news but less urgent globally.\"}, {\"id\": \"a00636\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Notable trade and security policy news relevant to Europe.\"}, {\"id\": \"a00649\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.6, \"rationale\": \"Interesting scientific discovery with broad relevance but not urgent.\"}, {\"id\": \"a00651\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.6, \"rationale\": \"Health innovation with potential impact but not immediate need to know.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2345,
+  "completion_tokens": 232
+ }
+}

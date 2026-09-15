@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f6d847e421c29bd2e0775de79cc9b463dbddee1950def965c6461049e3611e81",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01062\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Not related to sports, solar energy, or climate topics.\"}, {\"id\": \"a01086\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Not related to sports, solar energy, or climate topics.\"}, {\"id\": \"a01089\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promotional content, not relevant to interests.\"}, {\"id\": \"a01092\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Privacy and government surveillance topic unrelated to interests.\"}, {\"id\": \"a01097\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environmental_impact\"], \"confidence\": 0.85, \"rationale\": \"Relevant to sustainable cooling tech and environmental impact, secondary interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1980,
+  "completion_tokens": 239
+ }
+}

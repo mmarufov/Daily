@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aa29ad41059b04afe3c22085b6f20d9f8ab7b844735e03c956a8f10b1a687762",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00009\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"AI in production is relevant, but consumer robot sales are not core to reader's deep technical or regional focus.\"\n    },\n    {\n      \"id\": \"a00044\",\n      \"label\": \"never\",\n      \"tags\": [\"us domestic politics\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US politics and Canadian consumer habits are excluded and irrelevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00045\",\n      \"label\": \"never\",\n      \"tags\": [\"us domestic politics\", \"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US Federal Reserve policy and politics are not relevant to Singapore fintech or tech interests.\"\n    },\n    {\n      \"id\": \"a00079\",\n      \"label\": \"fine\",\n      \"tags\": [\"Southeast Asia\", \"background_routine\"],\n      \"confidence\": 0.5,\n      \"rationale\": \"Regional context is relevant, but drug trade is not a primary or technical interest for this reader.\"\n    },\n    {\n      \"id\": \"a00132\",\n      \"label\": \"must_see\",\n      \"tags\": [\"AI engineering\", \"Southeast Asia startups\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly addresses AI governance and law in Southeast Asia, a primary interest for this reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1367,
+  "completion_tokens": 348
+ }
+}

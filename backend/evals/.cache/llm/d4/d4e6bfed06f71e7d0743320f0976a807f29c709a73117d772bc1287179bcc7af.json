@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "8c6d85789868ab18218e163b94c98584ca405652f6844c4b833cdc0d87e80b89",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"results\": [\n    {\n      \"relevant\": true,\n      \"score\": 0.7,\n      \"reason\": \"The article discusses China's tax reform and its implications for Southeast Asia, which is relevant to the user's interest in the regional tech and startup scene.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.8,\n      \"reason\": \"The report on Singapore's RIE2025 shows significant growth in business R&D spending, which is crucial for the fintech and tech ecosystem in Singapore.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article focuses on cultural and demographic issues in Singapore, which do not align with the user's interests in technical news.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.6,\n      \"reason\": \"This article highlights success stories from Singapore's RIE efforts, which may provide insights into the local tech and startup landscape.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.7,\n      \"reason\": \"The article discusses increased business spending and job creation in R&D, relevant to the user's focus on the fintech and tech sectors.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.6,\n      \"reason\": \"The new grant under RIE2030 aims to fund nascent technologies, which is relevant to the user's interests in innovation and fintech.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article is about a new bar in Singapore and does not relate to the user's technical or professional interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a legal case regarding employment and health, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article focuses on a political campaign in Sweden, which is outside the user's areas of interest.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.8,\n      \"reason\": \"Cloudflare's AI Search service is directly relevant to AI engineering and developer tooling, which are key interests for the user.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article covers a sports event, which is excluded from the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a ferry disaster, which is not relevant to the user's professional or technical interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses prison policy, which is outside the user's areas of interest.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a political issue in Australia, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article covers a shooting incident, which is not relevant to the user's professional interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a political issue in Australia, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a political issue in Australia, which is not relevant to the user's interests.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.6,\n      \"reason\": \"The article discusses the use of AI in the Debian community, which is relevant to the user's interest in AI engineering and developer tools.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"The article discusses a political issue in the US, which is excluded from the user's interests.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.7,\n      \"reason\": \"The article discusses Singapore's efforts to translate research into real-world impact, which aligns with the user's interests in fintech and technology.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.6,\n      \"reason\": \"The article discusses challenges faced by electric motorcycle firms in Singapore, which may provide insights into local tech and startup dynamics.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4529,
+  "completion_tokens": 987
+ }
+}

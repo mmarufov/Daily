@@ -1,0 +1,163 @@
+{
+ "key": "dilshod",
+ "name": "Dilshod — Tashkent",
+ "axis": "non-English-named entities and places; transliteration and rare proper nouns",
+ "transcript": [
+  {
+   "role": "assistant",
+   "content": "Hi! Tell me what kind of news you want to see."
+  },
+  {
+   "role": "user",
+   "content": "I'm from Tashkent, Uzbekistan. I follow Uzbek football closely: Pakhtakor, Bunyodkor, the national team, and Eldor Shomurodov and Abdukodir Khusanov abroad. Also Uzbek politics and economy, Shavkat Mirziyoyev's reforms, the som exchange rate, and anything about Uzbekistan's relations with Russia, China and Afghanistan."
+  },
+  {
+   "role": "assistant",
+   "content": "Anything you'd rather not see?"
+  },
+  {
+   "role": "user",
+   "content": "No entertainment or celebrity news. I don't care about American sports."
+  }
+ ],
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "User is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.",
+  "interests": {
+   "topics": [
+    "Uzbek football",
+    "Uzbek politics",
+    "Uzbek economy",
+    "Shavkat Mirziyoyev's reforms",
+    "som exchange rate",
+    "Uzbekistan's relations with Russia",
+    "Uzbekistan's relations with China",
+    "Uzbekistan's relations with Afghanistan"
+   ],
+   "people": [
+    "Eldor Shomurodov",
+    "Abdukodir Khusanov"
+   ],
+   "locations": [
+    "Tashkent",
+    "Uzbekistan"
+   ],
+   "industries": [
+    "sports",
+    "politics",
+    "economy"
+   ],
+   "excluded_topics": [
+    "entertainment",
+    "celebrity news",
+    "American sports"
+   ],
+   "notes": "User is focused on local and national issues, particularly in sports and politics."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "Uzbek football",
+    "Uzbek politics",
+    "Uzbek economy"
+   ],
+   "current_interests": [
+    "Pakhtakor",
+    "Bunyodkor",
+    "national team",
+    "Shavkat Mirziyoyev's reforms"
+   ],
+   "people": [
+    "Eldor Shomurodov",
+    "Abdukodir Khusanov"
+   ],
+   "locations": [
+    "Tashkent",
+    "Uzbekistan"
+   ],
+   "industries": [
+    "sports",
+    "politics",
+    "economy"
+   ],
+   "excluded_topics": [
+    "entertainment",
+    "celebrity news",
+    "American sports"
+   ],
+   "expanded_exclusions": [],
+   "utility_priorities": [
+    "local news",
+    "political updates",
+    "economic information"
+   ],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "informative",
+    "concise"
+   ],
+   "life_context": "User is engaged in local affairs and follows sports closely.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "Uzbek football",
+     "Uzbek politics",
+     "Uzbek economy"
+    ],
+    "must_cover_entities": [
+     "Shavkat Mirziyoyev",
+     "Pakhtakor",
+     "Bunyodkor"
+    ],
+    "must_avoid_topics": [
+     "entertainment",
+     "celebrity news",
+     "American sports"
+    ],
+    "preferred_source_types": [
+     "news articles",
+     "analysis",
+     "reports"
+    ],
+    "coverage_targets": [
+     "Uzbekistan",
+     "Central Asia"
+    ],
+    "specificity_level": "specific"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "Uzbek football",
+    "Uzbek politics",
+    "Uzbek economy"
+   ],
+   "must_cover_entities": [
+    "Shavkat Mirziyoyev",
+    "Pakhtakor",
+    "Bunyodkor"
+   ],
+   "must_avoid_topics": [
+    "entertainment",
+    "celebrity news",
+    "American sports"
+   ],
+   "preferred_source_types": [
+    "news articles",
+    "analysis",
+    "reports"
+   ],
+   "coverage_targets": [
+    "Uzbekistan",
+    "Central Asia"
+   ],
+   "specificity_level": "specific"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "gpt-4o-mini",
+  "cache_key": "02ef95479e194ab14d3b1ecc93a6a3895e71037b454030cb1cb15ebd6569dc68",
+  "date": "2026-09-01"
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1f5f36c190cbb57b5385eb58aa7dde58791ae721c556ff622c6fcb562c68fcad",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00147\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Primarily about a sporting event; not relevant to business, trade, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00148\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Kazakhstan's UN initiative is regionally relevant but not urgent or directly impactful for business.\"\n    },\n    {\n      \"id\": \"a00150\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Education policy in Kazakhstan is background context; not directly relevant to trade or business.\"\n    },\n    {\n      \"id\": \"a00154\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports results are not relevant to business, trade, or reader's stated interests.\"\n    },\n    {\n      \"id\": \"a00155\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Government warning on mudflows directly affects safety, logistics, and business operations in Tajikistan.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3988,
+  "completion_tokens": 318
+ }
+}

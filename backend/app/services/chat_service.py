@@ -377,7 +377,34 @@ class ChatService:
         if not thread:
             raise HTTPException(status_code=404, detail="Thread not found")
 
+        from app.services.reader_integration import snapshot_for, filter_articles, is_current
+        reader_snapshot = snapshot_for(conn, user_id)
         prior_messages = chat_repository.get_thread_messages(conn, thread_id=thread_id)
+        if reader_snapshot is not None:
+            # Historical answers have no immutable reader-policy context receipt.
+            # Never reuse their prose as newly authorized personalized evidence.
+            prior_messages = []
+
+        def reader_context(articles):
+            if reader_snapshot is None:
+                return articles
+            if not is_current(conn, user_id, reader_snapshot):
+                raise HTTPException(409, "Reader changed; start a new response")
+            return filter_articles(reader_snapshot, articles)
+
+        def check_reader():
+            if reader_snapshot is not None and not is_current(conn, user_id, reader_snapshot):
+                raise HTTPException(409, "Reader changed; start a new response")
+        if reader_snapshot is not None:
+            if reader_snapshot.get("migration_status") != "ready":
+                raise HTTPException(409, "Review your imported reader preferences before starting personalized chat")
+            if thread.get("article_id"):
+                primary = chat_repository.get_articles_by_ids(conn, article_ids=[str(thread["article_id"])])
+                if not reader_context(primary):
+                    # Thread titles also enter routing/generation prompts. Do not
+                    # let excluded historical metadata bypass evidence filtering.
+                    # Direct article reading remains separately available.
+                    raise HTTPException(409, "This story is excluded by your reader preferences; review them before discussing it")
         intent_spec = self._resolve_intent_spec(intent)
         if intent and not intent_spec:
             raise HTTPException(status_code=400, detail="Unsupported chat intent")
@@ -470,6 +497,7 @@ class ChatService:
                     )
 
                     yield sse_event("status", {"label": "Pulling related coverage"})
+                    selected_articles = reader_context(selected_articles)
                     plan = await self._plan_response(
                         thread=thread,
                         prompt=prompt,
@@ -478,6 +506,7 @@ class ChatService:
                         prior_messages=prior_messages,
                     )
 
+                    check_reader()
                     source_cards = [
                         self._serialize_source_card(article) for article in selected_articles[:4]
                     ]
@@ -493,6 +522,7 @@ class ChatService:
                         selected_articles=selected_articles,
                         prior_messages=prior_messages,
                     ):
+                        check_reader()
                         full_text += delta
                         for event_name, payload in parser.feed(delta):
                             yield sse_event(event_name, payload)
@@ -523,6 +553,7 @@ class ChatService:
                                 limit=14,
                             )
 
+                    selected_articles = reader_context(selected_articles)
                     plan = self._roundup_plan(prompt=prompt)
                     source_cards = [
                         self._serialize_source_card(article) for article in selected_articles[:4]
@@ -539,6 +570,7 @@ class ChatService:
                         selected_articles=selected_articles,
                         prior_messages=prior_messages,
                     ):
+                        check_reader()
                         full_text += delta
                         for event_name, payload in parser.feed(delta):
                             yield sse_event(event_name, payload)
@@ -590,6 +622,7 @@ class ChatService:
                                 limit=10 if route["response_mode"] == "news_answer" else 6,
                             )
 
+                    selected_articles = reader_context(selected_articles)
                     plan = self._answer_plan(response_mode=route["response_mode"])
                     source_cards = [
                         self._serialize_source_card(article) for article in selected_articles[:4]
@@ -606,10 +639,12 @@ class ChatService:
                         selected_articles=selected_articles,
                         prior_messages=prior_messages,
                     ):
+                        check_reader()
                         full_text += delta
                         for event_name, payload in parser.feed(delta):
                             yield sse_event(event_name, payload)
 
+                check_reader()
                 for event_name, payload in (parser.finish() if parser else []):
                     yield sse_event(event_name, payload)
 
@@ -628,29 +663,22 @@ class ChatService:
                     "title": plan["title"],
                     "source_article_ids": source_article_ids,
                 }
-                updated_message = chat_repository.update_message(
-                    conn,
-                    message_id=str(assistant_message["id"]),
-                    thread_id=thread_id,
-                    plain_text=plain_text,
-                    blocks_json=blocks,
-                    follow_ups=plan["follow_ups"],
-                    degraded=degraded,
-                    generation_meta=generation_meta,
-                )
-                chat_repository.set_message_sources(
-                    conn,
-                    message_id=str(assistant_message["id"]),
-                    article_ids=source_article_ids,
-                )
-                final_sources = chat_repository.get_message_sources(
-                    conn,
-                    message_ids=[str(assistant_message["id"])],
-                )
-                serialized_message = self._serialize_message(
-                    updated_message,
-                    final_sources.get(str(assistant_message["id"]), []),
-                )
+                from app.services.reader_integration import publication_context
+                with publication_context(conn, user_id, reader_snapshot):
+                    updated_message = chat_repository.update_message(
+                        conn, message_id=str(assistant_message["id"]), thread_id=thread_id,
+                        plain_text=plain_text, blocks_json=blocks, follow_ups=plan["follow_ups"],
+                        degraded=degraded, generation_meta=generation_meta,
+                    )
+                    chat_repository.set_message_sources(
+                        conn, message_id=str(assistant_message["id"]), article_ids=source_article_ids,
+                    )
+                    final_sources = chat_repository.get_message_sources(
+                        conn, message_ids=[str(assistant_message["id"])],
+                    )
+                    serialized_message = self._serialize_message(
+                        updated_message, final_sources.get(str(assistant_message["id"]), []),
+                    )
                 if self._should_retitle_thread_after_turn(
                     thread=thread,
                     route=route,
@@ -664,11 +692,13 @@ class ChatService:
                     )
                     thread["title"] = new_title
                 if plan["follow_ups"]:
+                    check_reader()
                     yield sse_event("follow_ups", {"follow_ups": plan["follow_ups"]})
+                check_reader()
                 yield sse_event("done", {"message": serialized_message})
             except Exception as exc:
                 fallback_text = (
-                    full_text.strip()
+                    (full_text.strip() if reader_snapshot is None else "")
                     or "I couldn't finish this answer cleanly. Try again in a moment."
                 )
                 blocks = build_blocks_from_text(fallback_text, plan.get("sections", []))
@@ -993,18 +1023,28 @@ class ChatService:
         limit: int,
         lookback_hours: int,
     ) -> list[dict[str, Any]]:
-        embedding = await self.openai_service.generate_embedding(query)
+        from app.services.understanding_consumers import enabled as s3_enabled, query_vector
+        embedding = (await query_vector(conn,query) if s3_enabled()
+                     else await self.openai_service.generate_embedding(query))
         if not embedding:
             return []
+
+        from app.services.understanding_consumers import enabled as s3_enabled, semantic_rows
+        if s3_enabled():
+            return semantic_rows(conn,embedding,limit=limit,lookback_hours=lookback_hours,private=True)
 
         with conn.cursor() as cur:
             cur.execute(
                 f"""
-                SELECT id, title, summary, content, author, source_name, image_url,
+                SELECT id, title, summary, COALESCE(analysis_text, content) AS content,
+                       author, source_name, image_url, image_origin, image_source_url,
+                       image_attribution, image_is_illustrative,
                        published_at, category, url,
                        1 - (embedding <=> %s::vector) AS similarity
                 FROM public.articles
                 WHERE embedding IS NOT NULL
+                  AND analysis_content_version IS NOT NULL
+                  AND embedding_content_version = analysis_content_version
                   AND COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
                 ORDER BY embedding <=> %s::vector
                 LIMIT %s
@@ -1235,16 +1275,20 @@ class ChatService:
         }
 
     def _serialize_source_card(self, article: dict[str, Any]) -> dict[str, Any]:
+        from app.services.article_content import serialize_article
+
+        serialized = serialize_article(article, include_body=False)
         published_at = article.get("published_at")
         return {
             "article_id": str(article["id"]),
             "title": article["title"],
             "summary": article.get("summary"),
             "source": article.get("source_name"),
-            "image_url": article.get("image_url"),
+            "image": serialized.get("image"),
+            "image_url": serialized.get("image_url"),
             "published_at": self._iso(published_at) if isinstance(published_at, datetime) else published_at,
             "category": article.get("category"),
-            "url": article.get("url"),
+            "url": serialized.get("url"),
         }
 
     def _resolve_intent_spec(self, intent: str | None) -> dict[str, Any] | None:

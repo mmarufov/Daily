@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "83c787ba95056c2da75b0551a8a9c0385c178e5432a3445b90c6de0e323223a5",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00179\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to Singapore or reader's interests, about foreign energy deal.\"}, {\"id\": \"a00182\", \"label\": \"never\", \"tags\": [\"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Crypto topic excluded by reader preferences.\"}, {\"id\": \"a00183\", \"label\": \"never\", \"tags\": [\"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Crypto regulatory news excluded by reader.\"}, {\"id\": \"a00193\", \"label\": \"never\", \"tags\": [\"exclusion_collision\"], \"confidence\": 1.0, \"rationale\": \"Crypto regulation in Singapore but crypto excluded by reader.\"}, {\"id\": \"a00207\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"healthcare_advisory\"], \"confidence\": 0.9, \"rationale\": \"Data breach affects many patients, relevant to healthcare and personal data safety.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1063,
+  "completion_tokens": 245
+ }
+}

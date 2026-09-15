@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "86d490d9b7a1e254e49233333af06b97c4695ea3cbbf65fd65413cbe454ee02f",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on an electric vehicle, which is not directly related to the user's primary interests in tennis, horse racing, or climate policy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses Russian politics, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a video game roleplaying server, which does not align with the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a football transfer involving Enzo Fernandez, which is not relevant to the user's primary focus on tennis or horse racing.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a local boys soccer team, which does not intersect with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses cryptocurrency, which is not relevant to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a deportation case related to Brexit, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides promotional codes for a photo retailer, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides promotional codes for a fitness product, which does not align with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political events in the UK, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses cryptocurrency market trends, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political activist's legal issues, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political activist's legal issues, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses political relations between Tajikistan and Russia, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political figure's career move, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a classic television episode, which does not align with the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political crackdown in Tunisia, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses human rights issues in Tunisia, which falls under the excluded topics of partisan politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political meeting between Tajikistan and Russia, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political figure's career move, which falls under the excluded topics of partisan politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2333,
+  "completion_tokens": 692
+ }
+}

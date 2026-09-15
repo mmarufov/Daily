@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0403df49c8d178ceb863f7b992d7d3d3c9ccfcbd3efe73e0c17fef73dc01c966",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00180\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Fintech-related but no Singapore or deep tech focus evident.\"}, {\"id\": \"a00188\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US Fed Chair inflation comments; US domestic politics off-topic.\"}, {\"id\": \"a00189\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Banks building despite Clarity Act delay; fintech relevant but no Singapore or deep tech focus.\"}, {\"id\": \"a00191\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Southeast Asia\"], \"confidence\": 0.8, \"rationale\": \"Southeast Asia fintech investment relevant but not Singapore or MAS focused.\"}, {\"id\": \"a00198\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.85, \"rationale\": \"Bitcoin price update; no Singapore or fintech regulation relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1050,
+  "completion_tokens": 255
+ }
+}

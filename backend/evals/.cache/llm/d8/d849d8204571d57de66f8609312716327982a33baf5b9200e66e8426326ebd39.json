@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f2b70c1b50c6bafb50639f2c2d39eb6f4b3dde6b98a95db1d8b6c48649ac2c0e",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00340\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Celebrity legal news is general interest but not major event.\"}, {\"id\": \"a00341\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Entertainment news of a major star stepping back is interesting but not must-see.\"}, {\"id\": \"a00342\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Ongoing Ukraine conflict escalation is major global news.\"}, {\"id\": \"a00343\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Military movements near tourist areas are notable but not urgent.\"}, {\"id\": \"a00344\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"New cancer test is important health news but not urgent today.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 920,
+  "completion_tokens": 233
+ }
+}

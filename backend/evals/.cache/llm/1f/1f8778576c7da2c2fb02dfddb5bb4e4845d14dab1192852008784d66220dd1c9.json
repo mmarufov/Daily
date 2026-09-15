@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ccefd2c8e7e4e05fe36394824976e6621ccf9f1ed5d6fe7dbbdb19c8adcc70d3",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00344\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"London event, cultural but not primary interest or consumer impact.\"}, {\"id\": \"a00346\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"UK news\"], \"confidence\": 0.95, \"rationale\": \"Government policy change affecting UK public safety and justice system.\"}, {\"id\": \"a00360\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Sports article, excluded topic.\"}, {\"id\": \"a00361\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Sports article, excluded topic.\"}, {\"id\": \"a00367\", \"label\": \"fine\", \"tags\": [\"world news\"], \"confidence\": 0.8, \"rationale\": \"World news on political deportation, plausible interest but no direct consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1149,
+  "completion_tokens": 244
+ }
+}

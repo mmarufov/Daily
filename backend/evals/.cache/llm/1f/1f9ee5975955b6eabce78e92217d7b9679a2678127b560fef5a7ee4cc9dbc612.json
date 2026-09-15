@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "08a20cca37ab0920a36611ce02d7f315e6aa7aa7c2a17b08ce7b9f932c7960b1",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00152\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"TAPI pipeline is relevant for regional trade and energy, but current development is limited to Afghanistan, not directly impacting reader.\"\n    },\n    {\n      \"id\": \"a00153\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Regional investment and Chinese involvement are of interest, but ski tourism is not core to reader's business.\"\n    },\n    {\n      \"id\": \"a00154\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Olympic delegation rules are unrelated to trade, business, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00156\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Medical advances in Uzbekistan are not relevant to trade, business, or reader's priorities.\"\n    },\n    {\n      \"id\": \"a00157\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.98,\n      \"rationale\": \"Arts and ballet in Tajikistan are outside reader's business and stated interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3709,
+  "completion_tokens": 319
+ }
+}

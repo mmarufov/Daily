@@ -32,7 +32,7 @@ Important: PRODUCTION-ONLY fixes, no localhost.
 - One task per subagent for focused execution
 
 ### 3. Self-Improvement Loop
-- After ANY correction from the user: update tasks/lessons.md with the pattern
+- After ANY correction from the user: update docs/notes/lessons.md with the pattern
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
 
@@ -96,10 +96,10 @@ Follow the SwiftUI patterns from [Dimillian/Skills](https://github.com/Dimillian
 6. Validate: no compiler errors, previews render, state propagates correctly
 
 ## Task Management
-- Plan First: Write plan to tasks/plan.md with checklist items
+- Plan First: Write plan to docs/notes/plan.md with checklist items
 - Track Progress: Mark items complete as you go
 - Validate Changes: High-level summary at each step
-- Capture Lessons: Update tasks/lessons.md after corrections
+- Capture Lessons: Update docs/notes/lessons.md after corrections
 
 ## Commit Messages
 

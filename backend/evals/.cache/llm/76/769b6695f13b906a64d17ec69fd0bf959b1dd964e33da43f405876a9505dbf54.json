@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "191602ad0d8993d8874d41cc29372878961ab4ead9e701887fc09f15e6c2e887",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01280\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major escalation in Iran situation; direct relevance to energy security and geopolitical risk.\"\n    },\n    {\n      \"id\": \"a01285\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"Iran situation\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Further detail on same incident; useful context but not new primary information.\"\n    },\n    {\n      \"id\": \"a01287\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"major_event\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"New US strikes on Iran; critical for energy security and market analysis.\"\n    },\n    {\n      \"id\": \"a01289\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"Iran situation\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Visual/contextual followup on strikes; not essential but relevant background.\"\n    },\n    {\n      \"id\": \"a01290\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Iran situation\", \"major_event\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Live coverage of escalating Iran-US conflict; vital for energy/geopolitical analysis.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1094,
+  "completion_tokens": 348
+ }
+}

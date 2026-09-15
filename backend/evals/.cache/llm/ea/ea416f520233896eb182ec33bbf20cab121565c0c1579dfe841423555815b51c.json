@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "83e1d8c4301aefb6cf1432e19c6fa746ef0d2eb79d2e7d8ec20f36067e02669f",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00375\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Important geopolitical news but not a major event for all adults today.\"}, {\"id\": \"a00376\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Significant legal news but niche to US legal system and politics.\"}, {\"id\": \"a00379\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"Routine death penalty news, notable but not major event.\"}, {\"id\": \"a00380\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Escalation of US-Iran conflict is major global event all adults should know.\"}, {\"id\": \"a00384\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Celebrity opinion piece unrelated to general news or major events.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1469,
+  "completion_tokens": 246
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3c722562b429ef74dc7b4fde2b85d58f12297bc9289d905ec079b32e54db281c",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00901\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL coverage is off-topic; user excludes American sports.\"\n    },\n    {\n      \"id\": \"a00904\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL fantasy content is off-topic; user excludes American sports.\"\n    },\n    {\n      \"id\": \"a00905\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Cal football is US college sports; user excludes American sports.\"\n    },\n    {\n      \"id\": \"a00906\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"american sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"College football (US) is excluded; not relevant to user interests.\"\n    },\n    {\n      \"id\": \"a00910\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"European football transfer news not related to Uzbek teams or players.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1160,
+  "completion_tokens": 301
+ }
+}

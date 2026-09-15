@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "124f891c6874606e3163e9d6b6f72e3d0bbadbb5c10cfaf4a7917d02a1e37e0b",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00779\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Singapore-Indonesia fintech currency framework affects regional fintech operations.\"}, {\"id\": \"a00780\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"MAS fintech investment directly impacts Singapore fintech innovation and talent.\"}, {\"id\": \"a00783\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Singapore R&D spending growth is relevant but routine background info.\"}, {\"id\": \"a00785\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Real estate hospitality portfolio revamp unrelated to reader's tech/fintech interests.\"}, {\"id\": \"a00788\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Luxury home sales from money laundering case unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1120,
+  "completion_tokens": 260
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0d5742d89ccc61c3269b0a6ae1e59ba06c47499dbc0c44d074b8baf0424edfb1",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00087\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Geopolitical but not directly about energy or European security.\"}, {\"id\": \"a00088\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI in Asian newsrooms unrelated to energy or geopolitics.\"}, {\"id\": \"a00095\", \"label\": \"fine\", \"tags\": [\"energy\", \"economic policies\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Relevant to energy and Europe but indirect and routine.\"}, {\"id\": \"a00102\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Indian youth politics unrelated to energy or economic security.\"}, {\"id\": \"a00109\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\", \"Iran situation\", \"geopolitical developments\"], \"confidence\": 0.95, \"rationale\": \"Iran war disrupting Eurasian trade affects energy security and markets.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1103,
+  "completion_tokens": 269
+ }
+}

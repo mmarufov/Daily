@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "81d25824e244b2a22c91d1d6be6d456779a0ac0baef50d3983a0d91466924fed",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00804\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Fintech funding trends are not relevant to parenting, health, or daily life.\"\n    },\n    {\n      \"id\": \"a00805\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Tech industry expansion and AI hiring are not relevant to reader's interests or needs.\"\n    },\n    {\n      \"id\": \"a00821\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Healthcare innovation is tangentially relevant, but not directly impactful to daily life.\"\n    },\n    {\n      \"id\": \"a00830\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Taiwan-Thailand tech event is unrelated to Singapore local news or reader's priorities.\"\n    },\n    {\n      \"id\": \"a00835\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Crypto/Bitcoin news is explicitly excluded by reader preferences.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3850,
+  "completion_tokens": 306
+ }
+}

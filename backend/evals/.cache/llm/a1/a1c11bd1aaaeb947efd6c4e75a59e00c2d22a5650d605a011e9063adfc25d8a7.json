@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fb95aec17bd91e19359628f901e05f11d6f64c0f58af97fa827633e1cec9523d",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01225\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Home insurance claims in Australia unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01226\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.7, \"rationale\": \"Pacific Islands Forum meeting has geopolitical relevance but no direct energy or European focus.\"}, {\"id\": \"a01227\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Personal story about Nepal flood unrelated to energy markets or European security.\"}, {\"id\": \"a01228\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Ferry disaster in Cyprus unrelated to energy markets or geopolitical energy security.\"}, {\"id\": \"a01229\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Academic disciplinary news unrelated to energy or geopolitical developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1544,
+  "completion_tokens": 243
+ }
+}

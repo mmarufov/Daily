@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9b93292454e4d4a8ece0823cd11a4825d121a1ad5a6abe3c6677c102dacc0b98",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00748\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Business R&D spending relevant but Singapore-focused, not primary for London reader.\"}, {\"id\": \"a00749\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI and interest rates impact business, but Singapore mid-caps less relevant to UK reader.\"}, {\"id\": \"a00750\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Singapore property portfolio revamp unrelated to reader's interests or location.\"}, {\"id\": \"a00751\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Copenhagen metro contract irrelevant to London-based reader.\"}, {\"id\": \"a00752\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.95, \"rationale\": \"Luxury auction and money laundering case unrelated to reader's interests or location.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1048,
+  "completion_tokens": 254
+ }
+}

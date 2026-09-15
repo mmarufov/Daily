@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "20ec5bf6884589d7b9223a42374939d6ec4b75d833f1cd6a23036ecc24d3b591",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00944\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article about Detroit Red Wings, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00945\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Vancouver Canucks, unrelated to NJ or reader interests.\"}, {\"id\": \"a00946\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Philadelphia Flyers prospect, no NJ or Devils/Giants/NJ Transit connection.\"}, {\"id\": \"a00947\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Buffalo Sabres prospects, unrelated to NJ or reader interests.\"}, {\"id\": \"a00948\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"New York Islanders player rating, no NJ Devils or Giants relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3663,
+  "completion_tokens": 252
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "2d6a2f15484f39efad55b73033ec971c126bf07718f2e3e33cb8c79924f32c58",
+  "preview": "READER PROFILE:\nREADER: User is engaged in local affairs and follows sports closely.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Shavkat Mirziyoyev  (entity)\n  [PRIMARY] Pakhtakor  (entity)\n  [PRIMARY] Bunyod"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 50,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 51,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 52,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 53,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 54,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 55,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 56,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 57,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 58,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 59,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 60,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 61,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"Uzbek football\",\n      \"kind\": \"serendipity\",\n      \"why\": \"Uzbek-born kicker in NFL is interesting.\"\n    },\n    {\n      \"id\": 62,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 63,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1401,
+  "completion_tokens": 746
+ }
+}

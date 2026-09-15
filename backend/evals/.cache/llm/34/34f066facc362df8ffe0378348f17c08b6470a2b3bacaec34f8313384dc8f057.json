@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6efab675e244da4944c95f7dc222dc6dc0bc33ddd61bda2a784a9b4694f4bd10",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00370\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Political news of general interest but not a major event.\"}, {\"id\": \"a00371\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.7, \"rationale\": \"General political and social issue coverage, plausible interest.\"}, {\"id\": \"a00385\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Routine sports coverage, general interest but missable.\"}, {\"id\": \"a00386\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Sports news about a major player returning, interesting but not must-see.\"}, {\"id\": \"a00388\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Sudden death during sports event is major news for informed adults.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1519,
+  "completion_tokens": 248
+ }
+}

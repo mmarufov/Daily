@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0002e08876b0546a6b75e4d6618817fa969bdadce2df1f39ad076cb0e1759f7d",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00639\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting science but not directly relevant to reader's interests or consumer impact.\"}, {\"id\": \"a00640\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Major tech breakthrough in quantum computing relevant to tech interest and consumer impact.\"}, {\"id\": \"a00641\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Health science with potential consumer impact but not urgent or primary interest.\"}, {\"id\": \"a00642\", \"label\": \"fine\", \"tags\": [\"science\", \"technology\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Energy tech discovery relevant but focused on Australia, less direct impact on reader.\"}, {\"id\": \"a00643\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Important geoscience but focused on Oregon, no direct impact on UK reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1208,
+  "completion_tokens": 277
+ }
+}

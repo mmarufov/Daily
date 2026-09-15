@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5cc9385cf330eb9f4c9f80a23e8d0ab90dbc1eec0516da45918560325ff96cc3",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00030\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Iran war and Strait of Hormuz impact fuel costs and energy security.\"}, {\"id\": \"a00032\", \"label\": \"never\", \"tags\": [\"off_topic\", \"promo\"], \"confidence\": 0.95, \"rationale\": \"Advertising and fake influencer story unrelated to energy or economics.\"}, {\"id\": \"a00034\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.7, \"rationale\": \"Cybersecurity AI news relevant to tech but not primary energy focus.\"}, {\"id\": \"a00043\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Bank of England AI risk relevant to economics but secondary to energy security.\"}, {\"id\": \"a00045\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Fed inflation and interest rate signals affect economic stability and energy markets.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2947,
+  "completion_tokens": 273
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4870d72499347607caab04bbf320e72e61896ae9f20fe177918dc500b0eb4a35",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00323\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Light human interest story, not major news for general audience.\"}, {\"id\": \"a00324\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"Political and economic news relevant but not urgent or major event.\"}, {\"id\": \"a00328\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Cultural story with broad interest but not urgent or major.\"}, {\"id\": \"a00332\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Political reshuffle news, relevant but not major event.\"}, {\"id\": \"a00333\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"US military strike on Iran is major international news all adults should know.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 919,
+  "completion_tokens": 238
+ }
+}

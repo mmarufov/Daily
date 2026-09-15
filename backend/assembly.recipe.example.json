@@ -1,0 +1,9 @@
+{
+  "version": "s8-assembly-v1",
+  "ordering": "grade-intent-variety-v1",
+  "s3_membership_enabled": false,
+  "history_retention_days": 30,
+  "topic_share": 0.6,
+  "publisher_share": 0.5,
+  "source_streak": 2
+}

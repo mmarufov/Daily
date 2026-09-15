@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a921500f867c03710edd0540b57946fb035bf83be3596a5393a56dfc2cf6ff6e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00812\", \"label\": \"fine\", \"tags\": [\"marketing\", \"consumer impact\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant marketing and consumer impact but regional and routine analysis.\"}, {\"id\": \"a00819\", \"label\": \"fine\", \"tags\": [\"technology\", \"world news\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech corruption case in Indonesia; interesting but not primary for UK reader.\"}, {\"id\": \"a00820\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Tech digital transformation in insurance; relevant but niche and routine.\"}, {\"id\": \"a00822\", \"label\": \"fine\", \"tags\": [\"technology\", \"world news\", \"business\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech manufacturing network in Asia; relevant world tech news but not urgent.\"}, {\"id\": \"a00823\", \"label\": \"fine\", \"tags\": [\"technology\", \"business\", \"world news\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Southeast Asia manufacturing ecosystem; relevant but routine business news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3588,
+  "completion_tokens": 288
+ }
+}

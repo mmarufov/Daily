@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "17690f7ca87e99aaadfdd8f73d7d3bdb20f06f3f6ae1b0dd14b44bcfa1035e98",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00952\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL player preview; not a primary or secondary interest, no Toronto or environmental angle.\"\n    },\n    {\n      \"id\": \"a00953\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"gambling\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on NHL betting lines; gambling is explicitly excluded.\"\n    },\n    {\n      \"id\": \"a00962\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"St. Louis Blues prospect; not relevant to tennis, horse racing, Toronto, or environmental topics.\"\n    },\n    {\n      \"id\": \"a00963\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL contract analysis; not related to user's sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a00964\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Winnipeg Jets goalie situation; not relevant to user's stated interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4090,
+  "completion_tokens": 305
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d60f11c4fd45707c2fb074ffbbd1c7cfb604c822332c5974ea4c7eb93e735167",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01215\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"world_news\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major world event with geopolitical impact; relevant for staying informed on global affairs.\"\n    },\n    {\n      \"id\": \"a01227\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"technology\", \"consumer impact\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Tech topic with consumer and societal implications; aligns with primary interests and utility priorities.\"\n    },\n    {\n      \"id\": \"a01236\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"world_news\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"World news, but not a major event or directly impactful; background coverage.\"\n    },\n    {\n      \"id\": \"a01248\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"world_news\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Routine political development in Canada; relevant for world news but not must_see.\"\n    },\n    {\n      \"id\": \"a01249\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"world_news\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Major development in global democracy and China relations; important for staying informed.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1185,
+  "completion_tokens": 330
+ }
+}

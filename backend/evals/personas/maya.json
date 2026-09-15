@@ -1,0 +1,137 @@
+{
+ "key": "maya",
+ "name": "Maya — London",
+ "axis": "broad 'keep me informed' reader; tests over-filtering and generic quality",
+ "transcript": [
+  {
+   "role": "assistant",
+   "content": "Hi! Tell me what kind of news you want to see."
+  },
+  {
+   "role": "user",
+   "content": "Honestly I just want to stay informed. Big world news, UK news, some tech and science when it's interesting. I work in marketing in London so business stuff that affects consumers is good too."
+  },
+  {
+   "role": "assistant",
+   "content": "Anything you'd rather not see?"
+  },
+  {
+   "role": "user",
+   "content": "Not really. Maybe less sport, I don't follow any team. And skip the celebrity stuff."
+  },
+  {
+   "role": "assistant",
+   "content": "Do you prefer quick headlines or longer analysis?"
+  },
+  {
+   "role": "user",
+   "content": "A mix. Headlines for the big stuff, and one or two longer reads a day is nice."
+  }
+ ],
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "User wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.",
+  "interests": {
+   "topics": [
+    "world news",
+    "UK news",
+    "technology",
+    "science",
+    "business"
+   ],
+   "people": [],
+   "locations": [
+    "London"
+   ],
+   "industries": [
+    "marketing"
+   ],
+   "excluded_topics": [
+    "sports",
+    "celebrity"
+   ],
+   "notes": "User works in marketing and is interested in business news that affects consumers."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "world news",
+    "UK news",
+    "business"
+   ],
+   "current_interests": [
+    "technology",
+    "science"
+   ],
+   "people": [],
+   "locations": [
+    "London"
+   ],
+   "industries": [
+    "marketing"
+   ],
+   "excluded_topics": [
+    "sports",
+    "celebrity"
+   ],
+   "expanded_exclusions": [],
+   "utility_priorities": [
+    "staying informed",
+    "consumer impact"
+   ],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "informative",
+    "concise"
+   ],
+   "life_context": "User works in marketing in London and is interested in news that affects consumers.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "world news",
+     "UK news",
+     "business"
+    ],
+    "must_cover_entities": [],
+    "must_avoid_topics": [
+     "sports",
+     "celebrity"
+    ],
+    "preferred_source_types": [
+     "headlines",
+     "long reads"
+    ],
+    "coverage_targets": [
+     "consumer impact"
+    ],
+    "specificity_level": "mixed"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "world news",
+    "UK news",
+    "business"
+   ],
+   "must_cover_entities": [],
+   "must_avoid_topics": [
+    "sports",
+    "celebrity"
+   ],
+   "preferred_source_types": [
+    "headlines",
+    "long reads"
+   ],
+   "coverage_targets": [
+    "consumer impact"
+   ],
+   "specificity_level": "mixed"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "gpt-4o-mini",
+  "cache_key": "e781a65bc5c283023c88576ea24eb7006c14d632ade466d6bee4cfedd94fde3f",
+  "date": "2026-09-01"
+ }
+}

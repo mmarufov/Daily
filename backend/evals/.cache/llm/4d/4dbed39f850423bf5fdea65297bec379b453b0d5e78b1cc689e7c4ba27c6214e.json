@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "58adc677b77631f5ee66a36e1d16ac187360283120a9b9c9c508286f83b4b494",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00223\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity reality TV news, not relevant to AI or reader's interests.\"\n    },\n    {\n      \"id\": \"a00256\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Celebrity obituary, not related to AI, tech, or reader's priorities.\"\n    },\n    {\n      \"id\": \"a00258\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Sports/celebrity documentary, not relevant to AI or reader's interests.\"\n    },\n    {\n      \"id\": \"a00268\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"exclusion_collision\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Gaming/entertainment news, explicitly excluded by reader.\"\n    },\n    {\n      \"id\": \"a00383\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"company use of AI\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI industry news with policy/ethics angle; relevant but not must_see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1540,
+  "completion_tokens": 314
+ }
+}

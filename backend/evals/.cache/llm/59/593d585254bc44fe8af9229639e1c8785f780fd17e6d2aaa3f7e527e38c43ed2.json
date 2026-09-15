@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "808e5c2e1c0e08d558e6fb8b473b8c31879feb04812569d52528409e58ea990d",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01052\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Apple CEO legacy and climate are off-topic; not relevant to reader's interests or region.\"\n    },\n    {\n      \"id\": \"a01070\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep tech startup in IT infrastructure, outage prediction; highly relevant to backend engineering and production.\"\n    },\n    {\n      \"id\": \"a01071\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"GoPro acquisition involves AI infrastructure, but consumer focus and no direct engineering impact.\"\n    },\n    {\n      \"id\": \"a01073\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"AI agent vetting platform is directly relevant to AI engineering and production use cases.\"\n    },\n    {\n      \"id\": \"a01090\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major AI model release with cybersecurity implications; critical for backend and AI engineering.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1329,
+  "completion_tokens": 311
+ }
+}

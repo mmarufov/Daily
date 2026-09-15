@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fc4741a2e495b052fe8f1c0dbd48744ad63de6fed1b844fc68f078cce3be97b6",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01000\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Price hikes on Apple subscriptions impact consumers directly.\"}, {\"id\": \"a01001\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 0.95, \"rationale\": \"Celebrity and entertainment content, not relevant to reader interests.\"}, {\"id\": \"a01002\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Tech update on AI glasses privacy affects consumer awareness and tech ethics.\"}, {\"id\": \"a01003\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Major cybercrime arrests impact global security and business safety.\"}, {\"id\": \"a01004\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Space industry news is interesting but less relevant to primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1967,
+  "completion_tokens": 269
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "c53f7b2acd97b8f84a6a5828fbeaf235ca1f0bc1e16e95289b15a731100a0c3b",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: I'm an energy markets analyst in Berlin. Right now I'm following the Iran situation and the Strait of Hormuz very closely, e"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"Energy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\",\n  \"interests\": {\n    \"topics\": [\"Iran situation\", \"Strait of Hormuz\", \"oil and gas prices\", \"OPEC\", \"European energy security\", \"sanctions\", \"German politics\", \"European Central Bank decisions\"],\n    \"people\": [],\n    \"locations\": [\"Berlin\", \"Iran\", \"Strait of Hormuz\", \"Europe\"],\n    \"industries\": [\"Energy\", \"Economics\", \"Finance\"],\n    \"excluded_topics\": [\"sports\", \"gaming\", \"entertainment\"],\n    \"notes\": \"Requires detailed follow-ups on energy-related news.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [\"energy markets\", \"geopolitical developments\", \"economic policies\"],\n    \"current_interests\": [\"Iran situation\", \"Strait of Hormuz\", \"oil and gas prices\", \"OPEC\", \"European energy security\"],\n    \"people\": [],\n    \"locations\": [\"Berlin\"],\n    \"industries\": [\"Energy\", \"Economics\"],\n    \"excluded_topics\": [\"sports\", \"gaming\", \"entertainment\"],\n    \"utility_priorities\": [\"job\", \"money\", \"health\"],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [\"informative\", \"detailed\"],\n    \"life_context\": \"Working as an analyst in energy markets, focusing on developments that impact energy security and economic stability.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [\"Iran situation\", \"energy security\", \"economic policies\"],\n      \"must_cover_entities\": [\"OPEC\", \"European Central Bank\"],\n      \"must_avoid_topics\": [\"sports\", \"entertainment\"],\n      \"preferred_source_types\": [\"news articles\", \"analytical reports\", \"economic forecasts\"],\n      \"coverage_targets\": [\"Germany\", \"Iran\", \"Europe\"],\n      \"specificity_level\": \"specific\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 449,
+  "completion_tokens": 408
+ }
+}

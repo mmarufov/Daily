@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "414b9a73da5d87b040ad723c6320b11224f61620510196736d7fb3635f7f9478",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00355\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Important political/legal news with global human rights implications.\"}, {\"id\": \"a00357\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Health-related story with general interest but not urgent.\"}, {\"id\": \"a00365\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Sports business news, interesting but not essential for general audience.\"}, {\"id\": \"a00367\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Sports result, notable but routine for general news.\"}, {\"id\": \"a00369\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Sports feature story, interesting but not critical.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 910,
+  "completion_tokens": 232
+ }
+}

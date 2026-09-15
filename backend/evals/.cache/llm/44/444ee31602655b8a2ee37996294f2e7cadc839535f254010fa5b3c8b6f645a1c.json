@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c78ca6daa5187f5c8c188b9c37f2b54ab1322e5c230e7fd6c967c0304f7c1ca6",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00334\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Human interest story, not major news for general audience.\"}, {\"id\": \"a00335\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"International political news, relevant but not major event.\"}, {\"id\": \"a00336\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Social issue feature, informative but not urgent.\"}, {\"id\": \"a00337\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Unusual personal story, interesting but not major news.\"}, {\"id\": \"a00338\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Community concern story, relevant but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 917,
+  "completion_tokens": 223
+ }
+}

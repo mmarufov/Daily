@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "305219111ba0df44a021df374e378b0c21f1fa1048802f8a14a55de08ffe6d43",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01245\", \"label\": \"fine\", \"tags\": [\"world_news\", \"technology\"], \"confidence\": 0.8, \"rationale\": \"Tech news with some world context, interesting but not critical for UK marketing professional.\"}, {\"id\": \"a01247\", \"label\": \"fine\", \"tags\": [\"world_news\", \"UK_news\"], \"confidence\": 0.7, \"rationale\": \"Important geopolitical news involving UK, but no direct consumer or marketing impact.\"}, {\"id\": \"a01248\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.6, \"rationale\": \"International political news, less relevant to UK marketing or tech interests.\"}, {\"id\": \"a01249\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.6, \"rationale\": \"Significant political event but no direct impact on reader's interests or consumer impact.\"}, {\"id\": \"a01253\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article mostly about local Australian politics and unrelated social issues, off-topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1562,
+  "completion_tokens": 259
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "21342f8776528c9020aee4c4b143e19cf4c4f35f9640a24fc903b7b0f8c69b8c",
+  "preview": "User Profile:\nFree-form profile:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nStructured inter"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":true,\"score\":0.8,\"reason\":\"Relevant UK news about long-term borrowing costs affecting the economy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"Relevant world news about economic indicators in Tajikistan.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"Relevant UK news discussing the hottest summer and its implications.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"Relevant world news about US-Venezuela oil deal and its implications for democracy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"Relevant world news about leadership crisis in the US military.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"Relevant world news about Iran's military actions and their implications.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: cryptocurrency.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"Relevant UK news about women's health and access to testosterone.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"Relevant world news about the Taliban and the need for an inclusive government in Afghanistan.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: celebrity.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2684,
+  "completion_tokens": 464
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "02d24168af0fd594f3e2bfb237c2324160e59ce0049781b36b76a67f6251bdfb",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00642\", \"label\": \"fine\", \"tags\": [\"Russia\", \"Russia sanctions\", \"Central Asia politics\"], \"confidence\": 0.8, \"rationale\": \"Relevant to Russia politics but no direct trade or sanctions impact.\"}, {\"id\": \"a00655\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Quantum physics unrelated to reader's interests.\"}, {\"id\": \"a00660\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Human evolution research unrelated to reader's interests.\"}, {\"id\": \"a00662\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Health study unrelated to reader's interests.\"}, {\"id\": \"a00665\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Scientific discovery unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1848,
+  "completion_tokens": 232
+ }
+}

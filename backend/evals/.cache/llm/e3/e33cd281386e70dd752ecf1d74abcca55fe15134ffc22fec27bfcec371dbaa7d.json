@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e6a6b0a65d8e62bfdeaada1f332a13733c27871b220cd0d8f6467cd4aefc6430",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00351\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"UK news\"], \"confidence\": 0.8, \"rationale\": \"General UK news, interesting but routine, no direct consumer impact.\"}, {\"id\": \"a00354\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"consumer impact\", \"UK news\"], \"confidence\": 0.9, \"rationale\": \"Consumer warning about Booking.com affects consumer decisions and trust.\"}, {\"id\": \"a00359\", \"label\": \"fine\", \"tags\": [\"world news\"], \"confidence\": 0.7, \"rationale\": \"Important UK foreign policy but less direct consumer or tech impact.\"}, {\"id\": \"a00361\", \"label\": \"fine\", \"tags\": [\"world news\", \"science\"], \"confidence\": 0.6, \"rationale\": \"Health care topic relevant to science interest but less direct consumer impact.\"}, {\"id\": \"a00363\", \"label\": \"never\", \"tags\": [\"off_topic\", \"celebrity\"], \"confidence\": 1.0, \"rationale\": \"Entertainment/celebrity content excluded by user preferences.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1025,
+  "completion_tokens": 264
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7753d30e967392eec9a6a1b72f3b5b5d4a5da1dc0f5f07cd142a9cb997b365b7",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00386\", \"label\": \"fine\", \"tags\": [\"world_news\", \"UK_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant UK/world news but more political commentary than tech/science.\"}, {\"id\": \"a00389\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Focus on sports and culture war, excluded topic (sports).\"}, {\"id\": \"a00391\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Sports-related scam story, excluded topic (sports).\"}, {\"id\": \"a00397\", \"label\": \"fine\", \"tags\": [\"UK_news\", \"business\"], \"confidence\": 0.7, \"rationale\": \"UK political donor story with business angle, plausible interest.\"}, {\"id\": \"a00400\", \"label\": \"fine\", \"tags\": [\"world_news\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"General world news photo summary, interesting but missable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1757,
+  "completion_tokens": 258
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "79f68fbd9eed53d2b5346a9d7b2c174f5b2168e09f277902fc9083cad3658726",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00445\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"US local election news unrelated to UK, tech, science, or marketing.\"}, {\"id\": \"a00446\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news irrelevant to reader's interests and location.\"}, {\"id\": \"a00447\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"US political legal news unrelated to UK or reader's interests.\"}, {\"id\": \"a00448\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"US immigration enforcement news irrelevant to reader's focus.\"}, {\"id\": \"a00449\", \"label\": \"never\", \"tags\": [\"off_topic\", \"lookalike\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news not relevant to reader's interests or location.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1148,
+  "completion_tokens": 266
+ }
+}

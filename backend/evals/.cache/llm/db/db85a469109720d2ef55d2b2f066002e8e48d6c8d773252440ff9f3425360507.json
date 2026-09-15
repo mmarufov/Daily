@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3a2b40b98ac137a4bced5eb8acd219b9f8e1f3c7a6190202b55a312f26b2580f",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00005\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Economic growth in Australia is relevant world news but not primary for reader.\"}, {\"id\": \"a00006\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Apple CEO change and AI challenges are key tech news with consumer impact.\"}, {\"id\": \"a00007\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Global bond yields and inflation fears are important but secondary world/business news.\"}, {\"id\": \"a00008\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Used car prices affect consumer spending and inflation, relevant to marketing and consumer impact.\"}, {\"id\": \"a00009\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.75, \"rationale\": \"New robot tech is interesting but less critical than major tech or consumer news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1074,
+  "completion_tokens": 267
+ }
+}

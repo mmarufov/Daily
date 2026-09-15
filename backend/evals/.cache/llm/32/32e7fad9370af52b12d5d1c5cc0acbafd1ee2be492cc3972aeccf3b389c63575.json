@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2ae1ce04d7fd0f2a01050932665bb56aa9c34c89fed01b0c32d52c168ecc5cf1",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00826\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Personal essay on wearables and wine; not technical, fintech, or Singapore/SEA tech news.\"\n    },\n    {\n      \"id\": \"a00829\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep dive on AI infrastructure, memory shortages, and industry impact; core to AI engineering and cloud.\"\n    },\n    {\n      \"id\": \"a00833\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"In-depth analysis of stablecoins, fintech rails, and Singapore's role; highly relevant to fintech regulation.\"\n    },\n    {\n      \"id\": \"a00889\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Golf tournament result; sports are explicitly excluded.\"\n    },\n    {\n      \"id\": \"a00896\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Fantasy football advice; sports and US domestic content are excluded.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2954,
+  "completion_tokens": 314
+ }
+}

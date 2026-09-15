@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cbea5b86837d6d8d6d85194772660d4f7d9417bbdbd81acf3d112c405428dcbb",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00611\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Russian political livestream unrelated to Singapore, fintech, or tech interests.\"}, {\"id\": \"a00623\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Russian missile test irrelevant to reader's tech and fintech focus.\"}, {\"id\": \"a00633\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"cybersecurity\"], \"confidence\": 0.8, \"rationale\": \"AI used in cybersecurity attacks relevant but not Singapore or fintech specific.\"}, {\"id\": \"a00647\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Mars heat anomaly unrelated to reader's tech or fintech interests.\"}, {\"id\": \"a00664\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Vitamin C and colds unrelated to reader's tech or fintech focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2475,
+  "completion_tokens": 249
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7d9d89164ca2fc544be92189ae015be566b5a9cd1d1d474833104c4f54e06bf8",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01126\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Industry-specific storage market update, not major news for general audience.\"}, {\"id\": \"a01127\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Major international botnet takedown affecting cybersecurity worldwide.\"}, {\"id\": \"a01131\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Routine tech update on Firefox iOS ad blocking rollout.\"}, {\"id\": \"a01133\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Niche software update with limited general interest.\"}, {\"id\": \"a01140\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Corporate internal policy on AI token budgets, niche interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3426,
+  "completion_tokens": 249
+ }
+}

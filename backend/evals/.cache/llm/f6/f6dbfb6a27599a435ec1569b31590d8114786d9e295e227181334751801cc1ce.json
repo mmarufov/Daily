@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d924b5128f5ded5c9c29a07493e374b5ce7cc119dc4696bbf5b1a218b7c08054",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01041\",\n      \"label\": \"fine\",\n      \"tags\": [\"science\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Interesting science finding, but not urgent or directly impactful for reader's daily life.\"\n    },\n    {\n      \"id\": \"a01042\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"consumer impact\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Direct consumer tech risk; relevant for staying informed and consumer impact priorities.\"\n    },\n    {\n      \"id\": \"a01045\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"UK news\", \"world news\", \"major_event\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major regulatory change affecting tech and online safety in Europe; highly relevant.\"\n    },\n    {\n      \"id\": \"a01050\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"world news\", \"major_event\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major AI security incident with international impact; important for tech-focused reader.\"\n    },\n    {\n      \"id\": \"a01051\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Routine tech product launch; on-topic but not essential or urgent.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2143,
+  "completion_tokens": 336
+ }
+}

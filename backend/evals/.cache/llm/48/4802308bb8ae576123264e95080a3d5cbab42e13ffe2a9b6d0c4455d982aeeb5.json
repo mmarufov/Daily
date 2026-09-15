@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "4223a7edf5c06c58b420fdbc0feec13c43ec3ec397bad491717b4623ba7bac3b",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00456\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"General NJ news roundup; likely relevant but not must_see without specific breaking news.\"\n    },\n    {\n      \"id\": \"a00459\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Another general NJ news roundup; routine coverage, not must_see unless breaking news is specified.\"\n    },\n    {\n      \"id\": \"a00461\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NYC school policy, not NJ or relevant to reader's kids or local context.\"\n    },\n    {\n      \"id\": \"a00466\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"NJ policy change on solar panels; relevant to local/state interests but not urgent for daily life.\"\n    },\n    {\n      \"id\": \"a00480\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"OMNY is NYC MTA, not NJ Transit; not relevant to reader's commute.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1252,
+  "completion_tokens": 317
+ }
+}

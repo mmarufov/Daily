@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1d4097a31e1952d770b04f5558522cff13ab129ffd485319f3006a5a15c0ed85",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01062\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"need_to_know\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Security issue with major tech platform and new payments service; relevant for tech, consumer impact.\"\n    },\n    {\n      \"id\": \"a01067\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant tech innovation, but not essential; fits primary interest, missable for daily awareness.\"\n    },\n    {\n      \"id\": \"a01072\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"consumer impact\", \"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech feature update with consumer implications; interesting but not critical for daily awareness.\"\n    },\n    {\n      \"id\": \"a01074\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Ongoing tech outage; relevant but routine unless user is directly affected.\"\n    },\n    {\n      \"id\": \"a01080\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pure promotional content; not news, not relevant to user interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1046,
+  "completion_tokens": 323
+ }
+}

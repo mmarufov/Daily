@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a6fa3a2afe19fb3ecdcb623a82b199e8872acb9e077dbfad917fb70852ad9b79",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01117\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Article is about AI chip performance, not energy, economics, or geopolitics.\"\n    },\n    {\n      \"id\": \"a01194\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Corruption in Ecuador is not relevant to energy markets or reader's interests.\"\n    },\n    {\n      \"id\": \"a01195\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major oil deal involving US and Venezuela; directly impacts global oil markets and energy security.\"\n    },\n    {\n      \"id\": \"a01210\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Jewelry theft in Vienna is unrelated to energy, economics, or geopolitics.\"\n    },\n    {\n      \"id\": \"a01214\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Follow-up on major US-Venezuela oil deal; crucial for energy markets and geopolitical analysis.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1771,
+  "completion_tokens": 323
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "8470758e5af20f37ade7d9360c34c04d9836183414c8ec32ebf67a1b729f9012",
+  "preview": "READER PROFILE:\nREADER: User works in marketing in London and is interested in news that affects consumers.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] technology  (topic)\n  [PRIMARY] science  (topic)\n  [seco"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 50,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 51,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 52,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"business\",\n      \"kind\": \"contextual\",\n      \"why\": \"Insights on business leadership and unconventional approaches.\"\n    },\n    {\n      \"id\": 53,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 54,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"consumer impact\",\n      \"kind\": \"direct\",\n      \"why\": \"Concerns about privacy affect consumers directly.\"\n    },\n    {\n      \"id\": 55,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 56,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"business\",\n      \"kind\": \"contextual\",\n      \"why\": \"R&D spending impacts business landscape.\"\n    },\n    {\n      \"id\": 57,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 58,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"technology\",\n      \"kind\": \"direct\",\n      \"why\": \"Political backlash against big tech is significant.\"\n    },\n    {\n      \"id\": 59,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 60,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    },\n    {\n      \"id\": 61,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"technology\",\n      \"kind\": \"direct\",\n      \"why\": \"Environmental ethics in AI is a pressing issue.\"\n    },\n    {\n      \"id\": 62,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1221,
+  "completion_tokens": 687
+ }
+}

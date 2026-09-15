@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "809b1eae1462eee9c6fe163ab3641a6028bc4b0f47bacea5501374c6c6a1380b",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00171\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major development in European energy security and gas prices, Lena's core focus.\"\n    },\n    {\n      \"id\": \"a00173\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Relevant to global LNG flows, but not directly impactful for European energy security.\"\n    },\n    {\n      \"id\": \"a00176\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Historical overview of money transfer systems, not relevant to energy or Lena's interests.\"\n    },\n    {\n      \"id\": \"a00180\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on digital currency and Swift, not energy or economic policy relevant to Lena.\"\n    },\n    {\n      \"id\": \"a00198\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Bitcoin price movement is not relevant to energy markets or Lena's professional focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1038,
+  "completion_tokens": 304
+ }
+}

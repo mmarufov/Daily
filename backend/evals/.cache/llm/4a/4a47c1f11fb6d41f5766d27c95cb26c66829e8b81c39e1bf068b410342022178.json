@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "021925baced0b6fce490564f6551e5820bc8778e4939b32ea63202669651fe97",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00494\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Gateway tunnel funding directly impacts NJ Transit commuters; major infrastructure and daily life relevance.\"\n    },\n    {\n      \"id\": \"a00495\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major NJ job losses affect local economy, jobs, and family finances; highly relevant to reader's life.\"\n    },\n    {\n      \"id\": \"a00497\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"State policy on data centers is relevant but not urgent for daily life; background on local government.\"\n    },\n    {\n      \"id\": \"a00498\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Trade war may affect prices, but not directly actionable or urgent for this reader today.\"\n    },\n    {\n      \"id\": \"a00499\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Measles deaths nearby prompt NJ health warning; urgent for family with kids in public school.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3615,
+  "completion_tokens": 339
+ }
+}

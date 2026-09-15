@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "452ffa2e0d870b165601f8f0aec940f3307b786cd3bbdd68879dfd3d59cc4f29",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00773\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"General daily summary, useful but not critical for primary interests.\"}, {\"id\": \"a00774\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Singapore-Thailand political visit irrelevant to UK, tech, science, or marketing.\"}, {\"id\": \"a00775\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Regulation on stablecoins affects consumer protection and financial marketing.\"}, {\"id\": \"a00776\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Business payment delays relevant but not urgent or UK-focused.\"}, {\"id\": \"a00777\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Legal dispute over review unrelated to reader's interests or geography.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1005,
+  "completion_tokens": 251
+ }
+}

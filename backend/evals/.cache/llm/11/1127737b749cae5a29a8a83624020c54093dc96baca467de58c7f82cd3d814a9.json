@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "edc710790795c741c2084917f21331bb86d2c3ea5a0bcd8a8aa7b99bc9acdeff",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01230\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Maritime accident unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01231\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Shooting at rave unrelated to energy or geopolitical interests.\"}, {\"id\": \"a01232\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Iceland EU referendum relevant to European geopolitics but not primary interest.\"}, {\"id\": \"a01233\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 1.0, \"rationale\": \"US-Iran strikes in Strait of Hormuz directly impact energy security and geopolitics.\"}, {\"id\": \"a01234\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Conflict in West Bank unrelated to energy markets or European security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1560,
+  "completion_tokens": 257
+ }
+}

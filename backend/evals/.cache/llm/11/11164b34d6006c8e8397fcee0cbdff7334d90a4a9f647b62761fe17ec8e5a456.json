@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "5db45cf912f33a61458d695565e785081d248fcff2e7a9b689fbd3f4b3b60855",
+  "preview": "User Profile:\nFree-form profile:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nStructured interests:\n- Topi"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's primary focus or background interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1818,
+  "completion_tokens": 464
+ }
+}

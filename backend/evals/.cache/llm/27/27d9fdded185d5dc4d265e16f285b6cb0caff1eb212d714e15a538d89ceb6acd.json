@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8ffab916bb6f26ce3519264501b53fcdebe57be7a056ce4aea9b40ad60607c6d",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00839\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Deep dive on Southeast Asia market structure; relevant for regional tech/fintech context but not urgent or must_see.\"\n    },\n    {\n      \"id\": \"a00840\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Analysis of China tax reform's impact on SEA startup capital flows; relevant background, not must_see for daily work.\"\n    },\n    {\n      \"id\": \"a00841\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"General business frameworks, not technical or regionally focused; not aligned with reader's interests.\"\n    },\n    {\n      \"id\": \"a00843\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"followup\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Covers major SEA fintech funding, Singapore context; notable but not must_see unless directly involved.\"\n    },\n    {\n      \"id\": \"a00844\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"followup\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Repeat coverage of Ajaib funding; relevant for SEA fintech, but not essential for daily work or Singapore focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4050,
+  "completion_tokens": 345
+ }
+}

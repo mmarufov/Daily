@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dcc7433419073df25c819a057dba3611fd1fa72a618284bf7e2cc87f5d89a8cb",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00469\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NYC health policy is not relevant to Maya's interests or location.\"\n    },\n    {\n      \"id\": \"a00470\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NYC infrastructure anniversary and celebrity mentions are off-topic for Maya.\"\n    },\n    {\n      \"id\": \"a00485\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NYC local news, Broadway, and US Open are not relevant to Maya's interests.\"\n    },\n    {\n      \"id\": \"a00492\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NYC urban nature story is not relevant to Maya's interests or location.\"\n    },\n    {\n      \"id\": \"a00523\",\n      \"label\": \"never\",\n      \"tags\": [\"celebrity\", \"off_topic\"],\n      \"confidence\": 0.98,\n      \"rationale\": \"Celebrity obituary; Maya wants to avoid celebrity news.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1724,
+  "completion_tokens": 299
+ }
+}

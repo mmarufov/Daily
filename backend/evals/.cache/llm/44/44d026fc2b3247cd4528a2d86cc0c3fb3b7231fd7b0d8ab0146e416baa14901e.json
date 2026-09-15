@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "dd9a27df59606060a4337f979c2fb0e4f6d869b72d6e212281f004a1fdb9fe0a",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01006\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"xAI is a major AI company, but lawsuit details are not directly relevant to Tom's primary interests.\"\n    },\n    {\n      \"id\": \"a01008\",\n      \"label\": \"must_see\",\n      \"tags\": [\"AI industry\", \"major_event\", \"company use of AI\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Nvidia acquiring Hugging Face is a major industry event affecting AI infrastructure and model access.\"\n    },\n    {\n      \"id\": \"a01009\",\n      \"label\": \"must_see\",\n      \"tags\": [\"AI regulation\", \"major_event\", \"need_to_know\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Potential US chip tariffs could impact AI product development and industry landscape; highly relevant to Tom's work.\"\n    },\n    {\n      \"id\": \"a01020\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"AI regulation\", \"major_event\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major lawsuit against Anthropic, a primary interest, with industry-wide implications for AI product managers.\"\n    },\n    {\n      \"id\": \"a01026\",\n      \"label\": \"fine\",\n      \"tags\": [\"Anthropic\", \"AI regulation\", \"followup\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Similar to a01020, but less detail; still relevant but not essential if a01020 is seen.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1621,
+  "completion_tokens": 380
+ }
+}

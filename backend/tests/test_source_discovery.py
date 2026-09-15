@@ -2,6 +2,7 @@ import os
 import sys
 import types
 import unittest
+from unittest.mock import AsyncMock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -44,6 +45,96 @@ class _FakeConn:
 
     def cursor(self):
         return _FakeCursor(self._rows, self)
+
+
+class _FakeSafeFetchError(Exception):
+    def __init__(self, code="http_status", status_code=503, **kw):
+        super().__init__(code)
+        self.code = code
+        self.status_code = status_code
+
+
+class _FakeFetchResult:
+    def __init__(self, text, url="https://example.com/feed.xml"):
+        self.text = text
+        self.url = url
+
+
+class _FakePolicy:
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+
+class DiscoveryFeedFetchSsrfTests(unittest.IsolatedAsyncioTestCase):
+    """S1 2.1: candidate feed URLs reaching _validate_feed/_fetch_feed_sample
+    are not limited to a fixed source registry -- _ai_suggest_feeds builds
+    them from an LLM response to a prompt containing user-supplied interest
+    text. Both previously fetched with a bare httpx client with no
+    DNS-pinning or redirect re-validation.
+    """
+
+    class _FakeEntry(dict):
+        def get(self, key, default=None):
+            return dict.get(self, key, default)
+
+    async def test_fetch_feed_sample_never_touches_the_passed_client(self):
+        class _ExplodingClient:
+            async def get(self, *a, **kw):
+                raise AssertionError("must not use the unvalidated client for network I/O")
+
+        entries = [self._FakeEntry(title="Headline one"), self._FakeEntry(title="Headline two")]
+        fake_feed = types.SimpleNamespace(entries=entries)
+        safe_fetch = AsyncMock(return_value=_FakeFetchResult("<rss/>"))
+        safe_http = types.SimpleNamespace(
+            SafeFetchPolicy=_FakePolicy,
+            SafeFetchError=_FakeSafeFetchError,
+            safe_fetch=safe_fetch,
+        )
+        with patch.dict(sys.modules, {"app.services.safe_http": safe_http}), \
+                patch.object(source_discovery.feedparser, "parse", return_value=fake_feed):
+            is_valid, titles = await source_discovery._fetch_feed_sample(
+                _ExplodingClient(), "https://llm-suggested.example.com/feed.xml"
+            )
+
+        safe_fetch.assert_awaited_once()
+        self.assertEqual(safe_fetch.await_args.args[0], "https://llm-suggested.example.com/feed.xml")
+        self.assertTrue(is_valid)
+        self.assertEqual(titles, ["Headline one", "Headline two"])
+
+    async def test_fetch_feed_sample_fails_closed_on_unsafe_url(self):
+        """An LLM-suggested URL pointing at cloud metadata or another
+        internal address must come back invalid, not raise, not hang."""
+        safe_http = types.SimpleNamespace(
+            SafeFetchPolicy=_FakePolicy,
+            SafeFetchError=_FakeSafeFetchError,
+            safe_fetch=AsyncMock(side_effect=_FakeSafeFetchError("private_address")),
+        )
+        with patch.dict(sys.modules, {"app.services.safe_http": safe_http}):
+            is_valid, titles = await source_discovery._fetch_feed_sample(
+                None, "http://169.254.169.254/latest/meta-data/"
+            )
+
+        self.assertFalse(is_valid)
+        self.assertEqual(titles, [])
+
+    async def test_validate_feed_never_touches_the_passed_client(self):
+        class _ExplodingClient:
+            async def get(self, *a, **kw):
+                raise AssertionError("must not use the unvalidated client for network I/O")
+
+        fake_feed = types.SimpleNamespace(entries=[self._FakeEntry(title="x")])
+        safe_fetch = AsyncMock(return_value=_FakeFetchResult("<rss/>"))
+        safe_http = types.SimpleNamespace(
+            SafeFetchPolicy=_FakePolicy,
+            SafeFetchError=_FakeSafeFetchError,
+            safe_fetch=safe_fetch,
+        )
+        with patch.dict(sys.modules, {"app.services.safe_http": safe_http}), \
+                patch.object(source_discovery.feedparser, "parse", return_value=fake_feed):
+            result = await source_discovery._validate_feed(_ExplodingClient(), "https://example.com/feed.xml")
+
+        self.assertTrue(result)
+        safe_fetch.assert_awaited_once()
 
 
 class SourceDiscoveryTests(unittest.TestCase):

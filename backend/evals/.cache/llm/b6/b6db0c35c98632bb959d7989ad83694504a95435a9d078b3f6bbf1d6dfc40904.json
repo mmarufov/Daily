@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2a3f163de7afdd2021492feab748c42cb9cfdb84d1af57cec515b397957a9b39",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00809\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Product pricing strategy relevant to startups but not deep technical or MAS/Singapore fintech.\"}, {\"id\": \"a00811\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Southeast Asia\"], \"confidence\": 0.85, \"rationale\": \"Climate tech in Southeast Asia is interesting but not primary fintech or AI engineering.\"}, {\"id\": \"a00812\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Southeast Asia\"], \"confidence\": 0.8, \"rationale\": \"Regional economic and infrastructure overview; relevant but not deep technical or fintech regulation.\"}, {\"id\": \"a00813\", \"label\": \"must_see\", \"tags\": [\"Southeast Asia\", \"cloud infrastructure\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Deep technical insight on ASEAN digital infrastructure and cloud energy relevant to reader's work.\"}, {\"id\": \"a00814\", \"label\": \"must_see\", \"tags\": [\"AI engineering\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"AI agent procurement impacts startups and production engineering; highly relevant to reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3952,
+  "completion_tokens": 291
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a459feaa8ef4ae21e8135ce9018f2050963e4badf107ec4649cb683bac93ece7",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00113\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Pacific ocean environmental topic unrelated to energy or geopolitics relevant to reader.\"}, {\"id\": \"a00119\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"China's legal framework impacts geopolitical competition, relevant but not primary focus.\"}, {\"id\": \"a00122\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.7, \"rationale\": \"China's space strategy is geopolitical but not directly about energy or economic stability.\"}, {\"id\": \"a00123\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.7, \"rationale\": \"Defense pact in Middle East region relevant to geopolitics but no direct energy impact.\"}, {\"id\": \"a00125\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Myanmar military conflict unrelated to energy markets or European security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1086,
+  "completion_tokens": 257
+ }
+}

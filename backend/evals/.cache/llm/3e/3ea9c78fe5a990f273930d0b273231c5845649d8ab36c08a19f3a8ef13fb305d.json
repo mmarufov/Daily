@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "c572cca1a7f08ae2eada59304e502dc26c18217bd51e80e334a12bff51f18398",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political figure's custody, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a diplomatic meeting, which does not intersect with the user's primary focus areas.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a political threat, which is outside the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a historical figure's actions against a corporation, which is not relevant to the user's technical interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The content is focused on a fictional character in a TV series, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article reviews a TV show, which is not relevant to the user's professional interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a sports event, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a political figure's actions, which is outside the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a sports event, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses personal finance issues, which do not align with the user's technical interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses personal finance and investment, which are not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a community initiative unrelated to the user's professional interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a community initiative unrelated to the user's professional interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a government initiative unrelated to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political issue, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political issue, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides tips on audio quality, which is not relevant to the user's primary focus.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political figure's statements, which is outside the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political figure's actions, which is outside the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political issue, which is excluded from the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a political issue, which is excluded from the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2199,
+  "completion_tokens": 640
+ }
+}

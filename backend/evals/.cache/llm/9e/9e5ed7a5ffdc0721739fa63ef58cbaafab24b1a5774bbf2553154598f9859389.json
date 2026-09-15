@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "66f1f5faf312fa44be149b9133f5b5d83c5fd805404ad1b5d218564e02212798",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00175\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"General financial news, interesting but not urgent for general reader.\"}, {\"id\": \"a00176\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Environmental summit summary, relevant but not major event.\"}, {\"id\": \"a00181\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Cryptocurrency market movement, niche but notable financial news.\"}, {\"id\": \"a00182\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Cryptocurrency and commodity market update, routine financial news.\"}, {\"id\": \"a00183\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"SEC regulatory proposal, relevant financial news but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 882,
+  "completion_tokens": 227
+ }
+}

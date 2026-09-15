@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0d6d9a90661060c5e34ca9da5666d7b15a9a75c04ce2896bfa0f4f8f8c4c07c1",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00016\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US-Canada trade war and metals are irrelevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00075\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Involves Uzbekistan in an international scandal; relevant to national affairs interest.\"\n    },\n    {\n      \"id\": \"a00081\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major development in Uzbek politics; directly impacts national affairs.\"\n    },\n    {\n      \"id\": \"a00085\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Japanese politics not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00091\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pakistan-China security issues unrelated to Uzbekistan or reader's focus.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1159,
+  "completion_tokens": 291
+ }
+}

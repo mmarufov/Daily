@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6bf6cf8806dc9070eba6768769eef0d4286366e67f6281ccb5001812c96b1b85",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00602\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tax relief in Russia unrelated to European energy security or primary interests.\"}, {\"id\": \"a00605\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"geopolitical developments\"], \"confidence\": 0.95, \"rationale\": \"CIA chief's secret Moscow visit relates to Iran war and Russia-Ukraine conflict.\"}, {\"id\": \"a00609\", \"label\": \"must_see\", \"tags\": [\"direct\", \"followup\", \"geopolitical developments\"], \"confidence\": 0.9, \"rationale\": \"European officials' assessment of CIA visit impacts understanding of Russia-NATO tensions.\"}, {\"id\": \"a00612\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic policies\"], \"confidence\": 0.7, \"rationale\": \"Rusal plant mothballing affects Russian economy but less direct for European energy security.\"}, {\"id\": \"a00618\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Military plane crash in Crimea unrelated to energy markets or European energy security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3475,
+  "completion_tokens": 284
+ }
+}

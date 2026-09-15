@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "f06938b683a159cbcf2777eb9479c7920a5ff90a5199cd3b9f330f0594df5739",
+  "preview": "User Profile:\nFree-form profile:\nUser prefers a general news feed without specific interests or preferences.\n\nStructured interests:\n- Notes: User is open to any important news.\n\nInterest hierarchy:\n- "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":true,\"score\":0.7,\"reason\":\"The article discusses a significant political event in Guinea-Bissau that could impact future governance, which aligns with the user's openness to important news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on a specific sports team's draft decisions, which may not be of general interest.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article covers the detention of a British activist in a politically charged area, which is relevant to current global issues.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a nostalgic film streaming, which does not align with the user's interest in important news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses high school football rankings, which may not be significant enough for general news interest.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides tips on improving audio quality in a specific technology, which may not be broadly relevant.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on specific player cuts in a sports team, lacking broader significance.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses roster decisions for a sports team, which may not be of general interest.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article previews a video game, which may not align with the user's interest in important news.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article reports on a significant sports achievement, which could be of interest as a notable event.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses personal finance advice that may not be broadly relevant to general news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article provides technical support for iPhones, which may not be of general interest.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses specific player waivers in a sports context, lacking broader significance.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on roster decisions for a sports team, which may not be of general interest.\"},{\"relevant\":true,\"score\":0.4,\"reason\":\"The article discusses the risks of glacial lakes in Tajikistan, which is relevant to environmental and disaster news.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article discusses a wealthy individual's philanthropic considerations, which could be of interest as a human interest story.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article discusses a personal finance dilemma that touches on family dynamics, which could be of general interest.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a celebrity's opinion on casting, which may not be significant enough for general news.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article reports on a tragic event involving boating accidents, which is relevant to public safety and current events.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1426,
+  "completion_tokens": 645
+ }
+}

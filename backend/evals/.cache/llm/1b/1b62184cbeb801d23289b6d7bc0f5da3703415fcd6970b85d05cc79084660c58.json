@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6b6e70c45c8d8454de8ff170fabaaf22ace1eefc745823780d508c679871ef5a",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00659\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting science but not urgent or directly impactful for consumer or marketing context.\"}, {\"id\": \"a00660\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant science on human impact on wildlife, but not urgent or consumer-impacting.\"}, {\"id\": \"a00661\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Scientific history of insect eating; interesting but not urgent or consumer-impacting.\"}, {\"id\": \"a00662\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Astronomy discovery; relevant science but not urgent or consumer-impacting.\"}, {\"id\": \"a00663\", \"label\": \"must_see\", \"tags\": [\"science\", \"technology\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Tech breakthrough with potential consumer and industry impact, relevant to marketing and tech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1216,
+  "completion_tokens": 280
+ }
+}

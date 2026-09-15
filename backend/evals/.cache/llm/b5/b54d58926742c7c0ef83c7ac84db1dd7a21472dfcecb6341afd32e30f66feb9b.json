@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2ad8344c35ddc90b5bc93648c0c1c5b92e532fe58e2b655b4a9a95fb14ed597d",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01183\", \"label\": \"fine\", \"tags\": [\"science\"], \"confidence\": 0.8, \"rationale\": \"Interesting science topic but not urgent or directly impactful.\"}, {\"id\": \"a01187\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"World news relevant but no direct impact on reader.\"}, {\"id\": \"a01189\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Important world news but no direct UK or consumer impact.\"}, {\"id\": \"a01192\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Celebrity/political provocateur story, off-topic and unwanted.\"}, {\"id\": \"a01194\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"World news with political corruption, no direct UK or consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1020,
+  "completion_tokens": 234
+ }
+}

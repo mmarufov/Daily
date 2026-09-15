@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "41f7905972f0a44ab1e3c8d632ab235ccd101338511f1f69875189cd4315e3c0",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00364\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports transfer news, excluded topic for this reader.\"}, {\"id\": \"a00366\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 0.95, \"rationale\": \"Sports news, excluded topic.\"}, {\"id\": \"a00368\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Sports transfer news, excluded topic.\"}, {\"id\": \"a00371\", \"label\": \"fine\", \"tags\": [\"world_news\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"US political news with some consumer impact but not primary interest.\"}, {\"id\": \"a00383\", \"label\": \"must_see\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Military AI and financial ethics relevant to tech and consumer trust.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1276,
+  "completion_tokens": 253
+ }
+}

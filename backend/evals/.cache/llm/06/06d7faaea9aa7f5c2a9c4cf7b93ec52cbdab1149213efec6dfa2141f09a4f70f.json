@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3b0225ace470690cbb69bcb2a52f6b069b253291f35666dfa516d530d572f210",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00310\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming news unrelated to Uzbek politics or sports.\"}, {\"id\": \"a00311\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming laptop deal irrelevant to reader's interests.\"}, {\"id\": \"a00324\", \"label\": \"fine\", \"tags\": [\"politics\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"US politics and tariffs have some political interest but not primary or local.\"}, {\"id\": \"a00327\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US comic book store tariff story irrelevant to Uzbek reader.\"}, {\"id\": \"a00334\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment news excluded by user preferences.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2329,
+  "completion_tokens": 234
+ }
+}

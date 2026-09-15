@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aafcd18ccb188e684e0f22b1f3104f9e1e2017b4a7e2d8fbe7643ce582f9fb58",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00986\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NHL hockey, no interest in hockey or unrelated to tennis/horse racing/solar.\"}, {\"id\": \"a00987\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NHL rookie roster, unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00989\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"NHL draft prospect story, off-topic for tennis/horse racing/solar interests.\"}, {\"id\": \"a00990\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Montreal Canadiens NHL contract news, unrelated to reader's interests.\"}, {\"id\": \"a00991\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Vancouver Canucks prospect retrospective, off-topic for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3289,
+  "completion_tokens": 255
+ }
+}

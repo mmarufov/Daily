@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9be7c797637889238e5f7ef02edece92178f1aff56037a6cf3a996c2e3fcdff9",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00165\", \"label\": \"fine\", \"tags\": [\"secondary\", \"travel\"], \"confidence\": 0.8, \"rationale\": \"New air routes may aid trade and travel but not urgent or primary for business.\"}, {\"id\": \"a00166\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Human rights defenders topic unrelated to trade, economy, or sanctions.\"}, {\"id\": \"a00167\", \"label\": \"fine\", \"tags\": [\"secondary\", \"need_to_know\"], \"confidence\": 0.6, \"rationale\": \"Environmental risks could affect region but indirect for trade business.\"}, {\"id\": \"a00168\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Terrorism prosecution unrelated to reader's interests.\"}, {\"id\": \"a00171\", \"label\": \"fine\", \"tags\": [\"secondary\", \"commodity_prices\"], \"confidence\": 0.7, \"rationale\": \"LNG price spikes relevant to commodity prices but not direct to Central Asia.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1914,
+  "completion_tokens": 254
+ }
+}

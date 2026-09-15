@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9e1fa7e431f51ac5d87e8f8b449160852b1c2556923ca8828ea026c510c368ae",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00162\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan oil bond news unrelated to Uzbekistan or reader interests.\"}, {\"id\": \"a00163\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"New Uzbek law on illegal migration affects many citizens abroad, critical local policy update.\"}, {\"id\": \"a00164\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.7, \"rationale\": \"SCO summit on Afghanistan is regional politics but less direct impact on reader.\"}, {\"id\": \"a00165\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tajik-Russian relations update relevant regionally but not primary for reader.\"}, {\"id\": \"a00166\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tajikistan economic data is regional economic info, secondary interest for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3721,
+  "completion_tokens": 268
+ }
+}

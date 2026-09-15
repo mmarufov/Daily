@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3bca2c1e727b3f584b23f0687fe433e0e23beb11049f7d60869419b521acc05e",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00839\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting economic analysis but not major news for general audience.\"}, {\"id\": \"a00841\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Useful business strategy advice, but niche and routine content.\"}, {\"id\": \"a00846\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Cryptocurrency market update; relevant but not major event.\"}, {\"id\": \"a00853\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Workplace safety in Singapore is important but not urgent major news.\"}, {\"id\": \"a00860\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Entertainment content, not major news but fine for general interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3796,
+  "completion_tokens": 252
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c2dd44065800a5d6408f0fde99a7bb5a9de558680f61dfb91c65a51ab9187c6d",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00757\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"General daily news summary, no direct relevance to primary interests.\"}, {\"id\": \"a00761\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Economic and AI job market news unrelated to sports or solar energy.\"}, {\"id\": \"a00764\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Legal dispute about car rental firm unrelated to reader interests.\"}, {\"id\": \"a00771\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Energy supply and AI adoption relevant to solar industry but routine coverage.\"}, {\"id\": \"a00781\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Sustainability and water resilience relevant to environmental interest but routine.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1073,
+  "completion_tokens": 240
+ }
+}

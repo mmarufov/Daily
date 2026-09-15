@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "348f329779b029a16e74ed3cb10fff2d5dc99f50b5f134789af317f922f2ddbe",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01089\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Discount codes for bird feeders unrelated to AI or reader interests.\"}, {\"id\": \"a01091\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI\"], \"confidence\": 0.8, \"rationale\": \"AI coding policy in Debian is interesting but routine and secondary to primary AI companies.\"}, {\"id\": \"a01096\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Security vulnerability in Anthropic's Claude Code affects AI product safety and industry.\"}, {\"id\": \"a01097\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI\"], \"confidence\": 0.7, \"rationale\": \"New cooling tech for datacenters is interesting but not primary AI industry news.\"}, {\"id\": \"a01098\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI industry\"], \"confidence\": 0.7, \"rationale\": \"AWS Route 53 satire relevant to cloud and AI infrastructure but not primary news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2953,
+  "completion_tokens": 277
+ }
+}

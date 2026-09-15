@@ -7,16 +7,18 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
 import re
+import time
 import uuid as _uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from difflib import SequenceMatcher
+from functools import lru_cache
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from app.services.content_extractor import extract_article_content
-from app.services.image_extraction import fetch_best_source_image
+from app.services.article_content import serialize_article
 from app.services.openai_service import get_openai_service
 
 logger = logging.getLogger(__name__)
@@ -30,6 +32,13 @@ CANDIDATE_EXPANSION_STEPS = (
 )
 BATCH_SCORING_SIZE = 40
 MIN_CANDIDATE_TEXT_LENGTH = 40
+# Below this, the article detail view has nothing to render but the summary, so
+# a reader-initiated open should try extraction again.
+MIN_READABLE_CONTENT_CHARS = 400
+# Ceiling on reader-triggered retries, so a hard paywall isn't refetched forever.
+MAX_ON_DEMAND_EXTRACTION_ATTEMPTS = 5
+# Applied when articles.content_quality is NULL (enrichment hasn't run yet).
+DEFAULT_CONTENT_QUALITY = 0.5
 MAX_LLM_CANDIDATES = 200
 MIN_SHORTLIST_SIZE = 24
 MIN_FEED_SIZE = 6
@@ -42,6 +51,9 @@ DETERMINISTIC_STRONG_MATCH = 3.0
 DETERMINISTIC_SCORE_NORMALIZER = 8.0
 FALLBACK_SCORE_NORMALIZER = 5.0
 _FALLBACK_REASONS = {"scoring incomplete", "scoring unavailable", "scoring error"}
+# Rough per-call cost of one 40-article scoring batch on gpt-4o-mini. An
+# estimate for the build log, not a bill — usage is not returned by the batch scorer.
+EST_COST_PER_SCORING_CALL_USD = 0.002
 _DEDUPE_TRACKING_PARAMS = {"fbclid", "gclid", "ocid", "cmpid", "taid"}
 _DEDUPE_STOPWORDS = {
     "a", "about", "an", "and", "article", "articles", "around", "be", "coverage",
@@ -128,8 +140,23 @@ async def get_personalized_feed(
     conn,
     limit: int = 50,
     force_refresh: bool = False,
+    feed_request_id: str | None = None,
 ) -> list[dict]:
-    """Return a personalized news feed for the given user."""
+    """Return a personalized news feed for the given user.
+
+    `feed_request_id` (S10 A1/L4), when supplied by an edition-serving caller,
+    is persisted per article so legacy telemetry/feedback can bind to the exact
+    edition that served it. Auxiliary callers (chat/briefing context) omit it;
+    see `_save_feed_cache`'s COALESCE for why that can't clobber a real one.
+    """
+    from app.services.ranking_service import enabled as ranking_enabled, cached_feed
+    if ranking_enabled():
+        # Chat and other internal consumers can reuse an edition, never initiate
+        # paid ranking implicitly (including force_refresh callers).
+        return cached_feed(conn, user_id, limit=limit, ordinary_only=True)["articles"]
+    from app.services.reader_integration import enabled as reader_enabled, serve_feed
+    if reader_enabled():
+        return serve_feed(conn, user_id, limit=limit)["articles"]
     user_uuid = _uuid.UUID(user_id)
     if conn is None or not hasattr(conn, "cursor"):
         ai_profile, interests, preferences_updated_at = _load_user_preferences(conn, user_uuid)
@@ -165,16 +192,16 @@ async def get_personalized_feed(
             cached = _collapse_duplicate_coverage(cached)
             relevant = [a for a in cached if a.get("relevant", False)]
             if relevant:
-                relevant = relevant[:limit]
-                await _hydrate_missing_feed_images(conn, relevant)
-                return relevant
+                return relevant[:limit]
             if any(a.get("relevance_reason") for a in cached):
                 return []
             logger.info("Cache for user %s exists but lacks reasons; treating as stale", user_id)
 
     profile = _build_preference_profile(ai_profile or "", interests, user_profile_v2=user_profile_v2)
 
-    candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid)
+    build_started = time.perf_counter()
+    build_stats: dict[str, Any] = {}
+    candidates = await _load_candidates_for_profile(conn, profile, limit, user_uuid=user_uuid, stats=build_stats)
     if not candidates:
         return []
 
@@ -184,11 +211,9 @@ async def get_personalized_feed(
             candidate["_relevant"] = True
             candidate["_reason"] = "no profile available"
         candidates.sort(key=lambda article: article.get("published_at") or "", reverse=True)
-        _save_feed_cache(conn, user_uuid, candidates)
+        _save_feed_cache(conn, user_uuid, candidates, feed_request_id=feed_request_id)
         finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
-        finalized = finalized[:limit]
-        await _hydrate_missing_feed_images(conn, finalized)
-        return finalized
+        return finalized[:limit]
 
     # Load behavioral signals, entity pins, source quality for scoring context
     scoring_ctx = _prepare_scoring_context(conn, user_id)
@@ -208,20 +233,78 @@ async def get_personalized_feed(
     batch_results_list = await asyncio.gather(*(_scored(b) for b in batches))
     analysis_results = [r for results in batch_results_list for r in results]
 
-    _apply_individual_analysis_results(candidates, analysis_results, profile, scoring_ctx)
+    # Annotate BEFORE scoring: _apply_individual_analysis_results' feedback_adjustment
+    # call reads candidate["_matched_profile_signals"] to apply the learned `topic`
+    # weight (KIND_FACTORS["topic"]=1.0, the strongest kind). That field only exists
+    # after _annotate_candidate_feed_roles runs. Scoring first left it permanently
+    # empty at read time, silently zeroing the topic term for every candidate even
+    # though the write side (apply_feedback -> user_feed_cache.matched_profile_signals)
+    # was already correct. Neither function reads a field the other sets, so this
+    # ordering is safe to swap.
     _annotate_candidate_feed_roles(candidates, user_profile_v2 or {})
+    _apply_individual_analysis_results(candidates, analysis_results, profile, scoring_ctx)
     candidates.sort(
         key=lambda article: (article.get("_score", 0.0), article.get("published_at") or ""),
         reverse=True,
     )
-    _save_feed_cache(conn, user_uuid, candidates)
+    _save_feed_cache(conn, user_uuid, candidates, feed_request_id=feed_request_id)
     finalized = _collapse_duplicate_coverage(_finalize_articles(candidates))
     relevant = [article for article in finalized if article.get("relevant", False)]
+    n_relevant = len(relevant)
     relevant = _enforce_diversity(relevant)
+    n_diverse = len(relevant)
     relevant = _balance_feed_roles(relevant)
+    n_balanced = len(relevant)
     relevant = relevant[:limit]
-    await _hydrate_missing_feed_images(conn, relevant)
+
+    build_stats.update({
+        "prefiltered": len(candidates),
+        "scored": sum(1 for r in analysis_results if str(r.get("reason", "")).strip() not in _FALLBACK_REASONS),
+        "kept": len(relevant),
+        "calls": len(batches),
+        "model": getattr(openai_service, "scoring_model", None),
+        "dropped_by_stage": {
+            "not_relevant": len(candidates) - n_relevant,
+            "dedup": len(candidates) - len(finalized),
+            "diversity": n_relevant - n_diverse,
+            "roles": n_diverse - n_balanced,
+            "limit": n_balanced - len(relevant),
+        },
+        "feed_ids": [a.get("id") for a in relevant],
+        "latency_ms": int((time.perf_counter() - build_started) * 1000),
+    })
+    _record_feed_build(conn, user_uuid, build_stats)
     return relevant
+
+
+def _record_feed_build(conn, user_uuid, stats: dict[str, Any]) -> None:
+    """Append one row to `feed_build_log`. Never allowed to break a feed build."""
+    if conn is None or not hasattr(conn, "cursor"):
+        return
+    try:
+        git_sha = (os.getenv("GIT_SHA") or os.getenv("RAILWAY_GIT_COMMIT_SHA")
+                   or os.getenv("SOURCE_VERSION") or "unknown")[:40]
+        calls = int(stats.get("calls") or 0)
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.feed_build_log (
+                    user_id, git_sha, model, candidates_loaded, prefiltered, scored, kept,
+                    dropped_by_stage, feed_ids, calls, cost_usd_est, latency_ms
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s, %s, %s)
+                """,
+                (
+                    user_uuid, git_sha, stats.get("model"),
+                    stats.get("candidates_loaded"), stats.get("prefiltered"),
+                    stats.get("scored"), stats.get("kept"),
+                    json.dumps(stats.get("dropped_by_stage") or {}),
+                    json.dumps(stats.get("feed_ids") or []),
+                    calls, calls * EST_COST_PER_SCORING_CALL_USD, stats.get("latency_ms"),
+                ),
+            )
+    except Exception:
+        logger.exception("Failed to record feed build for user %s", user_uuid)
 
 
 def _log_score_distribution(results: list[dict], context: str) -> None:
@@ -295,10 +378,16 @@ async def _load_candidates_for_profile(
     profile: PreferenceProfile,
     limit: int,
     user_uuid=None,
+    stats: dict[str, Any] | None = None,
 ) -> list[dict]:
-    """Load and widen candidate windows until we have enough strong matches."""
+    """Load and widen candidate windows until we have enough strong matches.
+
+    `stats`, when given, receives `candidates_loaded` (rows seen before the
+    prefilter) for the build log."""
     seen_ids: set[str] = set()
     gathered: list[dict] = []
+    if stats is not None:
+        stats["candidates_loaded"] = 0
     desired_shortlist = min(max(max(limit, 10) * 2, MIN_SHORTLIST_SIZE), MAX_LLM_CANDIDATES)
 
     for lookback_hours, row_limit in CANDIDATE_EXPANSION_STEPS:
@@ -312,6 +401,8 @@ async def _load_candidates_for_profile(
             window_candidates.append(candidate)
 
         gathered.extend(window_candidates)
+        if stats is not None:
+            stats["candidates_loaded"] = len(gathered)
         logger.info(
             "Loaded %d candidates for %dh/%d window (total=%d)",
             len(window_candidates),
@@ -351,12 +442,30 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
         if user_uuid is None:
             cur.execute(
                 f"""
-                SELECT id, url, title, summary, content, author, source_name, image_url,
-                       published_at, ingested_at, category, content_quality
-                FROM public.articles
-                WHERE COALESCE(published_at, ingested_at) > now() - interval '{lookback_hours} hours'
-                  AND (content_quality >= 0.4 OR enrichment_completed = false)
-                ORDER BY COALESCE(published_at, ingested_at) DESC
+                SELECT a.id, a.url, a.title, a.summary, a.content, a.analysis_text,
+                       a.author, a.source_name, a.image_url, a.image_origin,
+                       a.image_source_url, a.image_attribution, a.image_is_illustrative,
+                       a.published_at, a.ingested_at,
+                       a.category, a.content_quality, a.presentation_mode,
+                       a.presentation_reason, a.body_state, a.content_access_hint,
+                       a.display_content_artifact_id, a.display_body_excerpt,
+                       a.display_rights_basis, a.display_effective_completeness,
+                       a.display_policy_version, a.content_version,
+                       artifact.kind AS artifact_kind,
+                       artifact.method AS artifact_method,
+                       artifact.origin_url AS artifact_origin_url,
+                       artifact.fetched_at AS artifact_fetched_at,
+                       artifact.extractor_version AS artifact_extractor_version,
+                       artifact.completeness AS artifact_completeness,
+                       artifact.confidence AS artifact_confidence,
+                       artifact.content_hash AS artifact_content_hash
+                FROM public.articles a
+                LEFT JOIN public.article_content_artifacts artifact
+                  ON artifact.id = a.display_content_artifact_id
+                 AND artifact.article_id = a.id
+                WHERE COALESCE(a.published_at, a.ingested_at) > now() - interval '{lookback_hours} hours'
+                  AND (a.content_quality >= 0.4 OR NOT COALESCE(a.enrichment_completed, false))
+                ORDER BY COALESCE(a.published_at, a.ingested_at) DESC
                 LIMIT {row_limit}
                 """,
             )
@@ -364,15 +473,44 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
             cur.execute(
                 f"""
                 SELECT scoped.id, scoped.url, scoped.title, scoped.summary, scoped.content,
+                       scoped.analysis_text,
                        scoped.author, scoped.source_name, scoped.image_url,
+                       scoped.image_origin, scoped.image_source_url,
+                       scoped.image_attribution, scoped.image_is_illustrative,
                        scoped.published_at, scoped.ingested_at, scoped.category,
                        scoped.coverage_role, scoped.selection_reason, scoped.matched_topics,
                        scoped.matched_entities, scoped.precision_score, scoped.breadth_score,
-                       scoped.content_quality
+                       scoped.content_quality, scoped.presentation_mode,
+                       scoped.presentation_reason, scoped.body_state,
+                       scoped.content_access_hint, scoped.display_content_artifact_id,
+                       scoped.display_body_excerpt, scoped.display_rights_basis,
+                       scoped.display_effective_completeness,
+                       scoped.display_policy_version, scoped.content_version,
+                       scoped.artifact_kind, scoped.artifact_method,
+                       scoped.artifact_origin_url, scoped.artifact_fetched_at,
+                       scoped.artifact_extractor_version,
+                       scoped.artifact_completeness, scoped.artifact_confidence,
+                       scoped.artifact_content_hash
                 FROM (
                     SELECT DISTINCT ON (a.id)
-                           a.id, a.url, a.title, a.summary, a.content, a.author, a.source_name,
-                           a.image_url, a.content_quality,
+                           a.id, a.url, a.title, a.summary, a.content, a.analysis_text,
+                           a.author, a.source_name,
+                           a.image_url, a.image_origin, a.image_source_url,
+                           a.image_attribution, a.image_is_illustrative,
+                           a.content_quality,
+                           a.presentation_mode, a.presentation_reason, a.body_state,
+                           a.content_access_hint, a.display_content_artifact_id,
+                           a.display_body_excerpt, a.display_rights_basis,
+                           a.display_effective_completeness,
+                           a.display_policy_version, a.content_version,
+                           artifact.kind AS artifact_kind,
+                           artifact.method AS artifact_method,
+                           artifact.origin_url AS artifact_origin_url,
+                           artifact.fetched_at AS artifact_fetched_at,
+                           artifact.extractor_version AS artifact_extractor_version,
+                           artifact.completeness AS artifact_completeness,
+                           artifact.confidence AS artifact_confidence,
+                           artifact.content_hash AS artifact_content_hash,
                            COALESCE(asl.published_at, a.published_at) AS published_at,
                            a.ingested_at,
                            COALESCE(us.category, a.category) AS category,
@@ -384,13 +522,16 @@ def _query_candidate_rows(conn, lookback_hours: int, row_limit: int, user_uuid=N
                            us.breadth_score,
                            COALESCE(asl.published_at, a.published_at, a.ingested_at) AS scoped_published_at
                     FROM public.articles a
+                    LEFT JOIN public.article_content_artifacts artifact
+                      ON artifact.id = a.display_content_artifact_id
+                     AND artifact.article_id = a.id
                     JOIN public.article_source_links asl ON asl.article_id = a.id
                     JOIN public.user_sources us
                       ON us.user_id = %s
                      AND us.active = true
                      AND us.source_url = asl.source_url
                     WHERE COALESCE(asl.published_at, a.published_at, a.ingested_at) > now() - interval '{lookback_hours} hours'
-                      AND (a.content_quality >= 0.4 OR a.enrichment_completed = false)
+                      AND (a.content_quality >= 0.4 OR NOT COALESCE(a.enrichment_completed, false))
                     ORDER BY a.id, COALESCE(asl.published_at, a.published_at, a.ingested_at) DESC
                 ) AS scoped
                 ORDER BY scoped.scoped_published_at DESC
@@ -411,32 +552,41 @@ def _rows_to_candidates(rows: list[dict]) -> list[dict]:
         else:
             published_at_str = None
 
-        summary = row.get("summary") or _derive_summary(row.get("content"))
-        text_blob = f"{row.get('title', '')} {summary or ''}".strip()
+        analysis_text = row.get("analysis_text") or row.get("content")
+        # Analysis may contain alternate-outlet or quarantined legacy text. It
+        # can help private ranking, but it must never be repackaged as a summary
+        # attributed to the article's publisher.
+        summary = row.get("summary")
+        ranking_summary = summary or _derive_summary(analysis_text)
+        text_blob = f"{row.get('title', '')} {ranking_summary or ''}".strip()
 
         if len(text_blob) < MIN_CANDIDATE_TEXT_LENGTH:
             continue
 
-        candidates.append({
-            "id": str(row["id"]),
-            "title": row.get("title", ""),
-            "summary": summary,
-            "description": summary,
-            "content": (row.get("content") or "")[:2000],
-            "author": row.get("author"),
-            "source": row.get("source_name"),
-            "image_url": row.get("image_url"),
-            "url": row.get("url"),
-            "published_at": published_at_str,
-            "category": row.get("category"),
+        serialized = serialize_article(
+            {**row, "summary": summary, "published_at": published_at_str},
+            include_body=False,
+        )
+        serialized.update({
+            # Private ranking input. `_finalize_articles` removes it before
+            # response serialization; clipped analysis is never called body.
+            "_analysis_text": (analysis_text or "")[:2000],
+            "_analysis_summary": ranking_summary,
             "source_coverage_role": row.get("coverage_role"),
             "source_selection_reason": row.get("selection_reason"),
             "source_matched_topics": row.get("matched_topics") or [],
             "source_matched_entities": row.get("matched_entities") or [],
             "source_precision_score": row.get("precision_score") or 0.0,
             "source_breadth_score": row.get("breadth_score") or 0.0,
-            "content_quality": row.get("content_quality") or 0.0,
+            # NULL means "not enriched yet", not "bad" — score it neutrally so
+            # the freshest articles aren't penalised for arriving before the
+            # enrichment loop reaches them.
+            "content_quality": (
+                row["content_quality"] if row.get("content_quality") is not None
+                else DEFAULT_CONTENT_QUALITY
+            ),
         })
+        candidates.append(serialized)
 
     return candidates
 
@@ -558,7 +708,7 @@ def _select_best_duplicate_representative(cluster: list[dict]) -> dict:
         published = _parse_article_datetime(article.get("published_at"))
         return (
             1 if article.get("image_url") else 0,
-            len(article.get("content") or ""),
+            len(article.get("_analysis_text") or article.get("body_excerpt") or ""),
             len(article.get("summary") or ""),
             _article_rank_score(article),
             published.timestamp() if published else 0.0,
@@ -592,47 +742,6 @@ def _collapse_duplicate_coverage(articles: list[dict]) -> list[dict]:
         deduped.append(_select_best_duplicate_representative(cluster))
 
     return deduped
-
-
-async def _hydrate_missing_feed_images(conn, articles: list[dict], max_articles: int = 15) -> None:
-    if not conn:
-        return
-
-    missing = [article for article in articles if not article.get("image_url") and article.get("url")][:max_articles]
-    if not missing:
-        return
-
-    semaphore = asyncio.Semaphore(8)
-
-    async def _fetch(article: dict) -> tuple[dict, str]:
-        async with semaphore:
-            image_url = await fetch_best_source_image(article["url"], timeout=3.0)
-            return article, image_url
-
-    results = await asyncio.gather(*[_fetch(article) for article in missing], return_exceptions=True)
-
-    for result in results:
-        if isinstance(result, Exception):
-            logger.debug("Feed image hydration failed", exc_info=result)
-            continue
-
-        article, image_url = result
-        if not image_url:
-            continue
-
-        article["image_url"] = image_url
-        try:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE public.articles
-                    SET image_url = COALESCE(image_url, %s)
-                    WHERE id = %s
-                    """,
-                    (image_url, _uuid.UUID(article["id"])),
-                )
-        except Exception:
-            logger.exception("Failed to persist hydrated image for article %s", article.get("id"))
 
 
 def _parse_interests(raw) -> dict | None:
@@ -698,12 +807,43 @@ def _interest_values(interests: dict | None, key: str) -> list[str]:
     return [str(value).strip() for value in values if str(value).strip()]
 
 
+@lru_cache(maxsize=4096)
+def _word_pattern(term: str) -> re.Pattern | None:
+    """Word-boundary matcher for a normalized term.
+
+    Raw substring matching is never right for interest terms. "ai" as a
+    substring appears inside ukraine, entertainment, chairman, maintaining and
+    thailand — so a user who asks for AI news gets flood coverage. Boundaries
+    are `[a-z0-9]` rather than `\\b` so that terms containing punctuation
+    (c++, .net, covid-19) still anchor correctly.
+    """
+    cleaned = term.strip()
+    if not cleaned:
+        return None
+    return re.compile(rf"(?<![a-z0-9]){re.escape(cleaned)}(?![a-z0-9])")
+
+
+def _word_in(text: str, term: str) -> bool:
+    """True when `term` occurs in `text` as a whole word (or whole phrase)."""
+    if not text or not term:
+        return False
+    pattern = _word_pattern(term)
+    return bool(pattern and pattern.search(text))
+
+
 def _categories_for_terms(terms: list[str]) -> set[str]:
     categories: set[str] = set()
     for term in terms:
         normalized = _normalize_text(term)
+        if not normalized:
+            continue
         for category, hints in _CATEGORY_HINTS.items():
-            if normalized == category or normalized in hints or any(hint in normalized for hint in hints):
+            if normalized == category or normalized in hints:
+                categories.add(category)
+                continue
+            # Hints must match on word boundaries. The unbounded form read
+            # "entertainment" and "ukraine" as AI interests.
+            if any(_word_in(normalized, hint) for hint in hints):
                 categories.add(category)
     return categories
 
@@ -721,13 +861,7 @@ def _keyword_terms(phrases: list[str]) -> set[str]:
 
 
 def _contains_any(text: str, terms: set[str]) -> bool:
-    for term in terms:
-        if len(term) <= 3 and term.isalnum():
-            if re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", text):
-                return True
-        elif term in text:
-            return True
-    return False
+    return any(_word_in(text, term) for term in terms)
 
 
 def _is_strict_profile(ai_profile: str) -> bool:
@@ -828,8 +962,10 @@ def _build_preference_profile(
 def _candidate_search_fields(candidate: dict[str, Any]) -> dict[str, str]:
     return {
         "title": _normalize_text(candidate.get("title")),
-        "summary": _normalize_text(candidate.get("summary")),
-        "content": _normalize_text(candidate.get("content")),
+        "summary": _normalize_text(
+            candidate.get("summary") or candidate.get("_analysis_summary")
+        ),
+        "content": _normalize_text(candidate.get("_analysis_text")),
         "source": _normalize_text(candidate.get("source")),
         "category": _normalize_text(candidate.get("category")),
     }
@@ -841,12 +977,12 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
 
     for phrase in profile.negative_phrases:
         normalized = _normalize_text(phrase)
-        if normalized and normalized in searchable:
+        if normalized and _word_in(searchable, normalized):
             return 0.0, f"Excluded topic match: {phrase}", True
 
     # Expanded exclusion patterns — require 2+ hits to avoid false positives
     if profile.expanded_exclusion_phrases:
-        hits = sum(1 for p in profile.expanded_exclusion_phrases if p and p in searchable)
+        hits = sum(1 for p in profile.expanded_exclusion_phrases if _word_in(searchable, p))
         if hits >= 2:
             return 0.0, f"Matched {hits} exclusion patterns", True
 
@@ -873,16 +1009,16 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
         if not normalized:
             continue
 
-        if normalized in fields["title"]:
+        if _word_in(fields["title"], normalized):
             score += 4.0
             matched_terms.append(phrase)
-        elif normalized in fields["category"] or normalized in fields["source"]:
+        elif _word_in(fields["category"], normalized) or _word_in(fields["source"], normalized):
             score += 3.0
             matched_terms.append(phrase)
-        elif normalized in fields["summary"]:
+        elif _word_in(fields["summary"], normalized):
             score += 2.0
             matched_terms.append(phrase)
-        elif normalized in searchable:
+        elif _word_in(searchable, normalized):
             score += 1.0
             matched_terms.append(phrase)
 
@@ -896,7 +1032,7 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
                 token_variants = {token}
                 if len(token) > 3 and token.endswith("s"):
                     token_variants.add(token[:-1])
-                if any(variant and variant in searchable for variant in token_variants):
+                if any(_word_in(searchable, variant) for variant in token_variants):
                     matched_token_count += 1
             if matched_token_count >= 2:
                 score += 2.0
@@ -908,9 +1044,11 @@ def _score_candidate(candidate: dict[str, Any], profile: PreferenceProfile) -> t
 
     keyword_hits = 0
     for keyword in profile.keyword_terms:
-        if keyword in fields["title"]:
+        if _word_in(fields["title"], keyword):
             keyword_hits += 2
-        elif keyword in fields["summary"] or keyword in fields["category"] or keyword in fields["source"]:
+        elif (_word_in(fields["summary"], keyword)
+              or _word_in(fields["category"], keyword)
+              or _word_in(fields["source"], keyword)):
             keyword_hits += 1
 
     score += min(keyword_hits * 0.4, 2.4)
@@ -962,6 +1100,8 @@ class ScoringContext:
     entity_pins: list[str] = field(default_factory=list)
     entity_patterns: dict = field(default_factory=dict)
     source_quality: dict = field(default_factory=dict)
+    feedback_signals: dict = field(default_factory=dict)
+    suppressed_article_ids: set = field(default_factory=set)
 
 
 def _extract_domain(source_name: str) -> str:
@@ -1020,13 +1160,19 @@ def _build_entity_patterns(pins: list[str]) -> dict:
 
 
 def _prepare_scoring_context(conn, user_id: str) -> ScoringContext:
-    """Load all scoring context (behavior, entities, source quality) for a single user."""
+    """Load all scoring context (behavior, entities, quality, feedback) for one user."""
+    from app.services.feedback_signals import (
+        load_feedback_signals, load_suppressed_article_ids,
+    )
+
     pins = _load_entity_pins(conn, user_id)
     return ScoringContext(
         behavior_signals=_load_behavior_signals(conn, user_id),
         entity_pins=pins,
         entity_patterns=_build_entity_patterns(pins),
         source_quality=_load_source_quality(conn),
+        feedback_signals=load_feedback_signals(conn, user_id),
+        suppressed_article_ids=load_suppressed_article_ids(conn, user_id),
     )
 
 
@@ -1057,6 +1203,15 @@ def _apply_individual_analysis_results(
             candidate["_score"] = 0.0
             candidate["_relevant"] = False
             candidate["_reason"] = prefilter_reason
+            continue
+
+        # The reader already rejected this exact article. Weights shift ranking;
+        # this is absolute. Seeing the same headline again after tapping "not
+        # relevant" is the clearest possible proof the button does nothing.
+        if candidate.get("id") in scoring_ctx.suppressed_article_ids:
+            candidate["_score"] = 0.0
+            candidate["_relevant"] = False
+            candidate["_reason"] = "You marked this as not relevant"
             continue
 
         if reason in _FALLBACK_REASONS or reason.startswith("Error during analysis:"):
@@ -1098,9 +1253,23 @@ def _apply_individual_analysis_results(
                 elif sq < 0.3:
                     blended_score = max(blended_score - 0.10, 0.0)
 
-        # Content quality multiplier — high quality rises, low quality sinks
-        content_quality = candidate.get("content_quality", 0.5)
-        blended_score *= (0.5 + 0.5 * content_quality)
+        # Learned feedback. Applied last among the adjustments so an explicit
+        # correction can override a behavioural or entity boost — the reader
+        # telling us directly outranks anything we inferred.
+        if scoring_ctx.feedback_signals:
+            from app.services.feedback_signals import feedback_adjustment
+
+            blended_score = max(0.0, min(
+                1.0, blended_score + feedback_adjustment(candidate, scoring_ctx.feedback_signals)))
+
+        # Content quality tilt — better-presented articles rise, thin ones sink.
+        # Kept gentle (0.8x–1.1x): presentation quality should order the feed, not
+        # override relevance. A perfectly on-topic story the reader opens at the
+        # source still belongs above an off-topic one we happened to extract well.
+        content_quality = candidate.get("content_quality")
+        if content_quality is None:
+            content_quality = DEFAULT_CONTENT_QUALITY
+        blended_score = min(blended_score * (0.8 + 0.3 * content_quality), 1.0)
 
         candidate["_score"] = blended_score
         candidate["_relevant"] = model_relevant and blended_score >= 0.35
@@ -1151,10 +1320,13 @@ def _keyword_match_count(searchable: str, values: list[str]) -> int:
 
 
 def _compute_life_impact(article: dict, profile_v2: dict) -> tuple[float, list[str]]:
-    searchable = " ".join(
-        _normalize_text(article.get(key))
-        for key in ("title", "summary", "content", "category", "source")
-    )
+    searchable = " ".join((
+        _normalize_text(article.get("title")),
+        _normalize_text(article.get("summary") or article.get("_analysis_summary")),
+        _normalize_text(article.get("_analysis_text") or article.get("content")),
+        _normalize_text(article.get("category")),
+        _normalize_text(article.get("source")),
+    ))
     score = 0.0
     signals: list[str] = []
 
@@ -1212,10 +1384,15 @@ def _build_why_now(article: dict, life_impact_score: float) -> str:
 
 def _annotate_candidate_feed_roles(candidates: list[dict], profile_v2: dict) -> None:
     for candidate in candidates:
-        searchable = " ".join(
-            _normalize_text(candidate.get(key))
-            for key in ("title", "summary", "content", "category", "source")
-        )
+        searchable = " ".join((
+            _normalize_text(candidate.get("title")),
+            _normalize_text(
+                candidate.get("summary") or candidate.get("_analysis_summary")
+            ),
+            _normalize_text(candidate.get("_analysis_text") or candidate.get("content")),
+            _normalize_text(candidate.get("category")),
+            _normalize_text(candidate.get("source")),
+        ))
         matched_signals: list[str] = []
         matched_signals.extend(candidate.get("source_matched_topics") or [])
         matched_signals.extend(candidate.get("source_matched_entities") or [])
@@ -1311,6 +1488,8 @@ def _finalize_articles(articles: list[dict]) -> list[dict]:
         row.pop("_prefilter_score", None)
         row.pop("_prefilter_reason", None)
         row.pop("_prefilter_excluded", None)
+        row.pop("_analysis_text", None)
+        row.pop("_analysis_summary", None)
         finalized.append(row)
     return finalized
 
@@ -1329,10 +1508,28 @@ def _load_cached_feed(
                 SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
                        ufc.feed_role, ufc.why_this_story, ufc.why_now, ufc.matched_profile_signals,
                        ufc.cluster_id, ufc.importance_score,
-                       a.id, a.url, a.title, a.summary, a.content, a.author,
-                       a.source_name, a.image_url, a.published_at, a.category
+                       a.id, a.url, a.title, a.summary, a.content, a.analysis_text,
+                       a.author, a.source_name, a.image_url, a.image_origin,
+                       a.image_source_url, a.image_attribution, a.image_is_illustrative,
+                       a.published_at, a.category,
+                       a.presentation_mode, a.presentation_reason, a.body_state,
+                       a.content_access_hint, a.display_content_artifact_id,
+                       a.display_body_excerpt, a.display_rights_basis,
+                       a.display_effective_completeness,
+                       a.display_policy_version, a.content_version,
+                       artifact.kind AS artifact_kind,
+                       artifact.method AS artifact_method,
+                       artifact.origin_url AS artifact_origin_url,
+                       artifact.fetched_at AS artifact_fetched_at,
+                       artifact.extractor_version AS artifact_extractor_version,
+                       artifact.completeness AS artifact_completeness,
+                       artifact.confidence AS artifact_confidence,
+                       artifact.content_hash AS artifact_content_hash
                 FROM public.user_feed_cache ufc
                 JOIN public.articles a ON a.id = ufc.article_id
+                LEFT JOIN public.article_content_artifacts artifact
+                  ON artifact.id = a.display_content_artifact_id
+                 AND artifact.article_id = a.id
                 WHERE ufc.user_id = %s
                 ORDER BY ufc.relevance_score DESC
                 """,
@@ -1345,10 +1542,28 @@ def _load_cached_feed(
                 SELECT ufc.relevance_score, ufc.relevant, ufc.relevance_reason, ufc.created_at,
                        ufc.feed_role, ufc.why_this_story, ufc.why_now, ufc.matched_profile_signals,
                        ufc.cluster_id, ufc.importance_score,
-                       a.id, a.url, a.title, a.summary, a.content, a.author,
-                       a.source_name, a.image_url, a.published_at, a.category
+                       a.id, a.url, a.title, a.summary, a.content, a.analysis_text,
+                       a.author, a.source_name, a.image_url, a.image_origin,
+                       a.image_source_url, a.image_attribution, a.image_is_illustrative,
+                       a.published_at, a.category,
+                       a.presentation_mode, a.presentation_reason, a.body_state,
+                       a.content_access_hint, a.display_content_artifact_id,
+                       a.display_body_excerpt, a.display_rights_basis,
+                       a.display_effective_completeness,
+                       a.display_policy_version, a.content_version,
+                       artifact.kind AS artifact_kind,
+                       artifact.method AS artifact_method,
+                       artifact.origin_url AS artifact_origin_url,
+                       artifact.fetched_at AS artifact_fetched_at,
+                       artifact.extractor_version AS artifact_extractor_version,
+                       artifact.completeness AS artifact_completeness,
+                       artifact.confidence AS artifact_confidence,
+                       artifact.content_hash AS artifact_content_hash
                 FROM public.user_feed_cache ufc
                 JOIN public.articles a ON a.id = ufc.article_id
+                LEFT JOIN public.article_content_artifacts artifact
+                  ON artifact.id = a.display_content_artifact_id
+                 AND artifact.article_id = a.id
                 WHERE ufc.user_id = %s AND ufc.created_at > %s
                 ORDER BY ufc.relevance_score DESC
                 """,
@@ -1372,17 +1587,10 @@ def _load_cached_feed(
         else:
             published_at_str = None
 
-        articles.append({
-            "id": str(row["id"]),
-            "title": row.get("title", ""),
-            "summary": row.get("summary"),
-            "content": (row.get("content") or "")[:500],
-            "author": row.get("author"),
-            "source": row.get("source_name"),
-            "image_url": row.get("image_url"),
-            "url": row.get("url"),
-            "published_at": published_at_str,
-            "category": row.get("category"),
+        serialized = serialize_article(
+            {**row, "published_at": published_at_str}, include_body=False
+        )
+        serialized.update({
             "relevance_score": row.get("relevance_score"),
             "relevant": row.get("relevant", True),
             "relevance_reason": row.get("relevance_reason", ""),
@@ -1393,12 +1601,20 @@ def _load_cached_feed(
             "cluster_id": row.get("cluster_id"),
             "importance_score": row.get("importance_score") or 0.0,
         })
+        articles.append(serialized)
 
     return articles
 
 
-def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
-    """Save scored articles to the feed cache table."""
+def _save_feed_cache(conn, user_uuid, articles: list[dict], feed_request_id: str | None = None) -> None:
+    """Save scored articles to the feed cache table.
+
+    `feed_request_id` is the edition id this build was published under, if any
+    (auxiliary callers like chat/briefing context reuse this cache without one).
+    On update, COALESCE keeps whatever edition id is already stored when this
+    call doesn't supply a fresh one, so an incidental non-edition read can never
+    wipe out real telemetry attribution for the currently-served feed (S10 A1).
+    """
     with conn.cursor() as cur:
         # Clear old cache for this user
         cur.execute(
@@ -1422,9 +1638,10 @@ def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
                     """
                     INSERT INTO public.user_feed_cache (
                         user_id, article_id, relevance_score, relevant, relevance_reason,
-                        feed_role, why_this_story, why_now, matched_profile_signals, cluster_id, importance_score
+                        feed_role, why_this_story, why_now, matched_profile_signals, cluster_id,
+                        importance_score, feed_request_id
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s)
                     ON CONFLICT (user_id, article_id) DO UPDATE SET
                         relevance_score = EXCLUDED.relevance_score,
                         relevant = EXCLUDED.relevant,
@@ -1435,6 +1652,7 @@ def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
                         matched_profile_signals = EXCLUDED.matched_profile_signals,
                         cluster_id = EXCLUDED.cluster_id,
                         importance_score = EXCLUDED.importance_score,
+                        feed_request_id = COALESCE(EXCLUDED.feed_request_id, public.user_feed_cache.feed_request_id),
                         created_at = now()
                     """,
                     (
@@ -1449,26 +1667,66 @@ def _save_feed_cache(conn, user_uuid, articles: list[dict]) -> None:
                         json.dumps(matched_profile_signals),
                         cluster_id,
                         importance_score,
+                        feed_request_id,
                     ),
                 )
             except Exception:
                 logger.exception("Feed cache error caching article %s", article_id)
 
 
+def _needs_on_demand_extraction(row: dict) -> bool:
+    """Legacy migration predicate; request handlers never invoke extraction.
+
+    Kept temporarily for compatibility tests around old rows. Authoritative
+    retries are controlled only by ``article_content_jobs`` in the background
+    worker, never by this legacy boolean/length heuristic.
+    """
+    if not row.get("url"):
+        return False
+    if len((row.get("content") or "").strip()) >= MIN_READABLE_CONTENT_CHARS:
+        return False
+    return (row.get("extraction_attempt_count") or 0) < MAX_ON_DEMAND_EXTRACTION_ATTEMPTS
+
+
 async def get_article_by_id(article_id: str, conn) -> dict | None:
-    """
-    Load a single article by ID. If content hasn't been extracted yet,
-    extract it on-demand using BeautifulSoup.
-    """
-    article_uuid = _uuid.UUID(article_id)
+    """Load a single article without outbound work on the request path."""
+    return get_article_by_id_sync(article_id, conn)
+
+
+def get_article_by_id_sync(article_id: str, conn, *, delivery_version=None) -> dict | None:
+    """Worker-owned synchronous hydration; no connection crosses an await."""
+    try:
+        article_uuid = _uuid.UUID(article_id)
+    except (TypeError, ValueError, AttributeError):
+        return None
 
     with conn.cursor() as cur:
         cur.execute(
             """
-            SELECT id, url, title, summary, content, author, source_name,
-                   image_url, published_at, category, content_extracted
-            FROM public.articles
-            WHERE id = %s
+            SELECT a.id, a.url, a.title, a.summary, a.author, a.source_name,
+                   a.image_url, a.image_origin, a.image_source_url,
+                   a.image_attribution, a.image_is_illustrative,
+                   a.published_at, a.category,
+                   a.presentation_mode, a.presentation_reason, a.body_state,
+                   a.content_access_hint, a.display_content_artifact_id,
+                   a.display_body_excerpt, a.display_rights_basis,
+                   a.display_effective_completeness,
+                   a.display_policy_version, a.content_version,
+                   artifact.text AS display_body,
+                   artifact.kind AS artifact_kind,
+                   artifact.method AS artifact_method,
+                   artifact.origin_url AS artifact_origin_url,
+                   artifact.fetched_at AS artifact_fetched_at,
+                   artifact.extractor_version AS artifact_extractor_version,
+                   artifact.rights_basis AS artifact_rights_basis,
+                   artifact.completeness AS artifact_completeness,
+                   artifact.confidence AS artifact_confidence,
+                   artifact.content_hash AS artifact_content_hash
+            FROM public.articles a
+            LEFT JOIN public.article_content_artifacts artifact
+              ON artifact.id = a.display_content_artifact_id
+             AND artifact.article_id = a.id
+            WHERE a.id = %s
             """,
             (article_uuid,),
         )
@@ -1477,55 +1735,11 @@ async def get_article_by_id(article_id: str, conn) -> dict | None:
     if not row:
         return None
 
-    # If content not yet extracted and we have a URL, extract now
-    if not row.get("content_extracted") and row.get("url"):
-        from app.services.extraction_telemetry import record_extraction
-
-        extracted = await extract_article_content(row["url"])
-        if extracted.get("content"):
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    UPDATE public.articles
-                    SET content = %s,
-                        summary = COALESCE(summary, %s),
-                        image_url = COALESCE(image_url, %s),
-                        content_extracted = true,
-                        content_extractor_version = 2
-                    WHERE id = %s
-                    """,
-                    (
-                        extracted["content"],
-                        extracted.get("summary"),
-                        extracted.get("image_url"),
-                        article_uuid,
-                    ),
-                )
-            # Update row with extracted data
-            row = dict(row)
-            row["content"] = extracted["content"]
-            if not row.get("summary"):
-                row["summary"] = extracted.get("summary")
-            if not row.get("image_url"):
-                row["image_url"] = extracted.get("image_url")
-            row["content_extracted"] = True
-        record_extraction(conn, article_uuid, row["url"], extracted)
-
-    published_at = row.get("published_at")
-    if isinstance(published_at, datetime):
-        published_at_str = published_at.replace(tzinfo=timezone.utc).isoformat()
-    else:
-        published_at_str = None
-
-    return {
-        "id": str(row["id"]),
-        "title": row.get("title", ""),
-        "summary": row.get("summary"),
-        "content": row.get("content"),
-        "author": row.get("author"),
-        "source": row.get("source_name"),
-        "image_url": row.get("image_url"),
-        "url": row.get("url"),
-        "published_at": published_at_str,
-        "category": row.get("category"),
-    }
+    article = serialize_article(row, include_body=True)
+    if delivery_version == '1':
+        from .article_content import _load_policy
+        from .delivery_contract import native_lease
+        with conn.cursor() as cur:
+            policy = _load_policy(cur, row.get('url') or '')
+        article = native_lease(article, policy=policy)
+    return article

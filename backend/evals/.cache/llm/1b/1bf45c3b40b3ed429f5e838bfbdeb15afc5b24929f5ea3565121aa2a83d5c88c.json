@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1a88cfbf58745cef571f26ab23c7fc63a7c1c9b8b98191dfeb9ab7c70e6a31b7",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00974\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"NHL contract news not about Devils or Giants, missable for this reader.\"}, {\"id\": \"a00975\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Trade news about Jets goalie, unrelated to Devils or Giants, mildly interesting.\"}, {\"id\": \"a00976\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Hurricanes broadcast details irrelevant to NJ or reader interests.\"}, {\"id\": \"a00977\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Devils acquire a key player, directly affects reader's primary interest and team.\"}, {\"id\": \"a00978\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Detroit Red Wings history irrelevant to NJ Devils or Giants fan.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2694,
+  "completion_tokens": 258
+ }
+}

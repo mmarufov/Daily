@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "08db3dacd6600f6d4629bce6aacce26fe07668164f8264ddfe85f6e7c4380d68",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00980\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"lookalike\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NHL GM story, not about tennis, horse racing, or environmental topics; 'betting' is a lookalike.\"\n    },\n    {\n      \"id\": \"a00981\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Penguins/NHL roster analysis; not relevant to reader's sports or environmental interests.\"\n    },\n    {\n      \"id\": \"a00982\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Calgary Flames TV schedule; not related to reader's interests in tennis, horse racing, or environment.\"\n    },\n    {\n      \"id\": \"a00984\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Flyers NHL prospects; not relevant to tennis, horse racing, or environmental topics.\"\n    },\n    {\n      \"id\": \"a00989\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Rangers NHL prospect; not related to reader's primary or secondary interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3738,
+  "completion_tokens": 325
+ }
+}

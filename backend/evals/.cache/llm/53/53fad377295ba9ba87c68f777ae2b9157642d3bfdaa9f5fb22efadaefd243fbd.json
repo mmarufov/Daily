@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0558d0be93043ea6a0999d4a393a89c84f3598b4072e60adbb824e8790c1c2df",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01210\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Fashion fees unrelated to energy, economics, or geopolitical interests.\"}, {\"id\": \"a01211\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Nigeria anti-corruption unrelated to energy or economic stability focus.\"}, {\"id\": \"a01212\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"geopolitical_developments\"], \"confidence\": 0.7, \"rationale\": \"Middle East conflict relevant geopolitics but not directly energy or economic impact.\"}, {\"id\": \"a01213\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Falklands dispute unrelated to energy or economic interests.\"}, {\"id\": \"a01214\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Crime story unrelated to energy, economics, or geopolitical focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1100,
+  "completion_tokens": 250
+ }
+}

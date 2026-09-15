@@ -11,6 +11,7 @@ import SwiftUI
 import UIKit
 
 struct ArticleBodyTextView: UIViewRepresentable {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let text: String
     var lineSpacing: CGFloat = 6
     var fontSizeMultiplier: CGFloat = 1.0
@@ -18,7 +19,7 @@ struct ArticleBodyTextView: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextView {
         let view = UITextView()
         view.isEditable = false
-        view.isSelectable = false
+        view.isSelectable = true
         view.isScrollEnabled = false
         view.backgroundColor = .clear
         view.textContainerInset = .zero
@@ -34,7 +35,9 @@ struct ArticleBodyTextView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextView, context: Context) {
-        uiView.attributedText = makeAttributedText(text: text)
+        let attributed = makeAttributedText(text: text)
+        // Avoid resetting selection and TextKit layout on unrelated UI updates.
+        if !uiView.attributedText.isEqual(to: attributed) { uiView.attributedText = attributed }
     }
 
     private func makeAttributedText(text: String) -> NSAttributedString {
@@ -60,5 +63,4 @@ struct ArticleBodyTextView: UIViewRepresentable {
         return UIFontMetrics(forTextStyle: .body).scaledFont(for: designed)
     }
 }
-
 

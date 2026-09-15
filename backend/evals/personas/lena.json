@@ -1,0 +1,156 @@
+{
+ "key": "lena",
+ "name": "Lena — Berlin",
+ "axis": "follows one developing story; tests day-three follow-ups and freshness",
+ "transcript": [
+  {
+   "role": "assistant",
+   "content": "Hi! Tell me what kind of news you want to see."
+  },
+  {
+   "role": "user",
+   "content": "I'm an energy markets analyst in Berlin. Right now I'm following the Iran situation and the Strait of Hormuz very closely, every development: strikes, shipping, oil and gas prices, OPEC, European energy security, sanctions. I need the follow-ups, not just the first headline."
+  },
+  {
+   "role": "assistant",
+   "content": "Anything else?"
+  },
+  {
+   "role": "user",
+   "content": "German politics when it touches energy or the economy. European Central Bank decisions. Nothing about sports, gaming or entertainment."
+  }
+ ],
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "Energy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.",
+  "interests": {
+   "topics": [
+    "Iran situation",
+    "Strait of Hormuz",
+    "oil and gas prices",
+    "OPEC",
+    "European energy security",
+    "sanctions",
+    "German politics",
+    "European Central Bank decisions"
+   ],
+   "people": [],
+   "locations": [
+    "Berlin",
+    "Iran",
+    "Strait of Hormuz",
+    "Europe"
+   ],
+   "industries": [
+    "Energy",
+    "Economics",
+    "Finance"
+   ],
+   "excluded_topics": [
+    "sports",
+    "gaming",
+    "entertainment"
+   ],
+   "notes": "Requires detailed follow-ups on energy-related news."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "energy markets",
+    "geopolitical developments",
+    "economic policies"
+   ],
+   "current_interests": [
+    "Iran situation",
+    "Strait of Hormuz",
+    "oil and gas prices",
+    "OPEC",
+    "European energy security"
+   ],
+   "people": [],
+   "locations": [
+    "Berlin"
+   ],
+   "industries": [
+    "Energy",
+    "Economics"
+   ],
+   "excluded_topics": [
+    "sports",
+    "gaming",
+    "entertainment"
+   ],
+   "expanded_exclusions": [],
+   "utility_priorities": [
+    "job",
+    "money",
+    "health"
+   ],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "informative",
+    "detailed"
+   ],
+   "life_context": "Working as an analyst in energy markets, focusing on developments that impact energy security and economic stability.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "Iran situation",
+     "energy security",
+     "economic policies"
+    ],
+    "must_cover_entities": [
+     "OPEC",
+     "European Central Bank"
+    ],
+    "must_avoid_topics": [
+     "sports",
+     "entertainment"
+    ],
+    "preferred_source_types": [
+     "news articles",
+     "analytical reports",
+     "economic forecasts"
+    ],
+    "coverage_targets": [
+     "Germany",
+     "Iran",
+     "Europe"
+    ],
+    "specificity_level": "specific"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "Iran situation",
+    "energy security",
+    "economic policies"
+   ],
+   "must_cover_entities": [
+    "OPEC",
+    "European Central Bank"
+   ],
+   "must_avoid_topics": [
+    "sports",
+    "entertainment"
+   ],
+   "preferred_source_types": [
+    "news articles",
+    "analytical reports",
+    "economic forecasts"
+   ],
+   "coverage_targets": [
+    "Germany",
+    "Iran",
+    "Europe"
+   ],
+   "specificity_level": "specific"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "gpt-4o-mini",
+  "cache_key": "53deafee39187980f9f842666b1aeeb39cc6a423c218f18f94ea8d624cc13bdb",
+  "date": "2026-09-01"
+ }
+}

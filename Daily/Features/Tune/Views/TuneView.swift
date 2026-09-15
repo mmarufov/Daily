@@ -17,7 +17,7 @@ struct TuneView: View {
     @ObservedObject var viewModel: TuneViewModel
     @Binding var selectedTab: MainTabView.AppTab
     @Environment(\.dismiss) private var dismiss
-    @State private var presentedSourceArticle: NewsArticle?
+    @State private var readerDestination: ArticleReaderDestination?
     var presentedAsSheet: Bool = false
 
     private static let suggestedPrompts: [String] = [
@@ -46,6 +46,21 @@ struct TuneView: View {
                         errorBanner(message: errorMessage)
                     }
 
+                    if let proposal = viewModel.readerProposal {
+                        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                            Text(proposal.summary).font(AppTypography.body)
+                            Text("Nothing changes until you apply this.").font(AppTypography.caption1)
+                            HStack {
+                                Button("Cancel") { viewModel.cancelReaderProposal() }
+                                Spacer()
+                                Button("Apply change") { Task { await viewModel.applyReaderProposal() } }
+                            }.disabled(viewModel.isStreaming)
+                        }.padding(AppSpacing.md)
+                    }
+                    if let summary = viewModel.committedSummary {
+                        Text("Saved: \(summary)").font(AppTypography.footnote).padding(AppSpacing.sm)
+                    }
+
                     Rectangle()
                         .fill(EditionPalette.sepia)
                         .frame(height: EditionPalette.hairlineWidth)
@@ -55,34 +70,14 @@ struct TuneView: View {
                             articleContextSection(thread: currentThread)
                         } else {
                             LiveFeedPeek(articles: viewModel.articles) { article in
-                                presentedSourceArticle = article
+                                guard readerDestination == nil else { return }
+                                readerDestination = ArticleReaderDestination(article: article)
                             }
                             .padding(.top, AppSpacing.sm)
                         }
                     }
                 }
 
-                if let diff = viewModel.pendingDiff {
-                    DiffToast(
-                        summary: diff.summary,
-                        onUndo: { Task { await viewModel.tapUndo() } }
-                    )
-                    .padding(.horizontal, AppSpacing.md)
-                    .padding(.top, AppSpacing.sm)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
-
-                if let undo = viewModel.persistedUndo {
-                    HStack {
-                        Spacer()
-                        UndoPill(label: undo.label) {
-                            Task { await viewModel.tapUndo() }
-                        }
-                        .padding(.trailing, AppSpacing.md)
-                    }
-                    .padding(.top, AppSpacing.sm)
-                    .transition(.opacity)
-                }
             }
             .animation(.easeOut(duration: 0.25), value: viewModel.pendingDiff != nil)
             .animation(.easeOut(duration: 0.25), value: viewModel.persistedUndo != nil)
@@ -98,9 +93,7 @@ struct TuneView: View {
                 await viewModel.loadHomeIfNeeded()
                 await viewModel.loadInitialFeed()
             }
-            .sheet(item: $presentedSourceArticle) { article in
-                ArticleDetailView(article: article)
-            }
+            .articleReaderDestination($readerDestination)
         }
     }
 

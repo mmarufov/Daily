@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "59add90f1298537f61c1c285a6bc4c7ff346b6ff822b81dc0dcf179a7d68c842",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00025\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Business/finance interest but not primary or urgent for consumer impact.\"}, {\"id\": \"a00026\", \"label\": \"never\", \"tags\": [\"off_topic\", \"celebrity\"], \"confidence\": 1.0, \"rationale\": \"Celebrity profile, explicitly excluded topic.\"}, {\"id\": \"a00027\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Business news but not directly relevant to tech, science, or consumer impact.\"}, {\"id\": \"a00028\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Finance/market news, some relevance but not primary or urgent.\"}, {\"id\": \"a00029\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Interest rate changes affect consumer finances and marketing environment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1075,
+  "completion_tokens": 249
+ }
+}

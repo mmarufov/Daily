@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "78858fc6c447efbc330ea136779ab41ae7d5da6f2cd27328702a4956a7badb63",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00005\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Australia's GDP is irrelevant to Central Asian trade or reader's business.\"\n    },\n    {\n      \"id\": \"a00066\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"River trade route involving Russia, China, Kazakhstan is core to reader's business interests.\"\n    },\n    {\n      \"id\": \"a00069\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Regional Russia relations are relevant but not directly impactful for daily business.\"\n    },\n    {\n      \"id\": \"a00073\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"US pressure on Central Asian AI policy is regionally relevant but not urgent for trade.\"\n    },\n    {\n      \"id\": \"a00081\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"New Tajikistan tax directly affects business costs and operations; critical for planning.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1129,
+  "completion_tokens": 311
+ }
+}

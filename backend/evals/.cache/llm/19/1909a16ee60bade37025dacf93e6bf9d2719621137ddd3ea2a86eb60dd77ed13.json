@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0a390949bc342cc6164d2b0622ad6d372fe46a0c1fa5ef77848ac7f33e3c168b",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01175\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Cybersecurity/AI risks not relevant to sports, climate, or solar energy interests.\"\n    },\n    {\n      \"id\": \"a01231\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"US-Canada trade war is relevant to Canadian context but not a primary or urgent interest.\"\n    },\n    {\n      \"id\": \"a01244\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"partisan politics\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Focuses on partisan politics, which user excludes.\"\n    },\n    {\n      \"id\": \"a01248\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"partisan politics\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Canadian byelections and political analysis; user excludes partisan politics.\"\n    },\n    {\n      \"id\": \"a01257\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major UN climate warning; directly relevant to user's environmental and solar industry interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1812,
+  "completion_tokens": 312
+ }
+}

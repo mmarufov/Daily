@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bcd49acfd6ee03c11aab780001b9467d7eb16c3962864b84b490814c83396a75",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00564\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"developer tools\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI engineering and edge computing but not Singapore or fintech specific.\"}, {\"id\": \"a00565\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"cloud infrastructure\"], \"confidence\": 0.7, \"rationale\": \"Cloud AI model routing update; technical but no Singapore or fintech/regulation focus.\"}, {\"id\": \"a00567\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"developer tools\"], \"confidence\": 0.8, \"rationale\": \"Cloudflare AI search tool relevant to AI and developer tooling, no regional or fintech angle.\"}, {\"id\": \"a00568\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"developer tools\"], \"confidence\": 0.8, \"rationale\": \"Open source AI coding agents relevant to developer tooling, no Singapore or fintech focus.\"}, {\"id\": \"a00569\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"databases\"], \"confidence\": 0.8, \"rationale\": \"Deep technical AI data layer architecture, relevant but no regional or fintech context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1392,
+  "completion_tokens": 285
+ }
+}

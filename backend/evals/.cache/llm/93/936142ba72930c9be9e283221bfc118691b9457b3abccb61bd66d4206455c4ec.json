@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5ca3b20931b92bcd5fa40484246281c05d9c1441ef8536ec92f97d413d1fef90",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00592\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Ukraine peace talks irrelevant to Uzbek politics or sports interests.\"}, {\"id\": \"a00603\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russian drone attacks unrelated to Uzbek local or national interests.\"}, {\"id\": \"a00606\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russian border phone security guide irrelevant to Uzbek reader.\"}, {\"id\": \"a00629\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russian digital ruble launch unrelated to Uzbek reader's interests.\"}, {\"id\": \"a00631\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"politics\"], \"confidence\": 0.7, \"rationale\": \"US-Russia NATO tensions are secondary political interest but missable.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3037,
+  "completion_tokens": 241
+ }
+}

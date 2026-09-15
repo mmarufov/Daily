@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1410375c98b236de1cbd80b0e20b6baf2db293f34940b46fbf9a902ee0a53567",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00244\", \"label\": \"never\", \"tags\": [\"off_topic\", \"celebrity\"], \"confidence\": 0.9, \"rationale\": \"Celebrity film marketing, off-topic and unwanted celebrity content.\"}, {\"id\": \"a00259\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Anime convention in Nairobi unrelated to reader's interests or location.\"}, {\"id\": \"a00269\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Anime film review, no tech, science, or UK/world news relevance.\"}, {\"id\": \"a00272\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.7, \"rationale\": \"Tech-related hacking story, but niche gaming community, missable.\"}, {\"id\": \"a00281\", \"label\": \"fine\", \"tags\": [\"technology\"], \"confidence\": 0.8, \"rationale\": \"Tech and gaming leak story relevant to technology interest, but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2339,
+  "completion_tokens": 247
+ }
+}

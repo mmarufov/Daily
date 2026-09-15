@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a4eb7bddfd47bf8d678c7209c44c3edde21f379b6ac607629da83284657bdeaf",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01297\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news but no direct consumer or UK impact.\"}, {\"id\": \"a01298\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Important world event but no direct UK or consumer impact.\"}, {\"id\": \"a01305\", \"label\": \"fine\", \"tags\": [\"world_news\", \"UK_news\"], \"confidence\": 0.75, \"rationale\": \"Relevant to UK security but no direct consumer impact.\"}, {\"id\": \"a01315\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"Major disaster but no direct UK or consumer impact.\"}, {\"id\": \"a01336\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Science topic relevant but more background than urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1029,
+  "completion_tokens": 238
+ }
+}

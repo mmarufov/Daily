@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5b39fd1945f390726b7792ec5613e4340b2802e21946b7eedf8c24f40359e459",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00804\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Critical update on Singapore fintech funding affecting local startup ecosystem and capital availability.\"}, {\"id\": \"a00805\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Singapore AI boom impacts workforce and tech hiring, relevant to local tech infrastructure and talent.\"}, {\"id\": \"a00806\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Focus on Bitcoin and US institutional investors, unrelated to Singapore or Southeast Asia fintech.\"}, {\"id\": \"a00807\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"direct\"], \"confidence\": 0.7, \"rationale\": \"Agritech in emerging markets is secondary interest; relevant but not primary focus for reader.\"}, {\"id\": \"a00808\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Southeast Asia robotaxi development relevant but more background on tech adoption pace.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3922,
+  "completion_tokens": 281
+ }
+}

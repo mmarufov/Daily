@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1cf554a0579b97b539e7a62ae74391ad1360160192d3dad60d49418ba468bed1",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00814\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting economic analysis but not major or urgent news for general reader.\"}, {\"id\": \"a00815\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Insightful AI business trend, relevant but not urgent or major event.\"}, {\"id\": \"a00821\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"First confirmed military drone attack on major cloud provider is globally important.\"}, {\"id\": \"a00828\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Startup investment advice is useful but niche and routine.\"}, {\"id\": \"a00836\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Regional chip smuggling issue is notable but not urgent or major for general audience.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3700,
+  "completion_tokens": 260
+ }
+}

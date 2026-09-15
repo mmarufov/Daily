@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b977c8979f493b9643ea3e14411d5a8bdfe057b1e929a970d8ca5ed870b11635",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00771\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Singapore data centre energy and AI adoption is relevant to cloud infrastructure, but not urgent or must_see.\"\n    },\n    {\n      \"id\": \"a00778\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Sanctions affecting Singapore-based entities is relevant for fintech/regulation, but not directly impactful or urgent.\"\n    },\n    {\n      \"id\": \"a00787\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Singapore's AI embrace is on-topic for AI engineering/regulation, but is general background, not must_see.\"\n    },\n    {\n      \"id\": \"a00791\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Major SEA fintech funding and Singapore context; relevant for regional fintech/startup scene, but not must_see.\"\n    },\n    {\n      \"id\": \"a00792\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Detailed coverage of major Indonesian fintech round; relevant for SEA fintech, but not Singapore-specific or urgent.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2361,
+  "completion_tokens": 345
+ }
+}

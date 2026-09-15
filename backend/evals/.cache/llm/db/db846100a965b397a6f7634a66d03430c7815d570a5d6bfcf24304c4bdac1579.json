@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "75049ae83d6f31722fe993d68f733d1b19371b0bd3ecb164097015fdf14ee35a",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00913\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"US college football, off-topic and sports.\"}, {\"id\": \"a00920\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\", \"promo\"], \"confidence\": 1.0, \"rationale\": \"Sports sneaker colorway, off-topic and sports.\"}, {\"id\": \"a00937\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"US NFL preseason, off-topic and sports.\"}, {\"id\": \"a00941\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"NHL trade news, off-topic and sports.\"}, {\"id\": \"a00946\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 1.0, \"rationale\": \"Hockey prospect highlights, off-topic and sports.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1751,
+  "completion_tokens": 245
+ }
+}

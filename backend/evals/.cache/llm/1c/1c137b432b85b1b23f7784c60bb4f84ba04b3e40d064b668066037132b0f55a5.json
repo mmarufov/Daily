@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0978313deeac303dccec70f83c916b0b5acb30fd63331fe7b5ad9c36fe0df159",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00847\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Not related to local healthcare, parenting, or government schemes in Singapore.\"}, {\"id\": \"a00848\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focuses on Southeast Asian agritech startups, unrelated to reader's interests.\"}, {\"id\": \"a00853\", \"label\": \"fine\", \"tags\": [\"local news\", \"healthcare\", \"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Relevant local workplace safety info but not directly impacting reader's daily life.\"}, {\"id\": \"a00854\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About startup branding and AI, unrelated to reader's interests.\"}, {\"id\": \"a00855\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on venture debt in startups, unrelated to reader's priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3770,
+  "completion_tokens": 257
+ }
+}

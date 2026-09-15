@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "877b9860ec8248f7253444654fc57a2444f843aef2f64e49cfada8856a8cc777",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00155\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\", \"environmental impact\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Climate risk and glacier melt are relevant to reader's work, but not directly impactful or urgent for Toronto.\"\n    },\n    {\n      \"id\": \"a00196\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Bitcoin and oil prices are unrelated to reader's interests or priorities.\"\n    },\n    {\n      \"id\": \"a00340\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Tiger Woods' legal issues are not relevant to tennis, horse racing, or environmental interests.\"\n    },\n    {\n      \"id\": \"a00358\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major climate disaster, but not directly relevant to reader's location or primary interests.\"\n    },\n    {\n      \"id\": \"a00373\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"partisan politics\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on US partisan politics and legal issues, not on reader's sports or environmental interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1654,
+  "completion_tokens": 331
+ }
+}

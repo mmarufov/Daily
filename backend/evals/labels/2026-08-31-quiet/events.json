@@ -1,0 +1,91 @@
+{
+ "snapshot": "2026-08-31-quiet",
+ "threshold": 0.55,
+ "clusters": [
+  {
+   "id": "ev-07",
+   "title": "Trump says NBC's Kristen Welker should face punishment from FCC",
+   "what": "Trump calls for FCC punishment of NBC reporter",
+   "tier": "routine",
+   "spread": 23,
+   "sources": [
+    "Al Jazeera",
+    "Fortune",
+    "Guardian US",
+    "NJ.com",
+    "Variety"
+   ],
+   "article_ids": [
+    "a00036",
+    "a00221",
+    "a00370",
+    "a00395",
+    "a01270"
+   ],
+   "source": "agent",
+   "rationale": "Keep routine and keep all members. The reports consistently cover the same presidential threat against Kristen Welker, but no FCC action or broader policy change occurred in the snapshot. It is consequential political rhetoric, not yet a major event under the strict rubric."
+  },
+  {
+   "id": "ev-11",
+   "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+   "what": "One killed, five injured in Swiss rave shooting",
+   "tier": "routine",
+   "spread": 16,
+   "sources": [
+    "BBC",
+    "DW",
+    "Guardian World",
+    "NJ.com"
+   ],
+   "article_ids": [
+    "a00350",
+    "a00411",
+    "a01231",
+    "a01283"
+   ],
+   "source": "agent",
+   "rationale": "Keep routine and keep all members. This is one coherent local crime story with one death, five injuries, and an active manhunt. It is serious to those affected but does not reach the rubric's regional-major or mass-casualty thresholds."
+  },
+  {
+   "id": "ev-12",
+   "title": "Far-right media provocateur Milo Yiannopoulos deported by ICE from US to UK",
+   "what": "Milo Yiannopoulos deported from US to UK",
+   "tier": "routine",
+   "spread": 16,
+   "sources": [
+    "BBC World",
+    "Guardian US",
+    "The Verge",
+    "Wired"
+   ],
+   "article_ids": [
+    "a00367",
+    "a00369",
+    "a00375",
+    "a01019",
+    "a01054",
+    "a01192"
+   ],
+   "source": "agent",
+   "rationale": "Keep routine and keep all members. Arrest, deportation, and immediate aftermath all concern the same public figure and immigration case, but it has no broader government, policy, or international consequence in the snapshot."
+  }
+ ],
+ "review": {
+  "source": "agent",
+  "reviewer": "codex",
+  "rationale": "independent editorial audit against frozen article titles and summaries",
+  "rejected_clusters": [
+   {
+    "id": "ev-05",
+    "source": "agent",
+    "rationale": "Reject the cluster. Its 35 members share only the broad topic AI and cover unrelated newsroom policy, information warfare, education, data centres, jobs, healthcare, security, hardware, and enterprise adoption. It is not one news event and must not count toward event delivery or major-story ground truth."
+   },
+   {
+    "id": "ev-09",
+    "source": "agent",
+    "rationale": "Reject the cluster. The four members are unrelated US Open coverage: day-one match results, a Williams doubles item, tournament predictions, and a Venus Williams wildcard analysis. No single event is corroborated across the articles."
+   }
+  ],
+  "reviewed_at": "2026-09-01T22:19:17"
+ }
+}

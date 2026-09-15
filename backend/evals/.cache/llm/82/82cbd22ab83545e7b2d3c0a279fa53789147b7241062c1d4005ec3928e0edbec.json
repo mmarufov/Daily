@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2470f831ed6ef716e115c00935d31d6491e4da68255ebde631688d746866dc63",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00411\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"International crime news; not a major global event but relevant for general news.\"\n    },\n    {\n      \"id\": \"a00412\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.9,\n      \"rationale\": \"US policy and indigenous rights; significant but not a must_see global event.\"\n    },\n    {\n      \"id\": \"a00419\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.8,\n      \"rationale\": \"Serious local crime; not a major event for a general audience.\"\n    },\n    {\n      \"id\": \"a00431\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Promotional content about pet jerseys; not general news.\"\n    },\n    {\n      \"id\": \"a00453\",\n      \"label\": \"fine\",\n      \"tags\": [],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local public safety concern; not a major event but plausible general interest.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 933,
+  "completion_tokens": 281
+ }
+}

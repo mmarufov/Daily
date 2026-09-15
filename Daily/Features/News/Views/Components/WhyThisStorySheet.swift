@@ -9,15 +9,21 @@
 import SwiftUI
 
 /// Sheet shown on long-press of any story row. Displays the paraphrased reason
-/// (already-sanitized — see ProvenanceLine) and three corrective actions:
-/// Less of this · Wrong reason · Hide this story.
+/// (already-sanitized — see ProvenanceLine) and six corrective actions, all
+/// six of the taste verbs the backend accepts (`feedback_signals.FEEDBACK_DELTAS`
+/// / `reader_feedback.DELTAS`): More like this · Important to me · Less of
+/// this · Wrong reason · I already knew this · Hide this story.
 ///
-/// Action handlers are caller-owned closures; this view does not wire to the
-/// taste model directly.
+/// S10 batch E: the backend has always accepted all six; only three ever
+/// reached a view. Action handlers are caller-owned closures; this view does
+/// not wire to the taste model directly.
 struct WhyThisStorySheet: View {
     let reason: String
+    var onMoreLikeThis: () -> Void = {}
+    var onImportant: () -> Void = {}
     var onLessOfThis: () -> Void = {}
     var onWrongReason: () -> Void = {}
+    var onAlreadyKnew: () -> Void = {}
     var onHide: () -> Void = {}
 
     @Environment(\.dismiss) private var dismiss
@@ -40,9 +46,15 @@ struct WhyThisStorySheet: View {
             }
 
             VStack(spacing: 0) {
+                actionRow("More like this") { onMoreLikeThis(); dismiss() }
+                hairline
+                actionRow("Important to me") { onImportant(); dismiss() }
+                hairline
                 actionRow("Less of this") { onLessOfThis(); dismiss() }
                 hairline
                 actionRow("Wrong reason") { onWrongReason(); dismiss() }
+                hairline
+                actionRow("I already knew this") { onAlreadyKnew(); dismiss() }
                 hairline
                 actionRow("Hide this story") { onHide(); dismiss() }
             }

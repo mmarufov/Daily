@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "64c0a9dccec66c2c9a4bb15817c7c64d96de9005c46e89df813774edacc2c69f",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00904\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL fantasy football is irrelevant; US sports are explicitly excluded.\"\n    },\n    {\n      \"id\": \"a00907\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"sports\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Soccer coverage is off-topic; sports are excluded for this reader.\"\n    },\n    {\n      \"id\": \"a01005\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep technical news on AI engineering and infrastructure; matches primary interests.\"\n    },\n    {\n      \"id\": \"a01028\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI in biotech is tangentially relevant; interesting but not core to reader's focus.\"\n    },\n    {\n      \"id\": \"a01031\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Technical news on AI infrastructure and data centers; highly relevant to cloud/AI engineering.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1576,
+  "completion_tokens": 307
+ }
+}

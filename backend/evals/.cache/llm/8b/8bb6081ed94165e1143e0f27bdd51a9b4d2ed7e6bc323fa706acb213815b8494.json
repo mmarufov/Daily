@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bc21d2729a4f612079b4509788f04e7599a0dbae6764d8250cdbc73fc8416281",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00099\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"AI governance in Southeast Asia is a primary interest; relevant to fintech regulation and regional tech scene.\"\n    },\n    {\n      \"id\": \"a00136\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Singapore politics is on-topic, but not directly tied to tech, fintech, or regulation.\"\n    },\n    {\n      \"id\": \"a00189\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Fintech regulation and banking are secondary interests; no urgent or direct impact indicated.\"\n    },\n    {\n      \"id\": \"a00203\",\n      \"label\": \"fine\",\n      \"tags\": [\"developer tools\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"AI developer tool update; relevant for engineering work, but not critical or region-specific.\"\n    },\n    {\n      \"id\": \"a00205\",\n      \"label\": \"fine\",\n      \"tags\": [\"cybersecurity\", \"background_routine\"],\n      \"confidence\": 0.75,\n      \"rationale\": \"Major cybersecurity breach, but not region-specific or directly impacting reader's work.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1155,
+  "completion_tokens": 323
+ }
+}

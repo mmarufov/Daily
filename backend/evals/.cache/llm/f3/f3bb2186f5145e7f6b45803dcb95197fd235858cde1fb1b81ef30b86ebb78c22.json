@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d461d6ffb5b425f8f58aecc3e7bf414ec725c9eb539fff9f26c10e9aead8124d",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00513\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Federal mail voting dispute unrelated to NJ local interests or reader's priorities.\"}, {\"id\": \"a00514\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"New NJ law on data centers affects state but not immediate daily impact for reader.\"}, {\"id\": \"a00515\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Trade war with Canada is national/international, no direct NJ/local impact.\"}, {\"id\": \"a00516\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Measles deaths near NJ affect health safety; vaccination urged for reader's family.\"}, {\"id\": \"a00517\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"followup\"], \"confidence\": 0.85, \"rationale\": \"Local NJ political news on Rep. McIver relevant but not urgent or primary interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3653,
+  "completion_tokens": 269
+ }
+}

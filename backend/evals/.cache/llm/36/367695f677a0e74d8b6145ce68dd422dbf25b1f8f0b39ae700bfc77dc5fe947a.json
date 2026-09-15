@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d6fe498417198ab11ea9f1a4d7b44d5946ab62f9488075497243877466ede803",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00051\",\n      \"label\": \"fine\",\n      \"tags\": [\"UK news\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"UK infrastructure issue, relevant for staying informed but not urgent or directly impactful today.\"\n    },\n    {\n      \"id\": \"a00052\",\n      \"label\": \"must_see\",\n      \"tags\": [\"UK news\", \"need_to_know\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major energy supply risk for UK consumers; high impact on daily life and consumer costs.\"\n    },\n    {\n      \"id\": \"a00054\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"London\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Tech and London focus; relevant but a delay, not urgent or life-changing.\"\n    },\n    {\n      \"id\": \"a00104\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"major_event\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major disaster abroad; important for world news but not directly relevant to reader's life.\"\n    },\n    {\n      \"id\": \"a00126\",\n      \"label\": \"fine\",\n      \"tags\": [\"world news\", \"background_routine\"],\n      \"confidence\": 0.75,\n      \"rationale\": \"Significant diplomatic development; relevant for staying informed but not urgent for this reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1352,
+  "completion_tokens": 339
+ }
+}

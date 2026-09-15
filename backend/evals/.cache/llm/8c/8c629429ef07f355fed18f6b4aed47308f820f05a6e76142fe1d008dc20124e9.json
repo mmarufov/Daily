@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "29e80e1e9380170180b9e88a7140edaa5afda24c85455ecbcd9102a39e45ca30",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00036\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"partisan_politics\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US partisan politics, no sports, climate, or Canada relevance.\"\n    },\n    {\n      \"id\": \"a00039\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major oil deal, some climate/energy relevance, but not directly about clean energy or Canada.\"\n    },\n    {\n      \"id\": \"a00048\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly affects Canadian economy; important for any informed Canadian, especially Toronto resident.\"\n    },\n    {\n      \"id\": \"a00052\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Energy market context, but not directly relevant to reader's work or life in Canada.\"\n    },\n    {\n      \"id\": \"a00100\",\n      \"label\": \"fine\",\n      \"tags\": [\"climate\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Climate security event; relevant to environmental interests but not directly impactful for reader.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2272,
+  "completion_tokens": 320
+ }
+}

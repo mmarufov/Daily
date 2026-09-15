@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1b9548ce6316813fdd5e5f4106636f992b0714927ee53bc8c2f6ebaaaf2fccf9",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00780\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major MAS investment in fintech innovation; directly impacts reader's sector and work context.\"\n    },\n    {\n      \"id\": \"a00788\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"High-profile Singapore news, but not directly relevant to tech, fintech, or work priorities.\"\n    },\n    {\n      \"id\": \"a00790\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"AI in Singapore public infrastructure; relevant to AI engineering and local tech scene.\"\n    },\n    {\n      \"id\": \"a00800\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Singapore tech/finance probe; relevant to fintech/regulation but not a must unless direct impact.\"\n    },\n    {\n      \"id\": \"a00806\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Singapore data centre/AI adoption news; relevant to cloud infrastructure and local tech context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1134,
+  "completion_tokens": 324
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1764358a0700fad9d949d823df65c2ac48868ed7df063ae5cc2b2c79a3697d82",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00443\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Local high school sports irrelevant to general news reader.\"}, {\"id\": \"a00457\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Military repair bill is general interest but not urgent or major.\"}, {\"id\": \"a00461\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.85, \"rationale\": \"NYC school AI ban is general interest education policy news.\"}, {\"id\": \"a00464\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Subway vending machine sales are niche and trivial.\"}, {\"id\": \"a00470\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.75, \"rationale\": \"Anniversary of bollards is local interest, not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1068,
+  "completion_tokens": 227
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0e89f78261da252058fa33e1ea78da6777ff77d4085905aa5031f665ccfe4e22",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Interesting general news but not a major event for all adults.\"}, {\"id\": \"a00001\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Military strike with global oil supply implications is major news.\"}, {\"id\": \"a00002\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Economic update relevant but not urgent or major event.\"}, {\"id\": \"a00003\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Business deal news is routine and missable for general reader.\"}, {\"id\": \"a00004\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 0.95, \"rationale\": \"Product launch and stock surge is promotional content.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 968,
+  "completion_tokens": 225
+ }
+}

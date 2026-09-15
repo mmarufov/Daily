@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d3abf7a872f5206f6dbb4e78be240a7493f63659db58c23a411171fa2039f80e",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00577\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"G20 finance talks and Russia's economic isolation are relevant, but not directly actionable for daily business.\"\n    },\n    {\n      \"id\": \"a00579\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Weather records in Russia have no bearing on trade, business, or regional economics.\"\n    },\n    {\n      \"id\": \"a00585\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"War news affects regional stability, but this is a routine military update, not directly impacting trade.\"\n    },\n    {\n      \"id\": \"a00589\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Wikipedia access in Russia is irrelevant to Central Asian trade or business interests.\"\n    },\n    {\n      \"id\": \"a00605\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major cash outflows in Russia signal economic instability, directly affecting trade and currency risk.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1224,
+  "completion_tokens": 319
+ }
+}

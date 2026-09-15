@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "55c45f062c7b9441e65163ade80c57850b8c523e7a92eae411697fc591433a70",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00339\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Major ferry disaster with fatalities and missing people.\"}, {\"id\": \"a00341\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Important education issue but routine political survey.\"}, {\"id\": \"a00342\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Trade war impacts are general interest but ongoing background story.\"}, {\"id\": \"a00343\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Personal finance advice, general interest but not urgent.\"}, {\"id\": \"a00346\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"followup\"], \"confidence\": 0.8, \"rationale\": \"Government policy changes, relevant but routine news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 922,
+  "completion_tokens": 236
+ }
+}

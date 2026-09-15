@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "03694fa3179e9208c06d8d6f3600c15daff09e2287da1eec7303352ba6cba341",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00454\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"money\"], \"confidence\": 0.9, \"rationale\": \"Tax bracket creep directly affects reader's money in NJ.\"}, {\"id\": \"a00455\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"local\"], \"confidence\": 0.7, \"rationale\": \"Local Newark school contract story, interesting but not urgent.\"}, {\"id\": \"a00456\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"General NJ news summary, no specific urgent info.\"}, {\"id\": \"a00459\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"General NJ news summary, no specific urgent info.\"}, {\"id\": \"a00461\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"NYC school AI ban unrelated to NJ or reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1257,
+  "completion_tokens": 246
+ }
+}

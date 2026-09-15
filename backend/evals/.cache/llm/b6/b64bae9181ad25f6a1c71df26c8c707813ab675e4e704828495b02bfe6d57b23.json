@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7185a833989e1a068f3731f9606b0d0643471b66e1d0a6741a246256afc6520d",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00692\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Astronomy news unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00695\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI and NASA alloy research unrelated to reader's context.\"}, {\"id\": \"a00704\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\", \"local_news\"], \"confidence\": 0.8, \"rationale\": \"Local transport event, mildly relevant but not urgent or primary.\"}, {\"id\": \"a00705\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Luxury property auction unrelated to reader's interests or location.\"}, {\"id\": \"a00706\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Foreign disaster aid unrelated to Singapore or reader's life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1214,
+  "completion_tokens": 243
+ }
+}

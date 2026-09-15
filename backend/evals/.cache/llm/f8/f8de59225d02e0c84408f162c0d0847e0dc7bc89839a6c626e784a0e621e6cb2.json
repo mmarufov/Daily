@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0aabcbbf587330137f3a0fd5c12cfe36cd5a6a389bea046b95842c548be6424a",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00233\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"General info on watching tennis; relevant but not about primary interests or urgent news.\"\n    },\n    {\n      \"id\": \"a00353\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Music festival coverage is unrelated to sports, tennis, or environmental interests.\"\n    },\n    {\n      \"id\": \"a00373\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Environmental/chemical safety news aligns with climate interests but is US-focused and not urgent for reader.\"\n    },\n    {\n      \"id\": \"a00377\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Rare earth supply chains are relevant to clean energy/solar, but not urgent or directly impactful today.\"\n    },\n    {\n      \"id\": \"a00384\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tennis journalism changes are relevant to tennis interest, but not a must-see or urgent update.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1489,
+  "completion_tokens": 316
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "747fc1f22ce7059c0768b310e6ec3a5d275806478598821b1f89019748a87442",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00748\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major Singapore R&D investment news; relevant to tech, startups, and local innovation ecosystem.\"\n    },\n    {\n      \"id\": \"a00755\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"AI engineering\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"AI in production for public transport in Singapore; strong overlap with AI engineering and local tech.\"\n    },\n    {\n      \"id\": \"a00765\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Singapore police/finance probe; relevant but not directly about tech, fintech, or engineering.\"\n    },\n    {\n      \"id\": \"a00767\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"International dispute centre in Singapore; relevant to business climate, but not core tech/fintech.\"\n    },\n    {\n      \"id\": \"a00770\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Supply chain digitalization in Asia; tangentially relevant to tech and regional business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1140,
+  "completion_tokens": 323
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cbe6d40aff54a5efcef251c66e775531b28aece6a1768822bf8360d085f761df",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01030\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Wellness massage gun is consumer product but not tech/science or consumer impact news.\"}, {\"id\": \"a01031\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Important tech innovation in AI and data centers affects tech and business sectors.\"}, {\"id\": \"a01032\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Tech and business news on robotics and automakers, interesting but not urgent.\"}, {\"id\": \"a01033\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.75, \"rationale\": \"Tech innovation in entertainment glasses is relevant but not critical.\"}, {\"id\": \"a01034\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Major business and tech funding news impacting AI chip market and consumers.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1056,
+  "completion_tokens": 261
+ }
+}

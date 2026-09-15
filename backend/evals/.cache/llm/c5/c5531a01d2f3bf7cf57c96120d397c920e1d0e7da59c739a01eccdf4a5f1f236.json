@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "daf84593f9fa410e84766cbd5f727cad036d2167d25d769598cf0c00fbb1a1ce",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00810\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Philippines IT industry AI impact; unrelated to Singapore or reader's interests.\"}, {\"id\": \"a00811\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Regional climate tech with some Philippines mention; not directly relevant to reader.\"}, {\"id\": \"a00812\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"secondary\"], \"confidence\": 0.8, \"rationale\": \"Southeast Asia infrastructure and waste management; general regional interest only.\"}, {\"id\": \"a00813\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Energy infrastructure in ASEAN; no direct Singapore/local parenting or healthcare relevance.\"}, {\"id\": \"a00815\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI trust ranking in Asia; unrelated to reader's primary interests or local news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3902,
+  "completion_tokens": 260
+ }
+}

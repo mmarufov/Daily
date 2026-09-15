@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "49d4b6022ddba127bf402daac72deb57bd2e79d52087e89881903bb8d8a03a52",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00109\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"War disrupting Eurasian trade routes directly impacts reader's business and regional trade logistics.\"\n    },\n    {\n      \"id\": \"a00120\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Cultural/education project in Uzbekistan unrelated to business, trade, or economics.\"\n    },\n    {\n      \"id\": \"a00138\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Kazakh cinema and international film production are entertainment, not relevant to business interests.\"\n    },\n    {\n      \"id\": \"a00139\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"SCO cooperation and regional connectivity are relevant background but not urgent or directly actionable.\"\n    },\n    {\n      \"id\": \"a00141\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"China overtaking Russia as Kazakhstan's top trading partner is crucial for regional trade and business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2924,
+  "completion_tokens": 319
+ }
+}

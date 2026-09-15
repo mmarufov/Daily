@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3b4b50a1f1702248a99bedcdbb94afb0da9851aa15afebe9b54326dfaa4f399b",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01179\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Entertainment/tech unrelated to energy or economics.\"}, {\"id\": \"a01181\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Gaming monitor advice irrelevant to energy or economics.\"}, {\"id\": \"a01186\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Home entertainment tech not related to energy or economics.\"}, {\"id\": \"a01190\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Smartphone storage tips unrelated to reader interests.\"}, {\"id\": \"a01196\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.8, \"rationale\": \"G20 finance ministers meeting relevant to economics but not primary focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1113,
+  "completion_tokens": 235
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "c53f2e6181856b656b86d276781708a075d45bfc876c959286c80279faf3d769",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00833\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Japan AI market not relevant to Singapore mother focused on local parenting and healthcare.\"}, {\"id\": \"a00834\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Thailand AI startup news unrelated to Singapore local parenting or healthcare.\"}, {\"id\": \"a00835\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Global AI expansion article off-topic for local Singapore parenting and healthcare interests.\"}, {\"id\": \"a00836\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"local_news\"], \"confidence\": 0.7, \"rationale\": \"Singapore police fraud investigation somewhat relevant local news but not primary interest.\"}, {\"id\": \"a00837\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Southeast Asia AI strategy overview not relevant to reader's local parenting or healthcare focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3732,
+  "completion_tokens": 256
+ }
+}

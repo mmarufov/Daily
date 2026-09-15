@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e84317dfaaa486b83862316598b5338940a54fccd6d144798d44caf517c891fc",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01091\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Interesting tech policy update but niche to Debian community.\"}, {\"id\": \"a01095\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Merchandising deal and product promo irrelevant to general news.\"}, {\"id\": \"a01109\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech product delay, routine update with limited broad impact.\"}, {\"id\": \"a01115\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Major cybercrime arrests with global impact on security and finances.\"}, {\"id\": \"a01117\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Tech industry performance claims, niche interest, no broad impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3242,
+  "completion_tokens": 250
+ }
+}

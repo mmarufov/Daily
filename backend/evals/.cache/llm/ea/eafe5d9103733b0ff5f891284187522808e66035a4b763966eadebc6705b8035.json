@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "18e0a607f6e0a0175eec2ca0cf9b0a02095301d71a5a93237c9fd9dfafe35bc7",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00504\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Relevant legal ruling on telehealth licensing, general interest but not major event.\"}, {\"id\": \"a00505\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Cuts to food stamps affect millions of children’s access to school meals nationwide.\"}, {\"id\": \"a00523\", \"label\": \"must_see\", \"tags\": [\"direct\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Death of Dolly Parton, a globally recognized cultural figure, is major news.\"}, {\"id\": \"a00524\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.85, \"rationale\": \"ACLU investigation of local police citations is relevant but localized and less urgent.\"}, {\"id\": \"a00527\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Article is just comments, no news content.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2891,
+  "completion_tokens": 263
+ }
+}

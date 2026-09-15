@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "fd7caba9161ec340b61c98a2ae9eebcfc7db206329066a813babc074fd0b5d6f",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00431\", \"label\": \"never\", \"tags\": [\"lookalike\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Soccer pet jerseys unrelated to tennis, horse racing, or solar energy.\"}, {\"id\": \"a00443\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news irrelevant to Toronto reader's interests.\"}, {\"id\": \"a00446\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news irrelevant to Toronto reader's interests.\"}, {\"id\": \"a00449\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news irrelevant to Toronto reader's interests.\"}, {\"id\": \"a00452\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"New Jersey local news irrelevant to Toronto reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1170,
+  "completion_tokens": 243
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9da2196ce1fba367324e815f7b3cd4d1a0ae86dda7bd9595637ae4da3ee1a688",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01201\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Floods in Tibet unrelated to energy or economic security interests.\"}, {\"id\": \"a01202\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Consumer coffee preferences irrelevant to energy markets or geopolitical interests.\"}, {\"id\": \"a01203\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.8, \"rationale\": \"Tariffs impact economics but not directly energy security or primary interests.\"}, {\"id\": \"a01204\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Flood devastation in Nepal unrelated to energy or economic security.\"}, {\"id\": \"a01205\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Relief efforts for Nepal floods unrelated to energy or economic security.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1079,
+  "completion_tokens": 245
+ }
+}

@@ -9,9 +9,9 @@
 
 import Foundation
 
-extension NewsArticle {
+nonisolated extension NewsArticle {
     /// Returns a copy of the article with normalized text fields for deterministic rendering.
-    func normalizedForDisplay() -> NewsArticle {
+    func normalizedForDisplay(at now: Date = Date()) -> NewsArticle {
         var article = NewsArticle(
             id: id,
             title: ArticleTextNormalizer.normalizeInline(title),
@@ -20,6 +20,7 @@ extension NewsArticle {
             author: author?.trimmingCharacters(in: .whitespacesAndNewlines),
             source: source?.trimmingCharacters(in: .whitespacesAndNewlines),
             imageURL: imageURL,
+            image: image,
             publishedAt: publishedAt,
             category: category?.trimmingCharacters(in: .whitespacesAndNewlines),
             url: url
@@ -33,12 +34,31 @@ extension NewsArticle {
         article.matchedProfileSignals = matchedProfileSignals
         article.clusterID = clusterID
         article.importanceScore = importanceScore
-        return article
+        article.eventDelivery = eventDelivery
+        article.readerGeneration = readerGeneration
+        article.readerRevision = readerRevision
+        article.feedRequestID = feedRequestID
+        article.deliveryPosition = deliveryPosition
+        article.bodyExcerpt = bodyExcerpt.map { ArticleTextNormalizer.normalizeBody($0) }
+        if let presentation {
+            article.presentation = ArticlePresentation(
+                mode: presentation.mode,
+                originalURL: presentation.originalURL,
+                body: presentation.body.map { ArticleTextNormalizer.normalizeBody($0) },
+                bodyState: presentation.bodyState,
+                accessHint: presentation.accessHint?.trimmingCharacters(in: .whitespacesAndNewlines),
+                reason: presentation.reason?.trimmingCharacters(in: .whitespacesAndNewlines),
+                provenance: presentation.provenance,
+                offlineValidUntil: presentation.offlineValidUntil,
+                validatedAt: presentation.validatedAt
+            )
+        }
+        return article.removingExpiredEventDelivery(at: now)
     }
 }
 
 /// Central text normalization rules for article content.
-enum ArticleTextNormalizer {
+nonisolated enum ArticleTextNormalizer {
     /// For titles / summaries (single-block text).
     static func normalizeInline(_ input: String) -> String {
         let base = normalizeCommonWhitespace(input)
@@ -113,4 +133,3 @@ enum ArticleTextNormalizer {
         input.replacingOccurrences(of: #"[ ]{2,}"#, with: " ", options: .regularExpression)
     }
 }
-

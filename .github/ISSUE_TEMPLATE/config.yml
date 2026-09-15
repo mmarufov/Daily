@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Architecture and design docs
+    url: https://github.com/mmarufov/Daily/tree/main/docs
+    about: How the ten pipeline stages fit together, and the design system.
+  - name: Evaluation harness (S0)
+    url: https://github.com/mmarufov/Daily/tree/main/backend/evals
+    about: How feed quality is measured, and the numbers it currently reports.

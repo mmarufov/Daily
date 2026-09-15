@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "13cd864fa2aa5bd22c90cbb334c4caa4d050ffea17724004cea40a1989c0fe34",
+  "preview": "User Profile:\nFree-form profile:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nStructured interests:\n- Topics: AI products, AI industry, model rele"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Crypto.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Crypto.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"Discusses the emergent structure of artificial neural networks, relevant to AI products and industry.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to user's interests in AI or industry developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2799,
+  "completion_tokens": 500
+ }
+}

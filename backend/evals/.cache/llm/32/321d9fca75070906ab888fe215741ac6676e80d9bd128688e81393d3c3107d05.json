@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b877802174cab9a252281d2740359c2197da19475603660b4d01a75c81201e61",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00010\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Business news with some consumer impact but not primary interest or urgent.\"}, {\"id\": \"a00011\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Tech stock and Fed policy impact relevant to consumer markets and tech interest.\"}, {\"id\": \"a00012\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\"], \"confidence\": 0.7, \"rationale\": \"World news relevant but not urgent or primary interest.\"}, {\"id\": \"a00013\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Retail tariff refund handling affects consumers and marketing/business context.\"}, {\"id\": \"a00014\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"OpenAI and SpaceX acquisition impacts tech and coding tools, relevant to tech interest.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1064,
+  "completion_tokens": 271
+ }
+}

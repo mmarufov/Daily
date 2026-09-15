@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bed54418e7cf108251e7d04f5d6a477de2671cedc9532d18d002099cf39bfb2c",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00801\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"local news\"], \"confidence\": 0.8, \"rationale\": \"Workplace safety in Singapore is relevant but not directly impacting reader's daily life.\"}, {\"id\": \"a00802\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Startup ecosystem and AI business strategy unrelated to reader's interests.\"}, {\"id\": \"a00804\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Fintech funding news unrelated to reader's primary interests or life context.\"}, {\"id\": \"a00805\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Workforce management platform expansion unrelated to reader's interests.\"}, {\"id\": \"a00808\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"local news\"], \"confidence\": 0.7, \"rationale\": \"Local autonomous vehicle trials are interesting but not critical for reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3891,
+  "completion_tokens": 254
+ }
+}

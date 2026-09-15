@@ -1,0 +1,9 @@
+# Default owner for everything in the repository.
+*                       @mmarufov
+
+# Pipeline contracts and schemas change behaviour for every reader.
+/backend/app/services/  @mmarufov
+/docs/                  @mmarufov
+
+# The committed model-response cache is what lets CI run offline.
+/backend/evals/         @mmarufov

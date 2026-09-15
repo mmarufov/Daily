@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5290991ede598ef466349a858abc3af6de7956d1ba37580de0be4fd5e61eea83",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00974\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on Arizona Cardinals; not relevant to reader's teams or interests.\"\n    },\n    {\n      \"id\": \"a00979\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Covers Philadelphia Eagles rookie; not relevant to Giants, Devils, or NJ topics.\"\n    },\n    {\n      \"id\": \"a00989\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Detailed Giants roster projection; primary interest for reader as a Giants fan.\"\n    },\n    {\n      \"id\": \"a01100\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"UK datacenter policy; no relevance to NJ, local, or reader's interests.\"\n    },\n    {\n      \"id\": \"a01139\",\n      \"label\": \"fine\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major US cyber event; not local but significant national news for informed adults.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3662,
+  "completion_tokens": 303
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "bb1fd8e84a5b91eba4be98185957a0ca825c68209295f85075334a551d3ac0bb",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00777\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Healthcare and AI in Singapore unrelated to Central Asia trade or sanctions.\"}, {\"id\": \"a00778\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"US sanctions news relevant to trade but focused on Iran, not Central Asia or Russia.\"}, {\"id\": \"a00780\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Singapore bid for tribunal unrelated to Tajikistan or Central Asian trade.\"}, {\"id\": \"a00786\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Inflation and electricity prices in Singapore not directly affecting reader's region or trade.\"}, {\"id\": \"a00788\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"China tax reform impacts Southeast Asia capital flows, indirectly relevant to trade and investment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1734,
+  "completion_tokens": 258
+ }
+}

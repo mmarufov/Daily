@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import ipaddress
 import json
 import re
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
-import httpx
 from bs4 import BeautifulSoup
 
 
@@ -20,6 +20,16 @@ _BLOCKED_IMAGE_HINTS_META = {
 _BLOCKED_IMAGE_HINTS_INLINE = _BLOCKED_IMAGE_HINTS_META | {"thumbnail", "thumb", "banner"}
 
 _STRONG_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
+_NON_PUBLIC_HOST_SUFFIXES = (
+    ".internal",
+    ".invalid",
+    ".local",
+    ".localhost",
+    ".test",
+    ".example",
+    ".home",
+    ".lan",
+)
 
 
 def extract_best_image_url(
@@ -57,17 +67,31 @@ def extract_best_image_from_html(html: str, page_url: str) -> str:
 
 
 async def fetch_best_source_image(article_url: str, timeout: float = 5.0) -> str:
+    """Fetch the origin page through the same SSRF boundary as body extraction."""
+    # Keep this import lazy so pure HTML parsing remains usable in constrained
+    # tooling, while every production network call still goes through safe_http.
+    from app.services.safe_http import SafeFetchError, SafeFetchPolicy, safe_fetch
+
     try:
-        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
-            response = await client.get(
-                article_url,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; DailyNewsBot/1.0)"},
-            )
-            response.raise_for_status()
-    except Exception:
+        article_host = _normalize_host(urlparse(article_url).hostname or "")
+    except (TypeError, ValueError):
+        return ""
+    try:
+        fetched = await safe_fetch(
+            article_url,
+            policy=SafeFetchPolicy(
+                timeout_seconds=timeout,
+                max_redirects=3,
+                max_wire_bytes=1_000_000,
+                max_decoded_bytes=1_000_000,
+                allowed_content_types=("text/html", "application/xhtml+xml"),
+                allowed_hosts=frozenset({article_host}) if article_host else frozenset(),
+            ),
+        )
+    except (SafeFetchError, ValueError):
         return ""
 
-    return extract_best_image_from_html(response.text[:200000], article_url)
+    return extract_best_image_from_html(fetched.text, fetched.url)
 
 
 def _meta_image_candidates(soup: BeautifulSoup) -> list[str]:
@@ -135,11 +159,60 @@ def _normalize_image_url(candidate: str | None, page_url: str) -> str:
         raw = raw.split(",", 1)[0].split(" ", 1)[0]
 
     resolved = urljoin(page_url, raw)
-    parsed = urlparse(resolved)
-    if parsed.scheme not in {"http", "https"}:
+    try:
+        parsed = urlparse(resolved)
+        port = parsed.port
+    except (TypeError, ValueError):
+        return ""
+    if (
+        parsed.scheme.lower() not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username is not None
+        or parsed.password is not None
+        or (port is not None and port not in {80, 443})
+    ):
         return ""
 
+    host = _normalize_host(parsed.hostname)
+    try:
+        literal = ipaddress.ip_address(host.split("%", 1)[0])
+    except ValueError:
+        if (
+            "." not in host
+            or host == "localhost"
+            or host.endswith(_NON_PUBLIC_HOST_SUFFIXES)
+        ):
+            return ""
+    else:
+        if not _is_public_ip(str(literal)):
+            return ""
+
     return resolved
+
+
+def _normalize_host(host: str) -> str:
+    normalized = host.strip().rstrip(".").lower()
+    if not normalized:
+        return ""
+    try:
+        return normalized.encode("idna").decode("ascii")
+    except UnicodeError:
+        return ""
+
+
+def _is_public_ip(address: str) -> bool:
+    try:
+        value = ipaddress.ip_address(address.split("%", 1)[0])
+    except ValueError:
+        return False
+    return value.is_global and not (
+        value.is_private
+        or value.is_loopback
+        or value.is_link_local
+        or value.is_multicast
+        or value.is_reserved
+        or value.is_unspecified
+    )
 
 
 def _is_blocked_image_candidate(url: str, context: str = "") -> bool:

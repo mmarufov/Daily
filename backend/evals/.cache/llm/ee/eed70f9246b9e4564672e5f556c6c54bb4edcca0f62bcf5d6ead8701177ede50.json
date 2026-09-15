@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b0a30609de1a6403591318c4dd306432fe4aac008c5866de528b2f40ef664686",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01002\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"consumer impact\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech update with privacy implications; relevant but not urgent for daily life.\"\n    },\n    {\n      \"id\": \"a01003\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"world news\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Cybercrime is relevant to tech/world news interests, but not directly impactful today.\"\n    },\n    {\n      \"id\": \"a01005\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"science\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech/science development; interesting for primary interests but not must_see.\"\n    },\n    {\n      \"id\": \"a01006\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"world news\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major tech company in scandal; important but not essential for daily life.\"\n    },\n    {\n      \"id\": \"a01008\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"business\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major acquisition in AI; significant for tech/business and global tech landscape.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2062,
+  "completion_tokens": 321
+ }
+}

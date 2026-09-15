@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8270a9f8c0ceaa5d86977a265007731f9d50cd8768e85bdbfe3d1d436b4c7e24",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01132\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"cybersecurity\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI security topic but not Singapore or Southeast Asia specific.\"}, {\"id\": \"a01133\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Windows nostalgia project unrelated to reader's interests or region.\"}, {\"id\": \"a01134\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"software engineering\"], \"confidence\": 0.85, \"rationale\": \"AI-assisted engineering productivity relevant but US-centric company.\"}, {\"id\": \"a01135\", \"label\": \"fine\", \"tags\": [\"cloud infrastructure\", \"distributed systems\"], \"confidence\": 0.8, \"rationale\": \"Multicloud networking relevant but no Singapore or Southeast Asia focus.\"}, {\"id\": \"a01137\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"US hospital ransomware incident unrelated to reader's interests or region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3470,
+  "completion_tokens": 249
+ }
+}

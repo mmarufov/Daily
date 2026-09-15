@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7e964f183c13d8ceb7a5d704df3810ba4360bed929edb3f43c3dc37585ee4718",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00982\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american_sports\"], \"confidence\": 1.0, \"rationale\": \"NFL waiver rules irrelevant to Uzbek sports or politics interests.\"}, {\"id\": \"a00983\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american_sports\"], \"confidence\": 1.0, \"rationale\": \"Denver Broncos preseason game irrelevant to Uzbek interests.\"}, {\"id\": \"a00984\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american_sports\"], \"confidence\": 1.0, \"rationale\": \"Minnesota Vikings roster rules unrelated to Uzbek sports or politics.\"}, {\"id\": \"a00985\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american_sports\"], \"confidence\": 1.0, \"rationale\": \"Denver Broncos game recap irrelevant to Uzbek reader.\"}, {\"id\": \"a00986\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american_sports\"], \"confidence\": 1.0, \"rationale\": \"Vikings preseason game summary off-topic for Uzbek reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3999,
+  "completion_tokens": 257
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1e3e132ddbbfdfc1b98a1bbc386c7dc6ed519cc1f3762982c64ecdeb07666181",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00342\",\n      \"label\": \"fine\",\n      \"tags\": [\"world_news\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"World news and trade impact are relevant, but not directly affecting UK consumers or daily life.\"\n    },\n    {\n      \"id\": \"a00346\",\n      \"label\": \"must_see\",\n      \"tags\": [\"UK_news\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major change to UK justice policy; affects public safety and is key UK news.\"\n    },\n    {\n      \"id\": \"a00369\",\n      \"label\": \"fine\",\n      \"tags\": [\"UK_news\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"UK news, but focused on a controversial figure; not essential or of primary interest.\"\n    },\n    {\n      \"id\": \"a00375\",\n      \"label\": \"fine\",\n      \"tags\": [\"UK_news\", \"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"UK news about a public figure's deportation; not directly impactful or primary interest.\"\n    },\n    {\n      \"id\": \"a00377\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"science\", \"world_news\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Critical tech/science supply chain issue with global and UK impact; highly relevant to user interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1401,
+  "completion_tokens": 345
+ }
+}

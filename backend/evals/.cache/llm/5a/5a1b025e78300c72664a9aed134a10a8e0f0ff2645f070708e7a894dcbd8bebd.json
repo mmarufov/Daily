@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "64b1a5f963f8385354c42eb249b0d2cb5ddfae1119700054400a1b2f69cc52bd",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NFL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NFL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NFL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NFL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Little League news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Fantasy sports predictions are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: MLB news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NCAA news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NFL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NHL news is not relevant to the user's interests.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"This article discusses Alex Eala, a rising tennis star, which aligns with the user's interest in tennis.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"This article provides expert picks for the US Open, a major tennis event, which is relevant to the user's interest in the WTA tour.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NFL offseason trades are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Fantasy baseball previews are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NHL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NCAA football history is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NHL news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: NBA news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Shein's IPO news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: AI coding policies are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Hacking news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Education technology debates are not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Video game news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Video game news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Personal finance advice is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Crime news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Music news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Healthcare news is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Bankruptcy news is not relevant to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4505,
+  "completion_tokens": 825
+ }
+}

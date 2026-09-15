@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "c87e44ea46ba60e35812e0fd43dc120faaed74875eae9739918f2a6368dcc461",
+  "preview": "User Profile:\nFree-form profile:\nUser prefers a general news feed without specific interests or preferences.\n\nStructured interests:\n- Notes: User is open to any important news.\n\nInterest hierarchy:\n- "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about a reality TV couple leaving a show, which is not significant news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a name change in a maps app, which lacks broader importance.\"},{\"relevant\":true,\"score\":0.6,\"reason\":\"The article covers a startup raising funds for AI chip packaging, which is relevant to current technology trends.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on a local development project in Singapore, which may not be of broad interest.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a podcast interview about proxy betting, which is a niche topic.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article provides economic data about Tajikistan, which is relevant for understanding regional economic conditions.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses marketing mix modeling, which is too specialized for general news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a local high school soccer match, which is not significant news.\"},{\"relevant\":true,\"score\":0.4,\"reason\":\"The article discusses Coco Gauff's performance at the US Open, which is relevant for sports news.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article reports on Australia's GDP growth, which is significant economic news.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The commentary discusses child support for unwed parents in Singapore, reflecting social policy changes.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on the creator economy in Asia, which is too specialized for general news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a local boys soccer match, which is not significant news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a girls soccer preview, which is not significant news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article reports on a trade in the NHL, which is too niche for general news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses online casino bonuses, which is not significant news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a girls soccer preview, which is not significant news.\"},{\"relevant\":true,\"score\":0.5,\"reason\":\"The article reports on a US aircraft carrier docking, which is relevant for military and international news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a local boys soccer match, which is not significant news.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a local soccer match, which is not significant news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2078,
+  "completion_tokens": 615
+ }
+}

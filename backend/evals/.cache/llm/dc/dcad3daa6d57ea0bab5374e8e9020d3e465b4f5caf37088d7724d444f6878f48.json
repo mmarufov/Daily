@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "e738aa1a28ca02d5a7ecf7a61130b1d8a5f443cf5e56134b0bcc5e39d6490163",
+  "preview": "READER PROFILE:\nREADER: Import-export business owner in Dushanbe trading with Russia, China and Kazakhstan.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Tajikistan  (entity)\n  [PRIMARY] Kazakhstan  (entity)\n  "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 100,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to import-export interests.\"\n    },\n    {\n      \"id\": 101,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focus on Kyrgyzstan ski resort, not trade.\"\n    },\n    {\n      \"id\": 102,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not directly relevant to reader's interests.\"\n    },\n    {\n      \"id\": 103,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Canadian consumer behavior not relevant.\"\n    },\n    {\n      \"id\": 104,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focus on US stock market, not relevant.\"\n    },\n    {\n      \"id\": 105,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to import-export interests.\"\n    },\n    {\n      \"id\": 106,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Brazil's LNG export plans not relevant.\"\n    },\n    {\n      \"id\": 107,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focus on Indonesian tech, not relevant.\"\n    },\n    {\n      \"id\": 108,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to import-export interests.\"\n    },\n    {\n      \"id\": 109,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Focus on AI in Japan, not relevant.\"\n    },\n    {\n      \"id\": 110,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Retail expansion in NJ not relevant.\"\n    },\n    {\n      \"id\": 111,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"LNG prices in Europe not relevant.\"\n    },\n    {\n      \"id\": 112,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"China export controls not relevant.\"\n    },\n    {\n      \"id\": 113,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Stock market focus not relevant.\"\n    },\n    {\n      \"id\": 114,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"US LNG demand not relevant.\"\n    },\n    {\n      \"id\": 115,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Crypto hack not relevant.\"\n    },\n    {\n      \"id\": 116,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Malaysian workforce tech not relevant.\"\n    },\n    {\n      \"id\": 117,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Luxury auction not relevant.\"\n    },\n    {\n      \"id\": 118,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Workplace policies in Singapore not relevant.\"\n    },\n    {\n      \"id\": 119,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Bankruptcy of gurus not relevant.\"\n    },\n    {\n      \"id\": 120,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"Russia\",\n      \"kind\": \"contextual\",\n      \"why\": \"Relevant to Russians returning home.\"\n    },\n    {\n      \"id\": 121,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Airport hack not relevant.\"\n    },\n    {\n      \"id\": 122,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"New Jersey news not relevant.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1939,
+  "completion_tokens": 1188
+ }
+}

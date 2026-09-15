@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ef90574cb25fa92892ae6c8b23bedb650abfb0c2573cf16944e0b886dc7e0c23",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00121\", \"label\": \"fine\", \"tags\": [\"AI\", \"AI regulation\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant AI regulation topic but focused on Asian newsrooms, not primary interest.\"}, {\"id\": \"a00129\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to AI or reader's interests.\"}, {\"id\": \"a00132\", \"label\": \"fine\", \"tags\": [\"AI regulation\", \"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Governments facing AI challenges is relevant but regional and secondary.\"}, {\"id\": \"a00136\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"No AI or industry relevance.\"}, {\"id\": \"a00138\", \"label\": \"fine\", \"tags\": [\"AI\", \"AI products\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI used in disinformation is relevant but not primary interest or urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1051,
+  "completion_tokens": 256
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cac46fd96f35a09a7cc3b19681e49114cf76e82a3152581d9f04f2d725ba2b1d",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00138\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on China-Japan info warfare, unrelated to Central Asia trade or politics.\"}, {\"id\": \"a00141\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Philippines defense strategies unrelated to Central Asia or trade interests.\"}, {\"id\": \"a00142\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Iran war disrupting Eurasian trade routes affects Central Asian import-export business.\"}, {\"id\": \"a00144\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Kazakhstan scientific legacy is background cultural info, not trade or politics.\"}, {\"id\": \"a00145\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Tokayev calls for stronger SCO trade and transport cooperation impact regional business.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2397,
+  "completion_tokens": 265
+ }
+}

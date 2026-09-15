@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "053972b4070c7419a323560ad26bce6e9c36b4b7a45152d3dc7778d226640f12",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01247\", \"label\": \"fine\", \"tags\": [\"geopolitical_developments\"], \"confidence\": 0.7, \"rationale\": \"Geopolitical but unrelated to energy or European security.\"}, {\"id\": \"a01248\", \"label\": \"fine\", \"tags\": [\"economic_policies\"], \"confidence\": 0.6, \"rationale\": \"Economic/political news with indirect relevance to economic stability.\"}, {\"id\": \"a01249\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Political activism in Hong Kong unrelated to energy or European security.\"}, {\"id\": \"a01250\", \"label\": \"fine\", \"tags\": [\"geopolitical_developments\"], \"confidence\": 0.7, \"rationale\": \"US military deployment related to Iran conflict, relevant geopolitics but not primary energy focus.\"}, {\"id\": \"a01251\", \"label\": \"fine\", \"tags\": [\"geopolitical_developments\"], \"confidence\": 0.6, \"rationale\": \"Follow-up on military deployment, secondary interest only.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1502,
+  "completion_tokens": 254
+ }
+}

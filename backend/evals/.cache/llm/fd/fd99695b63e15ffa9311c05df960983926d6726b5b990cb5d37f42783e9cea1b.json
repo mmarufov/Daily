@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "23fc831538f1e9b29c8e8faae593963d7e5dc568ad95a3533f2c4fc6b75843b8",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00860\", \"label\": \"never\", \"tags\": [\"off_topic\", \"celebrity\"], \"confidence\": 0.9, \"rationale\": \"Sci-fi movies and MCU are entertainment, not tech or science news.\"}, {\"id\": \"a00868\", \"label\": \"fine\", \"tags\": [\"science\", \"followup\"], \"confidence\": 0.8, \"rationale\": \"NASA telescope update relevant to science interest but no direct consumer impact.\"}, {\"id\": \"a00870\", \"label\": \"must_see\", \"tags\": [\"science\", \"technology\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Launch of major NASA space telescope with broad science impact.\"}, {\"id\": \"a00871\", \"label\": \"fine\", \"tags\": [\"technology\", \"followup\"], \"confidence\": 0.75, \"rationale\": \"SpaceX launch delay relevant to tech interest but no direct consumer impact.\"}, {\"id\": \"a00872\", \"label\": \"fine\", \"tags\": [\"science\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Historical space aviation story interesting but routine background science.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3742,
+  "completion_tokens": 266
+ }
+}

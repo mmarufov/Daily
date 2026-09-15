@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2db8b94978b9658a280ecd952b07e9d834310350fa4ea76239699c3c6c75c5e5",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00497\",\n      \"label\": \"fine\",\n      \"tags\": [\"environmental impact\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Covers energy/water use and regulation, relevant to environmental impact, but not directly about solar or Toronto.\"\n    },\n    {\n      \"id\": \"a00696\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Generic news update with no clear relevance to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00704\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Singapore heatwave response is not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a00757\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Generic daily news summary, no indication of sports, climate, or Toronto relevance.\"\n    },\n    {\n      \"id\": \"a00788\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"China/Southeast Asia tax reform and capital flows are not relevant to reader's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2046,
+  "completion_tokens": 314
+ }
+}

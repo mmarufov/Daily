@@ -1,0 +1,157 @@
+{
+ "key": "tom",
+ "name": "Tom — Boston",
+ "axis": "primary topic plus a background sports interest; routine background coverage must not surface",
+ "transcript": [
+  {
+   "role": "assistant",
+   "content": "Hi! Tell me what kind of news you want to see."
+  },
+  {
+   "role": "user",
+   "content": "I'm a product manager at an AI startup in Boston. My main thing is AI products and the AI industry: OpenAI, Anthropic, Google, model releases, AI regulation, and how companies actually use AI. That's what I need every day."
+  },
+  {
+   "role": "assistant",
+   "content": "Anything else you follow more casually?"
+  },
+  {
+   "role": "user",
+   "content": "I'm an Arsenal fan but I don't need every match report or transfer rumour, just the big moments. Same with the Celtics. Otherwise no sports."
+  },
+  {
+   "role": "assistant",
+   "content": "Anything you'd rather not see?"
+  },
+  {
+   "role": "user",
+   "content": "Crypto, celebrity news, and anything about gaming."
+  }
+ ],
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "Product manager at an AI startup in Boston with a focus on AI products and industry developments.",
+  "interests": {
+   "topics": [
+    "AI products",
+    "AI industry",
+    "model releases",
+    "AI regulation",
+    "company use of AI"
+   ],
+   "people": [
+    "OpenAI",
+    "Anthropic",
+    "Google"
+   ],
+   "locations": [
+    "Boston"
+   ],
+   "industries": [
+    "AI"
+   ],
+   "excluded_topics": [
+    "Crypto",
+    "celebrity news",
+    "gaming"
+   ],
+   "notes": "Casual follower of Arsenal and Celtics, interested in big moments rather than detailed reports."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "AI products",
+    "AI industry"
+   ],
+   "current_interests": [
+    "model releases",
+    "AI regulation",
+    "company use of AI"
+   ],
+   "people": [
+    "OpenAI",
+    "Anthropic",
+    "Google"
+   ],
+   "locations": [
+    "Boston"
+   ],
+   "industries": [
+    "AI"
+   ],
+   "excluded_topics": [
+    "Crypto",
+    "celebrity news",
+    "gaming"
+   ],
+   "expanded_exclusions": [],
+   "utility_priorities": [
+    "job",
+    "money"
+   ],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "informative",
+    "concise"
+   ],
+   "life_context": "Product manager at an AI startup, interested in industry developments.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "AI products",
+     "AI regulation"
+    ],
+    "must_cover_entities": [
+     "OpenAI",
+     "Anthropic",
+     "Google"
+    ],
+    "must_avoid_topics": [
+     "Crypto",
+     "celebrity news",
+     "gaming"
+    ],
+    "preferred_source_types": [
+     "industry reports",
+     "news articles"
+    ],
+    "coverage_targets": [
+     "AI industry news",
+     "major AI developments"
+    ],
+    "specificity_level": "specific"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "AI products",
+    "AI regulation"
+   ],
+   "must_cover_entities": [
+    "OpenAI",
+    "Anthropic",
+    "Google"
+   ],
+   "must_avoid_topics": [
+    "Crypto",
+    "celebrity news",
+    "gaming"
+   ],
+   "preferred_source_types": [
+    "industry reports",
+    "news articles"
+   ],
+   "coverage_targets": [
+    "AI industry news",
+    "major AI developments"
+   ],
+   "specificity_level": "specific"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "gpt-4o-mini",
+  "cache_key": "69681ea55caaaab951b4fb0a077274bbe3fc5afaf17d18e2a35a1fc1a6da7f17",
+  "date": "2026-09-01"
+ }
+}

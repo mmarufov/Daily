@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "810e326915484826bc727a30444ec4d1349a4c8853c8fa2c66728f229446c81b",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00602\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tax relief proposal is routine economic news, not major for general audience.\"}, {\"id\": \"a00610\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"Health trend analysis is interesting but not urgent or major event.\"}, {\"id\": \"a00618\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.9, \"rationale\": \"Military plane crash with fatalities is important general news.\"}, {\"id\": \"a00628\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.75, \"rationale\": \"Court sentencing of foreign adviser is notable but not major worldwide news.\"}, {\"id\": \"a00637\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Scientific advance in nutrition is interesting but not urgent.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2771,
+  "completion_tokens": 240
+ }
+}

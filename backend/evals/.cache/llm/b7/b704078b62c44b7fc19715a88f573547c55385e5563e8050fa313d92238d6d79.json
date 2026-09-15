@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "183b867824d49816aaa37f78c1744576452df3fe8436bf1841c8e5dac929b422",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01035\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Important AI tech update relevant to primary interest in technology and science.\"}, {\"id\": \"a01036\", \"label\": \"must_see\", \"tags\": [\"direct\", \"consumer impact\"], \"confidence\": 0.85, \"rationale\": \"New browser feature impacts consumer privacy and online behavior.\"}, {\"id\": \"a01037\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech business trend relevant but less urgent or impactful.\"}, {\"id\": \"a01038\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Tech ecosystem development interesting but secondary to primary interests.\"}, {\"id\": \"a01039\", \"label\": \"fine\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.6, \"rationale\": \"US surveillance issue relevant to world news but less relevant to reader's context.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1025,
+  "completion_tokens": 255
+ }
+}

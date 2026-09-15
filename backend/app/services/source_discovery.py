@@ -171,6 +171,12 @@ def _normalize_term(value: str | None) -> str:
     return " ".join((value or "").strip().lower().split())
 
 
+def _word_in(text: str, term: str) -> bool:
+    """Whole-word/phrase containment. See feed_service._word_in for the rationale."""
+    from app.services.feed_service import _word_in as _impl
+    return _impl(text, term)
+
+
 def _dedupe_preserve(values: list[str]) -> list[str]:
     seen = set()
     deduped: list[str] = []
@@ -200,12 +206,16 @@ def _categories_for_terms(terms: list[str]) -> set[str]:
     matched: set[str] = set()
     for term in terms:
         normalized = _normalize_term(term)
+        if not normalized:
+            continue
         for category, keywords in CATEGORY_KEYWORDS.items():
-            if (
-                normalized == category
-                or normalized in keywords
-                or any(keyword in normalized for keyword in keywords)
-            ):
+            if normalized == category or normalized in keywords:
+                matched.add(category)
+                continue
+            # Word boundaries, not substrings: the unbounded form matched the
+            # "ai" keyword inside "entertainment", "ukraine" and "maintain",
+            # so those terms pulled AI feeds into the user's source graph.
+            if any(_word_in(normalized, kw) for kw in keywords):
                 matched.add(category)
     return matched
 
@@ -358,37 +368,62 @@ def _match_seed_sources(conn, interests: dict, profile_specificity: str, ai_prof
     return candidates
 
 
+def _discovery_fetch_policy():
+    from app.services.safe_http import SafeFetchPolicy
+
+    # Candidate URLs here can come straight from an LLM suggestion
+    # (_ai_suggest_feeds) built from user-supplied interest text -- this is
+    # the one feed-discovery fetch path that sees genuinely untrusted URLs,
+    # not just a fixed source registry, so it goes through the SSRF-safe
+    # fetcher rather than a bare httpx client.
+    return SafeFetchPolicy(
+        timeout_seconds=10.0,
+        max_redirects=5,
+        max_wire_bytes=5_000_000,
+        max_decoded_bytes=5_000_000,
+        allowed_content_types=None,
+    )
+
+
 async def _validate_feed(client: httpx.AsyncClient, url: str) -> bool:
-    """Validate a feed URL: GET request + parse at least 1 entry."""
+    """Validate a feed URL: GET request + parse at least 1 entry.
+
+    ``client`` remains for caller compatibility but is intentionally unused;
+    see ``_fetch_feed_sample`` below for why.
+    """
+    from app.services.safe_http import SafeFetchError, safe_fetch
+
     try:
-        resp = await client.get(
-            url,
-            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
-            timeout=10.0,
-        )
-        if resp.status_code != 200:
-            return False
-        feed = feedparser.parse(resp.text)
-        return len(feed.entries) > 0
+        fetched = await safe_fetch(url, policy=_discovery_fetch_policy())
+    except SafeFetchError:
+        return False
     except Exception:
         return False
+    feed = feedparser.parse(fetched.text)
+    return len(feed.entries) > 0
 
 
 async def _fetch_feed_sample(client: httpx.AsyncClient, url: str) -> tuple[bool, list[str]]:
-    """Fetch a feed and sample a few titles for discovery scoring."""
+    """Fetch a feed and sample a few titles for discovery scoring.
+
+    ``client`` remains for caller compatibility but is intentionally unused:
+    an ordinary httpx client with ``follow_redirects=True`` can hop from a
+    public URL to a private/internal address on any redirect hop without
+    re-validating it, and candidate feed URLs here are not limited to a
+    fixed source registry (see ``_discovery_fetch_policy``). Every fetch
+    goes through the shared SSRF-safe fetcher instead.
+    """
+    from app.services.safe_http import SafeFetchError, safe_fetch
+
     try:
-        resp = await client.get(
-            url,
-            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
-            timeout=10.0,
-        )
-        if resp.status_code != 200:
-            return False, []
-        feed = feedparser.parse(resp.text)
-        titles = [str(entry.get("title", "")).strip() for entry in feed.entries[:5] if str(entry.get("title", "")).strip()]
-        return bool(feed.entries), titles
+        fetched = await safe_fetch(url, policy=_discovery_fetch_policy())
+    except SafeFetchError:
+        return False, []
     except Exception:
         return False, []
+    feed = feedparser.parse(fetched.text)
+    titles = [str(entry.get("title", "")).strip() for entry in feed.entries[:5] if str(entry.get("title", "")).strip()]
+    return bool(feed.entries), titles
 
 
 async def _ai_suggest_feeds(openai_svc, interests: dict, ai_profile: str) -> list[dict]:
@@ -663,6 +698,11 @@ async def discover_sources_for_user(
     source_selection_brief: dict | None = None,
 ) -> dict:
     """Discover and assign sources for a user based on their profile and exact interests."""
+    from .reader_integration import snapshot_for
+    reader = snapshot_for(conn, user_id)
+    if reader is not None:
+        from .reader_source_reconcile import reconcile_reader_sources
+        return reconcile_reader_sources(conn, user_id, reader)
     started = asyncio.get_running_loop().time()
     profile_specificity = determine_profile_specificity(interests, ai_profile)
 
@@ -854,7 +894,12 @@ async def fetch_user_sources(conn) -> int:
     Fetch articles from user-discovered sources that are due for fetching.
     Called from the ingestion loop. Returns count of new articles.
     """
-    from app.services.news_ingestion import _fetch_single_feed, _fetch_source_images
+    from app.services.news_ingestion import (
+        _fetch_single_feed,
+        _fetch_source_images,
+        _resolve_redirect_urls,
+        _upsert_ingested_article,
+    )
 
     # Get sources due for fetching (next_fetch_at <= now), limit to 50 per cycle
     with conn.cursor() as cur:
@@ -919,6 +964,8 @@ async def fetch_user_sources(conn) -> int:
     if not all_articles:
         return 0
 
+    await _resolve_redirect_urls(None, all_articles)
+
     # Deduplicate by URL
     seen = set()
     unique = []
@@ -930,34 +977,15 @@ async def fetch_user_sources(conn) -> int:
     # Fetch images for articles missing them
     await _fetch_source_images(unique)
 
-    # Insert into shared articles table
+    # Insert metadata and the content lifecycle job atomically. The helper
+    # passes any feed body to provenance storage instead of a display column.
     new_count = 0
-    with conn.cursor() as cur:
-        for article in unique:
-            try:
-                cur.execute(
-                    """
-                    INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (url) DO UPDATE SET
-                        image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
-                        summary = COALESCE(public.articles.summary, EXCLUDED.summary)
-                    """,
-                    (
-                        article["url"],
-                        article["title"],
-                        article["summary"],
-                        article["author"],
-                        article["source_name"],
-                        article["image_url"],
-                        article["published_at"],
-                        article["category"],
-                    ),
-                )
-                if cur.rowcount == 1:
-                    new_count += 1
-            except Exception as e:
-                logger.warning("User source insert error: %s", e)
+    for article in unique:
+        try:
+            if _upsert_ingested_article(conn, article):
+                new_count += 1
+        except Exception as e:
+            logger.warning("User source insert error: %s", e)
 
     logger.info("User sources: fetched %d sources, %d articles, %d new", len(due_sources), len(unique), new_count)
     return new_count

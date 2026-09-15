@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ce3a8c3142af627ee2f838e0d3a42c919e39b00d0f759e6f2085db1a4c6cdcb3",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00571\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Violent incident but local and not major global news.\"}, {\"id\": \"a00572\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Economic impact of war is general interest but not urgent.\"}, {\"id\": \"a00596\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Diplomatic expulsions are routine international news.\"}, {\"id\": \"a00601\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Sports participation updates are background routine news.\"}, {\"id\": \"a00604\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Drone attacks are notable but no major damage reported.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 930,
+  "completion_tokens": 213
+ }
+}

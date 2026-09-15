@@ -18,6 +18,11 @@ async def check_interest_evolution(conn) -> int:
     Eligible: 20+ reading events, no check in last 24 hours.
     Returns number of suggestions created.
     """
+    from .reader_integration import enabled as reader_enabled
+    if reader_enabled():
+        # Legacy tap/dwell has no generation-bound exposure provenance. S5 does
+        # not reinterpret it as taste or regenerate reset suggestions.
+        return 0
     try:
         with conn.cursor() as cur:
             # Find users with enough reading events and no recent suggestions

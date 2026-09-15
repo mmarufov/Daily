@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8adf9abd158d0fbc1dd747cdd55c71f77045f148eb5c5213463b14787976b96b",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00042\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"business\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant tech/business legal news, but not urgent or directly impactful for reader.\"\n    },\n    {\n      \"id\": \"a00043\",\n      \"label\": \"must_see\",\n      \"tags\": [\"technology\", \"world news\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major warning on AI's global economic risk; key for staying informed on tech and world news.\"\n    },\n    {\n      \"id\": \"a00050\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"business\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Insightful for tech/business, but routine analysis, not urgent or directly impactful.\"\n    },\n    {\n      \"id\": \"a00052\",\n      \"label\": \"must_see\",\n      \"tags\": [\"UK news\", \"world news\", \"need_to_know\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Potential energy crisis could affect UK consumers; important for staying informed and consumer impact.\"\n    },\n    {\n      \"id\": \"a00054\",\n      \"label\": \"fine\",\n      \"tags\": [\"London\", \"technology\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant London/tech update, but a delay, not a critical change for daily life.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1449,
+  "completion_tokens": 350
+ }
+}

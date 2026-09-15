@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e0c05f0b4f15058ef67dc685f98c01173b46f7e95323e5ea3fc389b69bcaed44",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01192\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Not a major event, but notable general news about a public figure.\"}, {\"id\": \"a01202\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Lifestyle/consumer trend, not general news or major event.\"}, {\"id\": \"a01205\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"Major natural disaster with ongoing relief efforts and missing persons.\"}, {\"id\": \"a01220\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"followup\"], \"confidence\": 0.95, \"rationale\": \"Critical update on major flood disaster with international impact.\"}, {\"id\": \"a01221\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Routine military news, interesting but not urgent or major.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1147,
+  "completion_tokens": 239
+ }
+}

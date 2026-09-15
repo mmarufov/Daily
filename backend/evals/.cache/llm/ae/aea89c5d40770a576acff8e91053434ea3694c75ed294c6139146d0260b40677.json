@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e93cff03fc6d6eac3c47b91fb4083a9bb65ce86309129f5ba4b554d791d5c5ec",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00142\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focuses on Kazakhstan, no relevance to Uzbek politics or sports.\"}, {\"id\": \"a00143\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan legislative news unrelated to Uzbek interests.\"}, {\"id\": \"a00145\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Airline fuel efficiency in Central Asia not relevant to Uzbek politics or sports.\"}, {\"id\": \"a00146\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan Kurultai legislative reform irrelevant to Uzbek reader.\"}, {\"id\": \"a00147\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Kazakhstan nuclear policy unrelated to Uzbek politics or sports.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3944,
+  "completion_tokens": 239
+ }
+}

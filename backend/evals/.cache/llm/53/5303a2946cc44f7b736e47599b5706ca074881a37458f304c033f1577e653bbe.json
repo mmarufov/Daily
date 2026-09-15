@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2be930d67722bde5b023caae8f7c12ef1ff2db4e8d35e49a6df0c53a227ca458",
+  "preview": "READER: Dilshod — Tashkent\n\nIn their own words:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nREADER: User is engaged in loc"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00902\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope news unrelated to Uzbek politics or sports.\"}, {\"id\": \"a00907\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"Tiger Woods DUI case irrelevant to Uzbek interests.\"}, {\"id\": \"a00908\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"Balogun transfer news unrelated to Uzbek football or politics.\"}, {\"id\": \"a00909\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"Mike Trout and Angels sale irrelevant to Uzbek sports or politics.\"}, {\"id\": \"a00910\", \"label\": \"never\", \"tags\": [\"off_topic\", \"american sports\"], \"confidence\": 1.0, \"rationale\": \"SEC and NFL rule news unrelated to Uzbek interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1746,
+  "completion_tokens": 248
+ }
+}

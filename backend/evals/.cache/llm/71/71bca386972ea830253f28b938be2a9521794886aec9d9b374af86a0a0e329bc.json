@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f77bddef8af4ad203ba6c9178d1a56db575cf8d2925869a2ea569485d51dfd78",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00433\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Local high school sports preview, routine coverage, no broad interest.\"}, {\"id\": \"a00434\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Local high school sports game result, routine and missable.\"}, {\"id\": \"a00435\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Local girls volleyball season opener, routine sports news.\"}, {\"id\": \"a00436\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Local boys soccer team outlook, routine sports coverage.\"}, {\"id\": \"a00437\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Legal case involving public figure, some general interest but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 936,
+  "completion_tokens": 239
+ }
+}

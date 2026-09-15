@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "45d3f1a3939946c997324128ca5f4f83bc9576674bf4c18fe982d2176959ff39",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01088\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"UK power grid and AI ambitions interesting but not directly relevant to Singapore fintech engineer.\"}, {\"id\": \"a01093\", \"label\": \"must_see\", \"tags\": [\"direct\", \"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Deep technical insight on AWS networking tech relevant to cloud infrastructure and cost efficiency.\"}, {\"id\": \"a01094\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Military drone defense tech unrelated to fintech, cloud, or Singapore/SEA tech.\"}, {\"id\": \"a01097\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Datacenter cooling tech interesting but not directly tied to Singapore or fintech regulation.\"}, {\"id\": \"a01098\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.75, \"rationale\": \"AWS Route 53 satire relevant to cloud infrastructure but more light tech humor than deep news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3078,
+  "completion_tokens": 268
+ }
+}

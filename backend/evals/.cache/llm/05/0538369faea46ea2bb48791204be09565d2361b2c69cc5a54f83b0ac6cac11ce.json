@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1bc4b7e66eaffda0398cf0bfc26237b1ba6a0b9ac0e543995f1876845f1d914a",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00060\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI use in dry cleaning unrelated to trade or regional interests.\"}, {\"id\": \"a00062\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"commodities\"], \"confidence\": 0.8, \"rationale\": \"Oil price surge relevant to commodity prices but indirect for reader.\"}, {\"id\": \"a00065\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Central Asia politics\"], \"confidence\": 0.7, \"rationale\": \"SCO summit narrative shift relevant to regional politics but not urgent.\"}, {\"id\": \"a00066\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"trade routes\", \"Russia\", \"Kazakhstan\"], \"confidence\": 0.95, \"rationale\": \"Trade route changes directly impact import-export business in region.\"}, {\"id\": \"a00067\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"Central Asia politics\"], \"confidence\": 0.7, \"rationale\": \"SCO summit start relevant but routine political event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1163,
+  "completion_tokens": 272
+ }
+}

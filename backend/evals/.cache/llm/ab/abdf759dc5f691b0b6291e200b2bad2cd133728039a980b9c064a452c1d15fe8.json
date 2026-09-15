@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "addcf9be6dd46cb31dfdfaa100892c8fe8d8c19290721d2068e0d34fe70ae729",
+  "preview": "READER PROFILE:\nREADER: User is engaged in local affairs and follows sports closely.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Shavkat Mirziyoyev  (entity)\n  [PRIMARY] Pakhtakor  (entity)\n  [PRIMARY] Bunyod"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 50,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 51,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Celebrity news, not of interest.\"\n    },\n    {\n      \"id\": 52,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 53,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 54,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"American sports, not of interest.\"\n    },\n    {\n      \"id\": 55,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 56,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 57,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 58,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 59,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Entertainment, not of interest.\"\n    },\n    {\n      \"id\": 60,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"economy\",\n      \"kind\": \"contextual\",\n      \"why\": \"Relevant to regional trade and economic interests.\"\n    },\n    {\n      \"id\": 61,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"American sports, not of interest.\"\n    },\n    {\n      \"id\": 62,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 63,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 64,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 65,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 66,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 67,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 68,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 69,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 70,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    },\n    {\n      \"id\": 71,\n      \"keep\": true,\n      \"score\": 0.9,\n      \"matched\": \"Uzbek football\",\n      \"kind\": \"direct\",\n      \"why\": \"Relevant to Uzbek football and local sports.\"\n    },\n    {\n      \"id\": 72,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to local affairs or sports.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2014,
+  "completion_tokens": 1208
+ }
+}

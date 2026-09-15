@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "902ce06b8016a0773e1c60d79499f22a274a5890e111f2a6e352079f341f8cfc",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00701\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"General human interest, no major news value.\"}, {\"id\": \"a00702\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Positive social story, but not major news.\"}, {\"id\": \"a00703\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Routine coverage of event attendance.\"}, {\"id\": \"a00704\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"Heatwave preparedness affects public safety and infrastructure.\"}, {\"id\": \"a00705\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Financial fraud story, interesting but not major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 898,
+  "completion_tokens": 230
+ }
+}

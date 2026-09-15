@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e706bf33b3c26783089eb4d1ee519a60e9f1f21adc7acf04a8ae08afc3e6f51d",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00406\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local family event, but no direct impact on reader's daily life or interests.\"}, {\"id\": \"a00407\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.95, \"rationale\": \"Giants roster news directly relevant to reader's primary sports interest.\"}, {\"id\": \"a00409\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"direct\"], \"confidence\": 0.9, \"rationale\": \"Severe weather threat in NJ affects reader's safety and daily life.\"}, {\"id\": \"a00415\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Eagles news unrelated to reader's interests or location.\"}, {\"id\": \"a00417\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Yankees injury news unrelated to reader's interests or location.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1097,
+  "completion_tokens": 255
+ }
+}

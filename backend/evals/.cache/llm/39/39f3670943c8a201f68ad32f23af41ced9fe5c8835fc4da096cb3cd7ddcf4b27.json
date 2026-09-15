@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "28b44ea5f993ffc1f08c6f1548328329698405cafe490f9beaa96df895411a8a",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00417\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Yankees news is off-topic; reader cares about Devils and Giants, not Yankees.\"\n    },\n    {\n      \"id\": \"a00420\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local interest, but food rankings are not a primary or utility priority.\"\n    },\n    {\n      \"id\": \"a00421\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NFL trade not involving Giants; Eagles/Philly news is off-topic.\"\n    },\n    {\n      \"id\": \"a00424\",\n      \"label\": \"never\",\n      \"tags\": [\"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Casino slots article is promotional and not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00432\",\n      \"label\": \"must_see\",\n      \"tags\": [\"need_to_know\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Affordable housing opportunity in NJ is highly relevant to local, money, and family priorities.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1113,
+  "completion_tokens": 308
+ }
+}

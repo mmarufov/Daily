@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0548fafcf031f3bdf300aeb17e4583fd4b4a87e1b716427c40eb8d2d50226db9",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00753\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Real estate auction unrelated to energy or geopolitical interests.\"}, {\"id\": \"a00761\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.8, \"rationale\": \"Economic growth and job market relevant but not primary focus.\"}, {\"id\": \"a00762\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Local club dispute unrelated to energy or economics.\"}, {\"id\": \"a00767\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"economic_policies\"], \"confidence\": 0.7, \"rationale\": \"International investment dispute center relevant to economics but not primary.\"}, {\"id\": \"a00771\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"energy\", \"economic_policies\"], \"confidence\": 0.9, \"rationale\": \"Energy supply pressure relevant but not directly about European energy security or OPEC.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1084,
+  "completion_tokens": 256
+ }
+}

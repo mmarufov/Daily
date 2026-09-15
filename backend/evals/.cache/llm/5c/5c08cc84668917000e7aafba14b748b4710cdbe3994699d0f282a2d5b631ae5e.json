@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "84fff82c810e209e9cbd4883fcc6001eac0ef50b436e68ca70ea11aa7b85031e",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00100\", \"label\": \"fine\", \"tags\": [\"world_news\", \"technology\"], \"confidence\": 0.8, \"rationale\": \"Tech and AI defense budget relevant but not primary consumer impact.\"}, {\"id\": \"a00102\", \"label\": \"fine\", \"tags\": [\"world_news\", \"need_to_know\"], \"confidence\": 0.7, \"rationale\": \"Disaster response in South Asia relevant world news, some consumer impact.\"}, {\"id\": \"a00103\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.6, \"rationale\": \"Sri Lanka anti-terrorism law is world news but less relevant to consumer or tech interests.\"}, {\"id\": \"a00109\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.6, \"rationale\": \"Indo-Pacific initiative is world news but less relevant to consumer or tech interests.\"}, {\"id\": \"a00114\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Uzbekistan presidential family law unrelated to reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1046,
+  "completion_tokens": 260
+ }
+}

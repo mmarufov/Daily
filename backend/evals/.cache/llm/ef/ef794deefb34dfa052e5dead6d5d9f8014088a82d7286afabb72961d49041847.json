@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "64e7f8a86dc083e525316a101368bad4ad161370e8a1ca2bf77a8b97d353a8bd",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00101\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Climate risk story aligns with environmental interests, but not directly relevant to reader's life or work.\"\n    },\n    {\n      \"id\": \"a00154\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"General sports governance news; not about reader's primary sports or Canadian athletes.\"\n    },\n    {\n      \"id\": \"a00158\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Climate change and environmental monitoring are relevant, but story is not directly impactful for reader.\"\n    },\n    {\n      \"id\": \"a00198\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Cryptocurrency market news is unrelated to reader's interests.\"\n    },\n    {\n      \"id\": \"a00223\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Pop music tour update is not relevant to reader's sports or environmental interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2129,
+  "completion_tokens": 304
+ }
+}

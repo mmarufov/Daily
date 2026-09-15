@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "000be12d2611e1e99ab33c1d794d91b3969e11e835927014cd2a9dd5e3672d09",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00783\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Energy hub news relevant to solar industry interest but not urgent or local.\"}, {\"id\": \"a00788\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"China tax reform unrelated to reader's interests or location.\"}, {\"id\": \"a00789\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Business strategy framework article unrelated to reader's interests.\"}, {\"id\": \"a00790\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"environmental_impact\"], \"confidence\": 0.85, \"rationale\": \"Environmental ethics of AI relevant to sustainability interest but not urgent.\"}, {\"id\": \"a00793\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Enterprise AI expansion in Japan unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3254,
+  "completion_tokens": 245
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8f4518344acabcc6e910159ff40fff748e505a2e3dfc066c9c8101c764ef5da2",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00131\", \"label\": \"fine\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"Human rights story, important but not primary interest or local UK impact.\"}, {\"id\": \"a00140\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Significant AI tech development with broad implications for tech and business sectors.\"}, {\"id\": \"a00142\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"World news on Kazakhstan's economy, relevant but secondary interest and distant geography.\"}, {\"id\": \"a00143\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Political news from Kazakhstan, relevant world news but less direct impact.\"}, {\"id\": \"a00157\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Cultural ballet story unrelated to reader's interests or UK/world news focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3336,
+  "completion_tokens": 259
+ }
+}

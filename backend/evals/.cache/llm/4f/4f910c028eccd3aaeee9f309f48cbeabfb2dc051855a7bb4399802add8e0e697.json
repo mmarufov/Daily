@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0a739727f21100ad7d8b65f28ec10f0e82e0469aa50f8dd33adbd13c63fe045b",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00378\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US political vegan slur topic unrelated to Singapore or reader interests.\"}, {\"id\": \"a00379\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Italy phone use law irrelevant to Singapore reader's context.\"}, {\"id\": \"a00380\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US-Iran economic sanctions unrelated to Singapore or reader's priorities.\"}, {\"id\": \"a00384\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 0.95, \"rationale\": \"US tennis journalism decline irrelevant and sports excluded.\"}, {\"id\": \"a00385\", \"label\": \"never\", \"tags\": [\"off_topic\", \"sports\"], \"confidence\": 0.95, \"rationale\": \"US Open tennis sports coverage excluded topic.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1914,
+  "completion_tokens": 239
+ }
+}

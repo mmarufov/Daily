@@ -26,6 +26,36 @@ final class TuneViewModel: ObservableObject {
     @Published var isStreaming: Bool = false
     @Published var streamStatus: String?
     @Published var errorMessage: String?
+    @Published var readerProposal: ReaderProposal?
+    @Published var committedSummary: String?
+    private var proposalSession: UInt64?
+    private var proposalMutation: ReaderMutation?
+    private var readerSubscriptions = Set<AnyCancellable>()
+    private var feedEpoch: UInt64 = 0
+
+    init() {
+        authService.$currentUser.dropFirst().sink { [weak self] _ in
+            guard let self else { return }
+            self.readerProposal = nil
+            self.proposalMutation = nil
+            self.inputText = ""
+            self.articles = []
+            self.turns = []
+            self.threads = []
+            self.currentThread = nil
+            self.committedSummary = nil
+            self.hasLoadedInitialFeed = false
+            self.hasLoadedHome = false
+            self.feedEpoch &+= 1
+        }.store(in: &readerSubscriptions)
+        NotificationCenter.default.publisher(for: .readerPreferencesCommitted)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.feedEpoch &+= 1
+                self?.articles = []
+                Task { await self?.refreshLiveFeed() }
+            }.store(in: &readerSubscriptions)
+    }
 
     // MARK: New Tune state (Phase 4)
 
@@ -94,7 +124,6 @@ final class TuneViewModel: ObservableObject {
     func loadInitialFeed() async {
         guard !hasLoadedInitialFeed else { return }
         await refreshLiveFeed()
-        hasLoadedInitialFeed = true
     }
 
     func refreshHome() async {
@@ -118,11 +147,22 @@ final class TuneViewModel: ObservableObject {
 
     private func refreshLiveFeed() async {
         guard let token = authService.getAccessToken() else { return }
+        let session = authService.sessionGeneration
+        feedEpoch &+= 1
+        let requestEpoch = feedEpoch
         isLoadingFeed = true
         defer { isLoadingFeed = false }
         do {
             let response = try await backendService.refreshFeedStatus(accessToken: token, limit: 20)
-            articles = response.articles
+            guard session == authService.sessionGeneration, requestEpoch == feedEpoch else { return }
+            if response.status == .ready { articles = response.articles }
+            hasLoadedInitialFeed = true
+            if response.status == .needsReaderReview {
+                articles = []
+                errorMessage = "Review your imported interests in Personalization settings to continue."
+            } else if response.status == .building || response.status == .unavailable {
+                errorMessage = "Your feed is not ready yet. Try refreshing again shortly."
+            }
         } catch {
             // Silent — leave the existing list in place. The composer remains usable.
         }
@@ -193,7 +233,7 @@ final class TuneViewModel: ObservableObject {
 
         inputText = ""
         showSuggestedChips = false
-        await sendMessage(content: text, intent: nil)
+        await prepareReaderProposal(text)
     }
 
     func sendIntent(_ intent: ChatIntent) async {
@@ -215,23 +255,67 @@ final class TuneViewModel: ObservableObject {
     // MARK: - DiffToast / Undo
 
     func dismissDiffToast() {
-        guard let diff = pendingDiff else { return }
         pendingDiff = nil
-        let undo = PersistedUndo(
-            id: UUID(),
-            label: "Undo",
-            diff: diff,
-            expiresAt: Date().addingTimeInterval(Self.undoPillDurationSeconds)
-        )
-        persistedUndo = undo
-        scheduleUndoExpiry(for: undo)
+        persistedUndo = nil
     }
 
     func tapUndo() async {
-        // TODO(backend): call a real "reverse last weight-diff" endpoint here.
-        // For now, just clear the pill so the user feels the action.
+        // No Undo is advertised until a version-safe reverse mutation exists.
         persistedUndo = nil
         undoExpiryTask?.cancel()
+    }
+
+    private func prepareReaderProposal(_ text: String) async {
+        guard !isStreaming else { return }
+        guard let token = authService.getAccessToken() else { errorMessage = ReaderClientError.authenticationRequired.localizedDescription; return }
+        let session = authService.sessionGeneration
+        isStreaming = true
+        streamStatus = "Preparing a change for your review…"
+        errorMessage = nil
+        committedSummary = nil
+        readerProposal = nil
+        defer { isStreaming = false; streamStatus = nil }
+        do {
+            let base = try await ReaderService.shared.fetch(token: token)
+            guard session == authService.sessionGeneration else { return }
+            guard !base.needsReview else {
+                errorMessage = "Review your imported interests in Personalization settings first."
+                inputText = text
+                return
+            }
+            let proposal = try await ReaderService.shared.propose(text: text, base: base, operationID: UUID().uuidString, token: token)
+            guard session == authService.sessionGeneration else { return }
+            proposalSession = session
+            readerProposal = proposal
+            proposalMutation = ReaderMutation(baseGeneration: proposal.baseGeneration, baseRevision: proposal.baseRevision, patch: proposal.patch)
+        } catch {
+            guard session == authService.sessionGeneration else { return }
+            inputText = text
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func cancelReaderProposal() {
+        readerProposal = nil
+        proposalMutation = nil
+    }
+
+    func applyReaderProposal() async {
+        guard !isStreaming, let proposal = readerProposal, let mutation = proposalMutation,
+              let token = authService.getAccessToken(), proposalSession == authService.sessionGeneration else { return }
+        let session = authService.sessionGeneration
+        isStreaming = true
+        defer { isStreaming = false }
+        do {
+            _ = try await ReaderService.shared.apply(mutation, token: token)
+            guard session == authService.sessionGeneration else { return }
+            cancelReaderProposal()
+            committedSummary = proposal.summary
+            NotificationCenter.default.post(name: .readerPreferencesCommitted, object: nil)
+        } catch {
+            guard session == authService.sessionGeneration else { return }
+            errorMessage = error.localizedDescription
+        }
     }
 
     private func scheduleDiffToastDismiss() {

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0d15c004ea1848efe45c69da76c751e9e7f99484deff376995df6fe45b532519",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00748\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Business R&D spending is not relevant to parenting, healthcare, or daily life.\"\n    },\n    {\n      \"id\": \"a00755\",\n      \"label\": \"fine\",\n      \"tags\": [\"public_transport\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Public transport improvements are relevant but not urgent or life-changing today.\"\n    },\n    {\n      \"id\": \"a00763\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Generic news roundup; likely too broad and not focused on reader's priorities.\"\n    },\n    {\n      \"id\": \"a00765\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Corporate legal probe unrelated to reader's interests or daily life.\"\n    },\n    {\n      \"id\": \"a00767\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"International investment dispute centre is not relevant to reader's daily concerns.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1095,
+  "completion_tokens": 298
+ }
+}

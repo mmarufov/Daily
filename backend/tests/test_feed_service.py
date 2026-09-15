@@ -529,16 +529,11 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
             feed_service,
             "_load_cached_feed",
             return_value=cached_articles,
-        ), patch.object(
-            feed_service,
-            "_hydrate_missing_feed_images",
-            new=AsyncMock(),
-        ) as hydrate_mock:
+        ):
             articles = await feed_service.get_personalized_feed(user_id, conn=object(), limit=10)
 
         self.assertEqual(len(articles), 1)
         self.assertEqual(articles[0]["image_url"], "https://images.example.com/anthropic.jpg")
-        hydrate_mock.assert_awaited_once()
 
     async def test_load_candidates_for_profile_expands_windows_for_strict_topics(self):
         profile = feed_service._build_preference_profile(
@@ -623,6 +618,56 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
         # Blended should be below threshold since deterministic is ~0
         self.assertFalse(candidates[0]["_relevant"])
 
+    def test_annotate_runs_before_scoring_so_topic_feedback_is_reachable(self):
+        """S10 A2: _annotate_candidate_feed_roles must run before
+        _apply_individual_analysis_results in the real build, or the learned `topic`
+        weight (KIND_FACTORS["topic"]=1.0, the strongest kind) is silently unreachable
+        because feedback_adjustment reads candidate["_matched_profile_signals"], which
+        only annotate sets."""
+        import inspect
+        source = inspect.getsource(feed_service.get_personalized_feed)
+        self.assertLess(
+            source.index("_annotate_candidate_feed_roles("),
+            source.index("_apply_individual_analysis_results("),
+            "annotate must run before scoring so feedback_adjustment sees real matched signals",
+        )
+
+    def test_topic_feedback_reaches_score_when_annotated_first(self):
+        """Behavioral proof of the A2 fix: run the two functions in the corrected
+        order and confirm a learned `topic` weight actually moves the blended score,
+        using signals annotate itself derives (not a hand-constructed dict)."""
+        profile = feed_service._build_preference_profile(
+            "I like quantum physics", {"topics": ["Quantum Physics"]}
+        )
+        profile_v2 = {"current_interests": ["Quantum Physics"]}
+        candidate = {
+            "title": "Quantum Physics breakthrough announced",
+            "summary": "Researchers report a new result in Quantum Physics",
+            "category": "science", "source_name": "Science Daily",
+            "url": "https://sciencedaily.com/qp", "content": "",
+        }
+        # Annotate first (the fixed order): populates _matched_profile_signals from
+        # the real matching logic, not a hand-authored fixture.
+        feed_service._annotate_candidate_feed_roles([candidate], profile_v2)
+        self.assertIn("quantum physics", [s.lower() for s in candidate["_matched_profile_signals"]])
+
+        results = [{"relevant": True, "score": 0.5, "reason": "Directly on topic"}]
+        ctx_no_feedback = feed_service.ScoringContext()
+        baseline = dict(candidate)
+        feed_service._apply_individual_analysis_results([baseline], results, profile, ctx_no_feedback)
+
+        # A strong negative learned weight on the exact matched topic.
+        penalized = dict(candidate)
+        ctx_negative = feed_service.ScoringContext(
+            feedback_signals={"topic": {"quantum physics": -0.5}, "source": {}, "category": {}}
+        )
+        feed_service._apply_individual_analysis_results([penalized], results, profile, ctx_negative)
+
+        self.assertLess(
+            penalized["_score"], baseline["_score"],
+            "a negative learned topic weight must lower the score once annotate has run first",
+        )
+
     def test_generic_backfill_threshold_removed(self):
         """The rebuilt feed should not pad results using generic score thresholds."""
         import inspect
@@ -660,3 +705,40 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestFeedBuildLog(unittest.TestCase):
+    """The build log is observability, never a failure mode."""
+
+    def test_record_feed_build_swallows_db_errors(self):
+        class _Boom:
+            def cursor(self):
+                raise RuntimeError("db down")
+
+        feed_service._record_feed_build(_Boom(), "00000000-0000-0000-0000-000000000001",
+                                        {"calls": 2, "kept": 3, "feed_ids": ["a"]})
+
+    def test_record_feed_build_writes_one_row(self):
+        executed = []
+
+        class _Cur:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def execute(self, q, params=None): executed.append((" ".join(q.split()), params))
+
+        class _Conn:
+            def cursor(self): return _Cur()
+
+        feed_service._record_feed_build(_Conn(), "u", {
+            "calls": 3, "kept": 12, "prefiltered": 100, "scored": 60, "candidates_loaded": 300,
+            "dropped_by_stage": {"not_relevant": 40}, "feed_ids": ["a", "b"], "latency_ms": 1234, "model": "m",
+        })
+        self.assertEqual(len(executed), 1)
+        q, params = executed[0]
+        self.assertTrue(q.startswith("INSERT INTO public.feed_build_log"))
+        self.assertEqual(params[3:7], (300, 100, 60, 12))
+        self.assertEqual(params[9], 3)
+        self.assertAlmostEqual(params[10], 3 * feed_service.EST_COST_PER_SCORING_CALL_USD)
+
+    def test_skipped_without_cursor(self):
+        feed_service._record_feed_build(None, "u", {})

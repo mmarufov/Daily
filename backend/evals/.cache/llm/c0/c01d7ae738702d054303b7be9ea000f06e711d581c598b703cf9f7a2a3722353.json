@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "79eabd4c970e4a79ab23026e20ee6ddd8bdb597213484638593af58ec153a230",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01253\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Australian state politics and education debate; not relevant to reader's interests or location.\"\n    },\n    {\n      \"id\": \"a01257\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major UN climate warning; global science/tech impact and world news, highly relevant for staying informed.\"\n    },\n    {\n      \"id\": \"a01265\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Significant world news, but not directly affecting UK or consumer impact; routine geopolitical update.\"\n    },\n    {\n      \"id\": \"a01271\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major disaster, relevant for world news interest, but not primary or directly impactful for reader.\"\n    },\n    {\n      \"id\": \"a01292\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Tech workplace issue; relevant to tech and business interests, but not urgent or must-see.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1646,
+  "completion_tokens": 320
+ }
+}

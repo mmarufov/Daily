@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "cb1025933905a920dd094d23554f17fe58af64fb1b99e73f3225747b4909c98d",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00755\", \"label\": \"fine\", \"tags\": [\"local news\"], \"confidence\": 0.8, \"rationale\": \"Local tenancy news, not directly relevant to parenting or healthcare.\"}, {\"id\": \"a00756\", \"label\": \"fine\", \"tags\": [\"local news\"], \"confidence\": 0.8, \"rationale\": \"Local community news, may interest but not critical for reader.\"}, {\"id\": \"a00757\", \"label\": \"fine\", \"tags\": [\"local news\"], \"confidence\": 0.8, \"rationale\": \"Local mall closure news, not impacting reader's daily life directly.\"}, {\"id\": \"a00758\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.95, \"rationale\": \"Fatal residential fire affects safety and living conditions directly.\"}, {\"id\": \"a00759\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"National Service awards update not relevant to reader's priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1159,
+  "completion_tokens": 246
+ }
+}

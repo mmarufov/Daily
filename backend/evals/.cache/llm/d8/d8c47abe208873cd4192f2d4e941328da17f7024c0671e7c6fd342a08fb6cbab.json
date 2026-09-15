@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "d646a3a9329030f8a7bab01ea22399752f5595f514bfacbf48da30399e36c0fe",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nStructured interests:\n-"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses education and digital learning, which does not align with the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on video game development, which is unrelated to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This opinion piece on nuclear energy in New Jersey does not directly relate to the user's primary interests in tennis or horse racing.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses stock market futures, which is not relevant to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a TV show and its cast, which does not intersect with the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about an actor performing a play, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a horror film available for streaming, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article critiques Emmy nominations and shows, which is not relevant to the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses community issues following a synagogue attack, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers the US-Canada trade war, which is not relevant to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a beauty company's stock performance, which does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses demographic challenges in Singapore, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a gaming controller, which does not align with the user's interests in sports or clean energy.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Iranian politics and economy, which is not relevant to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers a referendum in Guinea-Bissau, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a British activist detained in the West Bank, which is unrelated to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a sci-fi film streaming, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NFL team decisions, which is not relevant to the user's primary interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses environmental issues in Tajikistan, but it does not intersect with the user's primary interests in tennis or horse racing.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2301,
+  "completion_tokens": 654
+ }
+}

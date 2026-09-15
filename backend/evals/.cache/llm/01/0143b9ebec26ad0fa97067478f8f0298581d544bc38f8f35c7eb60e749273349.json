@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f6b46822749546f7905edcee57932c1f824f09086cf9a39cf6d322c857c38d7c",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01016\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Jets NHL team unrelated to Devils, Giants, or NJ local interests.\"}, {\"id\": \"a01017\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Article about former Sharks player, no NJ or Devils/Giants relevance.\"}, {\"id\": \"a01018\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Focus on Colorado Avalanche player, no NJ or Devils/Giants relevance.\"}, {\"id\": \"a01019\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Discusses Florida Panthers goalie, some NHL interest but no NJ Devils or Giants focus.\"}, {\"id\": \"a01020\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"About Martin Jones and Sharks history, no NJ or Devils/Giants relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3658,
+  "completion_tokens": 257
+ }
+}

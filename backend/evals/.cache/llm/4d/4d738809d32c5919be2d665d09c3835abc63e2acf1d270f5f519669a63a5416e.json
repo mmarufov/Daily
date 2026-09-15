@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f5c9f0a48ae35b170f6fea4f7fe1113b4609e14bc2edabfa8485634402613c6a",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00474\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Relevant to world/UK news but US local policy, not consumer impact or tech/science.\"}, {\"id\": \"a00491\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"US local legal news, not relevant to UK or primary interests.\"}, {\"id\": \"a00515\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"No clear topic or relevance to reader interests.\"}, {\"id\": \"a00521\", \"label\": \"must_see\", \"tags\": [\"direct\", \"technology\"], \"confidence\": 0.85, \"rationale\": \"Tech innovation relevant to primary interest in technology.\"}, {\"id\": \"a00538\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"marketing\"], \"confidence\": 0.6, \"rationale\": \"Hiring news in tech sector, mildly relevant to marketing and tech interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1018,
+  "completion_tokens": 253
+ }
+}

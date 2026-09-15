@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "05cb5b6f6f7c0c31d3b3b548cd134db837b1fd2ced23585500dac11e71f66b48",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00621\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Ukraine-Russia conflict, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00622\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Belarusian state TV story unrelated to Singapore or reader's priorities.\"}, {\"id\": \"a00632\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US military missile shortage in Europe irrelevant to Singapore reader.\"}, {\"id\": \"a00638\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Physics research on spacetime crystals unrelated to reader's interests.\"}, {\"id\": \"a00644\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Ancient Egyptian archaeology unrelated to Singapore or reader's needs.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2755,
+  "completion_tokens": 242
+ }
+}

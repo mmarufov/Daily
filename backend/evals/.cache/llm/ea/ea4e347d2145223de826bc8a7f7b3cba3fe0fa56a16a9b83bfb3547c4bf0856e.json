@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "b36bb84d0daf606ea07940a50c3256e53c0d1553504298addbd88d42de9409a1",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00830\",\n      \"label\": \"fine\",\n      \"tags\": [\"solar energy\", \"clean energy\", \"environmental impact\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Solar industry news is a secondary interest; relevant but not essential for today.\"\n    },\n    {\n      \"id\": \"a00840\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"China's tax reform and Southeast Asia finance are not relevant to reader's interests.\"\n    },\n    {\n      \"id\": \"a00878\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Space science is not a stated interest; may appeal due to environmental curiosity, but missable.\"\n    },\n    {\n      \"id\": \"a00887\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Astronomy biography is not relevant to sports, solar, or environmental interests.\"\n    },\n    {\n      \"id\": \"a00919\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"MLB playoff races are not among reader's sports interests (tennis, horse racing).\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3184,
+  "completion_tokens": 318
+ }
+}

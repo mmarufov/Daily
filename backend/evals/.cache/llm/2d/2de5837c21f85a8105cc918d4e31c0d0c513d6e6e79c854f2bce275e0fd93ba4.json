@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "346535d1a054b7033a9b755f94cf4fbf59867cef49c72673980170fbf9b0bbe9",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00813\",\n      \"label\": \"fine\",\n      \"tags\": [\"cloud_infrastructure\", \"Southeast Asia\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Covers regional digital infrastructure and energy, relevant to cloud/infra interests but not urgent or Singapore-specific.\"\n    },\n    {\n      \"id\": \"a00814\",\n      \"label\": \"must_see\",\n      \"tags\": [\"AI engineering\", \"developer tools\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Deep dive into AI agent-driven procurement; highly relevant to AI engineering and production use in tech.\"\n    },\n    {\n      \"id\": \"a00817\",\n      \"label\": \"must_see\",\n      \"tags\": [\"AI engineering\", \"Southeast Asia startups\", \"direct\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Detailed analysis of scaling AI in SEA, with technical/architectural focus; matches reader's core interests.\"\n    },\n    {\n      \"id\": \"a00818\",\n      \"label\": \"fine\",\n      \"tags\": [\"Southeast Asia\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Regional battery/EV industry update; tangential to tech/infra interests but not core or urgent.\"\n    },\n    {\n      \"id\": \"a00823\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"Southeast Asia\", \"background_routine\"],\n      \"confidence\": 0.75,\n      \"rationale\": \"Macro view of AI's economic impact in Asia Pacific; relevant context but not technical or Singapore-specific.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3859,
+  "completion_tokens": 376
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f89d049a2c42f1806f6a427fdb8c4c7420558a65b46105ce57c19e0a80403968",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00139\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Economic ties relevant to Singapore but not deep tech or fintech regulation.\"}, {\"id\": \"a00141\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Defense strategies in South China Sea unrelated to reader's tech or fintech interests.\"}, {\"id\": \"a00144\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Kazakh scientific history unrelated to reader's tech or fintech focus.\"}, {\"id\": \"a00153\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI and infrastructure in Central Asia somewhat relevant but not primary interest or Singapore-focused.\"}, {\"id\": \"a00162\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"KazMunayGas bond offering unrelated to Singapore, fintech, or AI engineering.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2955,
+  "completion_tokens": 254
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0edfd7255d2b04186fd1a5444c3a80112d94e0aabbb1b2ff3fa5d56d6e937f04",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00791\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Focus on Indonesian fintech, unrelated to Central Asia or trade.\"}, {\"id\": \"a00793\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"About AI in Japan, no relevance to Central Asia or trade.\"}, {\"id\": \"a00794\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"commodities\"], \"confidence\": 0.7, \"rationale\": \"Crypto market update; peripheral interest for currency/commodities.\"}, {\"id\": \"a00800\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"AI adoption in Southeast Asia unrelated to Central Asia or trade.\"}, {\"id\": \"a00801\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Warehouse safety in Singapore unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4029,
+  "completion_tokens": 243
+ }
+}

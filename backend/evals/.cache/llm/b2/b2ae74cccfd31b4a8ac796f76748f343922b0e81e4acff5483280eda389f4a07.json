@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "becfb8fed6e435cb707c2058f2a7a0841cf379fa2f7de0bf0d3e7674d22971f4",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01161\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Drone defense startup unrelated to Singapore, fintech, or AI engineering.\"}, {\"id\": \"a01164\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Datacenter cooling tech relevant to cloud infrastructure but not region-specific or fintech.\"}, {\"id\": \"a01165\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AWS Route 53 satire relevant to cloud infrastructure and developer tools.\"}, {\"id\": \"a01166\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"LibreOffice update relevant to software engineering but not primary interest or region.\"}, {\"id\": \"a01168\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"US government insider threat case unrelated to reader's interests or region.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3604,
+  "completion_tokens": 250
+ }
+}

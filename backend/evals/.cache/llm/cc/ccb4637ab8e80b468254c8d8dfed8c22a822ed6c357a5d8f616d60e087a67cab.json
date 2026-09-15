@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5e8832d8411b0ee0c630ebeb47e1d9876a722543383b54510381d859359a3cef",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00658\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Interesting medical research but not urgent or major news for general audience.\"}, {\"id\": \"a00671\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.85, \"rationale\": \"Important regional earthquake risk update but not a current event or major global news.\"}, {\"id\": \"a00674\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"Fascinating cosmology research, relevant to general knowledge but not urgent.\"}, {\"id\": \"a00676\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"New planetary science discovery, interesting but not critical for general audience.\"}, {\"id\": \"a00677\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.85, \"rationale\": \"NASA telescope news is solid general science news, not urgent or major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1106,
+  "completion_tokens": 245
+ }
+}

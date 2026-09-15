@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1b8ae6bd3b82d7f69cdb552c9587d3fd258bd7d0b029253cd7dc720efe86bee3",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01297\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Conflict unrelated to energy or geopolitical interests of reader.\"}, {\"id\": \"a01298\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Event unrelated to energy or geopolitical interests of reader.\"}, {\"id\": \"a01299\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Conflict unrelated to energy or geopolitical interests of reader.\"}, {\"id\": \"a01300\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Crime event unrelated to energy or geopolitical interests of reader.\"}, {\"id\": \"a01303\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\"], \"confidence\": 1.0, \"rationale\": \"Strait of Hormuz flare-up directly impacts energy security and geopolitical stability.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1069,
+  "completion_tokens": 246
+ }
+}

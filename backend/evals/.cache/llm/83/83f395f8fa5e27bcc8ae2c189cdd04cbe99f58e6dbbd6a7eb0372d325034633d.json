@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f114417319bb00be36f83b6a810d3a477e6a13ded6c44a1f1a52de8f49873c61",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00385\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US political architecture, unrelated to Singapore or reader interests.\"}, {\"id\": \"a00390\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US foreign aid agency story unrelated to Singapore or reader interests.\"}, {\"id\": \"a00393\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"US celebrity legal case unrelated to Singapore or reader interests.\"}, {\"id\": \"a00403\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 1.0, \"rationale\": \"US high school soccer preview irrelevant to reader.\"}, {\"id\": \"a00405\", \"label\": \"never\", \"tags\": [\"off_topic\", \"background_routine\"], \"confidence\": 1.0, \"rationale\": \"US boys soccer match report irrelevant to reader.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1542,
+  "completion_tokens": 241
+ }
+}

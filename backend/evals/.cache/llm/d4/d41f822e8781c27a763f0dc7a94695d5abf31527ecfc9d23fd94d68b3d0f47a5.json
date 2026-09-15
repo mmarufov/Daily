@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "faf4f8c4f96dba2e5647313b0c4d19c6237205b9a3b4263205c3a0b0f4050566",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01065\", \"label\": \"never\", \"tags\": [\"celebrity\", \"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Celebrity topic, off interest and excluded for reader.\"}, {\"id\": \"a01066\", \"label\": \"fine\", \"tags\": [\"technology\", \"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Tech and data sharing relevant but local to US, mildly interesting.\"}, {\"id\": \"a01067\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promo content, not relevant to reader interests.\"}, {\"id\": \"a01068\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promo content, not relevant to reader interests.\"}, {\"id\": \"a01069\", \"label\": \"never\", \"tags\": [\"promo\"], \"confidence\": 1.0, \"rationale\": \"Promo content, not relevant to reader interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1086,
+  "completion_tokens": 236
+ }
+}

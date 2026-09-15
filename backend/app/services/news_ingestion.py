@@ -14,8 +14,13 @@ import httpx
 import feedparser
 
 from app.services.image_extraction import fetch_best_source_image
+from app.services.article_content import article_content_transaction, register_ingested_article
 
 logger = logging.getLogger(__name__)
+
+# Minimum length for `content:encoded` to count as a real article body rather
+# than an expanded teaser.
+FEED_CONTENT_MIN_LENGTH = 600
 
 # Broad news feeds plus a small set of niche feeds for strict topic matching.
 RSS_FEEDS = [
@@ -113,19 +118,37 @@ def _category_for_topic(topic: str) -> str:
     return "general"
 
 
-async def _resolve_redirect_urls(client: httpx.AsyncClient, articles: list[dict]) -> None:
-    """Resolve Google News redirect URLs to actual article URLs for proper dedup."""
+async def _resolve_redirect_urls(_client: httpx.AsyncClient, articles: list[dict]) -> None:
+    """Resolve Google News redirects through the shared SSRF-safe fetcher.
+
+    The client argument remains for caller compatibility, but intentionally is
+    not used: an ordinary ``httpx`` redirect chain can cross from a public URL
+    to a private address without re-validating each hop.
+    """
     redirected = [a for a in articles if "news.google.com" in (a.get("url") or "")]
     if not redirected:
         return
+
+    # Lazy import keeps the pure feed parsing helpers usable in constrained
+    # test/tooling environments that intentionally stub the HTTP client.
+    from app.services.safe_http import SafeFetchPolicy, safe_fetch
 
     semaphore = asyncio.Semaphore(5)
 
     async def _resolve(article: dict) -> None:
         async with semaphore:
             try:
-                resp = await client.head(article["url"], timeout=10.0)
-                resolved = str(resp.url)
+                fetched = await safe_fetch(
+                    article["url"],
+                    policy=SafeFetchPolicy(
+                        timeout_seconds=10.0,
+                        max_redirects=5,
+                        max_wire_bytes=256_000,
+                        max_decoded_bytes=256_000,
+                        allowed_content_types=None,
+                    ),
+                )
+                resolved = fetched.url
                 if resolved != article["url"]:
                     article["url"] = resolved
             except Exception:
@@ -171,8 +194,15 @@ def _parse_date(entry: dict) -> Optional[datetime]:
     parsed = entry.get("published_parsed") or entry.get("updated_parsed")
     if parsed:
         try:
-            from time import mktime
-            return datetime.fromtimestamp(mktime(parsed), tz=timezone.utc)
+            # feedparser's *_parsed struct_time is already UTC (it normalizes
+            # every feed's timezone/offset before handing it back). mktime()
+            # instead interprets a struct_time as *local* time and converts
+            # to a local epoch -- on any host not running in UTC, that silently
+            # shifts every parsed date by the host's UTC offset, then the
+            # result gets mislabeled `tz=timezone.utc` on top of that.
+            # calendar.timegm() is the UTC-correct inverse of gmtime().
+            from calendar import timegm
+            return datetime.fromtimestamp(timegm(parsed), tz=timezone.utc)
         except (ValueError, OverflowError, OSError):
             pass
     return None
@@ -189,20 +219,66 @@ def _clean_html(text: str) -> str:
     return BeautifulSoup(text, "html.parser").get_text(separator=" ", strip=True)
 
 
+def _extract_feed_content(entry: dict) -> Optional[str]:
+    """Return the longest substantial ``content:encoded`` candidate.
+
+    Presence in a feed is useful provenance but is not, by itself, permission
+    or proof that the value is a complete article. ``article_content`` keeps it
+    non-display until that source has an explicitly reviewed full-text policy.
+    """
+    values = entry.get("content")
+    if not isinstance(values, list):
+        return None
+
+    best = ""
+    for item in values:
+        if not isinstance(item, dict):
+            continue
+        text = _clean_html(item.get("value") or "")
+        if len(text) > len(best):
+            best = text
+
+    return best if len(best) >= FEED_CONTENT_MIN_LENGTH else None
+
+
 async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[dict]:
-    """Fetch and parse a single RSS feed, returning list of article dicts."""
+    """Fetch and parse a single RSS feed, returning list of article dicts.
+
+    ``client`` remains for caller compatibility but is intentionally unused:
+    an ordinary httpx client with ``follow_redirects=True`` (as both callers
+    of this function construct) can hop from a public feed URL to a
+    private/internal address on any redirect hop without re-validating it.
+    Every recurring feed fetch goes through the shared SSRF-safe fetcher
+    instead, matching every other outbound fetch in this codebase (see
+    ``_resolve_redirect_urls`` above for the same pattern and reasoning).
+    """
+    from app.services.safe_http import SafeFetchError, SafeFetchPolicy, safe_fetch
+
     articles = []
     try:
-        response = await client.get(
-            feed_url,
-            headers={"User-Agent": "DailyNewsApp/1.0 (RSS Reader)"},
-        )
-        if response.status_code != 200:
-            print(f"RSS: HTTP {response.status_code} for {feed_url}")
+        try:
+            fetched = await safe_fetch(
+                feed_url,
+                policy=SafeFetchPolicy(
+                    timeout_seconds=15.0,
+                    max_redirects=5,
+                    max_wire_bytes=5_000_000,
+                    max_decoded_bytes=5_000_000,
+                    # Feed content-type headers are inconsistent across
+                    # publishers (rss+xml, atom+xml, xml, even text/html on
+                    # misconfigured servers); the safety property that
+                    # matters here is DNS-pinning and redirect
+                    # re-validation, not content-type gating.
+                    allowed_content_types=None,
+                ),
+            )
+        except SafeFetchError as exc:
+            print(f"RSS: {exc.code} ({exc.status_code or '-'}) for {feed_url}")
             return []
 
-        feed = feedparser.parse(response.text)
+        feed = feedparser.parse(fetched.text)
         category = _guess_category(feed_url)
+        fetched_feed_url = fetched.url
 
         for entry in feed.entries:
             link = entry.get("link", "").strip()
@@ -219,9 +295,15 @@ async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[d
                 summary = summary[:1000]
 
             author = entry.get("author")
-            source_name = feed.feed.get("title", urlparse(feed_url).netloc)
+            entry_source = entry.get("source") or {}
+            source_name = (
+                entry_source.get("title")
+                or feed.feed.get("title")
+                or urlparse(feed_url).netloc
+            )
             image_url = _extract_image_url(entry)
             published_at = _parse_date(entry)
+            feed_content = _extract_feed_content(entry)
 
             # Skip articles older than 7 days
             if published_at and published_at < datetime.now(timezone.utc) - timedelta(days=7):
@@ -231,9 +313,15 @@ async def _fetch_single_feed(client: httpx.AsyncClient, feed_url: str) -> list[d
                 "url": link,
                 "title": title,
                 "summary": summary or None,
+                "content": feed_content,
+                "feed_url": fetched_feed_url,
                 "author": author,
                 "source_name": source_name,
                 "image_url": image_url,
+                "image_origin": "publisher_feed" if image_url else None,
+                "image_source_url": feed_url if image_url else None,
+                "image_attribution": source_name if image_url else None,
+                "image_is_illustrative": False,
                 "published_at": published_at,
                 "category": category,
             })
@@ -250,6 +338,10 @@ async def _fetch_source_image(article: dict) -> None:
         image_url = await fetch_best_source_image(article["url"], timeout=5.0)
         if image_url:
             article["image_url"] = image_url
+            article["image_origin"] = "publisher_page"
+            article["image_source_url"] = article["url"]
+            article["image_attribution"] = article.get("source_name")
+            article["image_is_illustrative"] = False
     except Exception:
         pass
 
@@ -275,6 +367,86 @@ async def _fetch_source_images(articles: list[dict]) -> int:
             found += 1
 
     return found
+
+
+def _upsert_ingested_article(conn, article: dict):
+    """Atomically persist metadata and register the content lifecycle."""
+    with article_content_transaction(conn):
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.articles (
+                    url, title, summary, content, content_extracted,
+                    author, source_name, image_url, image_origin,
+                    image_source_url, image_attribution, image_is_illustrative,
+                    published_at, category
+                )
+                VALUES (%s, %s, %s, NULL, false, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (url) DO UPDATE SET
+                    title = COALESCE(NULLIF(EXCLUDED.title, ''), public.articles.title),
+                    image_url = CASE
+                        WHEN EXCLUDED.image_url IS NOT NULL
+                         AND (public.articles.image_url IS NULL
+                              OR public.articles.image_origin IS NULL
+                              OR public.articles.image_origin = 'legacy_unknown')
+                        THEN EXCLUDED.image_url ELSE public.articles.image_url END,
+                    image_origin = CASE
+                        WHEN EXCLUDED.image_url IS NOT NULL
+                         AND (public.articles.image_url IS NULL
+                              OR public.articles.image_origin IS NULL
+                              OR public.articles.image_origin = 'legacy_unknown')
+                        THEN EXCLUDED.image_origin ELSE public.articles.image_origin END,
+                    image_source_url = CASE
+                        WHEN EXCLUDED.image_url IS NOT NULL
+                         AND (public.articles.image_url IS NULL
+                              OR public.articles.image_origin IS NULL
+                              OR public.articles.image_origin = 'legacy_unknown')
+                        THEN EXCLUDED.image_source_url ELSE public.articles.image_source_url END,
+                    image_attribution = CASE
+                        WHEN EXCLUDED.image_url IS NOT NULL
+                         AND (public.articles.image_url IS NULL
+                              OR public.articles.image_origin IS NULL
+                              OR public.articles.image_origin = 'legacy_unknown')
+                        THEN EXCLUDED.image_attribution ELSE public.articles.image_attribution END,
+                    image_is_illustrative = CASE
+                        WHEN EXCLUDED.image_url IS NOT NULL
+                         AND (public.articles.image_url IS NULL
+                              OR public.articles.image_origin IS NULL
+                              OR public.articles.image_origin = 'legacy_unknown')
+                        THEN EXCLUDED.image_is_illustrative ELSE public.articles.image_is_illustrative END,
+                    summary = COALESCE(public.articles.summary, EXCLUDED.summary),
+                    author = COALESCE(public.articles.author, EXCLUDED.author),
+                    source_name = COALESCE(public.articles.source_name, EXCLUDED.source_name),
+                    published_at = COALESCE(public.articles.published_at, EXCLUDED.published_at),
+                    category = COALESCE(public.articles.category, EXCLUDED.category)
+                RETURNING id
+                """,
+                (
+                    article["url"],
+                    article["title"],
+                    article["summary"],
+                    article["author"],
+                    article["source_name"],
+                    article["image_url"],
+                    article.get("image_origin"),
+                    article.get("image_source_url"),
+                    article.get("image_attribution"),
+                    bool(article.get("image_is_illustrative", False)),
+                    article["published_at"],
+                    article["category"],
+                ),
+            )
+            stored = cur.fetchone()
+        if not stored:
+            return None
+        register_ingested_article(
+            conn,
+            stored["id"],
+            canonical_url=article["url"],
+            feed_content=article.get("content"),
+            feed_url=article.get("feed_url"),
+        )
+        return stored["id"]
 
 
 async def fetch_rss_feeds(conn) -> int:
@@ -303,6 +475,10 @@ async def fetch_rss_feeds(conn) -> int:
         print("RSS: No articles fetched from any feed")
         return 0
 
+    # The broad source set also includes Google News. Resolve wrappers before
+    # dedup and before attributing later page-origin artifacts.
+    await _resolve_redirect_urls(None, all_articles)
+
     print(f"RSS: Fetched {len(all_articles)} total entries from {len(RSS_FEEDS)} feeds")
 
     # Deduplicate by URL within this batch
@@ -318,33 +494,14 @@ async def fetch_rss_feeds(conn) -> int:
     if source_image_count:
         print(f"RSS: Fetched source images for {source_image_count} articles missing RSS images")
 
-    # Insert into database, skipping duplicates
-    with conn.cursor() as cur:
-        for article in unique_articles:
-            try:
-                cur.execute(
-                    """
-                    INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (url) DO UPDATE SET
-                        image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
-                        summary = COALESCE(public.articles.summary, EXCLUDED.summary)
-                    """,
-                    (
-                        article["url"],
-                        article["title"],
-                        article["summary"],
-                        article["author"],
-                        article["source_name"],
-                        article["image_url"],
-                        article["published_at"],
-                        article["category"],
-                    ),
-                )
-                if cur.rowcount == 1:
-                    new_count += 1
-            except Exception as e:
-                print(f"RSS: Error inserting article '{article['title'][:50]}': {e}")
+    # Insert the article and register its content job in one transaction. Raw
+    # feed text never goes directly into the legacy display-body columns.
+    for article in unique_articles:
+        try:
+            if _upsert_ingested_article(conn, article):
+                new_count += 1
+        except Exception as e:
+            print(f"RSS: Error inserting article '{article['title'][:50]}': {e}")
 
     print(f"RSS: Inserted {new_count} new articles (skipped {len(unique_articles) - new_count} duplicates)")
     return new_count
@@ -430,32 +587,12 @@ async def fetch_topic_feeds(conn) -> int:
         logger.info("Topic RSS: Fetched source images for %d articles", source_image_count)
 
     new_count = 0
-    with conn.cursor() as cur:
-        for article in unique:
-            try:
-                cur.execute(
-                    """
-                    INSERT INTO public.articles (url, title, summary, author, source_name, image_url, published_at, category)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (url) DO UPDATE SET
-                        image_url = COALESCE(public.articles.image_url, EXCLUDED.image_url),
-                        summary = COALESCE(public.articles.summary, EXCLUDED.summary)
-                    """,
-                    (
-                        article["url"],
-                        article["title"],
-                        article["summary"],
-                        article["author"],
-                        article["source_name"],
-                        article["image_url"],
-                        article["published_at"],
-                        article["category"],
-                    ),
-                )
-                if cur.rowcount == 1:
-                    new_count += 1
-            except Exception as e:
-                logger.warning("Topic RSS: Error inserting '%s': %s", article["title"][:50], e)
+    for article in unique:
+        try:
+            if _upsert_ingested_article(conn, article):
+                new_count += 1
+        except Exception as e:
+            logger.warning("Topic RSS: Error inserting '%s': %s", article["title"][:50], e)
 
     logger.info("Topic RSS: Fetched %d entries for %d topics, inserted %d new", len(unique), len(topics), new_count)
     return new_count

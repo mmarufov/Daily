@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "8607a38db4a73c7904e4605ad7ada55a9d5847f8808c7783370ec3668196bdb2",
+  "preview": "READER PROFILE:\nREADER: User works in the solar industry and values climate-related news.\nDEPTH: balanced\n\nWANTS:\n  [PRIMARY] Leylah Fernandez  (entity)\n  [PRIMARY] Bianca Andreescu  (entity)\n  [PRIMA"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 50,\n      \"keep\": true,\n      \"score\": 0.9,\n      \"matched\": \"climate\",\n      \"kind\": \"direct\",\n      \"why\": \"Discusses climate change and its impacts.\"\n    },\n    {\n      \"id\": 51,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Partisan politics, not climate-focused.\"\n    },\n    {\n      \"id\": 52,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"climate\",\n      \"kind\": \"direct\",\n      \"why\": \"Explores historical climate crises.\"\n    },\n    {\n      \"id\": 53,\n      \"keep\": true,\n      \"score\": 0.85,\n      \"matched\": \"climate\",\n      \"kind\": \"direct\",\n      \"why\": \"Focuses on urban trees and climate resilience.\"\n    },\n    {\n      \"id\": 54,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 55,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 56,\n      \"keep\": true,\n      \"score\": 0.75,\n      \"matched\": \"clean energy\",\n      \"kind\": \"direct\",\n      \"why\": \"Discusses climate-tech and waste management.\"\n    },\n    {\n      \"id\": 57,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 58,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"clean energy\",\n      \"kind\": \"direct\",\n      \"why\": \"Covers battery production and electric vehicles.\"\n    },\n    {\n      \"id\": 59,\n      \"keep\": true,\n      \"score\": 0.65,\n      \"matched\": \"clean energy\",\n      \"kind\": \"contextual\",\n      \"why\": \"Discusses energy hub potential in Singapore.\"\n    },\n    {\n      \"id\": 60,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 61,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Partisan politics, not climate-focused.\"\n    },\n    {\n      \"id\": 62,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"environmental impact\",\n      \"kind\": \"direct\",\n      \"why\": \"Discusses environmental ethics in AI.\"\n    },\n    {\n      \"id\": 63,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Partisan politics, not climate-focused.\"\n    },\n    {\n      \"id\": 64,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 65,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 66,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 67,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 68,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Partisan politics, not climate-focused.\"\n    },\n    {\n      \"id\": 69,\n      \"keep\": true,\n      \"score\": 0.75,\n      \"matched\": \"environmental impact\",\n      \"kind\": \"direct\",\n      \"why\": \"Focuses on environmental standards for datacenters.\"\n    },\n    {\n      \"id\": 70,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"clean energy\",\n      \"kind\": \"contextual\",\n      \"why\": \"Discusses water resilience and sustainability.\"\n    },\n    {\n      \"id\": 71,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not related to reader's interests.\"\n    },\n    {\n      \"id\": 72,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"environmental impact\",\n      \"kind\": \"direct\",\n      \"why\": \"Discusses toxic chemicals and public health.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1771,
+  "completion_tokens": 1222
+ }
+}

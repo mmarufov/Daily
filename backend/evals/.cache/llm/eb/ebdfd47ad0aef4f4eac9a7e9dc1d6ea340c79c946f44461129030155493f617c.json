@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "aca9c3dcc4ad88fd9858760223a72b20ea1a6e63c649810e4217bdf77fb07db9",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01216\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major US-Venezuela oil deal; direct impact on global oil markets and energy security.\"\n    },\n    {\n      \"id\": \"a01217\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Contextual followup on US-Venezuela oil; relevant but less urgent than the main announcement.\"\n    },\n    {\n      \"id\": \"a01233\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Directly about Iran, Strait of Hormuz; major escalation affecting energy security.\"\n    },\n    {\n      \"id\": \"a01250\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\", \"followup\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Live update on Iran/Strait of Hormuz conflict; critical for energy security analysis.\"\n    },\n    {\n      \"id\": \"a01256\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Geopolitical development; relevant background but not directly impacting energy security.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1393,
+  "completion_tokens": 327
+ }
+}

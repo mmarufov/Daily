@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ef68fded330189e88425cae37313a8920615b5a2f7d376a9f0bcdfc6ee3325f9",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00920\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Not related to tennis, horse racing, climate, or solar; no reader interests.\"\n    },\n    {\n      \"id\": \"a00921\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"promo\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Focuses on sports betting, which is explicitly excluded by the reader.\"\n    },\n    {\n      \"id\": \"a00925\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"background_routine\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"NHL draft is not a reader interest; no connection to tennis, horse racing, or climate.\"\n    },\n    {\n      \"id\": \"a00942\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"background_routine\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Buffalo Sabres/NHL goalie news is not relevant to reader's sports or climate interests.\"\n    },\n    {\n      \"id\": \"a00943\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\", \"background_routine\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Montreal Canadiens prospect update is not relevant to reader's stated interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1979,
+  "completion_tokens": 326
+ }
+}

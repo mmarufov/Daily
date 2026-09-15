@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e9c75bed70822eca50703785896c7b8fff574f6ee732a9628e189b2ca952ce87",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01144\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"VMware hardware memory tiering is relevant but not primary AI or model release news.\"}, {\"id\": \"a01145\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Important analysis on generative AI adoption at work, relevant to AI industry and job impact.\"}, {\"id\": \"a01146\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Nvidia IP licensing impacts AI hardware ecosystem, key for AI industry developments.\"}, {\"id\": \"a01147\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Healthcare cyberattack unrelated to AI or reader's interests.\"}, {\"id\": \"a01148\", \"label\": \"must_see\", \"tags\": [\"direct\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"VMware AI Factory with AMD is relevant AI product and industry news, follow-up on AI infrastructure.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3495,
+  "completion_tokens": 274
+ }
+}

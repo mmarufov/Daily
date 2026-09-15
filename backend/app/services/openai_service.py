@@ -312,10 +312,11 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         if article.get("description"):
             parts.append(f"Description: {article['description']}")
         
-        if article.get("content"):
-            # Truncate content if too long (keep first 2000 chars)
-            content = article['content'][:2000]
-            parts.append(f"Content: {content}")
+        analysis_text = article.get("_analysis_text") or article.get("content")
+        if analysis_text:
+            # Internal ranking context is intentionally distinct from the
+            # publisher-owned body exposed by the reader contract.
+            parts.append(f"Article context: {str(analysis_text)[:2000]}")
         
         if article.get("author"):
             parts.append(f"Author: {article['author']}")
@@ -522,8 +523,15 @@ Optimization goals:
         article_lines = []
         for i, article in enumerate(articles):
             title = article.get("title", "Untitled")
-            summary = (article.get("summary") or article.get("description") or "")[:500]
-            content_snippet = (article.get("content") or "")[:500]
+            summary = (
+                article.get("summary")
+                or article.get("_analysis_summary")
+                or article.get("description")
+                or ""
+            )[:500]
+            content_snippet = (
+                article.get("_analysis_text") or article.get("content") or ""
+            )[:500]
             source = article.get("source") or article.get("source_name") or ""
             parts = [f"{i}. [{source}] {title}", f"   {summary}"]
             if content_snippet:
@@ -1070,7 +1078,9 @@ Optimization goals:
                             "url": img["urls"]["regular"],  # or "small" for faster loading
                             "description": img.get("description"),
                             "alt_description": img.get("alt_description"),
-                            "id": img.get("id")
+                            "id": img.get("id"),
+                            "source_url": (img.get("links") or {}).get("html"),
+                            "attribution": (img.get("user") or {}).get("name") or "Unsplash",
                         })
                     return images
                 else:
@@ -1152,50 +1162,6 @@ Select the best matching image (0-based index) or return -1 if none are relevant
             # Fallback: return first image
             return image_candidates[0] if image_candidates else None
 
-    async def generate_expanded_summary(
-        self, title: str, summary: str, content: str
-    ) -> str | None:
-        """
-        Generate an expanded summary for articles with thin content.
-        Uses whatever text is available (title + summary + short content)
-        to produce a readable 2-3 paragraph expansion.
-        """
-        available_text = f"Title: {title}"
-        if summary:
-            available_text += f"\nSummary: {summary}"
-        if content:
-            available_text += f"\nContent: {content[:1000]}"
-
-        system_prompt = (
-            "You are a news content expander. Given a news article's title, summary, "
-            "and any available content, write a clear, factual 2-3 paragraph article body "
-            "that expands on the available information.\n\n"
-            "Rules:\n"
-            "- Do NOT invent facts, quotes, or statistics not present in the source material.\n"
-            "- Do NOT add opinions or analysis.\n"
-            "- Write in a neutral, journalistic tone.\n"
-            "- Provide context and background that would naturally accompany this story.\n"
-            "- Keep it between 150-400 words.\n"
-            "- Return ONLY the article text, no headers or labels."
-        )
-
-        try:
-            response = await asyncio.to_thread(
-                self.client.chat.completions.create,
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": available_text},
-                ],
-                temperature=0.3,
-                max_tokens=600,
-            )
-            expanded = response.choices[0].message.content.strip()
-            return expanded if len(expanded) > 100 else None
-        except Exception:
-            logger.exception("Failed to generate expanded summary")
-            return None
-
     async def generate_briefing(self, articles: list[dict], user_profile: str) -> str | None:
         """Synthesize a 3-point morning briefing from top articles."""
         articles_text = "\n".join(
@@ -1240,7 +1206,7 @@ Select the best matching image (0-based index) or return -1 if none are relevant
         catalog = "\n\n".join(
             (
                 f"[{index}] {article.get('title', 'Untitled')}\n"
-                f"Source: {article.get('source_name', article.get('source', 'Daily'))}\n"
+                f"Source: {article.get('source_name') or article.get('source') or 'Unknown source'}\n"
                 f"Summary: {(article.get('summary') or '')[:260]}"
             )
             for index, article in enumerate(selected_articles[:8])
@@ -1359,7 +1325,7 @@ Select the best matching image (0-based index) or return -1 if none are relevant
         catalog = "\n\n".join(
             (
                 f"[{index}] {article.get('title', 'Untitled')}\n"
-                f"Source: {article.get('source_name', article.get('source', 'Daily'))}\n"
+                f"Source: {article.get('source_name') or article.get('source') or 'Unknown source'}\n"
                 f"Summary: {(article.get('summary') or '')[:300]}\n"
                 f"Content: {(article.get('content') or '')[:500]}"
             )
@@ -1444,7 +1410,7 @@ Select the best matching image (0-based index) or return -1 if none are relevant
         catalog = "\n\n".join(
             (
                 f"[{index}] {article.get('title', 'Untitled')}\n"
-                f"Source: {article.get('source_name', article.get('source', 'Daily'))}\n"
+                f"Source: {article.get('source_name') or article.get('source') or 'Unknown source'}\n"
                 f"Published: {article.get('published_at') or 'unknown'}\n"
                 f"Summary: {(article.get('summary') or '')[:300]}\n"
                 f"Content: {(article.get('content') or '')[:500]}"
@@ -1526,7 +1492,7 @@ Select the best matching image (0-based index) or return -1 if none are relevant
         catalog = "\n\n".join(
             (
                 f"[{index}] {article.get('title', 'Untitled')}\n"
-                f"Source: {article.get('source_name', article.get('source', 'Daily'))}\n"
+                f"Source: {article.get('source_name') or article.get('source') or 'Unknown source'}\n"
                 f"Summary: {(article.get('summary') or '')[:240]}\n"
                 f"Content: {(article.get('content') or '')[:450]}"
             )

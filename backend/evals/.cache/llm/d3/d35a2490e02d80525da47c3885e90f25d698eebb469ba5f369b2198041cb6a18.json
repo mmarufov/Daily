@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "67221b8642d7dfc11c9d05004a2aa63b46e0d6326101e14ed22242b90c00d820",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00057\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US Social Security advice is irrelevant to Berlin-based energy analyst.\"\n    },\n    {\n      \"id\": \"a00062\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Directly about oil prices and Hormuz; major event for energy security.\"\n    },\n    {\n      \"id\": \"a00142\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant background on Iran conflict's impact on trade, but not urgent.\"\n    },\n    {\n      \"id\": \"a00174\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Thai banking news is not relevant to energy or European context.\"\n    },\n    {\n      \"id\": \"a00180\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Direct escalation in Iran/Hormuz; critical for energy security analysis.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1155,
+  "completion_tokens": 302
+ }
+}

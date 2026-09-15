@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "7b48a86db4c66be8b84119e6c987f2494b02f80b6aee3bba150658d5d759a891",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00984\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Article about Minnesota Vikings NFL roster, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00985\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Denver Broncos preseason game, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00986\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Minnesota Vikings preseason game recap, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00987\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Denver Broncos vs Vikings preseason game details, no NJ or Devils/Giants/NJ Transit relevance.\"}, {\"id\": \"a00988\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cincinnati Bengals roster issues, no NJ or Devils/Giants/NJ Transit relevance.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3978,
+  "completion_tokens": 272
+ }
+}

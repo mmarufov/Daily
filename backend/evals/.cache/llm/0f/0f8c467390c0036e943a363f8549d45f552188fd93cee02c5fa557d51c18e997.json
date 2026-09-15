@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2cc99d95d65df240897aeea897ce4d7b17c79acc6ffa07fa968cef20cc4c63a9",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01138\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Deep dive into AI infra and cost control; relevant but not urgent or region-specific.\"\n    },\n    {\n      \"id\": \"a01140\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI engineering\", \"cybersecurity\", \"background_routine\"],\n      \"confidence\": 0.85,\n      \"rationale\": \"Technical incident in AI/cybersecurity; interesting for engineering, but not must_see or region-specific.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1874,
+  "completion_tokens": 153
+ }
+}

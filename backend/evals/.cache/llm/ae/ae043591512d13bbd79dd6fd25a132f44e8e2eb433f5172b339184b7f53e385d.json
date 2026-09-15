@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6c334964ae668c345334706af4bf0b66cdd16c168e0780f76a574562e7b5b1ae",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00638\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\", \"economic policies\"], \"confidence\": 0.8, \"rationale\": \"Relevant geopolitical and economic sanctions context but not directly about energy security.\"}, {\"id\": \"a00639\", \"label\": \"fine\", \"tags\": [\"geopolitical developments\"], \"confidence\": 0.8, \"rationale\": \"Important geopolitical development but indirect impact on energy security.\"}, {\"id\": \"a00669\", \"label\": \"fine\", \"tags\": [\"energy\", \"energy markets\"], \"confidence\": 0.7, \"rationale\": \"Potential new energy source relevant but early-stage research, not urgent.\"}, {\"id\": \"a00672\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Ancient Egyptian archaeology unrelated to energy or economics.\"}, {\"id\": \"a00676\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Mars geology unrelated to energy markets or geopolitical developments.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2339,
+  "completion_tokens": 246
+ }
+}

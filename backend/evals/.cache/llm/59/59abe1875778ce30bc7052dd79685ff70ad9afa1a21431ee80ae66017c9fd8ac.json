@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "89dffb6f7c1ab60659c7fd55ca60986ccb664af8cad3914c58422ecf30589692",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses the US-Canada trade war, which does not intersect with the user's interests in Central Asia or Russia.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is focused on Manchester United's performance, which is unrelated to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about personal finance and investment decisions, not relevant to the user's trade and economic interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a political figure's comments on immigration, which does not relate to the user's focus on Central Asian economies or trade.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses Turkey's central bank and inflation, which is not directly relevant to the user's interests in Central Asia or Russia.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a film and its cast, which is outside the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article recounts a historical college football trip, which is unrelated to the user's business or economic interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses wildlife issues in New York, which does not intersect with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article focuses on tennis predictions, which is not relevant to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a music festival, which does not align with the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses NASA and space missions, which is unrelated to the user's focus on trade and economics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses LNG prices in Europe, which may be tangentially related but does not focus on Central Asia or Russia.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses Apple products, which is not relevant to the user's business interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article is about an NFL trade, which does not intersect with the user's interests.\"},{\"relevant\":true,\"score\":0.7,\"reason\":\"The article discusses the Taliban's challenges in provinces bordering Central Asia, which is relevant to the user's interest in Central Asian politics.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a TV series, which is outside the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article covers an NFL player's return from retirement, which is unrelated to the user's business.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a baseball game, which does not relate to the user's interests.\"},{\"relevant\":false,\"score\":0.0,\"reason\":\"The article discusses a legal dispute in college sports, which is not relevant to the user's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2371,
+  "completion_tokens": 645
+ }
+}

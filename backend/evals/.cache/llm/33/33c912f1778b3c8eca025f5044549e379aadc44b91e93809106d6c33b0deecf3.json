@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1f1d656cd407e3add10bcb543fce021ae26f0bd5a890e1178f3f1ea8e0f91778",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00044\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Relevant world news with consumer impact but not UK or tech/science focused.\"}, {\"id\": \"a00046\", \"label\": \"never\", \"tags\": [\"off_topic\", \"celebrity\"], \"confidence\": 0.95, \"rationale\": \"Celebrity-related and off-topic for reader's interests.\"}, {\"id\": \"a00048\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\"], \"confidence\": 0.7, \"rationale\": \"World news about job market, plausible interest but not primary.\"}, {\"id\": \"a00049\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\", \"business\"], \"confidence\": 0.75, \"rationale\": \"World/business news relevant but not directly impacting reader.\"}, {\"id\": \"a00050\", \"label\": \"must_see\", \"tags\": [\"direct\", \"technology\", \"business\", \"consumer_impact\"], \"confidence\": 0.9, \"rationale\": \"Tech/business article with direct relevance to marketing and consumer impact.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1512,
+  "completion_tokens": 273
+ }
+}

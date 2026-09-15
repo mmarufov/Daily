@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "1656415c951e65a646b3e68bd6e7e7ca4be402600238ed2b0251d7a8550a3058",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00035\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Education and children skills, unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00042\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US Federal Reserve inflation and interest rates, unrelated to Singapore or fintech regulation.\"}, {\"id\": \"a00045\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"US social media teen addiction lawsuit, unrelated to reader's interests or region.\"}, {\"id\": \"a00047\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Bill Gates on AI jobs is relevant to AI engineering but not region-specific or deeply technical.\"}, {\"id\": \"a00050\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"AI adoption lessons for small business relevant but general, not deeply technical or regional.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2036,
+  "completion_tokens": 259
+ }
+}

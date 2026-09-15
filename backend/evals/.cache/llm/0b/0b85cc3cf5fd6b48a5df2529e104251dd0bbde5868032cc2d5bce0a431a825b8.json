@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "afec1ca7a3ec75bceff57a7583879b97a1fbf22565d034d78a0b671f5f47b8dd",
+  "preview": "READER: Priya — Toronto\n\nIn their own words:\nUser is a sports enthusiast with a focus on tennis and horse racing, and is environmentally conscious due to their work in the solar industry.\n\nREADER: Use"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01167\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Costco deals unrelated to reader's interests or work.\"}, {\"id\": \"a01169\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI workplace article is off primary interests but plausible secondary interest.\"}, {\"id\": \"a01170\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Robot vacuum review unrelated to reader's interests.\"}, {\"id\": \"a01172\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"AI cost management story unrelated to reader's interests.\"}, {\"id\": \"a01176\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Smartphone camera tips unrelated to reader's interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1151,
+  "completion_tokens": 235
+ }
+}

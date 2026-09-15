@@ -1,0 +1,25 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "messages_sha256": "79ae904c22734c5ba62c058b09481808e92b0ee326f1d65430429c7e1105eeba",
+  "preview": "Transcript:\nAssistant: Hi! Tell me what kind of news you want to see.\nUser: just show me the news\nAssistant: Any topics, places or people you care about?\nUser: no, whatever is important\n\nReturn the JS"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"ai_profile\": \"User prefers a general news feed without specific interests or preferences.\",\n  \"interests\": {\n    \"topics\": [],\n    \"people\": [],\n    \"locations\": [],\n    \"industries\": [],\n    \"excluded_topics\": [],\n    \"notes\": \"User is open to any important news.\"\n  },\n  \"user_profile_v2\": {\n    \"stable_interests\": [],\n    \"current_interests\": [],\n    \"people\": [],\n    \"locations\": [],\n    \"industries\": [],\n    \"excluded_topics\": [],\n    \"utility_priorities\": [],\n    \"content_depth\": \"balanced\",\n    \"tone_preferences\": [],\n    \"life_context\": \"User does not specify any particular life context.\",\n    \"source_selection_brief\": {\n      \"priority_topics\": [],\n      \"must_cover_entities\": [],\n      \"must_avoid_topics\": [],\n      \"preferred_source_types\": [],\n      \"coverage_targets\": [],\n      \"specificity_level\": \"broad\"\n    }\n  }\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 388,
+  "completion_tokens": 204
+ }
+}

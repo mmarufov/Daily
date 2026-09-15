@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "5e33130d14660935bb530669253774b8f2bdfd0b8a9dcb0aeb19691c577d6e52",
+  "preview": "READER PROFILE:\nREADER: User is open to any important news.\nDEPTH: balanced\n\nWANTS:\n\nDOES NOT WANT:\n\nCANDIDATES:\n0. [Guardian World] Trump says US will ‘hit Iran hard’ as hostilities resume – as it ha"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 0,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"international relations\",\n      \"kind\": \"direct\",\n      \"why\": \"Involves significant US-Iran tensions.\"\n    },\n    {\n      \"id\": 1,\n      \"keep\": true,\n      \"score\": 0.9,\n      \"matched\": \"international relations\",\n      \"kind\": \"direct\",\n      \"why\": \"Critical update on the Ukraine conflict.\"\n    },\n    {\n      \"id\": 2,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development.\"\n    },\n    {\n      \"id\": 3,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Routine coverage of AI developments.\"\n    },\n    {\n      \"id\": 4,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development.\"\n    },\n    {\n      \"id\": 5,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development.\"\n    },\n    {\n      \"id\": 6,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development.\"\n    },\n    {\n      \"id\": 7,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not relevant to important news.\"\n    },\n    {\n      \"id\": 8,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development.\"\n    },\n    {\n      \"id\": 9,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Not a major development.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1193,
+  "completion_tokens": 513
+ }
+}

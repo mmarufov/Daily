@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5ee3be0c9157863ace9b92f52955945ba10fe340a21594dc82b1400af7916a96",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01028\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI\", \"company use of AI\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Interesting AI/VC crossover, but not a primary company or major industry event.\"\n    },\n    {\n      \"id\": \"a01035\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"model releases\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Direct insight into Anthropic's AI progress; squarely about a primary interest.\"\n    },\n    {\n      \"id\": \"a01037\",\n      \"label\": \"fine\",\n      \"tags\": [\"AI industry\", \"company use of AI\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Relevant industry trend, but not about a primary company or a major event.\"\n    },\n    {\n      \"id\": \"a01041\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Not related to AI, industry, or Boston; off-topic.\"\n    },\n    {\n      \"id\": \"a01074\",\n      \"label\": \"must_see\",\n      \"tags\": [\"Anthropic\", \"AI regulation\", \"need_to_know\", \"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major regulatory/legal development for a primary company; high industry impact.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1124,
+  "completion_tokens": 342
+ }
+}

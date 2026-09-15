@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a8fec09a3631ce1c8766cb4452405e0df6ff9c36f01df8657ec7fd5a170f02b7",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00800\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"fintech\", \"need_to_know\"], \"confidence\": 0.8, \"rationale\": \"Singapore fintech company under investigation; relevant but no deep technical detail.\"}, {\"id\": \"a00802\", \"label\": \"fine\", \"tags\": [\"Singapore\", \"Southeast Asia\", \"work\"], \"confidence\": 0.7, \"rationale\": \"New international dispute center in Singapore; relevant to regional business environment.\"}, {\"id\": \"a00804\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Stock market movement is routine finance news, no direct relevance to reader's tech interests.\"}, {\"id\": \"a00805\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Electronics supply chain story lacks relevance to reader's tech and fintech focus.\"}, {\"id\": \"a00806\", \"label\": \"must_see\", \"tags\": [\"Singapore\", \"cloud infrastructure\", \"AI engineering\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Data centers impact energy supply and AI adoption in Singapore; affects work and infrastructure.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1119,
+  "completion_tokens": 285
+ }
+}

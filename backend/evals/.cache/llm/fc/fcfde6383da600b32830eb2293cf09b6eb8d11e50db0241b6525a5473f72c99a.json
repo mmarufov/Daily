@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "5bbb307ddd7d9cf4763dde74eb3ac9993570ad76c3eefb6aae3390fa80a60e49",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01140\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to AI token cost trends but not Singapore or fintech specific.\"}, {\"id\": \"a01141\", \"label\": \"must_see\", \"tags\": [\"cloud infrastructure\", \"databases\", \"developer tools\", \"followup\"], \"confidence\": 0.9, \"rationale\": \"Important AWS acquisition impacting cloud data tools, relevant to backend engineering.\"}, {\"id\": \"a01144\", \"label\": \"fine\", \"tags\": [\"cloud infrastructure\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"VMware memory tiering relevant to cloud infrastructure but routine update.\"}, {\"id\": \"a01145\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Broad AI adoption study interesting but US-focused and general.\"}, {\"id\": \"a01146\", \"label\": \"fine\", \"tags\": [\"AI engineering\", \"cloud infrastructure\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Nvidia IP licensing relevant to AI hardware but not Singapore or fintech focused.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3655,
+  "completion_tokens": 282
+ }
+}

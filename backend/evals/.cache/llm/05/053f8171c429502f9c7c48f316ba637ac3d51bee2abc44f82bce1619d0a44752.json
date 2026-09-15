@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ce4b6ab2836fa5c8b4cf0c0eb5a970082af982dbb1288e3bcab89e7e7e5f52dc",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00051\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Business news on fast-fashion IPO relevant but not primary interest or urgent.\"}, {\"id\": \"a00052\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"major_event\"], \"confidence\": 0.9, \"rationale\": \"EU gas shortage impacts UK consumers and energy prices, important consumer impact.\"}, {\"id\": \"a00053\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Australian inflation affects global markets, relevant but secondary and missable.\"}, {\"id\": \"a00054\", \"label\": \"must_see\", \"tags\": [\"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"London robotaxi delay affects local tech and transport landscape, relevant to consumer and tech interests.\"}, {\"id\": \"a00055\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"AI server demand and earnings raise important tech and business update.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1370,
+  "completion_tokens": 265
+ }
+}

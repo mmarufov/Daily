@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f524ed3fa65efb5f700e6e6e71dfa284016e5932163dba660290feed5c211ec4",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00564\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Technical AI product topic, relevant but not primary entity or major update.\"}, {\"id\": \"a00565\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.95, \"rationale\": \"Major update on model releases including GPT-5.6, key for AI product manager.\"}, {\"id\": \"a00567\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"AI product development relevant but not about primary entities or regulation.\"}, {\"id\": \"a00569\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Technical AI architecture topic, relevant but secondary interest.\"}, {\"id\": \"a00574\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Not related to AI or reader interests, off-topic news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1265,
+  "completion_tokens": 249
+ }
+}

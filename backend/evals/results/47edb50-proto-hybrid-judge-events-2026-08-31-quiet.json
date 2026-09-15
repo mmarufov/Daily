@@ -1,0 +1,2165 @@
+{
+ "git_sha": "47edb50",
+ "runner": "proto-hybrid-judge-events",
+ "snapshot": "2026-08-31-quiet",
+ "k": 12,
+ "created_at": "2026-09-02T07:14:37+00:00",
+ "summary": {
+  "recall_at_k_mean": 0.4458,
+  "recall_at_k_min": 0.0,
+  "raw_recall_at_k_mean": 0.4196,
+  "raw_recall_at_k_min": 0.0,
+  "recall_at_retrieval_mean": 0.757,
+  "recall_at_retrieval_min": 0.0,
+  "need_to_know_recall_mean": 0.5451,
+  "need_to_know_recall_min": 0.2,
+  "followup_recall_mean": 0.0833,
+  "followup_recall_min": 0.0,
+  "never_rate_mean": 0.0833,
+  "never_rate_min": 0.0,
+  "event_delivery_mean": null,
+  "event_delivery_min": null,
+  "major_delivery_mean": null,
+  "major_delivery_min": null,
+  "false_major_rate_mean": 0.1791,
+  "false_major_rate_min": 0.0833,
+  "judge_precision_mean": 0.8739,
+  "judge_precision_min": 0.625,
+  "judge_recall_mean": 0.7463,
+  "judge_recall_min": 0.4167,
+  "needle_recall_mean": 0.75,
+  "needle_recall_min": 0.0,
+  "lookalike_rate_mean": 0.1,
+  "lookalike_rate_min": 0.0,
+  "feed_size_k_mean": 10.7,
+  "feed_size_k_min": 3,
+  "distinct_sources_mean": 6.7,
+  "distinct_sources_min": 2,
+  "latency_s_mean": 0.02,
+  "latency_s_min": 0.01,
+  "calls_total": 169,
+  "calls_max_per_persona": 27,
+  "cost_usd_total": 0.03407,
+  "cache_misses_total": 0,
+  "loss_by_stage": {
+   "assemble": 20,
+   "recall": 17,
+   "judge": 18
+  },
+  "personas": 10
+ },
+ "per_persona": {
+  "aisha": {
+   "n_must_see": 8,
+   "n_need_to_know": 8,
+   "n_labelled": 332,
+   "recall_at_k": 0.75,
+   "raw_recall_at_k": 0.75,
+   "recall_at_retrieval": 1.0,
+   "need_to_know_recall": 0.75,
+   "followup_recall": null,
+   "never_rate": 0.25,
+   "never_in_feed": [
+    {
+     "id": "a00142",
+     "title": "News Digest: Foreign Media on Kazakhstan’s Global Ties, Economic Outlook, Abai’s",
+     "rank": 3
+    },
+    {
+     "id": "a00499",
+     "title": "Pennsylvania measles deaths prompt concerns for NJ health leaders",
+     "rank": 6
+    },
+    {
+     "id": "a00821",
+     "title": "A*STAR, SingHealth spin-off Bioactivx lands US$3M for next-gen wound care",
+     "rank": 12
+    }
+   ],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 7,
+   "loss_by_stage": {
+    "assemble": 2
+   },
+   "losses": [
+    {
+     "id": "a00776",
+     "title": "NDR 2026: Bigger childcare subsidies can drive consolidation in pre-school marke",
+     "dropped_at": "assemble",
+     "reason": "Discusses childcare subsidies impacting parents.",
+     "score": 0.7865302638040189
+    },
+    {
+     "id": "a00782",
+     "title": "NDR 2026: Childcare leave salary caps still leave gaps for higher-income parents",
+     "dropped_at": "assemble",
+     "reason": "Covers childcare leave salary caps affecting parents.",
+     "score": 0.7281741235322157
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 0.7273,
+   "judge_recall": 1.0,
+   "judge_n": 63,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 19,
+   "cost_usd": 0.0042,
+   "latency_s": 0.02,
+   "cache_hits": 19,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1142,
+    "judge": 12,
+    "triage": 72,
+    "feed": 12
+   },
+   "drop_counts": {
+    "recall": 1142,
+    "assemble": 12,
+    "judge": 72
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a00704",
+     "rank": 2,
+     "title": "More than 300 cooling centres to open if S’pore faces heatwave: New heat office",
+     "source": "Straits Times",
+     "label": "must_see",
+     "score": 0.8226306191201284
+    },
+    {
+     "id": "a00142",
+     "rank": 3,
+     "title": "News Digest: Foreign Media on Kazakhstan’s Global Ties, Economic Outlook, Abai’s",
+     "source": "Astana Times",
+     "label": "never",
+     "score": 0.6620477036457647
+    },
+    {
+     "id": "n-aisha-02",
+     "rank": 4,
+     "title": "Baby Bonus cash gift raised to $11,000 and paternity leave doubled from January",
+     "source": "Straits Times",
+     "label": "must_see",
+     "score": 0.8695135557675853
+    },
+    {
+     "id": "a00775",
+     "rank": 5,
+     "title": "NDR 2026: New workplace policies for parents add options to labour market",
+     "source": "Business Times SG",
+     "label": "must_see",
+     "score": 0.8183390788149336
+    },
+    {
+     "id": "a00499",
+     "rank": 6,
+     "title": "Pennsylvania measles deaths prompt concerns for NJ health leaders",
+     "source": "NJ Monitor",
+     "label": "never",
+     "score": 0.6928542133766248
+    },
+    {
+     "id": "a00786",
+     "rank": 7,
+     "title": "Core inflation climbs to 2% in July; electricity prices rise sharply",
+     "source": "Business Times SG",
+     "label": "must_see",
+     "score": 0.6133333333333333
+    },
+    {
+     "id": "n-aisha-01",
+     "rank": 8,
+     "title": "NEA issues haze advisory as PSI enters unhealthy range in eastern Singapore",
+     "source": "CNA Singapore",
+     "label": "must_see",
+     "score": 0.8708967057856464
+    },
+    {
+     "id": "a00698",
+     "rank": 9,
+     "title": "New private not-for-profit hospital to be located in the east due to high occupa",
+     "source": "Straits Times",
+     "label": "must_see",
+     "score": 0.8141974819840154
+    },
+    {
+     "id": "a00730",
+     "rank": 10,
+     "title": "New initiative launched to provide timely support for caregivers of persons with",
+     "source": "Straits Times",
+     "label": "fine",
+     "score": 0.7535990204759946
+    },
+    {
+     "id": "a00724",
+     "rank": 11,
+     "title": "Workload, parents’ expectations cited as top factors affecting pre-school teache",
+     "source": "Straits Times",
+     "label": "fine",
+     "score": 0.8149205822502525
+    },
+    {
+     "id": "a00821",
+     "rank": 12,
+     "title": "A*STAR, SingHealth spin-off Bioactivx lands US$3M for next-gen wound care",
+     "source": "e27",
+     "label": "never",
+     "score": 0.6548482808276989
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 96,
+    "triaged": 96,
+    "k": 12
+   }
+  },
+  "cold": {
+   "n_must_see": 1,
+   "n_need_to_know": 0,
+   "n_labelled": 368,
+   "recall_at_k": 0.0,
+   "raw_recall_at_k": 0.0,
+   "recall_at_retrieval": 0.0,
+   "need_to_know_recall": null,
+   "followup_recall": null,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 3,
+   "feed_size_k": 3,
+   "feed_size_flag": true,
+   "unlabelled_in_feed": 3,
+   "distinct_sources": 2,
+   "loss_by_stage": {
+    "recall": 1
+   },
+   "losses": [
+    {
+     "id": "n-cold-01",
+     "title": "Magnitude 7.8 earthquake strikes off Japan, tsunami warning issued for Pacific c",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 1.0,
+   "judge_precision": null,
+   "judge_recall": null,
+   "judge_n": 0,
+   "needle_recall": 0.0,
+   "lookalike_rate": 0.0,
+   "calls": 1,
+   "cost_usd": 0.00038,
+   "latency_s": 0.01,
+   "cache_hits": 1,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1229,
+    "feed": 3,
+    "triage": 4
+   },
+   "drop_counts": {
+    "recall": 1229,
+    "judge": 4
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a01230",
+     "rank": 2,
+     "title": "At least eight dead and 18 missing after ferry capsizes off northern Cyprus",
+     "source": "Guardian World",
+     "label": null,
+     "score": 0.8133333333333335
+    },
+    {
+     "id": "a00048",
+     "rank": 3,
+     "title": "Canada announces retaliatory tariffs on wide range of US goods",
+     "source": "Guardian Business",
+     "label": null,
+     "score": 0.6733333333333333
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 7,
+    "triaged": 7,
+    "k": 12
+   }
+  },
+  "dilshod": {
+   "n_must_see": 3,
+   "n_need_to_know": 2,
+   "n_labelled": 343,
+   "recall_at_k": 1.0,
+   "raw_recall_at_k": 1.0,
+   "recall_at_retrieval": 1.0,
+   "need_to_know_recall": 1.0,
+   "followup_recall": null,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 8,
+   "feed_size_k": 8,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 5,
+   "loss_by_stage": {},
+   "losses": [],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.125,
+   "judge_precision": 1.0,
+   "judge_recall": 1.0,
+   "judge_n": 32,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 21,
+   "cost_usd": 0.00279,
+   "latency_s": 0.02,
+   "cache_hits": 21,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1175,
+    "triage": 55,
+    "feed": 8
+   },
+   "drop_counts": {
+    "recall": 1175,
+    "judge": 55
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "n-dil-02",
+     "rank": 2,
+     "title": "Mirziyoyev signs decree abolishing exit visa-style registration and easing som c",
+     "source": "Eurasianet",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "n-dil-01",
+     "rank": 3,
+     "title": "Shomurodov scores twice as Uzbekistan beat Iran 2-1 in World Cup qualifier",
+     "source": "Al Jazeera",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a00081",
+     "rank": 4,
+     "title": "Uzbekistan’s Presidential Daughter Just Got a Law of Her Own",
+     "source": "The Diplomat",
+     "label": "must_see",
+     "score": 0.9545101910810639
+    },
+    {
+     "id": "a00156",
+     "rank": 5,
+     "title": "Uzbekistan Performs First Simultaneous Liver-Kidney Transplant",
+     "source": "Times of Cent.Asia",
+     "label": "fine",
+     "score": 0.8296332583783516
+    },
+    {
+     "id": "a00120",
+     "rank": 6,
+     "title": "Can a State Build a Reading Culture? Uzbekistan Is Trying.",
+     "source": "The Diplomat",
+     "label": "fine",
+     "score": 0.7683738607744737
+    },
+    {
+     "id": "a00073",
+     "rank": 7,
+     "title": "Russia eyes Kazakhstan and Uzbekistan as arms purveyors – report",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.7024920428829016
+    },
+    {
+     "id": "a00070",
+     "rank": 8,
+     "title": "US effort to pressure Central Asian states on AI development falling flat",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.6087890356244016
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 63,
+    "triaged": 63,
+    "k": 12
+   }
+  },
+  "farrukh": {
+   "n_must_see": 14,
+   "n_need_to_know": 14,
+   "n_labelled": 330,
+   "recall_at_k": 0.25,
+   "raw_recall_at_k": 0.2143,
+   "recall_at_retrieval": 0.8571,
+   "need_to_know_recall": 0.25,
+   "followup_recall": 0.0,
+   "never_rate": 0.25,
+   "never_in_feed": [
+    {
+     "id": "n-far-92",
+     "title": "Russia sanctions: Premier League club drops sponsor over Moscow links",
+     "rank": 7
+    },
+    {
+     "id": "a00606",
+     "title": "How to prepare your mobile phone for the Russian border: Meduza’s complete survi",
+     "rank": 9
+    },
+    {
+     "id": "a00156",
+     "title": "Uzbekistan Performs First Simultaneous Liver-Kidney Transplant",
+     "rank": 12
+    }
+   ],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 6,
+   "loss_by_stage": {
+    "judge": 7,
+    "recall": 2,
+    "assemble": 2
+   },
+   "losses": [
+    {
+     "id": "a00037",
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "dropped_at": "judge",
+     "reason": "Focus on Iran, not relevant.",
+     "score": 0.0
+    },
+    {
+     "id": "a00075",
+     "title": "Report accuses Azerbaijan, Georgia, Kazakhstan and Uzbekistan of scamming United",
+     "dropped_at": "judge",
+     "reason": "Not relevant to reader's interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00109",
+     "title": "The Iran War Is Disrupting Trade Connectivity Across Eurasia",
+     "dropped_at": "judge",
+     "reason": "Not relevant to import-export interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00141",
+     "title": "China Consolidates Position as Kazakhstan’s Top Trading Partner",
+     "dropped_at": "judge",
+     "reason": "Focuses on China, not directly relevant.",
+     "score": 0.0
+    },
+    {
+     "id": "a00164",
+     "title": "Taliban Responds to CSTO Plans to Strengthen Tajik-Afghan Border",
+     "dropped_at": "judge",
+     "reason": "Not relevant to reader's interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00581",
+     "title": "Russians Are Rushing for Cash. Should the Kremlin Be Worried?",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00595",
+     "title": "Deadly Ukrainian Strikes in Southern Russia Force Oil Refinery to Shut Down",
+     "dropped_at": "judge",
+     "reason": "Not relevant to primary interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00600",
+     "title": "Kremlin Says It’s Working to Minimize Impact of Ukrainian Attacks on Russian Gra",
+     "dropped_at": "assemble",
+     "reason": "Relevant to Russian grain exports amid sanctions.",
+     "score": 0.7402887284135211
+    },
+    {
+     "id": "a00612",
+     "title": "Aluminum producer Rusal promises to ‘minimize the socioeconomic consequences’ of",
+     "dropped_at": "judge",
+     "reason": "Not relevant to primary interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00629",
+     "title": "Russia’s ‘digital ruble’ goes live on September 1. Here’s what we know.",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01318",
+     "title": "Grain exports stall as Ukraine steps up attacks on Russia's Black Sea ports",
+     "dropped_at": "assemble",
+     "reason": "Disruptions in grain exports affect trade routes.",
+     "score": 0.6567007939398216
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 0.625,
+   "judge_recall": 0.4167,
+   "judge_n": 52,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.5,
+   "calls": 27,
+   "cost_usd": 0.00534,
+   "latency_s": 0.02,
+   "cache_hits": 27,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1115,
+    "triage": 106,
+    "feed": 12,
+    "judge": 5
+   },
+   "drop_counts": {
+    "recall": 1115,
+    "judge": 106,
+    "assemble": 5
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "n-far-01",
+     "rank": 2,
+     "title": "Kazakhstan reintroduces customs duties on Chinese trucks transiting to Central A",
+     "source": "Times of Cent.Asia",
+     "label": "must_see",
+     "score": 0.9200000000000002
+    },
+    {
+     "id": "a00071",
+     "rank": 3,
+     "title": "Kazakhstan’s new parliament opens window for fresh trade possibilities",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.76
+    },
+    {
+     "id": "a00067",
+     "rank": 4,
+     "title": "Uzbekistan’s next competitive advantage is talent",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.5590843481402348
+    },
+    {
+     "id": "n-far-02",
+     "rank": 5,
+     "title": "EU adds three Tajik freight firms to Russia sanctions circumvention list",
+     "source": "Eurasianet",
+     "label": "must_see",
+     "score": 0.9200000000000002
+    },
+    {
+     "id": "a00149",
+     "rank": 6,
+     "title": "Tokayev Frames Modernization as Kazakhstan’s Answer to a Turbulent World",
+     "source": "Times of Cent.Asia",
+     "label": "fine",
+     "score": 0.8400000000000002
+    },
+    {
+     "id": "n-far-92",
+     "rank": 7,
+     "title": "Russia sanctions: Premier League club drops sponsor over Moscow links",
+     "source": "Guardian Business",
+     "label": "never",
+     "score": 0.7692859119417116
+    },
+    {
+     "id": "a00151",
+     "rank": 8,
+     "title": "Middle Corridor Must Cut Delays, TITR Chief Tells TCA",
+     "source": "Times of Cent.Asia",
+     "label": "must_see",
+     "score": 0.717530813162915
+    },
+    {
+     "id": "a00606",
+     "rank": 9,
+     "title": "How to prepare your mobile phone for the Russian border: Meduza’s complete survi",
+     "source": "Meduza EN",
+     "label": "never",
+     "score": 0.6976630154100497
+    },
+    {
+     "id": "a00165",
+     "rank": 10,
+     "title": "Somon Air launched direct flights from Dushanbe to Minsk",
+     "source": "Asia-Plus TJ",
+     "label": "fine",
+     "score": 0.806885232340975
+    },
+    {
+     "id": "a00074",
+     "rank": 11,
+     "title": "Kazakhstan: Pro-presidential party dominates parliamentary election",
+     "source": "Eurasianet",
+     "label": "fine",
+     "score": 0.6388110771645661
+    },
+    {
+     "id": "a00156",
+     "rank": 12,
+     "title": "Uzbekistan Performs First Simultaneous Liver-Kidney Transplant",
+     "source": "Times of Cent.Asia",
+     "label": "never",
+     "score": 0.5583639794951617
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 123,
+    "triaged": 123,
+    "k": 12
+   }
+  },
+  "lena": {
+   "n_must_see": 9,
+   "n_need_to_know": 9,
+   "n_labelled": 301,
+   "recall_at_k": 0.5556,
+   "raw_recall_at_k": 0.5556,
+   "recall_at_retrieval": 1.0,
+   "need_to_know_recall": 0.5556,
+   "followup_recall": 0.5,
+   "never_rate": 0.0833,
+   "never_in_feed": [
+    {
+     "id": "a01231",
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "rank": 1
+    }
+   ],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 7,
+   "loss_by_stage": {
+    "assemble": 3,
+    "judge": 1
+   },
+   "losses": [
+    {
+     "id": "a00020",
+     "title": "Iran trade falls as Supreme Leader Khamenei urges less reliance on the U.S. doll",
+     "dropped_at": "assemble",
+     "reason": "Covers Iran's economic situation and sanctions.",
+     "score": 0.7318657303668843
+    },
+    {
+     "id": "a00033",
+     "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+     "dropped_at": "assemble",
+     "reason": "Discusses Iran's internal issues affecting stability.",
+     "score": 0.6486157952123923
+    },
+    {
+     "id": "a00037",
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "dropped_at": "judge",
+     "reason": "Not relevant to energy security or economic stability.",
+     "score": 0.0
+    },
+    {
+     "id": "a00171",
+     "title": "LNG prices in Europe skyrocket to highest level since 2023",
+     "dropped_at": "assemble",
+     "reason": "Discusses skyrocketing LNG prices affecting markets.",
+     "score": 0.7450750159014836
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 0.8889,
+   "judge_recall": 0.8889,
+   "judge_n": 33,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 19,
+   "cost_usd": 0.0039,
+   "latency_s": 0.02,
+   "cache_hits": 19,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1150,
+    "triage": 65,
+    "judge": 11,
+    "feed": 12
+   },
+   "drop_counts": {
+    "recall": 1150,
+    "judge": 65,
+    "assemble": 11
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "n-lena-01",
+     "rank": 2,
+     "title": "Iran reopens Strait of Hormuz to tankers under UN-brokered 72-hour truce; Brent ",
+     "source": "CNBC",
+     "label": "must_see",
+     "score": 0.9200000000000002
+    },
+    {
+     "id": "a00053",
+     "rank": 3,
+     "title": "Fears grow for fourth rate hike after Australia sees higher-than-expected July i",
+     "source": "Guardian Business",
+     "label": "fine",
+     "score": 0.7232276427521924
+    },
+    {
+     "id": "a00109",
+     "rank": 4,
+     "title": "The Iran War Is Disrupting Trade Connectivity Across Eurasia",
+     "source": "The Diplomat",
+     "label": "fine",
+     "score": 0.7575945890908993
+    },
+    {
+     "id": "a01318",
+     "rank": 5,
+     "title": "Grain exports stall as Ukraine steps up attacks on Russia's Black Sea ports",
+     "source": "DW",
+     "label": null,
+     "score": 0.7030511705992157
+    },
+    {
+     "id": "a00621",
+     "rank": 6,
+     "title": "Bloomberg: Ukraine’s drones have pushed Russian oil refining to a 20-year low",
+     "source": "Meduza EN",
+     "label": "must_see",
+     "score": 0.6487730946757062
+    },
+    {
+     "id": "a00052",
+     "rank": 7,
+     "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+     "source": "Guardian Business",
+     "label": "must_see",
+     "score": 0.8612960676221624
+    },
+    {
+     "id": "a01293",
+     "rank": 8,
+     "title": "Serbia keeps EU, Russia in play ahead of key election",
+     "source": "DW",
+     "label": "fine",
+     "score": 0.5508024350191759
+    },
+    {
+     "id": "a00056",
+     "rank": 9,
+     "title": "U.S. stock futures slip as chances of rate hike rise after Warsh’s Jackson Hole ",
+     "source": "MarketWatch",
+     "label": "fine",
+     "score": 0.6280681677715046
+    },
+    {
+     "id": "n-lena-02",
+     "rank": 10,
+     "title": "Germany triggers gas emergency plan early-warning stage as LNG prices spike on H",
+     "source": "DW",
+     "label": "must_see",
+     "score": 0.8400000000000002
+    },
+    {
+     "id": "a00042",
+     "rank": 11,
+     "title": "Fed chair says delivering ‘stable prices’ is central bank’s job as inflation per",
+     "source": "Guardian Business",
+     "label": "fine",
+     "score": 0.7213746919178423
+    },
+    {
+     "id": "a01322",
+     "rank": 12,
+     "title": "Can new US sanctions cripple Iran's shadow economy?",
+     "source": "DW",
+     "label": "must_see",
+     "score": 0.6800873511893333
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 88,
+    "triaged": 88,
+    "k": 12
+   }
+  },
+  "maya": {
+   "n_must_see": 8,
+   "n_need_to_know": 5,
+   "n_labelled": 366,
+   "recall_at_k": 0.125,
+   "raw_recall_at_k": 0.125,
+   "recall_at_retrieval": 0.25,
+   "need_to_know_recall": 0.2,
+   "followup_recall": 0.0,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 9,
+   "loss_by_stage": {
+    "recall": 6,
+    "judge": 1
+   },
+   "losses": [
+    {
+     "id": "a00045",
+     "title": "Meta agrees to major changes to Facebook and Instagram as it settles US trial ov",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00052",
+     "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00640",
+     "title": "IBM quantum computer solves classically intractable problem in 15 minutes",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01008",
+     "title": "Report: Nvidia to acquire AI model repository Hugging Face for $13 billion",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01108",
+     "title": "Industry that built the problem offers to sell you the solution",
+     "dropped_at": "judge",
+     "reason": "Not relevant to stated interests.",
+     "score": 0.0
+    },
+    {
+     "id": "n-maya-01",
+     "title": "Bank of England cuts rates to 3.75% as inflation falls to target",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-maya-02",
+     "title": "Scientists confirm first detection of biosignature gases on exoplanet K2-18b",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 1.0,
+   "judge_recall": 0.5,
+   "judge_n": 13,
+   "needle_recall": 0.0,
+   "lookalike_rate": 0.0,
+   "calls": 12,
+   "cost_usd": 0.00276,
+   "latency_s": 0.02,
+   "cache_hits": 12,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1175,
+    "triage": 38,
+    "feed": 12,
+    "judge": 13
+   },
+   "drop_counts": {
+    "recall": 1175,
+    "judge": 38,
+    "assemble": 13
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a01016",
+     "rank": 2,
+     "title": "China’s robots race ahead",
+     "source": "The Verge",
+     "label": "fine",
+     "score": 0.786739635347965
+    },
+    {
+     "id": "a00875",
+     "rank": 3,
+     "title": "Chance gaze at old Hubble Telescope image leads to discovery that could reveal d",
+     "source": "Space.com",
+     "label": "fine",
+     "score": 0.8193216828781338
+    },
+    {
+     "id": "a00054",
+     "rank": 4,
+     "title": "London rollout of robotaxis delayed amid lack of guidance for firms to follow",
+     "source": "Guardian Business",
+     "label": "fine",
+     "score": 0.7487598391827163
+    },
+    {
+     "id": "a00809",
+     "rank": 5,
+     "title": "What if you segmented customers before you built the product?",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.726989750040449
+    },
+    {
+     "id": "a01088",
+     "rank": 6,
+     "title": "The UK Power Grid Has a Phantom Data Center Problem",
+     "source": "Wired",
+     "label": "must_see",
+     "score": 0.68
+    },
+    {
+     "id": "a00748",
+     "rank": 7,
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "source": "Business Times SG",
+     "label": "fine",
+     "score": 0.5439709264905032
+    },
+    {
+     "id": "a00790",
+     "rank": 8,
+     "title": "The environmental ethics of AI should be a product decision, not a sustainabilit",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.6960315605716201
+    },
+    {
+     "id": "a00050",
+     "rank": 9,
+     "title": "Big business has shown small firms what to do – and what not to do – with AI | G",
+     "source": "Guardian Business",
+     "label": "fine",
+     "score": 0.6979169237988299
+    },
+    {
+     "id": "a00679",
+     "rank": 10,
+     "title": "Scientists may have finally caught “empty” space changing light",
+     "source": "ScienceDaily",
+     "label": "fine",
+     "score": 0.7758636515116628
+    },
+    {
+     "id": "a00030",
+     "rank": 11,
+     "title": "Richard Branson double-booked his own job interview. The candidate stuck in traf",
+     "source": "Fortune",
+     "label": "fine",
+     "score": 0.7133378909600753
+    },
+    {
+     "id": "a00828",
+     "rank": 12,
+     "title": "AI has become how Southeast Asia finds you, but it still isn’t how the region de",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.6933333333333334
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 63,
+    "triaged": 63,
+    "k": 12
+   }
+  },
+  "priya": {
+   "n_must_see": 4,
+   "n_need_to_know": 2,
+   "n_labelled": 328,
+   "recall_at_k": 0.5,
+   "raw_recall_at_k": 0.5,
+   "recall_at_retrieval": 1.0,
+   "need_to_know_recall": 0.5,
+   "followup_recall": null,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 0,
+   "distinct_sources": 9,
+   "loss_by_stage": {
+    "judge": 2
+   },
+   "losses": [
+    {
+     "id": "a00048",
+     "title": "Canada announces retaliatory tariffs on wide range of US goods",
+     "dropped_at": "judge",
+     "reason": "Not related to reader's interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00233",
+     "title": "Where to Watch the 2026 U.S. Open Tennis Tournament Online",
+     "dropped_at": "judge",
+     "reason": "Not related to interests.",
+     "score": 0.0
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 1.0,
+   "judge_recall": 0.5,
+   "judge_n": 35,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 16,
+   "cost_usd": 0.00303,
+   "latency_s": 0.02,
+   "cache_hits": 16,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1168,
+    "triage": 53,
+    "feed": 12,
+    "judge": 5
+   },
+   "drop_counts": {
+    "recall": 1168,
+    "judge": 53,
+    "assemble": 5
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": "fine",
+     "score": 1.0
+    },
+    {
+     "id": "n-priya-01",
+     "rank": 2,
+     "title": "Leylah Fernandez reaches first WTA 1000 final in Toronto after upset of world No",
+     "source": "ESPN",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "n-priya-02",
+     "rank": 3,
+     "title": "Ontario approves 2 GW of new solar under revised procurement, largest in provinc",
+     "source": "CNBC",
+     "label": "must_see",
+     "score": 0.9115866137335085
+    },
+    {
+     "id": "a01312",
+     "rank": 4,
+     "title": "Was the heat of this summer really 'normal?'",
+     "source": "DW",
+     "label": "fine",
+     "score": 0.7955974684431052
+    },
+    {
+     "id": "a00642",
+     "rank": 5,
+     "title": "Australia’s red soil may be hiding a massive clean energy source",
+     "source": "ScienceDaily",
+     "label": "fine",
+     "score": 0.8891751133474931
+    },
+    {
+     "id": "a00790",
+     "rank": 6,
+     "title": "The environmental ethics of AI should be a product decision, not a sustainabilit",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.6266666666666666
+    },
+    {
+     "id": "a01323",
+     "rank": 7,
+     "title": "Trees are vital for cooler cities, but they need help too",
+     "source": "DW",
+     "label": "fine",
+     "score": 0.7932979660226535
+    },
+    {
+     "id": "a00095",
+     "rank": 8,
+     "title": "China’s Green Exports to Europe Are a Bright Spot Amid Trade Tensions",
+     "source": "The Diplomat",
+     "label": "fine",
+     "score": 0.7243730749372286
+    },
+    {
+     "id": "a00373",
+     "rank": 9,
+     "title": "Trump EPA is manipulating safety data around a highly toxic flame retardant, adv",
+     "source": "Guardian US",
+     "label": "fine",
+     "score": 0.6090544235564079
+    },
+    {
+     "id": "a01294",
+     "rank": 10,
+     "title": "What 'The Odyssey' can teach us about climate chaos",
+     "source": "DW",
+     "label": "fine",
+     "score": 0.7146450954052952
+    },
+    {
+     "id": "a00811",
+     "rank": 11,
+     "title": "Why Southeast Asia’s next climate unicorn might be built from farm waste",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.7114543561643414
+    },
+    {
+     "id": "a00492",
+     "rank": 12,
+     "title": "West Point professor says he was pushed out for objecting to climate directive",
+     "source": "Gothamist",
+     "label": "fine",
+     "score": 0.6399999999999999
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 70,
+    "triaged": 70,
+    "k": 12
+   }
+  },
+  "ray": {
+   "n_must_see": 9,
+   "n_need_to_know": 5,
+   "n_labelled": 318,
+   "recall_at_k": 0.4444,
+   "raw_recall_at_k": 0.4444,
+   "recall_at_retrieval": 0.8889,
+   "need_to_know_recall": 0.4,
+   "followup_recall": 0.0,
+   "never_rate": 0.0833,
+   "never_in_feed": [
+    {
+     "id": "n-ray-91",
+     "title": "New Jersey Devils-themed slot machine hits Atlantic City casino floors",
+     "rank": 2
+    }
+   ],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 8,
+   "loss_by_stage": {
+    "assemble": 3,
+    "recall": 1,
+    "judge": 1
+   },
+   "losses": [
+    {
+     "id": "a00407",
+     "title": "Giants’ 53-man roster to include Odell Beckham: Here’s the full squad.",
+     "dropped_at": "assemble",
+     "reason": "Giants' roster news includes notable player.",
+     "score": 0.8202041424022002
+    },
+    {
+     "id": "a00409",
+     "title": "N.J. weather: Severe thunderstorms, flash flooding threat in N.J. this week",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00494",
+     "title": "Trump administration appealing loss in Gateway tunnel funding case",
+     "dropped_at": "assemble",
+     "reason": "Gateway tunnel funding affects regional transit.",
+     "score": 0.6441878390779682
+    },
+    {
+     "id": "a00495",
+     "title": "Monthly job losses worst in NJ since first months of pandemic",
+     "dropped_at": "assemble",
+     "reason": "Job losses indicate economic issues in New Jersey.",
+     "score": 0.6750161443539664
+    },
+    {
+     "id": "a00503",
+     "title": "Appeals court rejects Rep. LaMonica McIver’s bid to avoid trial on assault charg",
+     "dropped_at": "judge",
+     "reason": "Not relevant to reader's interests.",
+     "score": 0.0
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 0.7778,
+   "judge_recall": 0.875,
+   "judge_n": 33,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.5,
+   "calls": 17,
+   "cost_usd": 0.00309,
+   "latency_s": 0.03,
+   "cache_hits": 17,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1166,
+    "triage": 48,
+    "judge": 12,
+    "feed": 12
+   },
+   "drop_counts": {
+    "recall": 1166,
+    "judge": 48,
+    "assemble": 12
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "n-ray-91",
+     "rank": 2,
+     "title": "New Jersey Devils-themed slot machine hits Atlantic City casino floors",
+     "source": "NJ.com",
+     "label": "never",
+     "score": 0.9900033863051709
+    },
+    {
+     "id": "a00989",
+     "rank": 3,
+     "title": "Giants 53-man roster projection: Final prediction of initial roster",
+     "source": "Yahoo Sports NHL",
+     "label": "fine",
+     "score": 0.9733333333333334
+    },
+    {
+     "id": "n-ray-01",
+     "rank": 4,
+     "title": "NJ Transit to suspend Morris & Essex line service from Newark Penn for two weeks",
+     "source": "NJ.com",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a00512",
+     "rank": 5,
+     "title": "Feud escalates between NJ governor, GOP over voter registration gaffe",
+     "source": "NJ Monitor",
+     "label": "fine",
+     "score": 0.7590214861849881
+    },
+    {
+     "id": "a00499",
+     "rank": 6,
+     "title": "Pennsylvania measles deaths prompt concerns for NJ health leaders",
+     "source": "NJ Monitor",
+     "label": "must_see",
+     "score": 0.7909396340356469
+    },
+    {
+     "id": "a00500",
+     "rank": 7,
+     "title": "Threat of federal trial looms as Rep. LaMonica McIver seeks reelection",
+     "source": "NJ Monitor",
+     "label": "fine",
+     "score": 0.5642860551326003
+    },
+    {
+     "id": "a00659",
+     "rank": 8,
+     "title": "Researchers followed 400,000 kids for 20 years and found a lasting pre-K advanta",
+     "source": "ScienceDaily",
+     "label": "fine",
+     "score": 0.6274879469640798
+    },
+    {
+     "id": "a00406",
+     "rank": 9,
+     "title": "Family of teen girl killed in high-speed crash will honor her at N.J. 5K race",
+     "source": "NJ.com",
+     "label": "fine",
+     "score": 0.4666666666666667
+    },
+    {
+     "id": "n-ray-02",
+     "rank": 10,
+     "title": "Devils trade first-round pick for Jets goaltender Hellebuyck in blockbuster deal",
+     "source": "ESPN NHL",
+     "label": "must_see",
+     "score": 0.9733333333333334
+    },
+    {
+     "id": "a00894",
+     "rank": 11,
+     "title": "OBJ earns spot on Giants' initial 53-man roster",
+     "source": "ESPN",
+     "label": "must_see",
+     "score": 0.8235969491098443
+    },
+    {
+     "id": "a00479",
+     "rank": 12,
+     "title": "Case dismissed against NJ man accused of fatally punching stranger at Penn Stati",
+     "source": "Gothamist",
+     "label": "fine",
+     "score": 0.733048625833848
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 72,
+    "triaged": 72,
+    "k": 12
+   }
+  },
+  "tom": {
+   "n_must_see": 17,
+   "n_need_to_know": 4,
+   "n_labelled": 330,
+   "recall_at_k": 0.4167,
+   "raw_recall_at_k": 0.2941,
+   "recall_at_retrieval": 0.8235,
+   "need_to_know_recall": 0.25,
+   "followup_recall": 0.0,
+   "never_rate": 0.1667,
+   "never_in_feed": [
+    {
+     "id": "a01231",
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "rank": 1
+    },
+    {
+     "id": "a00775",
+     "title": "NDR 2026: New workplace policies for parents add options to labour market",
+     "rank": 10
+    }
+   ],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 0,
+   "distinct_sources": 8,
+   "loss_by_stage": {
+    "judge": 3,
+    "assemble": 6,
+    "recall": 3
+   },
+   "losses": [
+    {
+     "id": "a00201",
+     "title": "Anthropic warns infostealer malware is hijacking Claude sessions to drain usage",
+     "dropped_at": "judge",
+     "reason": "Not relevant to AI or industry developments.",
+     "score": 0.0
+    },
+    {
+     "id": "a00214",
+     "title": "Nearly 700 rogue AI agents coordinated in the Hugging Face attack",
+     "dropped_at": "assemble",
+     "reason": "Details a significant incident involving OpenAI's model.",
+     "score": 0.788028880664524
+    },
+    {
+     "id": "a00633",
+     "title": "Reuters: Russian-speaking hackers breached seven companies by tricking the AI ag",
+     "dropped_at": "judge",
+     "reason": "Not a major development in AI.",
+     "score": 0.0
+    },
+    {
+     "id": "a00998",
+     "title": "Trump blacklisting of \"woke\" Anthropic deemed illegal by federal judge",
+     "dropped_at": "assemble",
+     "reason": "Legal ruling against Pentagon's actions towards Anthropic.",
+     "score": 0.8097496337413715
+    },
+    {
+     "id": "a01005",
+     "title": "Anthropic's new hardware standard lets AI agents control the physical world",
+     "dropped_at": "assemble",
+     "reason": "Discusses Anthropic's new hardware standard for AI.",
+     "score": 0.820971269625673
+    },
+    {
+     "id": "a01008",
+     "title": "Report: Nvidia to acquire AI model repository Hugging Face for $13 billion",
+     "dropped_at": "assemble",
+     "reason": "Reports on Nvidia's acquisition related to AI models.",
+     "score": 0.765975219089462
+    },
+    {
+     "id": "a01009",
+     "title": "AI industry says Trump plans to tax chips in the “single dumbest way imaginable”",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01020",
+     "title": "Sony Music Publishing and Warner Chappell are suing Anthropic",
+     "dropped_at": "judge",
+     "reason": "Not relevant to AI or industry developments.",
+     "score": 0.0
+    },
+    {
+     "id": "a01035",
+     "title": "An Anthropic researcher just gave us a peek at self-improving AI",
+     "dropped_at": "assemble",
+     "reason": "Focuses on Anthropic's advancements in AI.",
+     "score": 0.8696255770660561
+    },
+    {
+     "id": "a01096",
+     "title": "Researcher shows how Claude Code can be tricked simply by asking it to summarize",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01128",
+     "title": "Salesforce boasts: 50% of bookings were from 'customers refilling the tank... th",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a01140",
+     "title": "OpenAI explains how its naughty AI agents attacked Hugging Face",
+     "dropped_at": "assemble",
+     "reason": "Involves OpenAI's actions affecting the AI community.",
+     "score": 0.7315320686880127
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 0.8462,
+   "judge_recall": 0.7857,
+   "judge_n": 42,
+   "needle_recall": 1.0,
+   "lookalike_rate": 0.0,
+   "calls": 16,
+   "cost_usd": 0.0039,
+   "latency_s": 0.02,
+   "cache_hits": 16,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1150,
+    "feed": 12,
+    "triage": 58,
+    "judge": 18
+   },
+   "drop_counts": {
+    "recall": 1150,
+    "judge": 58,
+    "assemble": 18
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": "never",
+     "score": 1.0
+    },
+    {
+     "id": "a00014",
+     "rank": 2,
+     "title": "OpenAI to end model access to Cursor after acquisition by Elon Musk's SpaceX",
+     "source": "CNBC",
+     "label": "must_see",
+     "score": 0.9096417028470637
+    },
+    {
+     "id": "a01074",
+     "rank": 3,
+     "title": "A Judge Has Blocked the Pentagon’s Attempt to Blacklist Anthropic",
+     "source": "Wired",
+     "label": "fine",
+     "score": 0.8924292358492195
+    },
+    {
+     "id": "a00557",
+     "rank": 4,
+     "title": "Google Cloud Launches AI-powered Agents to Simplify Database Lifecycle Managemen",
+     "source": "InfoQ",
+     "label": "must_see",
+     "score": 0.7202234729581056
+    },
+    {
+     "id": "a01037",
+     "rank": 5,
+     "title": "Open-weight AI companies are the Valley’s hottest acquisition targets",
+     "source": "TechCrunch",
+     "label": "fine",
+     "score": 0.708534779616071
+    },
+    {
+     "id": "n-tom-02",
+     "rank": 6,
+     "title": "EU AI Act enforcement begins: first fines issued against two general-purpose mod",
+     "source": "The Register",
+     "label": "must_see",
+     "score": 0.8574425054748429
+    },
+    {
+     "id": "a00545",
+     "rank": 7,
+     "title": "Cloudflare Extends AI Search to Make it Easier for Agents and Developers to Sear",
+     "source": "InfoQ",
+     "label": "fine",
+     "score": 0.8313673138011193
+    },
+    {
+     "id": "a00828",
+     "rank": 8,
+     "title": "AI has become how Southeast Asia finds you, but it still isn’t how the region de",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.7136955011812924
+    },
+    {
+     "id": "a00816",
+     "rank": 9,
+     "title": "A Southeast Asia AI adoption outlook vs alternative global hubs",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.7169890730005741
+    },
+    {
+     "id": "a00775",
+     "rank": 10,
+     "title": "NDR 2026: New workplace policies for parents add options to labour market",
+     "source": "Business Times SG",
+     "label": "never",
+     "score": 0.6163856426561543
+    },
+    {
+     "id": "a01082",
+     "rank": 11,
+     "title": "OpenAI Is Developing a ‘Persistent’ AI Agent",
+     "source": "Wired",
+     "label": "must_see",
+     "score": 0.8116187975447949
+    },
+    {
+     "id": "n-tom-01",
+     "rank": 12,
+     "title": "Anthropic releases Claude Opus 5 with 2M-token context and agentic computer use",
+     "source": "TechCrunch",
+     "label": "must_see",
+     "score": 0.8901640264181515
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 88,
+    "triaged": 88,
+    "k": 12
+   }
+  },
+  "wei": {
+   "n_must_see": 16,
+   "n_need_to_know": 1,
+   "n_labelled": 332,
+   "recall_at_k": 0.4167,
+   "raw_recall_at_k": 0.3125,
+   "recall_at_retrieval": 0.75,
+   "need_to_know_recall": 1.0,
+   "followup_recall": 0.0,
+   "never_rate": 0.0,
+   "never_in_feed": [],
+   "feed_size": 12,
+   "feed_size_k": 12,
+   "feed_size_flag": false,
+   "unlabelled_in_feed": 1,
+   "distinct_sources": 6,
+   "loss_by_stage": {
+    "judge": 3,
+    "recall": 4,
+    "assemble": 4
+   },
+   "losses": [
+    {
+     "id": "a00099",
+     "title": "AI, Scams, the Law, and Governance: A Conversation With David Tan",
+     "dropped_at": "judge",
+     "reason": "Not relevant to primary interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a00748",
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00792",
+     "title": "Ajaib raises US$270M in Indonesia’s biggest tech funding round since 2022",
+     "dropped_at": "assemble",
+     "reason": "Major funding round in Southeast Asia fintech.",
+     "score": 0.7527730599884301
+    },
+    {
+     "id": "a00800",
+     "title": "Language was never the problem: Inside SEA’s real AI adoption gap",
+     "dropped_at": "assemble",
+     "reason": "Discusses AI adoption challenges in Southeast Asia.",
+     "score": 0.7755661826238207
+    },
+    {
+     "id": "a00829",
+     "title": "When will AI stop making memory more expensive? Probably much later than you hop",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "a00833",
+     "title": "SEA’s stablecoin boom has a dollarisation problem nobody’s pricing in",
+     "dropped_at": "assemble",
+     "reason": "Discusses stablecoin issues in Southeast Asia.",
+     "score": 0.573361182185487
+    },
+    {
+     "id": "a01005",
+     "title": "Anthropic's new hardware standard lets AI agents control the physical world",
+     "dropped_at": "judge",
+     "reason": "Not relevant to primary interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a01031",
+     "title": "Nvidia’s AI advantage is moving beyond the GPU",
+     "dropped_at": "judge",
+     "reason": "Not relevant to primary interests.",
+     "score": 0.0
+    },
+    {
+     "id": "a01093",
+     "title": "AWS mumbles about its cost-busting networking tech when it should be shouting",
+     "dropped_at": "assemble",
+     "reason": "Relevant to cloud networking technologies.",
+     "score": 0.7182140146357366
+    },
+    {
+     "id": "a01140",
+     "title": "OpenAI explains how its naughty AI agents attacked Hugging Face",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    },
+    {
+     "id": "n-wei-02",
+     "title": "PostgreSQL 19 released with built-in logical replication failover and async I/O",
+     "dropped_at": "recall",
+     "reason": "",
+     "score": null
+    }
+   ],
+   "event_delivery": null,
+   "major_delivery": null,
+   "false_major_rate": 0.0833,
+   "judge_precision": 1.0,
+   "judge_recall": 0.75,
+   "judge_n": 26,
+   "needle_recall": 0.5,
+   "lookalike_rate": 0.0,
+   "calls": 21,
+   "cost_usd": 0.00468,
+   "latency_s": 0.02,
+   "cache_hits": 21,
+   "cache_misses": 0,
+   "stage_counts": {
+    "pool": 1133,
+    "judge": 17,
+    "triage": 76,
+    "feed": 12
+   },
+   "drop_counts": {
+    "recall": 1133,
+    "assemble": 17,
+    "judge": 76
+   },
+   "feed": [
+    {
+     "id": "a01231",
+     "rank": 1,
+     "title": "Woman, 22, killed and five injured in shooting at Swiss rave",
+     "source": "Guardian World",
+     "label": null,
+     "score": 1.0
+    },
+    {
+     "id": "a00804",
+     "rank": 2,
+     "title": "Fintech funding in Singapore drops to US$499M as dealmaking becomes more selecti",
+     "source": "e27",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "n-wei-01",
+     "rank": 3,
+     "title": "MAS proposes new capital rules for Singapore payment firms holding customer fund",
+     "source": "Business Times SG",
+     "label": "must_see",
+     "score": 1.0
+    },
+    {
+     "id": "a01035",
+     "rank": 4,
+     "title": "An Anthropic researcher just gave us a peek at self-improving AI",
+     "source": "TechCrunch",
+     "label": "fine",
+     "score": 0.8390729995883695
+    },
+    {
+     "id": "a00557",
+     "rank": 5,
+     "title": "Google Cloud Launches AI-powered Agents to Simplify Database Lifecycle Managemen",
+     "source": "InfoQ",
+     "label": "must_see",
+     "score": 0.8480472013314481
+    },
+    {
+     "id": "a00816",
+     "rank": 6,
+     "title": "A Southeast Asia AI adoption outlook vs alternative global hubs",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.8754444151565471
+    },
+    {
+     "id": "a00773",
+     "rank": 7,
+     "title": "Fintech firms from Airwallex to Revolut are on hiring spree in Singapore amid AI",
+     "source": "Business Times SG",
+     "label": "fine",
+     "score": 0.8556494316449674
+    },
+    {
+     "id": "a00817",
+     "rank": 8,
+     "title": "Moving past the pilot and scaling AI in Southeast Asian retail",
+     "source": "e27",
+     "label": "must_see",
+     "score": 0.874744796676778
+    },
+    {
+     "id": "a00546",
+     "rank": 9,
+     "title": "AWS Open Sources Kiro Crew for Asynchronous Coding Agents",
+     "source": "InfoQ",
+     "label": "must_see",
+     "score": 0.6407619739023684
+    },
+    {
+     "id": "a00547",
+     "rank": 10,
+     "title": "Presentation: Architecting the Data Layer for AI Agents: from Transactional Syst",
+     "source": "InfoQ",
+     "label": "fine",
+     "score": 0.7224547141641255
+    },
+    {
+     "id": "a00836",
+     "rank": 11,
+     "title": "Why so many startups are cutting down on the number of tools they use",
+     "source": "e27",
+     "label": "fine",
+     "score": 0.47762169157059153
+    },
+    {
+     "id": "a01179",
+     "rank": 12,
+     "title": "AI a 'force multiplier' for low-skilled threat actors: 4 ways organizations shou",
+     "source": "ZDNet",
+     "label": "fine",
+     "score": 0.6975812444637414
+    }
+   ],
+   "meta": {
+    "runner": "proto-hybrid-judge-events",
+    "backend": "hybrid",
+    "judge": true,
+    "events": true,
+    "world_critical_events": 1,
+    "recalled": 105,
+    "triaged": 105,
+    "k": 12
+   }
+  }
+ },
+ "cache_keys": [
+  "007fd6d008e3242278f40dd75f417935213c51a351e44a60ef692077145e10cb",
+  "009b8c92e11c991b9265753d43bf93557c4ff1f075a99939bd82bad131303081",
+  "00f71dc5d7fed97cd8ddf7729fde785db56120faf92c7291854f5e4b63828fa4",
+  "0356e0f8333e36ccda7275a536c1597974e48558e3beff74bf4c0b51068b007b",
+  "03fe3f5169b17e373d13e2b87dd0210257c34d24895a08d0ac448a1fa3a57dbf",
+  "04804a8b48338320ffe77fa8b11d63b2e18aaba63f07a4415f52ebe682e3ecca",
+  "048fc71c388aed0c6092520841b922bf4297bd044f0bef4c37ad1aceb1f9f0bf",
+  "05d43e2f7eb8b59cec5a38129e6eed787a81d9c0100a7e84461ed193bcf73c3e",
+  "0734bdc231e63ed4043fb271ebb4bcfc0496c7d9d0cac6649f9015add54fa729",
+  "074f229e31b6abb1497ee7cbbd59a8c9546fcd35d5351228b0e9716488f99ff4",
+  "076e3b2d2d734f2b7daadfebdeece67132b520727e2aaa6950d22c20b50650f2",
+  "082e182073d1533996c002d1cc77e5c4c2fcce016e2403957d0c6398e33697f7",
+  "0897d6ff9434f585da8d9937af9547aada583a5544e1e104f178177426c47de8",
+  "08fd78087f6744f25f543adf9a53c9d28711b7fc632b5918c4cfb367db77bebf",
+  "09ff715938b08157e2dedfec7506407a03e245f91979e082277f790638cdfbdb",
+  "0a5701d0cdebef821f62fac3b070fc304d68215c4d3de7140bc0255b3d5713e1",
+  "0b25756db38bf01102b3598cd6d9a246002167582e9353364eb6b9eae181c84d",
+  "0b3aa463bd1ef26d726e44d9160de3f6a4ea787f664d7c58f165cb06ec71bb4d",
+  "0bb99778ca34431c22b891ca231681cd1221e5caf7a68166358888e2d8a48ec9",
+  "0d4266a2e9b46699bdb46cecbbacbff024d182ee36e902f833c71220061192c3",
+  "0dd1b7ffc070bea9483a12bb48841b60b4a84ef485bcea227b5fad7d786f43a0",
+  "0e8c86e552b0910d491ff81d81b9e0a253538e3de0f316329e9c3d424f079533",
+  "0f569daad7b7f0629fa24f44f0de13b13ed5b112b3002cf0e7096310a33948e7",
+  "0ffb1d35916d5458d9926772b9f964ddaf3d4c4b1845277ceb2dfa7dc27a61e4",
+  "1047d9e618305ba50fc7d886176e483e8a92f047cdf5cf52bbd15312e428395c",
+  "13b2ee9e22026d57b29902923e96ceba455367135a52881b5b8d8e3a661cc708",
+  "14c8e9485be7155d3e1b209232a66e1a2a78295a1b29a7d42f8e79259910c808",
+  "15c43be9e427a7821ee9ee02106fabdcabaed226343192086543db012fcad224",
+  "15de02f6e23f48df4a87837ca14fc4ae8b7d022d74ea7d700707e6cb7ccf5a9e",
+  "1669487ab27a22de195fa542db8ba193b9e84864673b6135c7ab0d504b1bb4f9",
+  "17d010631a0eae28e32c6608dd0380d9211dee5258b11d1dffb932e1b7612cc4",
+  "1c80d33cb539e3368005cf59db3641d6fe6574bc2a3fea928fecf0fce9557d60",
+  "1d7f65cdad6479b761a44db7ec91ea8ce2a60c8527d36646b21b421f4224cba7",
+  "1daf1f02f83e8f34bc91392dbe9244f8386a2b1702d24590a1a613962a3eee48",
+  "1f5fbfcfd993df0566789512c5baa814127d1615a582123e5d77afd0b5d8f984",
+  "1fbcd56899fa6a23454bdfbf0d0e769fa7cd7df63ddd8f6ca63408a9d2bfc2ff",
+  "202471d7c975d148378f9cf4d0ab16aa404e69841b161f7b5078add550cad662",
+  "20e22e9f6093324ead938272a605e398d30eb9de888513313fa926a32d79daa9",
+  "21ac119722039ce8e7b9188f82787deba92c794ecba25172789a5b58ae9f8281",
+  "2350e2c544647186e18918b19f364d846b8f5d97dfffb45d75efd5e2f31e3476",
+  "261b3bd0e1b41c9190c531fede6371174730a858c7c4e2c721b60f2c72b2e6cf",
+  "26cad06f28902bfba4e8b17b223a31b4f0ad6b4ef46668749cc21267cde678d0",
+  "27f442c05e81fb6ac9d281aa8a66ac8163e3383d2a4130eb8fe01cafda79f49b",
+  "2993c20751522ac7223c84e6cb9532f1d50e14f566f1b841f6e27d16b9c02434",
+  "2a25e7d23af43469102ed19a1b856e36b471c44cbf860be1286c15f3ab430484",
+  "2b2da8f02e02baa2877bc87006021327461717ce93ff93434c1ec9c25152edbf",
+  "2cbc9a01014ff59867dae44a313abd64eed59d4225d338b70c45e024a96c81d0",
+  "2e1ca9dd715435d4d256b058e5b1e57bf7c360c0a19c6bc5a76b383b5a5853a3",
+  "2e4fe504d739b25cf0518b0a579891f6a097147c8f5805e5e6e013377928e943",
+  "2e961915a8139b24f0b6f2971d207adbbbc1a8f844e592ebbd2dd267fcd3f1fc",
+  "2fd63551c89cea969b82877c76ea945413e89acd6bc436af8f99a07cf53b8f00",
+  "30cded08a109bb40858a5e4fb902ceaa47c6970269209ac28b0e1a9bfff68928",
+  "32b31af74c0e77730ceefd0b476b5a1066fc7515d9c72eb8b59772ab68da9bfd",
+  "32ce3a6bca39502b268bf704d2884c96d55d6a329d558858a7271c690f830b63",
+  "34d2e4326f314dcef1ae45b7652f1104abbac19f3d344ec9c9cec52f96fb37d3",
+  "34ea3336584499f6adbc2238c84cfc196092bd235f4cb5a0a951ed5aca08ea2e",
+  "356bad34790478dcf59f43c2c5dab3eaf8401c86d95e963f125872ca2c1e8c4b",
+  "364317f481ea90f608a5ad302776ef7d5a6f20fe7e47720190301f305beeb67a",
+  "3738790900dc50391e1afcaa8d6b7cba7c326d26ab02f8fd4497b281f6874234",
+  "38b7eb55dbf2cd4e50924a2b0aa0d61caf45fb459b95395a9326d6fd37add40c",
+  "3ac193c643ff7c7f98177ca468f799ee6675b9dde9cb21633d5e9be57e55689d",
+  "3bdf676238d1daf4f53d400488a11c56a2042b1037c2b306cb0b8eb422d6bac6",
+  "3c531cdd1608f3c78e24fe375c3a010f1899591766db0aee056c85bdabff7092",
+  "3f4e5161d29e6bfe0217a8c23764459b93af9445496e8c1e9b289893cc0cb08c",
+  "3f9865e1a4faf59dff73fcdc92669848c2f4a124c9baa2e7e811bb8d6bd52497",
+  "41e4ea3480c5d091522cd943fab33782c21d63753afb3bb957fa2974d5044c66",
+  "42f72480ecec81a177580ac114fbb3b75e5e3f404a3cd60fb072521d9b2c3ec3",
+  "49a205b20ae898824f11da3178662203a02b076e3f6194af99dfe28cf9543bdd",
+  "4a1f6547bd63e42f48eb5652ba0124b2937e942b4d1e2511e2257ec751c1cd08",
+  "4dc9e99612bcf5bb8fe121f6095ab96cdd529993c36d7bc305cdef9bb5156835",
+  "4e325190d67a1d3bdc792824b70cc0865b2d86fa041881181cd6364cf4ee7873",
+  "4f14935ab0c0d696fe266cd6c3d1cf817e3c08ae372096c38c2207f402640722",
+  "4f180c73d274cfde2f2160dc1743ded979dfd0ba2b902cd88e9728a22aa6b1c4",
+  "4f76415a687165f86319d58bc3199a7cffd49dd3ff1c87a4ccbc66630b454ddb",
+  "4f7ca9f0b4cee7e074f115ed6a3218aca8be125901a162b9abb9bc3fe7319558",
+  "545d2dcfe247eb40b5f4c13acf51ccdc4c058a632e89c769190aae403fd9aa76",
+  "54c9c7b290ea48d9b4f0b40309a0f8970be0ca95c68106529f292f14d53d40fc",
+  "5776c02db9cdc66ffe997e43d56d8bc278088c8cffb811c3944f32ca26932b6f",
+  "59a57727653cffb8ed6afe40dcd90ecfd4450db73085726749613d1b0f4fbdf4",
+  "59f3331a1ceb502a71daa2a218ce36e89bb565797214af7cf96c4087a1ac0c7e",
+  "5c0b52cae6cc3a1b1a0a6e6b98e9880456c2500332377335cf72a67779a40c66",
+  "5cf21c9aa316fb15a7782d084cb04a9fd0446597d77c194e4714a07b9228d1f0",
+  "5cfdd986a688267af513e425fd5062bde8f3ca22ba24759ba2969b2a5ea55fee",
+  "5f6777aadd244079e12238c60d1bf5ba074f35eec46c7afab4d41ac84b8a4e88",
+  "630780d005e1bacb69d4f11c884b65420de3db6c700ed8b9226ab01996beb799",
+  "631ab49aac4a317a5fd48a4bf36049b11cdb9b04b3eab873390bd16b4b1b7e25",
+  "6449e89361f21bc0f51ab0e3ac6d6a83afecdf81bdd367e2e8841acad6624848",
+  "663cec8ce6a1490fb54ada29bfb49ea03fcbcd57986d9a8fa5f0f687488e3ee4",
+  "68daa8e1bfb5e014d4710aaae5d8ded55c869715e9cb9af653416d4d493fcfd1",
+  "6a6c2c542557c74c21ccdc70b48344a9c0c0f450d2266b9befa74b5794f858ca",
+  "6b9842fa62a01c76c3b6aceb8bde83a382bc84c2d5e500ee26e617b324b7f391",
+  "6d10c93188f1a12eeee9de76afaeaeadac764ff0b35be071bdc6228f03c76628",
+  "6d15e0aab247f3c61b1b8c0957263c77ae1de363a23f6db6a6e597cdd9a48f13",
+  "6d5e6cd5955945b2985214464993f62238a36d8e2470bd2661313d4c7af9ae30",
+  "6e9da3309dfc399b4d5c8a1ecaa6a695dd9f2e72e4a97b2d8435c71de16e2d91",
+  "706309f4ec1398b54bac138b3473c292a03987be160cab33726cb36ad239489b",
+  "70d991c1205d7dc1d7639639955d6e67b5ad1b9d2d9b1f2d7cbd422e338eb9ec",
+  "7207e111363f4635f520c3509ce70cdb77ac62d4563f2f3ce2220e8077863265",
+  "726d2e75cd0e74394563ca2250f05ade6b528079adb8d1941ce04120cb1345b2",
+  "74f14d754740dc6b36455ffc86e07786327ac7f1e1d263d2f988f45a514b528e",
+  "758fc7ff198385be2a67ecafad0a15578a237087b091f56612fa41273c8e854a",
+  "774817b200b8ffbb4dc455a366582b1fa02331183f62c7d0423df4abde46f9dc",
+  "79a6f05432e3a17ce797dbbf223f0070ed508fa8c5d43c7aa5e6e952edc02ce4",
+  "7a040d2197f751485da2b3b63b9b6a510decd1683a6746fe98f3c42daf12fc9e",
+  "7a25a4d36b48ccd09d0f5c1a3864a51f557e87a3052942124dbaa2c089e5df40",
+  "7a36ebce3376e29173f8cdc65e44b2d50d91b7778355bbded060fec1e60babf1",
+  "7a474a79d8e18a0da781d16b94dcb8dd587731d91f794bdcdf9d88eb3938d061",
+  "7c904afb0be0fb1cd77b24f234ddbdf1f0e690966adde1243076524c8a4a1663",
+  "7de2858a70e13eb4489c46060486b4f7068b9cb9075f3e79c98122e55e6d37bd",
+  "7f623eee38657d7e4782392e7852b4e4c87c1a8cfad1582d9ba9b01b3a9f2609",
+  "7f88cf22393f1c6e93de4419b8a02cc0f51d3c42068eaeadbe2a4c7b5cdc5131",
+  "7fbef371afea8aaa3411ecbc28170ac195c85d36653838b2e5d7274691f83b0a",
+  "807c3fd49ac72ad0fcbed2aa5e8205ae84c365b7ba1c88e721d658b2957aac89",
+  "80cc549521b3c5e60d846fbf488aa668a9b080933c5f4a47ed8cb549e360f4f7",
+  "815c910a1cf7b1d2180a5d8735b69165de4eb710c2132b5591155a928550780f",
+  "8168ff8bace5401878a1cffc704a5f55b9c4d7278bb604e93966fe056543d887",
+  "81952eef8d1a70fa240692628c081e18355cfa1aeaf54a307fb42b4f60363609",
+  "82bbc38e7df980cfaba487873539b323fcabaa0fec6d27fcec56a32faa9548cc",
+  "83b0aa54994296d12f7850e50a679ecd7898160ad5ecd625c1c0bc69e75f2f8e",
+  "8563389587c42aca62059fcaf4f37bab7480f7223d0a3647539babc643f6802a",
+  "856e7a8386ff59b8a50281d2da3228e77173ac5e0e72f6effb9b7c22a9d3c6d9",
+  "85f7c453531a23f2ecc58a58d21afcc7f715c668af6f1e35b26c3fa07a537d8f",
+  "88305a80b518570850ed71d803d4b71a22da17b9c17ea7f206dcb879c4a6cf4c",
+  "88349b8e32e6a206cf3efdd8cecd07e6781ebf30ba523db9d44ee8c66a38ad44",
+  "8af50017dd6306e74c3ede608790476c6ee8c7385a75aaf7d5365928f503d634",
+  "8ba47f06fcf8639fd0e370b87980e4cbf9145706d755360c0d99448ae82617fd",
+  "8d3cc7df2fd7dbdb28629f6ccb9a5a4297e8cb96cdda4d22557372e3e1e634d6",
+  "8d5e95f8e8cd18391b0e0e7c868f5c24220e0417a7746c7f5b6d900054dc63dd",
+  "8ea5bbd0899f473196da2bc538f28512c7eaccb4248926fb18380ac5ee1a039f",
+  "8f34569dba2a262571f5f5d40d3f03ca0c9b68a1e54d7223b5c290d3f81c619e",
+  "8f988c250b5f110366b60538695dc5a12b816a434a9f52606e87a77063e7e69d",
+  "906a3c827214d20cd43eb81d35c344764f822d3d4497a52c6f6eac900756df96",
+  "90c6cc7792a90e835eb4ffafe6d36b21e76f8d708ce3c528066f54a1a687b165",
+  "9245af957c7fbcdb0ee8ff71af77371c6eaba9dba6364be954efe8f97b7ba9d3",
+  "9256deb45f355633bf7e9f8260cb93db1e53b9b8e5c124d6f5f841535ab3a9c0",
+  "93c5e01df6d7f63436ec49eb449e5d4973bb91a45cfe24e6ff746e5cd12e8eba",
+  "9454e36f048deb29a5e123630b4341beec2f1bad0cfb1f643b08e79d83b74506",
+  "9482aa554b6413f16b760f72f507a3c055155a63aff8cb1b55f48135abdb2e03",
+  "959e120b2e20e035929896c0a3779ceae47c3559751118b12c75a1cd5d98b363",
+  "a1515404822435c39e723ec70aa7081d7a233dba04b7bec1ef418c4bc0ecb0ff",
+  "a32174b33bed70bea21e9e93264c472e4d7dedb4299d41ca49be8651de1a6dff",
+  "a5e2e18c1ac6bcc4420092c69f3c72628012e113de879c21776003e2134c7677",
+  "a6ddeda186e63edc02fc54c6b726de97cc3d5aed7703f3fc79d9bb9944a95254",
+  "a7de8a18a5172112820d490ec32f1912237ba4a7faae1f0db67583a24bb9600e",
+  "ab0d76a9046f4e77597f687e6a320c1042721bdda91230d7c77128a8492d7541",
+  "ad96e5ac2cf839555f2c72abe7f96c03fdad99e53dfa7f2ae58e37be15a41c09",
+  "ae6c56acf8bd503a0cac812c6009bb278cfd91bedd3e000bf654e3ea3eb17f30",
+  "af637b0c68b38890e1e0457ab6878870265c0c0a55fd18999b00495e56e22006",
+  "b0c0387a38ec5eaf06aadf582d0e3650521f0eda3e933cf42d05f30076882fad",
+  "b101cf452e0c005bdfbca938722b3d7911ed82abcea034c006f50dcaa0ad469f",
+  "b31c7ab31137ebd22ccd3e69ed0824bd9128aab5a322cb5c61545350e3d215e2",
+  "b41bec82fec50fbb89f59a0c93c81f89ae010d012e3bdd616d33ef2c102937cc",
+  "b53e3372f81c5a89aac4ddff139a65aa9b0995df008fabb155492563e8ccfc19",
+  "b5672095afee4e0502a49ede0e45736b6b04bc90e631d1bb58c9749f4aa80181",
+  "b5a18ed2d98d4238d281aa876f4a0cf5c07e6c7a902691cebbcd11a4da886437",
+  "b9249928e449cbd1bb02b1b8696f3855f995deaa36d0ab55b271e3904d6f742b",
+  "b951da3dc8fdd0bd36568ab8e18e88b56a55d3ff16fc21ddf63e3bd464da7892",
+  "b9ee8ad74db964e9c1e5af7916875a908090aa9b5e5d4c8c38680098590f09cd",
+  "bb84517b3c520d0fcece9084e00aacc5f461fbd28f29dfc95f2198ce70937ebf",
+  "bbb5af5ab8ab7bb0d4d6fffb8190009330ec6643aa66803a5d0c05d2fa1eada2",
+  "bcc1d77970d2a585221406f2d08b5fd74f3eae0eaf03c3ee0364ea108fed3df7",
+  "bd507ad817eb53f3df445c2da2d25a641c03faaa9862388d0a3b7202bf72b542",
+  "bde63883c20e7b34f1f95f8c42b687a3c9061c496c488c46c174d8c05f7f6861",
+  "be00e063075a88802373e619024ccb634169be486a3de30e20910a037b0dfc1b",
+  "bf483595e1b42c1eee4ae8447d03b854a6764c8f72016096a1b09fba3f70bfa4",
+  "bf5bc8dd962cd5c5eecd1406bbab9ae9fe266b11665665850d7adf20ac4e92bf",
+  "c0802fc143af7a294cff5af0a5f691c3760623e80d96f3f4f6910322d1a87a6d",
+  "c094e6cd12e63240400ff9332a94f3b989dec08bed828dbdfc111ac4a33f6471",
+  "c13e0499cad0c38892c094c50ae3349ebc7b3a235fcaea20d249d26d493112a6",
+  "c18e6b06154f8f51113be4bf4413e8cad99a81ec6a1f3cd8aed72339797185bb",
+  "c31bfe7ac4d7f396ee0385f1d2998b579de355c37b272b4c2d44da8fd465bc4b",
+  "c4ea04af17b05e29b23a6101c3e86852a18d475ba5e605b6878a10b13989fa07",
+  "c6db53ba457be49b6fa19d5ef7d783d29ab4448bd65856fda90439dfbf4cbade",
+  "c6ed5fe4d07c1baaed3b9de0d77244ca44a37920389eb369bef052075db10e7e",
+  "c88c7eb3da8bf5376e3c9bef4a86f01c23b37d7cf4c38cbf884332aa137c6171",
+  "ca2e3a19f8c0d7f5dbee1d435edc46b3b571260bb0d54c065dc3924eac23bdfb",
+  "caa9644f1eb5888b5cdf5fc8c7a7f70550c2579b3131c75413340e7aeddfa9da",
+  "caef65642700e35e7b6172c5dbadc619d3522ce4f56841bad667b325121024e2",
+  "cd639707e62972c498200573f3a319c21ff4c4ecbd1c58bd5d9c300382ab051c",
+  "ce02a28be6f31e2178dd634e66c25bd29edfff248c005c53a1f74df36d21ca13",
+  "cf2ed373da7a087b43b9eea0b4a3eeca4720a81b12bb527635913d1992846d95",
+  "d16dae97f91c2c1ffaefac67707ec985a1d846f109f1421e5e9cf0134c901f37",
+  "d5a55116ac37b81160321e2bfd2945f498dab6f17d10f9fdc559b76a9963f856",
+  "d6889aa5cc146f44e2026e9a8093872fe3cc6595abe2185997085c0542aaa278",
+  "d724a729f4729d56bfc3f8c3121467c4a1db2f9a045dd11dba0e800bc76feb4e",
+  "d79cd214be870686d5cfdeaa1b5907c1851ca9455ab4ba78354ad38a6e31bf8f",
+  "d7d4f8fea3bee6eced9b744905818f523665565f2241cb97955d2bc4150243ac",
+  "d7ebbc4feb90c6ce4743ce37f32f9bd50ee7c00e8a8b5ac6e7ae968e2363a125",
+  "da15253dcd642d5f485e60a2e91cefc7154f5008f4eb51bede84d0cb3fc4c360",
+  "dcad3daa6d57ea0bab5374e8e9020d3e465b4f5caf37088d7724d444f6878f48",
+  "dce25ab9a56ae90960911b413074ec4819dd774483f840788d0f9424735fcce8",
+  "dd30a9adaf36516cf0671746bd790edd44f7dba10a23ed17bd793d7acaaf47c6",
+  "dd8c7e5f89ee009b756f172d9b68be86dd19e1a1406f0012f1c86670602d285c",
+  "ddb55ef2738e4d76d1673e0c7649d95ed100a4339361826c3d881ccc3790c64d",
+  "de32daa0309034ca7e11cf03fdc91b3cc318916ead9a0e433d80be8da4f5b910",
+  "de55b8ee281c61af2e4248bac55b7e1da16832801336b023dce97de37ea2f0e3",
+  "de8924b683df030e8e0f2c8f39f502bb99cac5d660ee06ec1aeca186c7048737",
+  "df22f6b97795f7a079ecbd690af5c7e9ec2f62441a42e80d82cdff5145459f1b",
+  "df47fc1a28fe4cfdf2b92431bbc812cf02d6e5be7f4601c3c9c83e243e98a767",
+  "df88aadf57df152d17a7ab98317e81d77cabd4be2dc3bd278e6dc133fd253104",
+  "e2871736ef94645dc2995f4270c9563f9cb6662fc9873023f4fe0090465ca635",
+  "e42515bcefe99901227a5f569c77d28a678452c16bb4cbdd11b3ab5136021db4",
+  "e53d4ed061fb1961e38fe2d96f79899720ef631c83d1b4fcad45c4676a851493",
+  "e646dd38b2b69091ba47adc7928d2cd82aa5ab52dbd27f251865768d6e000071",
+  "e74c9d98306e02a1dffb8dc683276c09e81865329944f4dda529c8b4e6fb7237",
+  "e8bb8737b981d5933d7f0fb3618a0a7d5601638e98c97eec4b52111110a505bb",
+  "ea000e14c7f04e88759c9c5ace1e97dc894bb8c2b3d9121e256da5d7a984b7aa",
+  "eb02ad745d59a93bd276dbdf45355c9f928894968589cda685a31d7f51d1c6a5",
+  "ec35ada068366540dc59dadef4adc4ec9c3626244694f19962df68e352f91ad4",
+  "ed36895235b2152894f7c0603154b119d18fcf7b0ed7a87177e775bbb2af7a0b",
+  "ed9483af43fdae44c4fac061aee50b98c2b5c5248aae1706d95ffa72f49c56a9",
+  "eeecebfc8f2c7d5318c35cbe0085b39559347e4867b68794c6ea2db72a4853c5",
+  "ef1665b13854548e51fe55c1f1aaed6034f0d5d634c64ec0a2685299a28e878e",
+  "efe759e505f8d10597e7fbeb28eec5217da66c2d4a97bb49c31ad9e3a8354d95",
+  "eff723a06603c56df27794730c3275377f6c00cbf1a779268a6a30832f1972e5",
+  "f0390d9e74751d03a3f8c3a64655a87cf9895a58d59a26abc3087aa2a0f4f602",
+  "f2fa590b621311b446a80592501fde5855520e63106d9e32d774c446b90bfd2e",
+  "f367c882559867462a29bdba1e7d878c0e5c20ce593193acaa55c8f557ee833d",
+  "f38b6746798d34b38f71de5f3456170860fbe1788858b000ff2712bd18beb201",
+  "f6819fcbf98385ad466eecae3281e7cd96270b67704d1b62ce8b2ddfe2313548",
+  "f6a27494e33012a50a8a48db7a1bbfdd841417f4792717c61a505960b505c7f8",
+  "fa6e6e97e8e734966510561ca3a2cbf1fa7dfcff6c1135d3d11764a9b0271685",
+  "fbeae9fbafee1fa181c848ec311f9f7da5a5b7c23e786c66b252af11c1473f12",
+  "fc2fa192b2ff9fee9123ec3dfbbac5c7bc8de63d929b910b1a4cd45644bae61e",
+  "fcb0f44cc0f5122d0ac0b622f9673226d16d5e667e0587a3bab3d49c35caf327",
+  "fdc4db3fc735fc91aa67ec1c89e5f7ed66e42200d198924234f435084ecce5d7",
+  "fe189719ad5dcd2cc2f906479d583898f3344cc69f7efc2773af3d840d5a95ce"
+ ],
+ "meta": {
+  "needles": true,
+  "quiet": true
+ }
+}

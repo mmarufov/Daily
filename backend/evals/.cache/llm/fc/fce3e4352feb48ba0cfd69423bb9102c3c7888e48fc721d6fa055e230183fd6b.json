@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "582586ef8f4cd32a2ba85886560ea4136a81ce4ad77435aa766b166305f07863",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00680\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Interesting science but not urgent or major news for general audience.\"}, {\"id\": \"a00685\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Useful environmental innovation but niche and not urgent.\"}, {\"id\": \"a00698\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Scientific curiosity about cosmos, not major event or urgent.\"}, {\"id\": \"a00703\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Serious crime report, relevant but local and not major event.\"}, {\"id\": \"a00704\", \"label\": \"fine\", \"tags\": [\"need_to_know\"], \"confidence\": 0.85, \"rationale\": \"Local traffic closure notice, useful for affected readers.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1024,
+  "completion_tokens": 236
+ }
+}

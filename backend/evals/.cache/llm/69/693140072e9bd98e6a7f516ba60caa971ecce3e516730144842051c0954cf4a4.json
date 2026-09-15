@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "3f058659c9b406107b026269fe90ff99ea3e0802a6d7f7572b957149d0cdd89b",
+  "preview": "READER: Aisha — Singapore\n\nIn their own words:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nREADER: New mo"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00477\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US-specific legal news, not relevant to Singapore or reader's interests.\"\n    },\n    {\n      \"id\": \"a00483\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"NYC parking policy is irrelevant to Singaporean parenting or daily life.\"\n    },\n    {\n      \"id\": \"a00497\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"New Jersey data center law is unrelated to Singapore or reader's priorities.\"\n    },\n    {\n      \"id\": \"a00499\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.5,\n      \"rationale\": \"General health advisory about measles; tangentially relevant due to parenting/health focus, but not local.\"\n    },\n    {\n      \"id\": \"a00505\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"US healthcare investment trends are not relevant to Singaporean healthcare or reader's context.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2601,
+  "completion_tokens": 305
+ }
+}

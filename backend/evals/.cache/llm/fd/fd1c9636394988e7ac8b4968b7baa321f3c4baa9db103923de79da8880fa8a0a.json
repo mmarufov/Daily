@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a7788be30bbb180c6431ddc127c8c083e00cbd6756ce163c18d4cfb37d7ccbaa",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00610\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Russian political developments are relevant but not urgent for business; routine background on Russia.\"\n    },\n    {\n      \"id\": \"a00613\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Covers Russia-Ukraine war and Russia's international stance; relevant context but not directly actionable.\"\n    },\n    {\n      \"id\": \"a00616\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly impacts regional logistics and cross-border trade; actionable for import-export business.\"\n    },\n    {\n      \"id\": \"a00618\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Military tactics in Ukraine are background context; not directly affecting business operations.\"\n    },\n    {\n      \"id\": \"a00619\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Relevant for airspace safety and Russia-Ukraine tensions, but not directly actionable for business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3466,
+  "completion_tokens": 318
+ }
+}

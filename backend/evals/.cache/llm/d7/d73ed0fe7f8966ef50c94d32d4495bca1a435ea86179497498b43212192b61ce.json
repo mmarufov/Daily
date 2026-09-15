@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "6c9b80311d600a5b1c31a2a930be93b27ce389d427f0cd5da30f8ee75fb4b255",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01003\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major cybercrime arrests are solid general news but not a must_see for all adults.\"\n    },\n    {\n      \"id\": \"a01013\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Space telescope launch is notable science news, but not a must_see for everyone.\"\n    },\n    {\n      \"id\": \"a01115\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Followup on major cybercrime arrests; important but not must_see for general audience.\"\n    },\n    {\n      \"id\": \"a01181\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"International aid for Nepal floods is relevant world news, but not a must_see.\"\n    },\n    {\n      \"id\": \"a01188\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Grand Canyon flash flooding is significant, but not a global must_see event.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1919,
+  "completion_tokens": 309
+ }
+}

@@ -14,6 +14,7 @@ struct SearchView: View {
     @State private var categoryCounts: [String: Int] = [:]
     @State private var semanticResults: [NewsArticle] = []
     @State private var isSearching = false
+    @State private var readerDestination: ArticleReaderDestination?
 
     private static let defaultCategories: [(name: String, icon: String, color: Color)] = [
         ("technology", "cpu.fill", .blue),
@@ -91,6 +92,7 @@ struct SearchView: View {
             .task {
                 await loadCategories()
             }
+            .articleReaderDestination($readerDestination)
         }
     }
 
@@ -186,7 +188,7 @@ private extension SearchView {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(spacing: 0) {
                 ForEach(Array(displayResults.enumerated()), id: \.element.id) { index, article in
-                    NavigationLink(destination: ArticleDetailView(article: article)) {
+                    ArticleReaderButton(article: article, destination: $readerDestination) {
                         FeaturedArticleCard(article: article, isRead: bookmarks.isRead(article.id), style: .feed)
                     }
                     .buttonStyle(PressableButtonStyle())

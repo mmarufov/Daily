@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "34fdc58aa1abc480dac6a09a3fb59d559763a9dd631763ec7db72c56387e86a6",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00454\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Local tragedy, not a major event for a general audience.\"\n    },\n    {\n      \"id\": \"a00472\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Routine local policy response; not a major event.\"\n    },\n    {\n      \"id\": \"a00474\",\n      \"label\": \"fine\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Policy proposal with social relevance, but not a must-know for all.\"\n    },\n    {\n      \"id\": \"a00498\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Major international trade conflict affecting US economy and prices.\"\n    },\n    {\n      \"id\": \"a00508\",\n      \"label\": \"must_see\",\n      \"tags\": [\"major_event\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"National-level legal battle over voting rights; major democratic process impact.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1948,
+  "completion_tokens": 291
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "98e604895bcc645b8ba942994c8d2e56fce9e2bfa788b8bca805316531c54ae9",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00042\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"US Fed policy is relevant to energy markets but not a primary focus for Lena.\"\n    },\n    {\n      \"id\": \"a00049\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\", \"followup\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Iran sanctions and economic policy are relevant but not Lena's core focus.\"\n    },\n    {\n      \"id\": \"a00052\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"need_to_know\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Critical update on EU gas storage directly impacts European energy security and markets.\"\n    },\n    {\n      \"id\": \"a00109\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Iran war's disruption of Eurasian trade is a major event for energy security analysis.\"\n    },\n    {\n      \"id\": \"a00152\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"TAPI pipeline progress is relevant background for energy markets, but not urgent.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1949,
+  "completion_tokens": 323
+ }
+}

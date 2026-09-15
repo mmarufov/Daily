@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "2d55a55b75c679d5d0c6e1e1273c5c29d0335ef6e36db2ab47a9509840e35648",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01277\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Important international political news but not a major event for all adults.\"}, {\"id\": \"a01278\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Significant human rights issue, relevant general news but not major event.\"}, {\"id\": \"a01279\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Notable media figure deported, interesting but niche interest.\"}, {\"id\": \"a01280\", \"label\": \"must_see\", \"tags\": [\"major_event\"], \"confidence\": 0.95, \"rationale\": \"US strike killing civilians is major international news all informed adults should know.\"}, {\"id\": \"a01281\", \"label\": \"never\", \"tags\": [\"promo\", \"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Tech company renaming a lake is trivial and likely promotional or fringe.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 921,
+  "completion_tokens": 242
+ }
+}

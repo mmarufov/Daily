@@ -1,0 +1,169 @@
+{
+ "key": "farrukh",
+ "name": "Farrukh — Dushanbe, Tajikistan",
+ "axis": "multi-region geopolitics + trade; tests breadth and non-Western coverage",
+ "transcript": null,
+ "explicit_context": null,
+ "profile": {
+  "ai_profile": "I run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with the region, trade routes and logistics, customs and tariff changes, currency and commodity prices, and anything about sanctions that affects cross-border trade. Global business news matters when it touches the region. Not interested in entertainment or gaming.",
+  "interests": {
+   "topics": [
+    "Central Asia economy",
+    "Central Asia politics",
+    "Russia sanctions",
+    "trade routes",
+    "logistics",
+    "customs and tariffs",
+    "currency exchange",
+    "commodity prices"
+   ],
+   "people": [
+    "Emomali Rahmon",
+    "Kassym-Jomart Tokayev"
+   ],
+   "locations": [
+    "Tajikistan",
+    "Dushanbe",
+    "Kazakhstan",
+    "Uzbekistan",
+    "Russia",
+    "China",
+    "Central Asia"
+   ],
+   "industries": [
+    "import export",
+    "logistics",
+    "banking",
+    "commodities"
+   ],
+   "excluded_topics": [
+    "entertainment",
+    "gaming",
+    "celebrity"
+   ],
+   "notes": "Runs an import-export business; cross-border trade with Russia and China."
+  },
+  "user_profile_v2": {
+   "stable_interests": [
+    "Central Asia economy",
+    "Central Asia politics",
+    "trade routes",
+    "commodity prices",
+    "Russia sanctions"
+   ],
+   "current_interests": [
+    "Russia sanctions",
+    "customs and tariffs",
+    "trade routes",
+    "currency exchange"
+   ],
+   "people": [
+    "Emomali Rahmon",
+    "Kassym-Jomart Tokayev"
+   ],
+   "locations": [
+    "Tajikistan",
+    "Kazakhstan",
+    "Uzbekistan",
+    "Russia",
+    "China",
+    "Central Asia"
+   ],
+   "industries": [
+    "import export",
+    "logistics",
+    "banking",
+    "commodities"
+   ],
+   "excluded_topics": [
+    "entertainment",
+    "gaming",
+    "celebrity"
+   ],
+   "expanded_exclusions": [
+    "box office",
+    "red carpet",
+    "game trailer",
+    "esports"
+   ],
+   "utility_priorities": [
+    "money",
+    "work",
+    "travel"
+   ],
+   "content_depth": "balanced",
+   "tone_preferences": [
+    "neutral"
+   ],
+   "life_context": "Import-export business owner in Dushanbe trading with Russia, China and Kazakhstan.",
+   "source_selection_brief": {
+    "priority_topics": [
+     "Central Asia economy",
+     "Russia sanctions",
+     "trade routes",
+     "customs and tariffs"
+    ],
+    "must_cover_entities": [
+     "Tajikistan",
+     "Kazakhstan",
+     "Uzbekistan",
+     "Russia"
+    ],
+    "must_avoid_topics": [
+     "entertainment",
+     "gaming"
+    ],
+    "preferred_source_types": [
+     "publisher",
+     "analyst",
+     "breadth"
+    ],
+    "coverage_targets": [
+     "Central Asia",
+     "Russia",
+     "logistics",
+     "commodities"
+    ],
+    "specificity_level": "mixed"
+   }
+  },
+  "source_selection_brief": {
+   "priority_topics": [
+    "Central Asia economy",
+    "Russia sanctions",
+    "trade routes",
+    "customs and tariffs"
+   ],
+   "must_cover_entities": [
+    "Tajikistan",
+    "Kazakhstan",
+    "Uzbekistan",
+    "Russia"
+   ],
+   "must_avoid_topics": [
+    "entertainment",
+    "gaming"
+   ],
+   "preferred_source_types": [
+    "publisher",
+    "analyst",
+    "breadth"
+   ],
+   "coverage_targets": [
+    "Central Asia",
+    "Russia",
+    "logistics",
+    "commodities"
+   ],
+   "specificity_level": "mixed"
+  }
+ },
+ "expect": {
+  "has_preferences": true
+ },
+ "built_with": {
+  "model": "hand-written",
+  "cache_key": null,
+  "date": "2026-08-30"
+ }
+}

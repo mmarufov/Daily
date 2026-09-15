@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "d37496967c58b58a611fcab2deb78baa99ec0772d93bbe2c78688a0f28c1f83f",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00625\", \"label\": \"fine\", \"tags\": [\"Russia\", \"business\", \"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Russian business payment limits relevant but not directly about trade or sanctions.\"}, {\"id\": \"a00627\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Teen arson prevention ads in Russia unrelated to trade or Central Asia.\"}, {\"id\": \"a00629\", \"label\": \"must_see\", \"tags\": [\"Russia\", \"sanctions\", \"major_event\", \"need_to_know\"], \"confidence\": 0.95, \"rationale\": \"Germany blames Russia for sabotage, EU sanctions impact trade and politics.\"}, {\"id\": \"a00630\", \"label\": \"fine\", \"tags\": [\"Russia\", \"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Russian domestic policy changes, digital ruble relevant but not urgent.\"}, {\"id\": \"a00634\", \"label\": \"fine\", \"tags\": [\"Russia\", \"military\", \"background_routine\"], \"confidence\": 0.75, \"rationale\": \"Russian marketplaces selling military goods, indirect relevance to sanctions and trade.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 4392,
+  "completion_tokens": 280
+ }
+}

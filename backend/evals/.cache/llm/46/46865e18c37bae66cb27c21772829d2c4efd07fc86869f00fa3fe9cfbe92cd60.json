@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0284f94fcbd8c123ca849555179baf3f6aa86b192c127403c325a48e4e9dd2a9",
+  "preview": "READER: Tom — Boston\n\nIn their own words:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nREADER: Product manager at an AI startup, interested in ind"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a01063\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Apple iPhone launch unrelated to AI or reader's interests.\"}, {\"id\": \"a01064\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 1.0, \"rationale\": \"Anthropic's new Fable release directly relevant to AI model releases.\"}, {\"id\": \"a01067\", \"label\": \"must_see\", \"tags\": [\"direct\"], \"confidence\": 0.9, \"rationale\": \"Google's new AI tool relevant to AI products and industry developments.\"}, {\"id\": \"a01068\", \"label\": \"fine\", \"tags\": [\"direct\"], \"confidence\": 0.8, \"rationale\": \"OpenAI's ChatGPT Health integration relevant but more niche.\"}, {\"id\": \"a01069\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Waymo vs Tesla autonomous vehicles not related to AI product management.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1061,
+  "completion_tokens": 244
+ }
+}

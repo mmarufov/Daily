@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "9f8b2d0ca19acc93438850ec315a48599615ee8bfc7b5a1e2a9978bb3d726313",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01009\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"world news\", \"consumer impact\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Major tech policy news with global impact; relevant to tech and consumer interests but not must_see.\"\n    },\n    {\n      \"id\": \"a01011\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Music nostalgia piece; not relevant to user's interests or priorities.\"\n    },\n    {\n      \"id\": \"a01013\",\n      \"label\": \"must_see\",\n      \"tags\": [\"science\", \"major_event\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Major science event; primary interest and significant for staying informed.\"\n    },\n    {\n      \"id\": \"a01016\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Tech/robotics event; on-topic but routine coverage, not essential.\"\n    },\n    {\n      \"id\": \"a01019\",\n      \"label\": \"fine\",\n      \"tags\": [\"UK news\", \"world news\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"UK/world news; notable but not essential for staying informed or consumer impact.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2048,
+  "completion_tokens": 318
+ }
+}

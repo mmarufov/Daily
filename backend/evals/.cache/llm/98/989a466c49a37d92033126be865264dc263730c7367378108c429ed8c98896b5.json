@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "12ab788c868351663c210e9b94b49f198a05613ace144e9e1125b993bff31878",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00771\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.8,\n      \"rationale\": \"Tech/AI topic is primary, but article is general industry commentary, not urgent or UK/London-specific.\"\n    },\n    {\n      \"id\": \"a00772\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"AI and tech are primary interests, but Singapore focus and general discussion make it missable.\"\n    },\n    {\n      \"id\": \"a00774\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore-Thailand diplomatic event; not relevant to user's interests or location.\"\n    },\n    {\n      \"id\": \"a00775\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore financial regulation; not relevant to UK/London or user's consumer/marketing focus.\"\n    },\n    {\n      \"id\": \"a00780\",\n      \"label\": \"fine\",\n      \"tags\": [\"technology\", \"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Fintech/innovation is on-topic, but Singapore focus and no direct UK/consumer impact.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1006,
+  "completion_tokens": 326
+ }
+}

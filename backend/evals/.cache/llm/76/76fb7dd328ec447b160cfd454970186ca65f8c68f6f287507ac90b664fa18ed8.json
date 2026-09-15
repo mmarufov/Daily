@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "928f0468d592b36fbae4d33fd64d70807a5e0bdde8896b105b762dae075708cf",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00369\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Far-right political figure, no tech, science, or UK consumer relevance.\"}, {\"id\": \"a00370\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Political dispute with no direct consumer or tech impact.\"}, {\"id\": \"a00371\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"world_news\"], \"confidence\": 0.8, \"rationale\": \"Tech-related political issue with consumer impact, but local US focus.\"}, {\"id\": \"a00375\", \"label\": \"never\", \"tags\": [\"off_topic\", \"exclusion_collision\"], \"confidence\": 0.9, \"rationale\": \"Same far-right figure, no relevance to reader interests.\"}, {\"id\": \"a00377\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\", \"major_event\", \"technology\", \"consumer_impact\"], \"confidence\": 0.95, \"rationale\": \"Critical tech supply chain issue affecting consumers and industry globally.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1689,
+  "completion_tokens": 273
+ }
+}

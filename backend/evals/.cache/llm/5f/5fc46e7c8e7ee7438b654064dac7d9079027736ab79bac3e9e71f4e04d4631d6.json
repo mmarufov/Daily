@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "100db120dcdaadb23fd729206d6d7500e05f53f286060c684d0a19959f1f4ec5",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00263\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Apartheid photography exhibition unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00277\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Video game housing design tips unrelated to reader's tech and fintech focus.\"}, {\"id\": \"a00289\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Industry perspective on gaming and AI hardware prices; marginally relevant to software engineering.\"}, {\"id\": \"a00294\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Tech hardware safety warning relevant to engineering but not core interests.\"}, {\"id\": \"a00297\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"VR game promotion unrelated to fintech, cloud, or Southeast Asia tech.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3193,
+  "completion_tokens": 250
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "ba7096e6c4a8170978f8341446fd3a1a02047428466374328048a58e55b3e8fb",
+  "preview": "READER: Cold start — no preferences\n\nIn their own words:\nUser prefers a general news feed without specific interests or preferences.\n\nThis reader gave NO preferences at all. must_see = only news an in"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00825\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.9, \"rationale\": \"Crypto market update interesting but not major news for general reader.\"}, {\"id\": \"a00828\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.85, \"rationale\": \"AI marketing trends in Southeast Asia are niche but plausible general interest.\"}, {\"id\": \"a00838\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.8, \"rationale\": \"Trump's call is notable but not major event or critical news.\"}, {\"id\": \"a00839\", \"label\": \"must_see\", \"tags\": [\"major_event\", \"direct\"], \"confidence\": 0.95, \"rationale\": \"Launch of major NASA space telescope is important global science news.\"}, {\"id\": \"a00848\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Profile of Nancy Grace Roman is informative background, not urgent news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3621,
+  "completion_tokens": 247
+ }
+}

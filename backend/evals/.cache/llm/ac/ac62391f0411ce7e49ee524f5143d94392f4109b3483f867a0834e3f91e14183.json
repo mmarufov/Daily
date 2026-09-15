@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "8f168590cd1a3717a77dd04da4a07bf29d51e00e9610faf8d83464e4f39b7e40",
+  "preview": "READER: Maya — London\n\nIn their own words:\nUser wants a balanced news feed with a focus on world news, UK news, and relevant tech and science updates, while avoiding sports and celebrity news.\n\nREADER"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00000\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to tech and social media impact, but not urgent or major news.\"}, {\"id\": \"a00001\", \"label\": \"fine\", \"tags\": [\"world_news\"], \"confidence\": 0.7, \"rationale\": \"World news with geopolitical impact, but no direct consumer or UK impact.\"}, {\"id\": \"a00002\", \"label\": \"fine\", \"tags\": [\"world_news\", \"business\"], \"confidence\": 0.7, \"rationale\": \"Economic update relevant to global business environment, missable.\"}, {\"id\": \"a00003\", \"label\": \"fine\", \"tags\": [\"business\"], \"confidence\": 0.7, \"rationale\": \"Major business deal, relevant to business and marketing interests, but routine.\"}, {\"id\": \"a00004\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Beauty product launch unrelated to tech, science, UK, or marketing.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1074,
+  "completion_tokens": 250
+ }
+}

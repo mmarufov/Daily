@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "a57cfc20e0b3d7999c075e81e3556eb04c6f1bec4d2462c93f7fd67b814c6b89",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00651\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Cosmic acceleration unrelated to NJ or reader interests.\"}, {\"id\": \"a00656\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.7, \"rationale\": \"Health topic may interest but not directly NJ or reader's daily life.\"}, {\"id\": \"a00659\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Pre-K study relevant to public schools but not local or urgent.\"}, {\"id\": \"a00678\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 1.0, \"rationale\": \"Space telescope launch unrelated to NJ or reader interests.\"}, {\"id\": \"a00680\", \"label\": \"fine\", \"tags\": [], \"confidence\": 0.6, \"rationale\": \"Pain research interesting but not related to NJ or reader's priorities.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1263,
+  "completion_tokens": 234
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.1,
+  "max_tokens": 2000,
+  "messages_sha256": "f5415ce9cba8f42462bab4dbf0873465e337e7067404220291d74f01d6d74169",
+  "preview": "READER PROFILE:\nREADER: Senior backend engineer at a Singapore fintech; evaluates tools for production use.\nDEPTH: deep\n\nWANTS:\n  [PRIMARY] Singapore  (entity)\n  [PRIMARY] MAS  (entity)\n  [PRIMARY] AI"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"verdicts\": [\n    {\n      \"id\": 100,\n      \"keep\": true,\n      \"score\": 0.8,\n      \"matched\": \"AI engineering\",\n      \"kind\": \"direct\",\n      \"why\": \"Cybersecurity capabilities in AI are relevant to fintech.\"\n    },\n    {\n      \"id\": 101,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"New Jersey news is irrelevant to the reader.\"\n    },\n    {\n      \"id\": 102,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"New Jersey news is irrelevant to the reader.\"\n    },\n    {\n      \"id\": 103,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Game development insights are not relevant.\"\n    },\n    {\n      \"id\": 104,\n      \"keep\": true,\n      \"score\": 0.7,\n      \"matched\": \"cybersecurity\",\n      \"kind\": \"contextual\",\n      \"why\": \"Vulnerabilities affect security in fintech systems.\"\n    },\n    {\n      \"id\": 105,\n      \"keep\": true,\n      \"score\": 0.6,\n      \"matched\": \"cybersecurity\",\n      \"kind\": \"contextual\",\n      \"why\": \"Healthcare breaches highlight cybersecurity risks.\"\n    },\n    {\n      \"id\": 106,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"New York financial struggles are irrelevant.\"\n    },\n    {\n      \"id\": 107,\n      \"keep\": true,\n      \"score\": 0.5,\n      \"matched\": \"AI engineering\",\n      \"kind\": \"direct\",\n      \"why\": \"AI model control is relevant to engineering practices.\"\n    },\n    {\n      \"id\": 108,\n      \"keep\": false,\n      \"score\": 0.0,\n      \"matched\": null,\n      \"kind\": \"direct\",\n      \"why\": \"Science stories are not relevant to professional interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1025,
+  "completion_tokens": 494
+ }
+}

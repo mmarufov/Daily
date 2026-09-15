@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "f41cda0f1a90592c5965d44fb812ca0354bdce1fef576a6406f36135968f837d",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00207\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Healthcare data breach is unrelated to energy, economics, or reader's interests.\"\n    },\n    {\n      \"id\": \"a00219\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Cybersecurity in infrastructure is tangentially relevant to energy security, but not central.\"\n    },\n    {\n      \"id\": \"a00335\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major escalation in Iran situation, directly relevant to energy security and geopolitical focus.\"\n    },\n    {\n      \"id\": \"a00380\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\", \"followup\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Ongoing Iran-US hostilities; critical for energy security and geopolitical analysis.\"\n    },\n    {\n      \"id\": \"a00572\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Analysis of oil shock's impact on Russia is highly relevant to energy markets and geopolitics.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1229,
+  "completion_tokens": 321
+ }
+}

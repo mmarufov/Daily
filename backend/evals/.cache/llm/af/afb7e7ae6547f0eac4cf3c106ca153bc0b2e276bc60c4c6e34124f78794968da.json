@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "0ba6a8bde66c550dfdc75ed3e757f69d2d99fcce51581ac803f9ea366c07e1ce",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00815\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Relevant to AI trust in Asia but not deeply technical or Singapore/MAS specific.\"}, {\"id\": \"a00816\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Insightful on SEA AI adoption but lacks deep technical or regulatory focus.\"}, {\"id\": \"a00817\", \"label\": \"must_see\", \"tags\": [\"direct\", \"need_to_know\"], \"confidence\": 0.9, \"rationale\": \"Deep technical and operational AI scaling challenges in SEA retail, relevant to engineering and SEA market.\"}, {\"id\": \"a00818\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.6, \"rationale\": \"Southeast Asia industry development but unrelated to fintech, AI, or software engineering.\"}, {\"id\": \"a00819\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.95, \"rationale\": \"Agritech focus unrelated to reader's interests or fintech/AI/software engineering.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3811,
+  "completion_tokens": 269
+ }
+}

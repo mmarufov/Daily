@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "41f84b694eae67aa36fa9f3ad1421d13c4f951e05b62095babb00b4e9f873b95",
+  "preview": "READER: Farrukh — Dushanbe, Tajikistan\n\nIn their own words:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a00638\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"Russia sanctions\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Directly addresses Russia sanctions, a primary interest affecting cross-border trade and business environment.\"\n    },\n    {\n      \"id\": \"a00640\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major news, but not directly relevant to business/trade; background on Russia-Ukraine conflict.\"\n    },\n    {\n      \"id\": \"a00856\",\n      \"label\": \"never\",\n      \"tags\": [\"off_topic\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Singapore fintech funding is unrelated to Central Asia, Russia, or reader's business interests.\"\n    },\n    {\n      \"id\": \"a01224\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.6,\n      \"rationale\": \"Regional trade route disruption is relevant, but Nepal-China border is peripheral to reader's main trade routes.\"\n    },\n    {\n      \"id\": \"a01305\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.65,\n      \"rationale\": \"Russia-related security incident in Europe; relevant as background but not directly impacting reader's business.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2894,
+  "completion_tokens": 323
+ }
+}

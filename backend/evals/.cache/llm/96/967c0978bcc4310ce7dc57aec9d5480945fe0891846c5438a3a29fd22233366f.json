@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "35eabbf2c9e9ec0f953da259824593761648757c265ceb62a824b2964fb5bdd9",
+  "preview": "READER: Wei — Singapore\n\nIn their own words:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and ho"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00630\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Russia school and animal rules irrelevant to Singapore fintech engineer.\"}, {\"id\": \"a00648\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.8, \"rationale\": \"NASA space telescope unrelated to reader's tech and fintech interests.\"}, {\"id\": \"a00649\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Geological plume in Africa unrelated to reader's interests.\"}, {\"id\": \"a00659\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Medical osteoarthritis drug research irrelevant to reader.\"}, {\"id\": \"a00695\", \"label\": \"fine\", \"tags\": [\"background_routine\", \"AI engineering\"], \"confidence\": 0.7, \"rationale\": \"AI used in materials science is interesting but not core to reader's fintech/cloud focus.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1730,
+  "completion_tokens": 244
+ }
+}

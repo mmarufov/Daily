@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "57d73a15de21e89b19f8c767b973c3ebcd42697620016765c48dbc9ebd74ddaa",
+  "preview": "READER: Ray — Newark, New Jersey\n\nIn their own words:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system"
+ },
+ "model": "gpt-4.1-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"labels\": [{\"id\": \"a00518\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.8, \"rationale\": \"Voting rights issue relevant but not directly impacting Newark or NJ daily life.\"}, {\"id\": \"a00519\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Settlement affects NJ financially but no direct daily impact for reader.\"}, {\"id\": \"a00520\", \"label\": \"fine\", \"tags\": [\"background_routine\"], \"confidence\": 0.7, \"rationale\": \"Local political legal case in Newark, relevant but not urgent or life-impacting.\"}, {\"id\": \"a00521\", \"label\": \"must_see\", \"tags\": [\"need_to_know\", \"local\"], \"confidence\": 0.9, \"rationale\": \"State law on ICE agents affects local safety and community, directly relevant to Newark.\"}, {\"id\": \"a00522\", \"label\": \"never\", \"tags\": [\"off_topic\"], \"confidence\": 0.9, \"rationale\": \"Private equity healthcare deals not relevant to reader's interests or daily life.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3613,
+  "completion_tokens": 261
+ }
+}

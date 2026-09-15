@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4.1",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.0,
+  "max_tokens": 1500,
+  "messages_sha256": "e2d228570cf75ac8b1da0632baff8560e825371adb593a2656fd7a52dee77527",
+  "preview": "READER: Lena — Berlin\n\nIn their own words:\nEnergy markets analyst based in Berlin with a focus on geopolitical developments affecting energy security.\n\nREADER: Working as an analyst in energy markets,"
+ },
+ "model": "gpt-4.1",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"labels\": [\n    {\n      \"id\": \"a01295\",\n      \"label\": \"fine\",\n      \"tags\": [\"background_routine\"],\n      \"confidence\": 0.7,\n      \"rationale\": \"Major oil deal relevant to energy markets, but not directly tied to reader's primary interests or immediate impact.\"\n    },\n    {\n      \"id\": \"a01296\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Iran nuclear developments are a primary interest and have direct implications for energy security.\"\n    },\n    {\n      \"id\": \"a01303\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"major_event\"],\n      \"confidence\": 1.0,\n      \"rationale\": \"Major escalation in Iran/Strait of Hormuz directly impacts energy security and oil markets.\"\n    },\n    {\n      \"id\": \"a01306\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.95,\n      \"rationale\": \"Continued hostilities in Iran/Strait of Hormuz are critical for energy security analysis.\"\n    },\n    {\n      \"id\": \"a01309\",\n      \"label\": \"must_see\",\n      \"tags\": [\"direct\", \"followup\"],\n      \"confidence\": 0.9,\n      \"rationale\": \"Iran's fuel crisis due to war and sanctions is central to energy security and market analysis.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 1127,
+  "completion_tokens": 332
+ }
+}
