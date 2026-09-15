@@ -29,7 +29,7 @@ final class NewsPersonalizationViewModel: ObservableObject {
     // view. Legacy-serving only -- S5 write-blocks pins with 409 and
     // check_interest_evolution() returns 0 unconditionally when S5 is on
     // (interest_evolution.py:21-25), so these are hidden whenever `reader`
-    // is set. See tasks/s10-learning-audit.md and -implementation-plan.md batch E.
+    // is set. See docs/stages/s10-learning-audit.md and -implementation-plan.md batch E.
     @Published private(set) var entityPins: [BackendService.EntityPin] = []
     @Published private(set) var interestSuggestions: [BackendService.InterestSuggestion] = []
     @Published var entityPinErrorMessage: String?

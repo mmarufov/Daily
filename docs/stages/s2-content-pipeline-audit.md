@@ -69,7 +69,7 @@ this implementation pass.
 
 Read-only architecture and correctness review, 2026-09-03. Evidence: the current dirty
 worktree, focused and full test runs, an iOS simulator build, the 2026-09-02 production
-measurements in `tasks/s1-ingestion-audit.md`, and read-only probes of the production API.
+measurements in `docs/stages/s1-ingestion-audit.md`, and read-only probes of the production API.
 No product code or production state was changed.
 
 ## Verdict

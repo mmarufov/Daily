@@ -67,7 +67,7 @@ ranking, is the bottleneck — the S6 finding, now a number.
 
 ## 2. S1 — Sources & ingestion 🔍 audited, Phase 0 shipped
 
-Full audit: **`tasks/s1-ingestion-audit.md`**. Plan:
+Full audit: **`docs/stages/s1-ingestion-audit.md`**. Plan:
 `~/.claude/plans/create-a-plan-to-adaptive-cray.md`.
 
 ### What the audit measured (read-only, production DB + live probe of all 82 seeds)
@@ -154,9 +154,9 @@ test module loads.
 
 ## Key documents
 
-- `tasks/systems.md` — the app as eleven systems, S0–S10
-- `tasks/s1-ingestion-audit.md` — the S1 audit with all measurements
+- `docs/architecture/systems.md` — the app as eleven systems, S0–S10
+- `docs/stages/s1-ingestion-audit.md` — the S1 audit with all measurements
 - `backend/evals/README.md` — how to run and extend the evaluation
-- `tasks/plan.md` — live checklists for S0 (done) and S1 (P0 done)
-- `tasks/lessons.md` — corrections and rules captured this session
+- `docs/notes/plan.md` — live checklists for S0 (done) and S1 (P0 done)
+- `docs/notes/lessons.md` — corrections and rules captured this session
 - `~/.claude/plans/create-a-plan-to-adaptive-cray.md` — the approved S1 plan

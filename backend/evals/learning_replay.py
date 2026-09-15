@@ -4,7 +4,7 @@ Before this file existed, `fake_db.SnapshotConn` stubbed `user_feedback_signals`
 and `reading_events` to an unconditional `[]` (see its old dispatch() branch),
 so no S0 persona could ever have any behavior -- there was no way, even in
 principle, for this repository's test suite to tell you whether a change to
-the learning system helps or hurts. `tasks/s10-learning-audit.md` names this
+the learning system helps or hurts. `docs/stages/s10-learning-audit.md` names this
 as the single most important gap the audit found, ahead of any modeling work.
 
 This closes it for the legacy (S5-off) path specifically: build a persona's

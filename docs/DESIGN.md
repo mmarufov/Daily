@@ -1,6 +1,6 @@
 # DESIGN.md — Daily Design System
 
-**Last updated:** 2026-05-06 (from `/plan-design-review` — see `tasks/design-redesign-plan.md`)
+**Last updated:** 2026-05-06 (from `/plan-design-review` — see `docs/architecture/design-redesign-plan.md`)
 
 This is the single source of truth for Daily's visual design. If a UI change conflicts with this file, update this file first, then ship.
 
@@ -162,4 +162,4 @@ The AI Slop Blacklist applied:
 
 ## Source
 
-This file is the output of `/plan-design-review` (2026-05-06), incorporating Codex hard-rules review + Claude subagent completeness review + product owner direction. Full rationale in `tasks/design-redesign-plan.md`.
+This file is the output of `/plan-design-review` (2026-05-06), incorporating Codex hard-rules review + Claude subagent completeness review + product owner direction. Full rationale in `docs/architecture/design-redesign-plan.md`.

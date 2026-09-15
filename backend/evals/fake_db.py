@@ -84,7 +84,7 @@ class SnapshotConn:
         # against this same connection (see evals/learning_replay.py) so a
         # persona's next build reflects actual feedback instead of the
         # unconditional `[]` this harness previously always returned for
-        # these tables -- the S0 gap tasks/s10-learning-audit.md names as the
+        # these tables -- the S0 gap docs/stages/s10-learning-audit.md names as the
         # most important one: nothing could previously prove learning works.
         self.feedback_signals: dict[tuple[str, str, str], dict] = {}
         self.suppressed_article_ids: set[str] = set()

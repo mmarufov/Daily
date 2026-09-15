@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # S10 C: these constants now live in reward.py, the one definition shared with
 # the S5 path (reader_feedback.py). Re-exported under their original names so
 # nothing else in this module or its tests has to change; the *values* can no
-# longer silently drift between the two loops. See tasks/s10-learning-audit.md
+# longer silently drift between the two loops. See docs/stages/s10-learning-audit.md
 # section 6 and reward.py's module docstring.
 FEEDBACK_DELTAS = _reward.DELTAS
 KIND_FACTORS = _reward.KIND_FACTORS

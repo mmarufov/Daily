@@ -1,6 +1,6 @@
 """S10 Tier 0: the one reward definition, shared by the legacy and S5 learning
-loops. Pure function, no DB/network access -- see tasks/s10-learning-audit.md
-section 6 and tasks/s10-implementation-plan.md batch C.
+loops. Pure function, no DB/network access -- see docs/stages/s10-learning-audit.md
+section 6 and docs/stages/s10-implementation-plan.md batch C.
 
 Before this module existed, `feedback_signals.py` (legacy) and
 `reader_feedback.py` (S5) each hard-coded their own copy of the same delta

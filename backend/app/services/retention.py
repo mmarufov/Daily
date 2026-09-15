@@ -46,7 +46,7 @@ mismatch rather than a live defect -- a client cannot echo a receipt for a
 card it stopped holding two weeks ago -- so the honest fix is to say so
 (`RECEIPT_VALIDATION_DAYS` below) rather than to restructure an append-only
 receipt table that S8's `reader_edition_reads` composite-FKs onto. Flagged in
-tasks/bulletproof-architecture-plan.md rather than silently changed.
+docs/architecture/bulletproof-architecture-plan.md rather than silently changed.
 """
 from __future__ import annotations
 

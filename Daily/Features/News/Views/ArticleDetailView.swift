@@ -455,7 +455,7 @@ struct ArticleDetailView: View {
     /// (.onDisappear -- the view leaving the navigation stack), never on
     /// backgrounding the app (scenePhase changes go through a separate path
     /// and never call this). Distinguishes "the reader didn't want this" from
-    /// "the reader left the app", per tasks/s10-implementation-plan.md batch B.
+    /// "the reader left the app", per docs/stages/s10-implementation-plan.md batch B.
     private func trackQuickBackIfNeeded() {
         guard !hasLoggedQualifyingRead,
               Date().timeIntervalSince(articleOpenTime) < 8 else { return }

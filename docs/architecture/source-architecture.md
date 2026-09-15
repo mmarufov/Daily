@@ -3,7 +3,7 @@
 Answer to: *what sources, from where, and how do we fetch them so the AI can filter
 through them ALL properly.*
 
-Companion to `tasks/personalization-audit.md`. Everything marked **[measured]** was
+Companion to `docs/architecture/personalization-audit.md`. Everything marked **[measured]** was
 verified live from this machine on 2026-08-31.
 
 ---

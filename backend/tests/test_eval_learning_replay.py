@@ -43,7 +43,7 @@ def _persona(**profile_v2):
 
 
 class TestNeverReturnGuarantee(unittest.TestCase):
-    """The bulletproof claim tasks/systems.md makes for S10: 'the rejected
+    """The bulletproof claim docs/architecture/systems.md makes for S10: 'the rejected
     article never returns.' Checked here through the real edition-building
     pipeline, not only through feedback_signals.py's isolated unit tests."""
 

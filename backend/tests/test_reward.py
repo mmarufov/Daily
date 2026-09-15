@@ -1,5 +1,5 @@
-"""S10 C: the shared reward function. See tasks/s10-learning-audit.md section 6
-and tasks/s10-implementation-plan.md batch C.
+"""S10 C: the shared reward function. See docs/stages/s10-learning-audit.md section 6
+and docs/stages/s10-implementation-plan.md batch C.
 
 Locks down: reward() is pure and bounded; no term is ever a function of raw
 dwell seconds or a bare impression/open count (the product instruction this

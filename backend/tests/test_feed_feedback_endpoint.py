@@ -4,8 +4,8 @@ Locks down three fixes: article_id is UUID-validated before any DB write (was
 an unhandled 500 on bad input); a retried/duplicate action does not re-apply
 learned-weight deltas (was unconditional, so retaps compounded the weight);
 hide_source suppresses the specific article, not only future ones from its
-source. See tasks/s10-learning-audit.md L1/L4/L5/L7 and
-tasks/s10-implementation-plan.md batch A.
+source. See docs/stages/s10-learning-audit.md L1/L4/L5/L7 and
+docs/stages/s10-implementation-plan.md batch A.
 """
 import asyncio
 import uuid

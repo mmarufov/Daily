@@ -5,7 +5,7 @@ implemented; labeled quality, production prerequisites and rollout remain incomp
 Architecture and evidence: [S3 audit](s3-understanding-audit.md).
 This document is the execution checklist; the audit remains the detailed contract and rationale.
 
-Execution status is tracked in `tasks/plan.md`; retained test/pilot evidence is in `.context/s3/`.
+Execution status is tracked in `docs/notes/plan.md`; retained test/pilot evidence is in `.context/s3/`.
 The checklists below are the full acceptance contract, not a claim that implementation alone
 satisfies semantic quality or production rollout. The operating guide is
 `backend/app/data/understanding/OPERATIONS.md`. No production flags or schemas have been changed.

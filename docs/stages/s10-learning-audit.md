@@ -54,7 +54,7 @@ mischaracterizes the reachable part.** The real state is:
    also cover general reader-mutation correctness unrelated to learning, so their full counts
    aren't all "learning" tests). It is also completely inert:
    `S5_READER_ENABLED=false` by default, and even if enabled, **S6 retrieval explicitly
-   refuses to consume it** (`tasks/s6-implementation-plan.md:133`: *"Do not apply S10 learned
+   refuses to consume it** (`docs/stages/s6-implementation-plan.md:133`: *"Do not apply S10 learned
    weights here initially: keep the retrieval comparison independent of learning"*), and S8
    assembly doesn't reference it at all. In the fully-enabled S5+S7 configuration, the only
    place learning can act is a ±25%/−50% multiplier on an *already-accepted* candidate's
@@ -206,7 +206,7 @@ tap/read (dwell≥5s + native-hash match) / not_relevant / more_like_this / hide
                     │
                     ▼
      ══════ S6 candidate retrieval: DOES NOT READ learned weights, BY DESIGN ══════
-     (tasks/s6-implementation-plan.md:133 — deliberately keeps retrieval independent
+     (docs/stages/s6-implementation-plan.md:133 — deliberately keeps retrieval independent
       of learning "to preserve the overlay for S7")
                     │
                     ▼
@@ -433,7 +433,7 @@ models or expect comparable data volume.
 post-processing over whatever relevance signal already exists:
 - *The Use of MMR, Diversity-Based Reranking for Reordering Documents and Producing Summaries*
   (Carbonell & Goldstein, SIGIR 1998) — already cited and scoped as an "optional, unevaluated
-  challenger" in `tasks/s8-implementation-plan.md:160,320`. Nothing new to add architecturally;
+  challenger" in `docs/stages/s8-implementation-plan.md:160,320`. Nothing new to add architecturally;
   correct as scoped.
 - *Calibrated Recommendations* (Steck, RecSys 2018 ✓verified) — a recommended list should
   reflect a reader's *proportions* of interest, not just rank by top predicted score (a reader
@@ -451,7 +451,7 @@ post-processing over whatever relevance signal already exists:
   recommender trained on its own historically-served items homogenizes behavior without
   increasing utility. **This is the central cautionary result for Daily specifically**,
   because S6's explicit refusal to let retrieval consume learned weights
-  (`tasks/s6-implementation-plan.md:133`) is *exactly* the guardrail these papers motivate —
+  (`docs/stages/s6-implementation-plan.md:133`) is *exactly* the guardrail these papers motivate —
   it means Daily's candidate pool today is generated from **explicit** interests only, never
   from what was previously served, so the classic confounding loop can't start. This is worth
   stating as a thing to actively **preserve**, not fix, and worth an explicit regression test
@@ -538,7 +538,7 @@ Requirement 3, addressed against what the trace found (not hypothetically):
 | **Diversity** | **Architecturally present, not calibrated.** S8's topic/publisher-share soft targets are flat constants (`topic_share: 0.6`), not calibrated against the reader's own declared priorities, and by design don't consume learned weights at all | `assembly_contract.py:21` `s3_membership_enabled: false`; §2b Steck discussion | Reframe existing constants as calibration targets derived from `ReaderIntent.priority` (Steck 2018) — zero new data required | 0 |
 | **Cold start** | **A genuine strength, partially undermined.** Explicit typed-intent onboarding with declared priority is a *better* cold-start signal than most industrial systems get implicitly — but the learned overlay treats "brand new intent" and "intent nobody has engaged since decay" identically (both simply absent = 0 in `reader_learned_signals`) | `reader_contract.py:25-70` (typed intents exist); no distinguishing logic in `reader_feedback.py` | Bayesian formulation (Tier 1, §2b) fixes this for free — a Beta prior seeded from declared priority *is* a principled cold-start answer, not a bolt-on | 1 |
 | **Interest drift (short vs long term)** | **Not handled distinctly.** Both loops use a single 30-day exponential half-life for the learned overlay, despite Daily's own *explicit* profile already modeling `stable_interests` vs `current_interests` as two tiers (`profile_model.py:26-27, 91-92, 142, 187-204`) | Single `HALF_LIFE_DAYS = 30.0` constant in both `feedback_signals.py:52` and `reader_feedback.py:92-94` | Two decay columns (fast: session/day-scale, slow: 30-day) blended at read time — stays entirely within existing Postgres/no-ML-infra constraints, mirrors the two-tier structure the explicit layer already has | 0 (schema) / 1 (use) |
-| **Feedback loops** | **Actively avoided by current design**, and this must be *preserved*, not "fixed." | `tasks/s6-implementation-plan.md:133` — retrieval explicitly excludes learned weights | Chaney et al. 2018 / Jiang et al. 2019 — make "retrieval never consumes learned weights" an explicit regression test (§4, §6), so a future change can't silently reintroduce the exact confounding loop this literature documents | guardrail, all tiers |
+| **Feedback loops** | **Actively avoided by current design**, and this must be *preserved*, not "fixed." | `docs/stages/s6-implementation-plan.md:133` — retrieval explicitly excludes learned weights | Chaney et al. 2018 / Jiang et al. 2019 — make "retrieval never consumes learned weights" an explicit regression test (§4, §6), so a future change can't silently reintroduce the exact confounding loop this literature documents | guardrail, all tiers |
 
 ---
 
@@ -580,7 +580,7 @@ upgrade gates."*
 | **rejected, no tier** | — | — | Two-tower retrieval, Monolith-style infra, HSTU sequential transducers, full LinUCB context vectors — see §2b for citations on why each needs orders of magnitude more data/items than Daily will plausibly have |
 
 **Practical first implementation = Tier 0, entirely.** Nothing else is honestly buildable
-today. The implementation plan (`tasks/s10-implementation-plan.md`) scopes Tier 0 as concrete,
+today. The implementation plan (`docs/stages/s10-implementation-plan.md`) scopes Tier 0 as concrete,
 file-scoped batches; Tiers 1–2 are documented as gated future work with their evidence
 thresholds stated as code (a query the app can actually run to check whether the gate is met),
 not prose.
@@ -655,7 +655,7 @@ to work without it:
 2. **Add a "reader-expressed-negative" label class to S0.** The current 3-way
    `must_see`/`fine`/`never` taxonomy has no way to represent "this specific reader said no to
    this specific article" — extend personas with an optional scripted feedback history so the
-   never-return guarantee (`tasks/systems.md` S10 bulletproof line: *"the rejected article
+   never-return guarantee (`docs/architecture/systems.md` S10 bulletproof line: *"the rejected article
    never returns"*) can be checked as a metric per persona, not just asserted by unit test.
 3. **Name the real online metric for later, honestly**: qualified-read rate per cohort — not
    engagement, not session length, not DAU. State plainly that this requires real users Daily
@@ -694,7 +694,7 @@ matching `manage_s5_reader.py`'s shape. No new deployment pattern is justified o
 
 ---
 
-## 7. Corrected claims vs. `tasks/systems.md`
+## 7. Corrected claims vs. `docs/architecture/systems.md`
 
 Requirement 7 (source-backed audit): concrete corrections to the current S10 blurb, each with
 file:line evidence, so the systems.md update in this same change is traceable to this audit
@@ -733,4 +733,4 @@ Explicitly flagged as **not** a primary source (press/folklore, not cited as fac
 above): TikTok's specific reward-shaping internals; the "70% of YouTube watch time" figure
 (Neal Mohan, CES 2018, reported by press).
 
-This audit's companion implementation plan is `tasks/s10-implementation-plan.md`.
+This audit's companion implementation plan is `docs/stages/s10-implementation-plan.md`.

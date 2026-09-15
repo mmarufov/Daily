@@ -86,7 +86,7 @@ shadow cannot. A singleton S3 group is acceptable input; an unapproved S3 recipe
 ## 4. Batch 0 — Baseline and finite acceptance manifest
 
 Files: `.context/s4/` evidence; new `backend/app/data/events/acceptance.json`,
-`backend/app/data/events/OPERATIONS.md`; future `tasks/s4-implementation-status.md`.
+`backend/app/data/events/OPERATIONS.md`; future `docs/stages/s4-implementation-status.md`.
 
 - [ ] Record branch SHA, full dirty-worktree inventory, scoped diff hashes, installed dependencies
   and existing S0/S3 evidence. Do not mistake uncommitted S3 work for shipped mainline code.
@@ -446,7 +446,7 @@ number of passing tests. Never run production data mutations to create failure-t
 
 Each batch records: changed file scope, exact code/schema/recipe/dataset versions, tests and
 non-skipped counts, semantic metrics with denominators/intervals, spend, unresolved blockers,
-rollback evidence and next safe action. Keep durable status in `tasks/s4-implementation-status.md`
+rollback evidence and next safe action. Keep durable status in `docs/stages/s4-implementation-status.md`
 and the operating guide; `.context/s4/` holds local evidence, not the only release proof.
 
 The planning deliverable is complete when independently reviewed and consistent with the audit.

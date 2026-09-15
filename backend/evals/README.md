@@ -96,7 +96,7 @@ signals because the answer is known by construction.
 Always: fully offline (zero cache misses), calls bounded, and **no per-snapshot metric—including
 quiet-day false-major rate—worse than `results/baseline-*.json` by more than 0.05**. Under
 `EVAL_GATE_STRICT=1`, false-major must be zero, world-critical events must reach every prototype
-feed, and the absolute targets from `tasks/filtering-architecture-plan.md §9` apply
+feed, and the absolute targets from `docs/architecture/filtering-architecture-plan.md §9` apply
 (recall@12 ≥ 0.8, ≤ 1 call). Production does
 not meet them today; the scorecard reports the gap every run so S6/S7 can close it.
 

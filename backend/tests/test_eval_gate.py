@@ -10,7 +10,7 @@ Two tiers:
     worse than the baseline by more than the tolerance, and the run stayed
     offline (a cache miss means someone changed a prompt without re-warming).
   * EVAL_GATE_STRICT=1 — the absolute targets from
-    tasks/filtering-architecture-plan.md §9. Production does not meet them yet;
+    docs/architecture/filtering-architecture-plan.md §9. Production does not meet them yet;
     that gap is what S6/S7 exist to close, and the scorecard reports it every run.
 
 The historical prototype fixtures used reader-dependent event discovery. They

@@ -7,7 +7,7 @@ test suites — or (b) verified by one of five parallel read-only research agent
 re-checked its assigned system's audit claims against **current code**, ran the actual test
 commands, and reported file:line evidence rather than trusting prior documents. Where something
 couldn't be verified (e.g., an agent had no production DB access), that's stated explicitly
-rather than assumed. This is the single most heavily fact-checked document in `tasks/`.
+rather than assumed. This is the single most heavily fact-checked document in `docs/`.
 
 ## 0. The verdict, in one paragraph
 
@@ -30,7 +30,7 @@ sequenced accordingly: **ship the foundation before touching the activation orde
 
 - `git status --porcelain` (repo root): 191 untracked (`??`) files + 64 modified-but-uncommitted
   files. Every S2–S10 service module, every `test_*_postgres.py`, all four `manage_s*.py`
-  scripts, `.github/workflows/backend-tests.yml`, and every `tasks/s*.md` document — including
+  scripts, `.github/workflows/backend-tests.yml`, and every `docs/stages/s*.md` document — including
   this one — are either untracked or modified relative to `HEAD`.
 - Current branch `mmarufov/sydney-v7` has **no tracking ref** (`git branch -vv` shows no
   `[origin/...]`) — it has never been pushed. `HEAD` is `b667985` (2026-09-02, "test: add
@@ -283,7 +283,7 @@ S7 specifically — the cost mechanism is unused in anger, not just untested.
 ### S10 — Learning (this session's earlier implementation)
 
 Already implemented and verified in a prior turn this session (see
-`tasks/s10-implementation-status.md`): Tier 0 batches A–F shipped, 1,884 backend tests and 121
+`docs/stages/s10-implementation-status.md`): Tier 0 batches A–F shipped, 1,884 backend tests and 121
 iOS tests passing. Same caveat as everything else here: **uncommitted**, and only meaningfully
 active once S5/S7 are actually turned on in production (S10's learned-weight influence is
 currently a no-op with S5/S7 both off).
@@ -490,7 +490,7 @@ retrieval deadline. Root cause (confirmed via direct `pg_buffercache` inspection
 this Supabase project's free-tier compute gives Postgres only 224MB of `shared_buffers`, not
 enough to keep the ~123MB lexical working set (`articles` + its GIN index) reliably cache-resident
 under contention from the rest of the database's activity — see
-`tasks/s6-lexical-cache-limitation.md` for the full investigation, including a first attempt
+`docs/stages/s6-lexical-cache-limitation.md` for the full investigation, including a first attempt
 (a per-connection warm-up probe) that was tried, deployed, and reverted after live verification
 disproved it (commits `53633d3`, `cf4955f`, and the follow-up `pg_prewarm`-based mitigation).
 A 15-minute periodic re-warm loop (`_prewarm_loop` in `app/main.py`) is deployed as a free,
@@ -634,7 +634,7 @@ What is committed:
 **What staging caught on its first day — and it caught it about itself.** The initial deploy
 passed all nine checks, then twelve hours later the app would not come back at all: `/healthz`
 503'd after ~59s and every uvicorn child process died on spawn. Two real lessons, both now in
-`tasks/lessons.md`:
+`docs/notes/lessons.md`:
 
 1. **The smoke test only ever ran warm.** `fly deploy` leaves the machines running, so the
    suite never exercised the cold-start path that `min_machines_running = 0` makes the *normal*

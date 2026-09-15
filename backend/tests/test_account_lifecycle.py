@@ -27,7 +27,7 @@ def _module(name):
     module-level `from app import main` here would bind the pre-eviction object
     while the endpoint under test resolves the post-eviction one, so patches
     would land on a module nobody calls -- passing alone, failing in the full
-    suite. See tasks/lessons.md, "A test suite with no conftest.py has
+    suite. See docs/notes/lessons.md, "A test suite with no conftest.py has
     order-dependent behaviour".
     """
     return sys.modules.get(name) or importlib.import_module(name)

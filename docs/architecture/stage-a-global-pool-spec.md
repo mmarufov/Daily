@@ -2,8 +2,8 @@
 
 **Hand this whole file to the implementing session. It is self-contained.**
 
-Prereq reading (same repo): `tasks/personalization-audit.md` (what's broken),
-`tasks/source-architecture.md` (why these sources).
+Prereq reading (same repo): `docs/architecture/personalization-audit.md` (what's broken),
+`docs/architecture/source-architecture.md` (why these sources).
 
 ---
 

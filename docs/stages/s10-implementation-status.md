@@ -1,6 +1,6 @@
 # S10 Learning — implementation status
 
-Companion to `tasks/s10-learning-audit.md` and `tasks/s10-implementation-plan.md`. This is
+Companion to `docs/stages/s10-learning-audit.md` and `docs/stages/s10-implementation-plan.md`. This is
 Tier 0 only — the deterministic, zero-data-requirement bookkeeping tier the audit concluded
 was the entire honestly-buildable scope given the production measurement (0 reading events,
 0 feedback rows, 3 accounts, ever). Tier 1 (Bayesian per-intent posteriors) and Tier 2

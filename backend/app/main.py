@@ -1164,7 +1164,7 @@ def _ensure_tables(conn, force: bool = False) -> None:
             # endpoint (below) is never persisted per article, so legacy telemetry can
             # never bind feedback to the edition that actually served it -- the client
             # always echoes null, and the reading_events dedup index (which keys on
-            # feed_request_id) can never detect a real duplicate. See tasks/s10-learning-audit.md.
+            # feed_request_id) can never detect a real duplicate. See docs/stages/s10-learning-audit.md.
             cur.execute("ALTER TABLE public.user_feed_cache ADD COLUMN IF NOT EXISTS feed_request_id uuid;")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_user_feed_cache_user_created ON public.user_feed_cache (user_id, created_at DESC);")
 
@@ -1318,7 +1318,7 @@ def _ensure_tables(conn, force: bool = False) -> None:
             # topic_key is the confirmed S5 intent_id (uuid text) for a
             # receipt-attributed impression; there is currently no equivalent
             # attribution for the legacy (S5-off) serving path, so this table is
-            # populated only when S5 receipts exist. See tasks/s10-learning-audit.md.
+            # populated only when S5 receipts exist. See docs/stages/s10-learning-audit.md.
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS public.reader_topic_exposure (
                     user_id      uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,

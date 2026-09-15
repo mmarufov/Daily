@@ -84,4 +84,4 @@ labels, compare model quality, populate trusted entity/place candidates, calibra
 grouping, declare supported language/evidence slices and approve forecast budgets.
 The small paid wire pilot is not a substitute for these gates. Complete hosted
 load/ANN measurements and the production prerequisite/canary sequence in
-`tasks/s3-implementation-plan.md`. Do not mark S3 globally ready from unit tests.
+`docs/stages/s3-implementation-plan.md`. Do not mark S3 globally ready from unit tests.

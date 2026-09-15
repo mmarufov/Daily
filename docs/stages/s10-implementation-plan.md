@@ -1,6 +1,6 @@
 # S10 Learning — implementation plan
 
-Companion to `tasks/s10-learning-audit.md`; read that first. This plan scopes **Tier 0 only**
+Companion to `docs/stages/s10-learning-audit.md`; read that first. This plan scopes **Tier 0 only**
 — the deterministic, zero-data-requirement bookkeeping tier the audit concluded is the entire
 honestly-buildable scope given the production measurement (0 reading events, 0 feedback rows,
 3 accounts, ever). Tier 1 (Bayesian per-intent posteriors) and Tier 2 (position-bias-corrected
@@ -10,7 +10,7 @@ blueprint for a future pass, file-scoped per this repo's convention.
 
 ## Outcome and scope
 
-Ship the version of "S10" `tasks/systems.md` originally described — telemetry that
+Ship the version of "S10" `docs/architecture/systems.md` originally described — telemetry that
 demonstrably changes the next edition, entity pins and interest suggestions reachable in the
 UI, implicit signals feeding the model, a reader able to see/undo what's been learned — **plus**
 the structural bugs the audit found that make the existing 70-test-covered S5 learning
@@ -236,7 +236,7 @@ additional verbs — the backend already accepts all six; only three reach the U
 
 This batch is pure wiring — zero backend change, since every endpoint and `BackendService`
 method already exists and is tested. It directly closes the "entity pins... no view calls
-them" gap `tasks/systems.md` names, and the L3 gap (§A) this audit re-confirmed.
+them" gap `docs/architecture/systems.md` names, and the L3 gap (§A) this audit re-confirmed.
 
 1. Add a settings section listing pinned entities with add/remove, calling the existing
    `fetchEntityPins`/`createEntityPin`/`deleteEntityPin` — no new backend contract.
@@ -245,7 +245,7 @@ them" gap `tasks/systems.md` names, and the L3 gap (§A) this audit re-confirmed
    endpoints — matches this repo's established "reviewable proposal" pattern already used for
    Tune (`reader_proposals`), so it's consistent with house style, not a new interaction model.
 3. Extend `WhyThisStorySheet` (currently 3 of 6 server-accepted verbs) with `more_like_this`
-   (closes the `tasks/lessons.md` 2026-05-07 note: *"the backend action code already exists...
+   (closes the `docs/notes/lessons.md` 2026-05-07 note: *"the backend action code already exists...
    not currently reachable from anywhere on the feed"* — still true today per the iOS trace),
    `important`, and `already_knew`.
 4. **Note interest_evolution.py's `check_interest_evolution` returns `0` unconditionally when
@@ -271,7 +271,7 @@ them" gap `tasks/systems.md` names, and the L3 gap (§A) this audit re-confirmed
 
 ## F — Evaluation: the synthetic-session replay harness (build alongside, not after)
 
-Per this repo's own standing instruction (`tasks/s9-implementation-plan.md:252`: *"Add
+Per this repo's own standing instruction (`docs/stages/s9-implementation-plan.md:252`: *"Add
 deterministic tests as each phase lands, not a separate optional cleanup at the end"*) — this
 batch should land incrementally with A–E, not after them. Scoped separately here only for
 file-scoping clarity.
@@ -329,7 +329,7 @@ half-configured.
 
 ## References checked for this plan
 
-Full literature discussion and verification status is in `tasks/s10-learning-audit.md`. The
+Full literature discussion and verification status is in `docs/stages/s10-learning-audit.md`. The
 citations that directly justify specific engineering choices in this plan: Yi, Hong, Zhong, Liu
 & Rajan 2014 (RecSys, dwell-time normalization → batch D); Lee et al. 2014 (KDD, impression
 discounting → batch D); Hu, Koren & Volinsky 2008 (ICDM, confidence-weighted implicit feedback

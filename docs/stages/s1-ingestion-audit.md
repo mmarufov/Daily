@@ -141,7 +141,7 @@ gaps:
   to that publisher's own feed.
 - **Local and regional coverage is absent.** The catalog has no geography. The personas that
   matter most for "never miss what affects my day" (Ray, Aisha, Farrukh) have zero curated
-  local sources. `tasks/source-architecture.md` already proposes the fix: a registry with
+  local sources. `docs/architecture/source-architecture.md` already proposes the fix: a registry with
   region and language, grown from public OPML collections and feed autodiscovery, not hand
   editing.
 - **Category weights are inverted.** 10 gaming feeds, 9 AI feeds of which 4 are dead, 2

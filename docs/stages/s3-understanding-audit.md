@@ -29,9 +29,9 @@ Paths and line numbers below refer to the audited worktree, not a deployed build
 
 | Finding | Evidence | Consequence for S3 |
 |---|---|---|
-| S0 has a real labeled, frozen replay framework, but outstanding quality failures | `backend/evals/README.md:45`, `tasks/s2-content-pipeline-audit.md:38` | Extend its ruler; do not claim current absolute quality gates pass or rebaseline failures away. |
-| S1 implementation checklist only has P0 complete | `tasks/plan.md`, S1 section; `tasks/s1-ingestion-audit.md:17` | Registry, canonical acquisition identity, and poller remain production activation dependencies. |
-| S2 repository work is complete; production gates remain | `tasks/s2-content-pipeline-audit.md:52` | Consume its provenance artifacts; preserve the source-web/native separation. |
+| S0 has a real labeled, frozen replay framework, but outstanding quality failures | `backend/evals/README.md:45`, `docs/stages/s2-content-pipeline-audit.md:38` | Extend its ruler; do not claim current absolute quality gates pass or rebaseline failures away. |
+| S1 implementation checklist only has P0 complete | `docs/notes/plan.md`, S1 section; `docs/stages/s1-ingestion-audit.md:17` | Registry, canonical acquisition identity, and poller remain production activation dependencies. |
+| S2 repository work is complete; production gates remain | `docs/stages/s2-content-pipeline-audit.md:52` | Consume its provenance artifacts; preserve the source-web/native separation. |
 | Worker embeds up to 50 rows with non-null analysis text per ingestion cycle | `backend/app/main.py:173` | No title/summary-only coverage; no independent S3 freshness or durable retry lifecycle. |
 | Vector input includes title, summary, and first 2,000 body characters | `backend/app/main.py:195` | Relevant detail can be absent; evidence coverage must be explicit. |
 | Version fence only checks selected analysis-body version | `backend/app/main.py:214`, `backend/app/services/article_content.py:1542` | A title update with unchanged body can preserve a stale vector. |

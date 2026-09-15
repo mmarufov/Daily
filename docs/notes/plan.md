@@ -1,13 +1,13 @@
 # Daily Redesign — Active Plan
 
-> **System map: `tasks/systems.md`** — the app split into ten systems with contracts,
+> **System map: `docs/architecture/systems.md`** — the app split into ten systems with contracts,
 > current state, technology choices and the order to harden them in. Start there.
 
 ## S10 — Analyse, challenge, plan and implement (2026-09-10)
 
 ### Implementation authorized (2026-09-10)
 
-User asked for full implementation of `tasks/s10-implementation-plan.md`'s Tier 0 scope.
+User asked for full implementation of `docs/stages/s10-implementation-plan.md`'s Tier 0 scope.
 Repository changes and offline verification only; no commit, push, hosted SQL, provider spend,
 deployment or activation. Tier 1/2 not attempted — their evidence gates (≥20 events per
 reader-intent pair; ≥1,000 receipted impressions per position bucket from ≥50 accounts) are
@@ -28,7 +28,7 @@ nowhere close to met (0 real events, 3 accounts).
 Repository implementation verified 2026-09-10: backend 1,884 passed / 143 skipped / 235
 subtests passed (same three pre-existing S0 baseline gaps as every prior status doc, confirmed
 unrelated). iOS: `xcodebuild build` succeeded for the whole app; `xcodebuild test` on a real
-iPhone 17 Pro simulator passed all 121 `DailyTests`. See `tasks/s10-implementation-status.md`
+iPhone 17 Pro simulator passed all 121 `DailyTests`. See `docs/stages/s10-implementation-status.md`
 for scope adjustments made during implementation, verification evidence and what remains out
 of scope (Tier 1/2, the interval-accumulation dwell bug, length-normalized dwell, account
 deletion/sign-out revocation).
@@ -56,15 +56,15 @@ scale regardless of future traffic.
 - [x] Define reward signals, event contracts, model/update lifecycle, evaluation, exploration
       safeguards, privacy, cost limits and failure/rollback handling.
 
-Outputs: `tasks/s10-learning-audit.md`, `tasks/s10-implementation-plan.md`,
-`tasks/s10-implementation-status.md`. Implementation was subsequently authorized and completed
+Outputs: `docs/stages/s10-learning-audit.md`, `docs/stages/s10-implementation-plan.md`,
+`docs/stages/s10-implementation-status.md`. Implementation was subsequently authorized and completed
 as above.
 
 ## S9 — Analyse, challenge and plan (2026-09-09)
 
 ### Implementation authorized (2026-09-09)
 
-User approved implementation of `tasks/s9-implementation-plan.md`. Repository changes and
+User approved implementation of `docs/stages/s9-implementation-plan.md`. Repository changes and
 offline verification only; no hosted SQL, provider spend, deployment or activation.
 
 - [x] A: versioned delivery envelope, publication sequence and bounded read contract.
@@ -78,7 +78,7 @@ offline verification only; no hosted SQL, provider spend, deployment or activati
 
 Repository implementation verified 2026-09-10: 119 iOS unit + five isolated reader UI tests
 passed. Full backend: 1,833 passed, 143 skipped, 235 subtests passed, and the same three
-pre-existing S0 snapshot-quality failures. See `tasks/s9-implementation-status.md` for
+pre-existing S0 snapshot-quality failures. See `docs/stages/s9-implementation-status.md` for
 scope refinements, evidence and unpassed release gates. No deployment or paid/live operations.
 
 Historical analysis scope: source-backed audit, offline checks and planning documents only. No runtime
@@ -89,7 +89,7 @@ implementation, paid calls, hosted database operations, deployment or activation
 - [x] Complete focused offline checks and distinguish measured results from hypotheses.
 - [x] Write implementation phases, contracts, failure tests and release gates; update S9 status.
 
-Outputs: `tasks/s9-delivery-audit.md`, `tasks/s9-implementation-plan.md`.
+Outputs: `docs/stages/s9-delivery-audit.md`, `docs/stages/s9-implementation-plan.md`.
 Evidence: 115 focused existing backend tests and 30 subtests passed; all 80 iOS unit tests
 passed. Findings distinguish source-confirmed paths from unmeasured races/performance.
 No runtime changes, live SQL, paid calls, physical-device QA, deployment or activation.
@@ -99,7 +99,7 @@ Implementation was subsequently approved above; historical analysis evidence is 
 
 ### Implementation authorized (2026-09-09)
 
-User approved `tasks/s8-implementation-plan.md`. Implement repository code and offline proof;
+User approved `docs/stages/s8-implementation-plan.md`. Implement repository code and offline proof;
 no paid calls, hosted database operations, deployment or activation.
 
 - [x] A: backend–iOS status, generation and immutable receipt identity.
@@ -112,7 +112,7 @@ Repository evidence: 341 focused backend tests and 33 subtests passed; 18 S8 Pos
 cases skipped (no database selected). Final full backend: 1,797 passed, 140 skipped,
 235 subtests passed, with the same three pre-existing S0 quality failures. Final iOS:
 80 DailyTests passed. Compile/diff checks passed. No activation or paid/live operations.
-See `tasks/s8-implementation-status.md` for refinements and the unpassed release gates.
+See `docs/stages/s8-implementation-status.md` for refinements and the unpassed release gates.
 
 Historical analysis scope: read-only runtime analysis, offline checks and planning documents only. No implementation,
 paid calls, hosted database operations or activation. Preserve the existing dirty workspace.
@@ -122,7 +122,7 @@ paid calls, hosted database operations or activation. Preserve the existing dirt
 - [x] Verify findings with focused offline evidence and identify evaluation gaps.
 - [x] Write a bounded implementation plan, test map and release gates; update system status.
 
-Outputs: `tasks/s8-edition-assembly-audit.md`, `tasks/s8-implementation-plan.md`.
+Outputs: `docs/stages/s8-edition-assembly-audit.md`, `docs/stages/s8-implementation-plan.md`.
 Evidence: 267 focused existing tests and 68 subtests passed; seven synthetic probe groups
 reproduce current assembly/wire-contract defects. No runtime edits, paid calls, live SQL,
 iOS build or activation during the analysis phase. Implementation was subsequently approved above.
@@ -131,7 +131,7 @@ iOS build or activation during the analysis phase. Implementation was subsequent
 
 ### Implementation authorized
 
-User approved `tasks/s7-implementation-plan.md`. Repository implementation and offline proof;
+User approved `docs/stages/s7-implementation-plan.md`. Repository implementation and offline proof;
 no paid calls, hosted database operations, deployment or production activation.
 
 - [x] A: strict ranking contracts and candidate-stage evaluator.
@@ -143,7 +143,7 @@ no paid calls, hosted database operations, deployment or production activation.
 
 Implementation evidence (2026-09-09): 308 focused tests passed; full backend run 1,602 passed,
 122 skipped and the same three pre-existing S0 quality-gate failures. Compile and diff checks
-passed. See `tasks/s7-implementation-status.md` for explicit unpassed activation gates.
+passed. See `docs/stages/s7-implementation-status.md` for explicit unpassed activation gates.
 
 Historical analysis scope: read-only runtime analysis and implementation planning. No runtime edits, deployment,
 hosted database operations, provider calls, or activation. Preserve the dirty S1–S6 worktree.
@@ -154,7 +154,7 @@ hosted database operations, provider calls, or activation. Preserve the dirty S1
 - [x] Write a file-scoped implementation plan with acceptance tests and rollout gates.
 - [x] Update the system map with confirmed current status and deliver the recommendation.
 
-Outputs: `tasks/s7-ranking-audit.md`, `tasks/s7-implementation-plan.md`.
+Outputs: `docs/stages/s7-ranking-audit.md`, `docs/stages/s7-implementation-plan.md`.
 Evidence: 161 focused existing tests passed; fake-provider/pure-function probes reproduce
 malformed output acceptance, fallback promotion, entity-pin override and cached-order drift.
 Implementation was subsequently approved. No paid calls, hosted database operations or activation.
@@ -176,7 +176,7 @@ mutations or deployment. S6 shadow/serving/ANN stay default-off. Preserve existi
 Final evidence: 359 focused tests passed. Full offline suite: 1,342 passed, 112 skipped,
 182 subtests passed; the same three S0 snapshot-quality subtests fail. S6 SQL contracts:
 15 skipped without explicit test database configuration, required without skips in CI.
-No production activation, deployment or provider spend. See `tasks/s6-implementation-status.md`.
+No production activation, deployment or provider spend. See `docs/stages/s6-implementation-status.md`.
 
 Historical analysis scope: repository-backed candidate-retrieval analysis and implementation specification.
 No runtime edits, deployment, paid calls or hosted database changes. Preserve the existing
@@ -188,11 +188,11 @@ dirty worktree. Distinguish the legacy feed path from default-off S5 retrieval.
 - [x] Produce a staged implementation plan with explicit boundaries and unresolved decisions.
 - [x] Verify findings with focused offline diagnostics and update the system map.
 
-Outputs: `tasks/s6-retrieval-audit.md`, `tasks/s6-implementation-plan.md`.
+Outputs: `docs/stages/s6-retrieval-audit.md`, `docs/stages/s6-implementation-plan.md`.
 Evidence: 106 focused offline tests passed; `.context/s6-diagnostics.py` reproduces policy-after-cap
 starvation and 40-row per-interest underfill. Independent retrieval/evaluation audits and design
 challenge incorporated. Analysis-stage evidence is retained; implementation is now authorized above.
-Actual implementation and deferred release gates: `tasks/s6-implementation-status.md`.
+Actual implementation and deferred release gates: `docs/stages/s6-implementation-status.md`.
 
 ## S5 — Analyse, challenge and plan (2026-09-07)
 
@@ -212,7 +212,7 @@ requires clarification; no unverified global-quality claim.
 - [x] Make feedback idempotent, attributed, decayed and reset-safe.
 - [x] Run focused offline/backend/Swift verification and document actual remaining gates.
 
-Repository implementation and bounded scope changes: `tasks/s5-implementation-status.md`.
+Repository implementation and bounded scope changes: `docs/stages/s5-implementation-status.md`.
 Latest focused checks: 191 backend tests plus 4 subtests; 9 iOS unit tests and simulator
 build pass. An earlier broad offline run has three existing S0 snapshot-quality failures;
 do not treat the full suite as green. All S5 runtime/semantic activation flags remain off.
@@ -232,7 +232,7 @@ Preserve all existing S1–S4/iOS work. No runtime changes, paid calls, deployme
 - [x] Produce a file-scoped, end-to-end implementation/test plan with explicit approval gates.
 - [x] Verify the analysis artifacts and report remaining decisions before implementation.
 
-Working outputs: `tasks/s5-reader-model-audit.md`, `tasks/s5-implementation-plan.md`.
+Working outputs: `docs/stages/s5-reader-model-audit.md`, `docs/stages/s5-implementation-plan.md`.
 Analysis-stage evidence: backend/client/architecture audits, independent draft challenge and incorporated
 corrections; 94 selected offline tests pass; pure diagnostics reproduce current compiler/
 normalizer defects. System map corrected. No runtime implementation, paid/live verification
@@ -243,9 +243,9 @@ production/semantic-quality gates remain open.
 
 ## S4 — Implementation plan (2026-09-06)
 
-Plan: `tasks/s4-implementation-plan.md`. Architecture: `tasks/s4-event-detection-audit.md`.
+Plan: `docs/stages/s4-implementation-plan.md`. Architecture: `docs/stages/s4-event-detection-audit.md`.
 Implementation authorized 2026-09-06; in progress. Paid S4 calls and production actions remain
-separately gated. Preserve the existing S1–S3/iOS worktree. See `tasks/s4-implementation-status.md`.
+separately gated. Preserve the existing S1–S3/iOS worktree. See `docs/stages/s4-implementation-status.md`.
 
 - [x] Translate the audit into file-scoped implementation batches, dependencies and exit gates.
 - [x] Independently review lifecycle/integration and evaluation/rollout sequencing; resolve gaps.
@@ -293,7 +293,7 @@ S1–S3 work; no runtime edits, deployment, production mutation or paid model ca
 - [x] Define adversarial evaluation, operational/quality gates and staged implementation/rollout.
 - [x] Independently challenge findings, run focused offline checks and publish the S4 audit.
 
-Deliverable: `tasks/s4-event-detection-audit.md`. Reproduced prototype defects; focused event/
+Deliverable: `docs/stages/s4-event-detection-audit.md`. Reproduced prototype defects; focused event/
 evaluation/S3 contract checks **137 passed, 24 subtests passed**. Independent runtime and
 evaluation reviews completed; final revisions resolved their must-fix issues. Existing S0
 regressions remain recorded, not relaxed. System map updated; runtime code and production unchanged.
@@ -302,10 +302,10 @@ regressions remain recorded, not relaxed. System map updated; runtime code and p
 
 ## S3 — Execution plan (2026-09-05)
 
-Plan: `tasks/s3-implementation-plan.md`. Architecture: `tasks/s3-understanding-audit.md`.
+Plan: `docs/stages/s3-implementation-plan.md`. Architecture: `docs/stages/s3-understanding-audit.md`.
 Status: guarded runtime implemented and verified; capped pilot completed. Production activation
 remains blocked by quality evaluation, S1/S2 prerequisites and canary proof.
-Final evidence and remaining gates: `tasks/s3-implementation-status.md`.
+Final evidence and remaining gates: `docs/stages/s3-implementation-status.md`.
 
 - [x] Batch 0: capture worktree/test baseline, dependency register and acceptance manifest (unset production budgets stay blocked).
 - [x] Batch 1: typed evidence/card contracts, revision rules, taxonomy and initial fixtures.
@@ -341,9 +341,9 @@ changes, deploy, mutate production data, or start a localhost service.
 - [x] Specify quality/cost/freshness gates and a staged production rollout with rollback.
 - [x] Independently challenge the design and publish the source-linked S3 audit/specification.
 
-Deliverable: `tasks/s3-understanding-audit.md`, including the still-open implementation batches
+Deliverable: `docs/stages/s3-understanding-audit.md`, including the still-open implementation batches
 A–G. Existing focused offline checks: **58 passed, 4 subtests passed**; final specification
-review findings resolved. `tasks/systems.md` now reflects observed S0–S4 state and the revised
+review findings resolved. `docs/architecture/systems.md` now reflects observed S0–S4 state and the revised
 S3 contract. No runtime changes, paid model calls, production mutations or deployment in this task.
 
 ---
@@ -363,7 +363,7 @@ content, and whether the app has a polished original-source path when it does no
 
 ## S2 — Bulletproof content and reader implementation (2026-09-03)
 
-Source of truth: `tasks/s2-content-pipeline-audit.md`. This is an additive, production-oriented
+Source of truth: `docs/stages/s2-content-pipeline-audit.md`. This is an additive, production-oriented
 migration: older mobile clients keep decoding optional legacy fields while the new client routes
 from an explicit presentation contract. No production database mutation or deployment is run as
 part of local implementation verification.
@@ -438,7 +438,7 @@ part of local implementation verification.
 
 Repository implementation and local verification are complete. Production remains deliberately
 unchanged until the reviewed source-policy rows, staged backfill/constraint validation, deploy,
-and live canary gates in `tasks/s2-content-pipeline-audit.md` are executed.
+and live canary gates in `docs/stages/s2-content-pipeline-audit.md` are executed.
 
 ### Post-review iOS lifecycle closure (2026-09-05)
 
@@ -461,14 +461,14 @@ unchanged throughout this pass.
       checks, and a final independent blocker audit; record repository versus production status.
 
 Repository closure is complete. No production database mutation, source-policy change, deploy,
-commit, or push was performed; the production-only gates in `tasks/s2-content-pipeline-audit.md`
+commit, or push was performed; the production-only gates in `docs/stages/s2-content-pipeline-audit.md`
 remain mandatory.
 
 ---
 
 ## S1 — Sources & ingestion (approved 2026-09-02)
 
-Plan: `~/.claude/plans/create-a-plan-to-adaptive-cray.md`. Audit: `tasks/s1-ingestion-audit.md`.
+Plan: `~/.claude/plans/create-a-plan-to-adaptive-cray.md`. Audit: `docs/stages/s1-ingestion-audit.md`.
 Decisions: in-process advisory-lock leader; Google News for discovery only; ~120-feed registry;
 enrichment gated with generated images off; migrations idempotent, one-way steps run by the user.
 
@@ -520,7 +520,7 @@ Plan: `~/.claude/plans/create-a-plan-to-adaptive-cray.md`. Decisions: labeler = 
 
 ## Phase 1 (personalization) — Close the feedback loop
 
-**Status:** backend complete. See `tasks/filtering-architecture-plan.md` for the full roadmap.
+**Status:** backend complete. See `docs/architecture/filtering-architecture-plan.md` for the full roadmap.
 
 - [x] `user_feedback_signals` table + migration in `_ensure_tables`
 - [x] `app/services/feedback_signals.py` — attribution, decay, adjustment, suppression
@@ -537,7 +537,7 @@ Plan: `~/.claude/plans/create-a-plan-to-adaptive-cray.md`. Decisions: labeler = 
 ---
 
 
-This file tracks the **current phase** of the whole-app redesign. The full design system is in `DESIGN.md`; the per-surface execution roadmap (Phases 1–10) is in `tasks/design-redesign-plan.md`. This file is the focused checklist for what's being built right now.
+This file tracks the **current phase** of the whole-app redesign. The full design system is in `DESIGN.md`; the per-surface execution roadmap (Phases 1–10) is in `docs/architecture/design-redesign-plan.md`. This file is the focused checklist for what's being built right now.
 
 ---
 
@@ -563,7 +563,7 @@ Phase 2 wires the Phase 1 components into `NewsView`. Substitution is mechanical
 
 ### Three judgment calls (approved before execution)
 
-1. **Long-press swap.** `.onLongPressGesture` → `WhyThisStorySheet` (3 corrective actions). The 4 other contextMenu actions are dropped from the feed: Bookmark/Share/Discuss reachable from `ArticleDetailView`; **More Like This is lost** in Phase 2 — Phase 4 (Tune) re-introduces it. Captured in `tasks/lessons.md`.
+1. **Long-press swap.** `.onLongPressGesture` → `WhyThisStorySheet` (3 corrective actions). The 4 other contextMenu actions are dropped from the feed: Bookmark/Share/Discuss reachable from `ArticleDetailView`; **More Like This is lost** in Phase 2 — Phase 4 (Tune) re-introduces it. Captured in `docs/notes/lessons.md`.
 2. **Provenance gating.** `HeroStory.provenance = article.whyThisStory` (nil → no line). Cold/Warming/Earned state machine deferred until taste-model exposes confidence. Today's behavior: hero shows provenance only when backend populates it.
 3. **Section label restyle scope.** `sectionLabel` helper restyled (affects "Top Story" + "For You"). Welcome banner / error banner / loading subtitle keep their current `BrandColors` references — Phase 9 cleanup migrates them globally.
 
@@ -580,7 +580,7 @@ Phase 2 wires the Phase 1 components into `NewsView`. Substitution is mechanical
 - [x] **2i.** SkeletonViews palette swap (2 token replacements).
 - [ ] **2j.** Build clean (`xcodebuild ... iPhone 17 Pro`).
 - [ ] **2k.** Simulator boot: tap-through Feed → ArticleDetail → back; long-press a row → WhyThisStorySheet appears with three actions; tap profile (44pt) → ProfileView.
-- [x] **2l.** `tasks/lessons.md` updated with the contextMenu-loss note for Phase 4.
+- [x] **2l.** `docs/notes/lessons.md` updated with the contextMenu-loss note for Phase 4.
 - [ ] **2m.** Single commit: `feat: replace feed surface with edition header + hero + story rows`.
 
 ### Out of scope
@@ -650,6 +650,50 @@ This verifies deployment/readiness/auth guards, not all product flows or product
 - [x] Add `backend/.dockerignore`: the build context was 265MB, 213MB of it the local
   venv, and it included `backend/.env` with a live `OPENAI_API_KEY`. Now 12.6kB.
 
-Lesson, recorded in `tasks/lessons.md`: a deploy smoke test that only ever runs while the
+Lesson, recorded in `docs/notes/lessons.md`: a deploy smoke test that only ever runs while the
 machines are warm does not test the deploy, and shrinking staging away from production's
 shape means rehearsing something that is not production.
+
+## Repository presentation for GitHub (2026-09-14)
+
+Goal: make the public repo read like a professionally maintained project without changing
+any runtime behaviour. Constraint: no functional change, prove it with the test suite.
+
+- [x] Rewrite `.gitignore` so nothing that must stay private depends on a machine-local
+      `.git/info/exclude` — `.context/`, `artifacts/`, `*.pptx`, `*.inspect.ndjson`,
+      `node_modules/`, CI scratch. Verified `git ls-files -i -c --exclude-standard` is
+      empty (no tracked file became ignored) and `git add -A` stages only 70 real files.
+- [x] Add `.gitattributes`. `linguist-generated=true` on `backend/evals/.cache/**`,
+      `snapshots/`, `labels/`, `results/` and `*.pbxproj` so GitHub collapses them in pull
+      requests and keeps them out of the language bar; `export-ignore` on dev-only paths.
+      The committed LLM cache is kept — CI needs it for `EVAL_OFFLINE=1`.
+- [x] Move `tasks/` → `docs/{architecture,stages,notes}/` and `DESIGN.md` → `docs/`, with
+      `git mv` so history follows. Rewrote all 118 cross-references, including 14 source
+      comments; verified every one resolves. Root went from 26 entries to 15.
+- [x] Delete `PRODUCTION_READINESS.md` — every "Current State" claim contradicted by code.
+- [x] Deduplicate `CLAUDE.md` into a symlink to `AGENTS.md` (they were byte-identical).
+- [x] Add `docs/README.md` as the documentation index (S0–S10 audit/plan/status table).
+- [x] Add `.github/`: PR template, two issue forms + `config.yml`, `CODEOWNERS`,
+      `dependabot.yml` (monthly, grouped), `release.yml`, `SECURITY.md`, `CONTRIBUTING.md`.
+- [x] Rewrite `README.md` around the honest built-vs-live distinction, the S0 harness and
+      its real numbers, the ten-stage table, and a Known gaps section.
+- [x] Correct four false README claims (iOS 17 → 26, Apple Sign-In, `/docs` in production,
+      Tune live re-sort) against the code.
+- [x] Set repo description + 15 topics; disable wiki and projects; enable
+      delete-branch-on-merge.
+- [x] Verified: `EVAL_OFFLINE=1 pytest tests/ -q` → 1,960 passed, 185 skipped. Every
+      source-file change in this pass is a comment or docstring.
+
+Deliberately not done, pending a decision:
+
+- [ ] `LICENSE` — still `null`, so GitHub shows no license chip and the repo fails the
+      community checklist. Needs an owner decision, not a default.
+- [ ] Prune stale remote branches (75, including `hong-kong-v1`…`v22`) and close or
+      finish PR #40 (open since April).
+- [ ] Delete the unrelated `artifacts/` + `*.pptx` from the working copy (45 MB). Now
+      gitignored, so harmless, but still local clutter.
+- [ ] No shared Xcode scheme, so iOS tests cannot run in CI. Adding one means editing the
+      project file — out of scope for a presentation-only pass.
+- [ ] Social preview image (1280×640) is UI-only; no CLI or API path.
+- [ ] `AppConfig.swift` defaults to the owner's production backend, so anyone who clones
+      and runs the app spends the owner's OpenAI budget.

@@ -399,3 +399,38 @@ places — the S5/S7/S8 installers each take an advisory lock before their DDL �
 one-line-per-request logging, and article extraction makes hundreds of requests per
 ingestion cycle; the first log after the fix was screens of NYT 403s with the shadow
 observations buried underneath. Fixing visibility means choosing what stays quiet too.
+
+## Repository presentation (2026-09-14)
+
+**A committed cache can be load-bearing.** 34 MB across 2,337 files under
+`backend/evals/.cache/` looks exactly like the bloat you delete on sight — it is 85% of
+every tracked file in the repo. It is also the only reason CI can run the eval gate with
+`EVAL_OFFLINE=1` and no API key. Deleting it would have turned every pull request red.
+Before removing anything that looks like generated waste, grep CI for it. The right fix
+was `linguist-generated=true` in `.gitattributes`, which collapses the diffs on GitHub
+without removing the bytes.
+
+**`.git/info/exclude` is not `.gitignore`.** `.context/` — 909 MB of agent working notes,
+logs, and a second copy of the repo — was ignored only by a machine-local exclude file.
+Nothing was wrong on this machine and everything would have been wrong on the next clone.
+Anything that must never be committed belongs in the tracked `.gitignore`, not in a local
+exclude. The proof is `git ls-files -i -c --exclude-standard` (must be empty) plus
+`git add -A` followed by inspecting what actually got staged.
+
+**Documentation claims decay silently, and the README decays fastest.** Four separate
+claims in the README were false against the code: the deployment target was `iOS 26.0` in
+all four build configurations while the badge said iOS 17; "Sign in with Apple" was listed
+as a shipped feature with no `AuthenticationServices` import anywhere in `Daily/`;
+Swagger was advertised at `/docs` when `_DOCS_ENABLED = ENVIRONMENT != "production"` and
+`ENVIRONMENT` defaults to `production`; and the Tune diff toast was described as working
+when `weight_diff` has zero occurrences in `backend/`. None of these were ever lies — each
+was true when written. A doc that asserts a fact needs a way to be checked: prefer
+"`grep` says X" claims over remembered ones, and check every number before publishing.
+
+**`PRODUCTION_READINESS.md` was worse than having no such document.** Its top Critical item
+was "Using `print()` statements throughout" (logging was configured at `main.py:29`); it
+also claimed no health check (`/healthz`, `main.py:719`), no CORS (`main.py:615`), no rate
+limiting (`main.py:646`), and empty test files (822 test functions). Every "Current State"
+line was false, and a section header read "Structured Loggin". Deleted rather than
+rewritten — git history keeps it. A stale checklist actively misinforms; an absent one only
+omits.

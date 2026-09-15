@@ -31,7 +31,7 @@ S1 sources ─▶ S2 content ─▶ S3 understanding ─┬─▶ S4 events ─�
 cached model calls and a production-path replay runner. Label provenance distinguishes human,
 agent and model judgments. Absolute targets below are not currently met; the latest S2 audit
 also records three pre-existing S0 metric regressions. See `backend/evals/README.md` and
-`tasks/s2-content-pipeline-audit.md`. S3 needs additional article-facet and cluster ground truth.
+`docs/stages/s2-content-pipeline-audit.md`. S3 needs additional article-facet and cluster ground truth.
 
 **Technology.** Golden labelled set + offline replay + CI gate. This is what everyone does
 before online A/B; you are too small for A/B, so offline is the whole game.
@@ -54,7 +54,7 @@ before the thing you measure. It is also the cheapest item on this list.
 **Contract.** in: nothing · out: rows in `articles`, deduped by canonical URL
 
 **State: P0 implemented; registry/poller work pending.** Global and per-user ingestion paths
-exist, but no unified canonical source registry/conditional poller. `tasks/plan.md` retains
+exist, but no unified canonical source registry/conditional poller. `docs/notes/plan.md` retains
 P1–P7 as open. The feed still gates candidates through active per-user source links, so global
 pool coverage does not imply reader access. The last production audit is dated 2026-09-02;
 deployment and coverage must be remeasured before claiming completion.
@@ -90,7 +90,7 @@ canonical metadata, display artifacts, and private ranking context separate; res
 with a default-deny audited source policy; binds feed rights to an exact reviewed feed URL; and
 uses durable leased jobs with version fencing. The iOS client routes from the typed server contract,
 opens source-only stories directly in Safari, and keeps account-scoped, version-fenced native text
-only as a bounded offline fallback. See `tasks/s2-content-pipeline-audit.md` for proof and rollout.
+only as a bounded offline fallback. See `docs/stages/s2-content-pipeline-audit.md` for proof and rollout.
 The last production coverage measurement remains **26%** of seven-day articles at >=400 characters;
 it describes the old deployment, not this unshipped repository implementation.
 
@@ -136,9 +136,9 @@ the provisional grouping recipe stays singleton until calibration. Search/chat a
 implemented but disabled; the legacy worker/consumers remain active by default. Feed retrieval
 still needs S6 adoption. Production activation has not occurred.
 
-**Implementation specification:** `tasks/s3-understanding-audit.md`. Its technology references,
+**Implementation specification:** `docs/stages/s3-understanding-audit.md`. Its technology references,
 schema, failure handling, acceptance targets and rollout gates supersede the earlier S3
-proposals in `tasks/filtering-architecture-plan.md`.
+proposals in `docs/architecture/filtering-architecture-plan.md`.
 Operating instructions: `backend/app/data/understanding/OPERATIONS.md`.
 
 **Technology.**
@@ -174,8 +174,8 @@ history · out: stable event/development identities, versioned significance/scop
 unknown/error states, source-linked material changes, expiry and invalidation events.
 
 **State: guarded runtime and independent evaluation tooling implemented; hosted lifecycle,
-semantic quality and reader activation gates remain open.** See `tasks/s4-implementation-status.md`
-for current evidence and remaining engineering. `tasks/s4-event-detection-audit.md` records the earlier evaluation-only detector,
+semantic quality and reader activation gates remain open.** See `docs/stages/s4-implementation-status.md`
+for current evidence and remaining engineering. `docs/stages/s4-event-detection-audit.md` records the earlier evaluation-only detector,
 reproduced identity/breadth/validation failures, circular model-seeded labels, omitted shared
 costs and missing production lifecycle/consumer wiring. The quiet derivative's retained 0.18
 false-major metric is feed-slot contamination, not independently measured event false-positive
@@ -398,7 +398,7 @@ serialized account storage, bounded native-body permissions and viewport-sized i
 - Foreground revalidation, bounded networking/images, adaptive accessible reading and genuine
   exposure measurement. Background refresh/push are best-effort, not a five-minute SLA.
 
-See `tasks/s9-implementation-status.md` for evidence and refinements. Final combined iOS:
+See `docs/stages/s9-implementation-status.md` for evidence and refinements. Final combined iOS:
 119 unit + five isolated reader UI tests passed. Full backend: 1,833 passed, 143 skipped,
 235 subtests passed, with three pre-existing S0 failures. No physical-device performance/
 accessibility audit, live SQL, source-policy grant, provider calls, deployment or activation.

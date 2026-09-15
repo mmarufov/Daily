@@ -309,7 +309,7 @@ def embedding_text(bundle: Mapping[str, Any]) -> str:
 DEFAULT_RECIPE = {
     # The pilot bake-off rejected gpt-4.1-mini-2025-04-14 on 6/20 facet calls
     # (5 missing evidenced event actors, 1 non-exact quote); gpt-4o-mini-2024-07-18
-    # passed 20/20 (tasks/s3-implementation-status.md). Not live-impacting on
+    # passed 20/20 (docs/stages/s3-implementation-status.md). Not live-impacting on
     # its own -- nothing is promoted off this recipe yet -- but this constant
     # is exactly what a future promotion would copy, so it should be the
     # model that actually won, not the one that lost.
