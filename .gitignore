@@ -1,34 +1,61 @@
-# Xcode
+# ---- macOS -------------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# ---- Xcode / Swift -----------------------------------------------------
 DerivedData/
+build/
 *.xcuserstate
 xcuserdata/
 *.xcscmblueprint
-# macOS
-.DS_Store
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
 
-# Environment variables (contains sensitive API keys)
+# ---- Python ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+
+# ---- Secrets -----------------------------------------------------------
+# Real credentials live in Fly.io secrets and an untracked local .env.
 .env
 .env.*
 *.env
 !.env.example
 
-# Python
-__pycache__/
-.pytest_cache/
-*.pyc
-*.pyo
-*.pyd
-venv/
-*.egg-info/
+# ---- CI scratch --------------------------------------------------------
+*-results.xml
 
-# Security reports and gstack artifacts
+# ---- Regenerable eval data --------------------------------------------
+# Rebuild: python evals/build_corpus.py
+backend/evals/corpus.json
+backend/evals/.cache/emb_*.pkl
+
+# ---- Agent / tooling working directories -------------------------------
+# Local scratch used by coding agents; never part of the project.
+.context/
+.conductor/settings.local.*
 .gstack/
-
-# Temporary files
+.claude/settings.local.json
+.tmp/
 *.tmp
 *.temp
 .enc.temp
 
-# Regenerable eval corpus (rebuild: python evals/build_corpus.py)
-backend/evals/corpus.json
-backend/evals/.cache/emb_*.pkl
+# ---- Unrelated local artifacts -----------------------------------------
+# Scratch output from unrelated one-off tasks run in this working copy.
+artifacts/
+node_modules/
+*.pptx
+*.inspect.ndjson

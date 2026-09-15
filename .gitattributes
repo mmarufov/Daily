@@ -1,0 +1,46 @@
+# Normalize line endings in the repository; check out native.
+* text=auto
+
+# ---- Binary ------------------------------------------------------------
+*.npy   binary
+*.gz    binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.pdf   binary
+*.ipa   binary
+
+# ---- Generated eval data ----------------------------------------------
+# The S0 evaluation harness commits every model response so CI can run the
+# regression gate offline with no API key (EVAL_OFFLINE=1). These files are
+# machine-produced and content-addressed: mark them generated so GitHub keeps
+# them out of the language bar and collapses them in pull-request diffs.
+backend/evals/.cache/**    linguist-generated=true
+backend/evals/snapshots/** linguist-generated=true
+backend/evals/labels/**    linguist-generated=true -diff
+backend/evals/personas/**  linguist-generated=true -diff
+backend/evals/results/**   linguist-generated=true -diff
+backend/evals/understanding/review_queue.json linguist-generated=true -diff
+
+# ---- Generated project files ------------------------------------------
+*.pbxproj                  linguist-generated=true
+*.xcworkspacedata          linguist-generated=true
+Package.resolved           linguist-generated=true
+
+# ---- Documentation -----------------------------------------------------
+# Counted as prose, not as a language.
+docs/**   linguist-documentation
+*.md      linguist-documentation
+
+# ---- Language hints ----------------------------------------------------
+*.swift  linguist-language=Swift
+*.sql    linguist-language=SQL
+
+# ---- Kept out of release archives (git archive / GitHub source tarballs)
+.github/           export-ignore
+.gitattributes     export-ignore
+.gitignore         export-ignore
+.vscode/           export-ignore
+docs/notes/        export-ignore
+conductor.json     export-ignore
