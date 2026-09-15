@@ -1,0 +1,35 @@
+name: Feed quality report
+description: The feed surfaced something it shouldn't have, or missed something it should have.
+labels: ["feed-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Feed quality is measured, not argued. A report that names the specific
+        story is one that can become an eval label and a regression test.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Which failure is this
+      options:
+        - Missed a story I needed to see
+        - Showed a story I would never want
+        - Right keyword, wrong subject (a "lookalike")
+        - Stale or duplicated story
+        - Ranking order felt wrong
+    validations:
+      required: true
+  - type: textarea
+    id: story
+    attributes:
+      label: The story
+      description: Headline, publisher, and URL if you have it.
+    validations:
+      required: true
+  - type: textarea
+    id: profile
+    attributes:
+      label: What about your interests made this right or wrong
+      description: The words you'd use to describe the interest involved.
+    validations:
+      required: true
