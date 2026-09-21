@@ -148,9 +148,13 @@ function main(): void {
     snapshot_sha256: snapshot.sha256,
     frozen_at: frozenAt,
     n_articles_in_corpus: snapshot.n_articles,
-    // Commit time, not wall-clock time: see the note in export-artifacts.ts.
-    built_at: git('show', '-s', '--format=%cI', 'HEAD'),
-    artifact_revision: git('rev-parse', '--short', 'HEAD'),
+    // Commit time of the evidence, not wall-clock time, for the same reason.
+    built_at: artifact.provenance.artifact_built_at,
+    // Inherited from the artifact rather than read from HEAD, so the demo and
+    // the evidence it was derived from always name the same evidence revision.
+    // See the note on EVIDENCE_PATHS in export-artifacts.ts for why HEAD is the
+    // wrong anchor for a committed export.
+    artifact_revision: artifact.provenance.artifact_revision,
     editions,
   }
 

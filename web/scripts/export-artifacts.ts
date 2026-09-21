@@ -68,6 +68,21 @@ const OUT = join(REPO, 'web', 'public', 'artifacts')
 
 const CHECK_ONLY = process.argv.includes('--check')
 
+/**
+ * The committed evidence an artifact is built from.
+ *
+ * `artifact_revision` is the last commit to touch any of these. Deliberately
+ * NOT the exporter's own files: including them makes the value chase its own
+ * tail, because the commit that ships a regenerated export also ships the
+ * exporter change that caused it. Schema changes are covered by
+ * `artifact_version` instead.
+ */
+const EVIDENCE_PATHS = [
+  'backend/evals/results',
+  'backend/evals/snapshots',
+  'backend/evals/labels',
+] as const
+
 /* ------------------------------------------------------------------ git ---- */
 
 function git(...args: readonly string[]): string | null {
@@ -534,12 +549,16 @@ function main(): void {
     throw new Error(`No scorecards found at ${RESULTS}`)
   }
 
-  const artifactRevision = git('rev-parse', '--short', 'HEAD') ?? UNKNOWN
-  // Derived from the commit rather than the wall clock so the same tree always
-  // produces byte-identical artifacts. That is what lets CI assert the
-  // committed export is in sync with the harness; a wall-clock timestamp would
-  // make every run differ and the check meaningless.
-  const builtAt = git('show', '-s', '--format=%cI', 'HEAD') ?? new Date().toISOString()
+  // The revision of the evidence, not of HEAD.
+  //
+  // HEAD is the obvious choice and it is wrong: the export is committed, so
+  // committing it changes HEAD, which changes the next export, which never
+  // matches the commit -- CI's staleness check would fail forever. Anchoring to
+  // the evidence is stable under every commit that does not add new scorecards,
+  // and says the more useful thing anyway: which evidence this was built from.
+  const artifactRevision = git('log', '-1', '--format=%h', '--', ...EVIDENCE_PATHS) ?? UNKNOWN
+  const builtAt =
+    git('log', '-1', '--format=%cI', '--', ...EVIDENCE_PATHS) ?? new Date().toISOString()
   const snapshotManifest = loadSnapshotManifest()
   const labelCache = new Map<string, ReturnType<typeof labelProvenance>>()
 
