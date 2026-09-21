@@ -1,0 +1,1009 @@
+{
+ "demo_version": 1,
+ "run_id": "prod-llm__2026-09-02__47edb50",
+ "runner": "prod-llm",
+ "snapshot": "2026-09-02",
+ "snapshot_sha256": "73f93e5b8cc02c189823f0fc6bbf6b97c27e5bd5e44bcef9d79fa5a0045921b4",
+ "frozen_at": "2026-09-02T05:06:49.958134+00:00",
+ "n_articles_in_corpus": 1358,
+ "built_at": "2026-09-14T21:21:05-07:00",
+ "artifact_revision": "3b11a3c",
+ "editions": [
+  {
+   "persona": "aisha",
+   "masthead": "SEP 2 · AISHA EDITION",
+   "stories": [
+    {
+     "id": "n-aisha-91",
+     "position": 1,
+     "headline": "Singapore fintech raises $40m to build AI healthcare claims platform",
+     "publication": "e27",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00753",
+     "position": 2,
+     "headline": "Commentary: Support for children of unwed parents reflects Singapore’s refreshed",
+     "publication": "CNA Singapore",
+     "url": "https://www.channelnewsasia.com/commentary/baby-bonus-child-support-package-single-parent-singapore-6355616",
+     "synthetic": false
+    },
+    {
+     "id": "a00772",
+     "position": 3,
+     "headline": "Bringing tech and people together for Singapore’s AI future",
+     "publication": "Business Times SG",
+     "url": "https://www.businesstimes.com.sg/singapore/singapores-ai-future/bringing-tech-and-people-together-singapores-ai-future",
+     "synthetic": false
+    },
+    {
+     "id": "a00751",
+     "position": 4,
+     "headline": "Economists raise Singapore's 2026 growth forecast to 5%: MAS survey",
+     "publication": "CNA Singapore",
+     "url": "https://www.channelnewsasia.com/singapore/mas-economist-survey-2026-gdp-growth-inflation-6353876",
+     "synthetic": false
+    },
+    {
+     "id": "a00706",
+     "position": 5,
+     "headline": "Singapore’s Mercy Relief to deliver $120k in emergency aid to disaster-stricken ",
+     "publication": "Straits Times",
+     "url": "https://www.straitstimes.com/singapore/singapores-mercy-relief-to-deliver-120k-in-emergency-aid-to-disaster-stricken-nepal",
+     "synthetic": false
+    },
+    {
+     "id": "a00227",
+     "position": 6,
+     "headline": "Indian Streamer JioHotstar Launches in U.K., Canada and Singapore With Interacti",
+     "publication": "Variety",
+     "url": "https://variety.com/2026/tv/news/jiohotstar-uk-canada-singapore-launch-1236848067/",
+     "synthetic": false
+    },
+    {
+     "id": "a00754",
+     "position": 7,
+     "headline": "Singapore teen births at lowest in over 20 years; safe, judgment-free environmen",
+     "publication": "CNA Singapore",
+     "url": "https://www.channelnewsasia.com/singapore/teenage-births-lowest-young-mothers-babies-6331786",
+     "synthetic": false
+    },
+    {
+     "id": "a00770",
+     "position": 8,
+     "headline": "Economists raise Singapore’s growth forecast, lower inflation projections in lat",
+     "publication": "Business Times SG",
+     "url": "https://www.businesstimes.com.sg/singapore/economists-raise-singapores-growth-forecast-lower-inflation-projections-latest-mas-survey",
+     "synthetic": false
+    },
+    {
+     "id": "n-aisha-02",
+     "position": 9,
+     "headline": "Baby Bonus cash gift raised to $11,000 and paternity leave doubled from January",
+     "publication": "Straits Times",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "n-aisha-92",
+     "position": 10,
+     "headline": "Lions beat Malaysia 3-0 in Causeway derby at National Stadium",
+     "publication": "Straits Times",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "n-aisha-01",
+     "position": 11,
+     "headline": "NEA issues haze advisory as PSI enters unhealthy range in eastern Singapore",
+     "publication": "CNA Singapore",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a01282",
+     "position": 12,
+     "headline": "Honduran court drops case against ex-President Hernandez after Trump pardon",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/honduran-court-drops-case-against-ex-president-hernandez-after-trump-pardon?traffic_source=rss",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "cold",
+   "masthead": "SEP 2 · COLD EDITION",
+   "stories": [
+    {
+     "id": "a01249",
+     "position": 1,
+     "headline": "Hong Kong pro-democracy activist Joshua Wong pleads guilty in second national se",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/world/2026/sep/02/hong-kong-pro-democracy-activist-joshua-wong-pleads-guilty-collusion-china",
+     "synthetic": false
+    },
+    {
+     "id": "a00174",
+     "position": 2,
+     "headline": "KBANK gains attention as Thai bank sentiment improves",
+     "publication": "bne IntelliNews",
+     "url": "https://www.intellinews.com/kbank-gains-attention-as-thai-bank-sentiment-improves-464955/",
+     "synthetic": false
+    },
+    {
+     "id": "a01253",
+     "position": 3,
+     "headline": "Australia news live: Victorian premier calls statues of state leaders ‘stupid wa",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/australia-news/live/2026/sep/02/anthony-albanese-palau-forum-one-nation-pauline-hanson-channel-contos-ntwnfb",
+     "synthetic": false
+    },
+    {
+     "id": "a00242",
+     "position": 4,
+     "headline": "The Gentlemen season two review – these geezers in tweed are irritating, stupid ",
+     "publication": "Guardian Culture",
+     "url": "https://www.theguardian.com/tv-and-radio/2026/sep/02/the-gentlemen-season-two-review-guy-ritchie-theo-james-netflix",
+     "synthetic": false
+    },
+    {
+     "id": "a01278",
+     "position": 5,
+     "headline": "Tunisia’s civil society faces growing pressure as crackdown widens",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/tunisias-civil-society-faces-growing-pressure-as-crackdown-widens?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a00335",
+     "position": 6,
+     "headline": "Iran attacks US bases in Middle East after reports US strike killed five at wedd",
+     "publication": "BBC",
+     "url": "https://www.bbc.co.uk/news/articles/cj06q4ynpmjo?at_medium=RSS&at_campaign=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a00342",
+     "position": 7,
+     "headline": "Zelensky says airlines should avoid Russian airspace as Ukraine escalates drone ",
+     "publication": "BBC",
+     "url": "https://www.bbc.co.uk/news/articles/c9v9yydy2wvo?at_medium=RSS&at_campaign=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01085",
+     "position": 8,
+     "headline": "Verizon Promo Codes: $200 Verizon Gift Cards | September 2026",
+     "publication": "Wired",
+     "url": "https://www.wired.com/story/verizon-promo-code/",
+     "synthetic": false
+    },
+    {
+     "id": "a00265",
+     "position": 9,
+     "headline": "Onimusha Way of the Sword release time in your time zone",
+     "publication": "Polygon",
+     "url": "https://www.polygon.com/onimusha-way-of-the-sword-release-time-when-edt-pdt/",
+     "synthetic": false
+    },
+    {
+     "id": "a01276",
+     "position": 10,
+     "headline": "Germany says Russia preparing ‘hybrid’ attacks over Ukraine support",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/video/newsfeed/2026/9/2/germany-says-russia-preparing-hybrid-attacks-over-ukraine-support?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a00337",
+     "position": 11,
+     "headline": "Chris Mason: Will Burnham find PMQs as 'nail biting' and 'nerve wracking' as Bla",
+     "publication": "BBC",
+     "url": "https://www.bbc.co.uk/news/articles/c7507z4enq6o?at_medium=RSS&at_campaign=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a00243",
+     "position": 12,
+     "headline": "The year of Domhnall Gleeson: ‘No one talks about actors’ dedication. But I had ",
+     "publication": "Guardian Culture",
+     "url": "https://www.theguardian.com/film/2026/sep/02/the-year-of-domhnall-gleeson-no-one-talks-about-actors-dedication-but-i-had-a-perm-for-five-months",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "dilshod",
+   "masthead": "SEP 2 · DILSHOD EDITION",
+   "stories": [
+    {
+     "id": "a00965",
+     "position": 1,
+     "headline": "Romo pleads no contest to OWI, to seek help",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49794939/ex-nfl-qb-cbs-sports-analyst-tony-romo-pleads-no-contest-owi",
+     "synthetic": false
+    },
+    {
+     "id": "a00961",
+     "position": 2,
+     "headline": "CB Porter noncommittal on playing without deal",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49796601/steelers-joey-porter-jr-playing-deal-know",
+     "synthetic": false
+    },
+    {
+     "id": "a00962",
+     "position": 3,
+     "headline": "GM says Packers have not seen Jacobs video",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49794123/packers-not-seen-video-josh-jacobs-case-gm-says",
+     "synthetic": false
+    },
+    {
+     "id": "a00963",
+     "position": 4,
+     "headline": "Raiders say RB Jeanty in 'good spot' with recovery",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49797714/raiders-gm-says-ashton-jeanty-good-spot-recovery",
+     "synthetic": false
+    },
+    {
+     "id": "a00964",
+     "position": 5,
+     "headline": "Lions send Pacheco to IR with MCL, back injuries",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49796729/detroit-lions-place-rb-isiah-pacheco-injured-reserve",
+     "synthetic": false
+    },
+    {
+     "id": "a00966",
+     "position": 6,
+     "headline": "Taylor: Chase, Higgins should be ready for Week 1",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49796201/chase-higgins-ready-bengals-opener",
+     "synthetic": false
+    },
+    {
+     "id": "a00967",
+     "position": 7,
+     "headline": "Texans GM sets Week 1 deadline for Stroud talks",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49794128/texans-negotiate-stroud-season-gm-says",
+     "synthetic": false
+    },
+    {
+     "id": "a00953",
+     "position": 8,
+     "headline": "Ducks to retire former captain Getzlaf's No. 15",
+     "publication": "ESPN NHL",
+     "url": "https://www.espn.com/nhl/story/_/id/49797141/anaheim-ducks-retire-former-captain-ryan-getzlaf-no-15",
+     "synthetic": false
+    },
+    {
+     "id": "a00976",
+     "position": 9,
+     "headline": "Hurricanes announce more broadcast details—with a lot still unknown",
+     "publication": "Yahoo Sports NHL",
+     "url": "https://sports.yahoo.com/articles/hurricanes-announce-more-broadcast-details-040954962.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00912",
+     "position": 10,
+     "headline": "Kaepernick now shuns NFL for 'blackballing me'",
+     "publication": "ESPN",
+     "url": "https://www.espn.com/nfl/story/_/id/49796833/colin-kaepernick-says-now-shuns-nfl-blackballing-me",
+     "synthetic": false
+    },
+    {
+     "id": "n-dil-01",
+     "position": 11,
+     "headline": "Shomurodov scores twice as Uzbekistan beat Iran 2-1 in World Cup qualifier",
+     "publication": "Al Jazeera",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00241",
+     "position": 12,
+     "headline": "The Runner review – Gal Gadot stumbles through derivative high-speed, low-rent t",
+     "publication": "Guardian Culture",
+     "url": "https://www.theguardian.com/film/2026/sep/01/the-runner-amazon-thriller-movie-review",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "farrukh",
+   "masthead": "SEP 2 · FARRUKH EDITION",
+   "stories": [
+    {
+     "id": "a01283",
+     "position": 1,
+     "headline": "Top US lawmaker Mike Johnson says lying is part of some Iranians’ religion",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/top-us-lawmaker-mike-johnson-says-lying-is-part-of-some-iranians-religion?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01285",
+     "position": 2,
+     "headline": "Iran says US bombed a wedding party in Sirik, killing five people",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/iran-says-us-strikes-hit-a-wedding-party-in-sirik-killing-five?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01286",
+     "position": 3,
+     "headline": "IAEA says Syria built a nuclear reactor in Deir Az Zor under al-Assad",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/iaea-says-syria-built-a-nuclear-reactor-in-deir-az-zor-under-al-assad?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01287",
+     "position": 4,
+     "headline": "US launches new strikes on Iran, denies its bases hit in Jordan",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/video/newsfeed/2026/9/2/us-launches-new-strikes-on-iran-denies-its-bases-hit-in-jordan?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01288",
+     "position": 5,
+     "headline": "US pushes looser approach to AI regulation, while EU pushes new law",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/us-pushes-looser-approach-to-ai-regulation-while-eu-pushes-new-law?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01289",
+     "position": 6,
+     "headline": "Moment US strikes on Iranian port city hit wedding party",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/video/newsfeed/2026/9/2/moment-us-strikes-on-iranian-port-city-hit-wedding-party?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01290",
+     "position": 7,
+     "headline": "Iran war live: Tehran claims attacks on US bases in Bahrain, Jordan, Iraq",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/liveblog/2026/9/2/iran-war-live-us-bombs-iran-tehran-retaliates-on-gulf-neighbours-jordan?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01229",
+     "position": 8,
+     "headline": "Not just guilty or not - The jury's options in Lindsay Clancy's murder trial",
+     "publication": "BBC World",
+     "url": "https://www.bbc.co.uk/news/articles/c93vgv4kr49o?at_medium=RSS&at_campaign=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01291",
+     "position": 9,
+     "headline": "Fernandez transfers to Man City from Chelsea in joint British record fee",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/sports/2026/9/1/fernandez-transfers-to-man-city-from-chelsea-in-joint-british-record-fee?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01267",
+     "position": 10,
+     "headline": "British aid worker mistakenly identified as a survivor of Nepal-Tibet disaster",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/world/2026/sep/01/briton-among-119-more-people-rescued-in-nepal-after-flash-floods",
+     "synthetic": false
+    },
+    {
+     "id": "n-far-01",
+     "position": 11,
+     "headline": "Kazakhstan reintroduces customs duties on Chinese trucks transiting to Central A",
+     "publication": "Times of Cent.Asia",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "n-far-02",
+     "position": 12,
+     "headline": "EU adds three Tajik freight firms to Russia sanctions circumvention list",
+     "publication": "Eurasianet",
+     "url": null,
+     "synthetic": true
+    }
+   ]
+  },
+  {
+   "persona": "lena",
+   "masthead": "SEP 2 · LENA EDITION",
+   "stories": [
+    {
+     "id": "a01249",
+     "position": 1,
+     "headline": "Hong Kong pro-democracy activist Joshua Wong pleads guilty in second national se",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/world/2026/sep/02/hong-kong-pro-democracy-activist-joshua-wong-pleads-guilty-collusion-china",
+     "synthetic": false
+    },
+    {
+     "id": "a01259",
+     "position": 2,
+     "headline": "Germany blames Russia for drone attack at Leipzig airport",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/world/2026/sep/01/germany-blames-russia-drone-attack-leipzig-airport",
+     "synthetic": false
+    },
+    {
+     "id": "a01295",
+     "position": 3,
+     "headline": "US energy secretary will travel to Venezuela to unveil oil arrangement",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/1/us-energy-secretary-will-travel-to-venezuela-to-unveil-oil-arrangement?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a00808",
+     "position": 4,
+     "headline": "Can Bitcoin defend the critical US$76,500 foundation zone before the September 1",
+     "publication": "e27",
+     "url": "https://e27.co/can-bitcoin-defend-the-critical-us76500-foundation-zone-before-the-september-11-inflation-data-triggers-another-massive-liquidation-cascade-20260902/",
+     "synthetic": false
+    },
+    {
+     "id": "a00165",
+     "position": 5,
+     "headline": "Putin and Rahmon expressed satisfaction with the growth of trade turnover and th",
+     "publication": "Asia-Plus TJ",
+     "url": "https://asiaplus.news/en/2026/09/02/putin-and-rahmon-expressed-satisfaction-with-the-growth-of-trade-turnover-and-the-progress-of-construction-of-the-drama-theater-and-center-for-gifted-children-in-dushanbe/",
+     "synthetic": false
+    },
+    {
+     "id": "a01303",
+     "position": 6,
+     "headline": "Iran war: US, Tehran trade fire in new flare-up",
+     "publication": "DW",
+     "url": "https://www.dw.com/en/iran-war-us-tehran-trade-fire-in-new-flare-up/live-78656656?maca=en-rss-en-all-1573-rdf",
+     "synthetic": false
+    },
+    {
+     "id": "a00770",
+     "position": 7,
+     "headline": "Economists raise Singapore’s growth forecast, lower inflation projections in lat",
+     "publication": "Business Times SG",
+     "url": "https://www.businesstimes.com.sg/singapore/economists-raise-singapores-growth-forecast-lower-inflation-projections-latest-mas-survey",
+     "synthetic": false
+    },
+    {
+     "id": "n-lena-01",
+     "position": 8,
+     "headline": "Iran reopens Strait of Hormuz to tankers under UN-brokered 72-hour truce; Brent ",
+     "publication": "CNBC",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00000",
+     "position": 9,
+     "headline": "Trump says U.S. is not forcing Iran to negotiate after fresh round of strikes",
+     "publication": "CNBC",
+     "url": "https://www.cnbc.com/2026/09/02/us-iran-war-trump-hormuz-irgc-jordan-bahrain.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00001",
+     "position": 10,
+     "headline": "China dissented from G20 statement opposing 'cheap exports' flooding market, Bes",
+     "publication": "CNBC",
+     "url": "https://www.cnbc.com/2026/09/01/bessent-china-g20-trade-exports-trump-xi.html",
+     "synthetic": false
+    },
+    {
+     "id": "a01256",
+     "position": 11,
+     "headline": "Off-grid UK-Australian couple given more access to children who were removed fro",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/australia-news/2026/sep/02/off-grid-uk-australian-couple-italy-given-more-access-to-children-court-ntwnfb",
+     "synthetic": false
+    },
+    {
+     "id": "a01280",
+     "position": 12,
+     "headline": "US strikes on Iran kill child at wedding ceremony",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/video/newsfeed/2026/9/2/us-strikes-on-iran-kill-child-at-wedding-ceremony?traffic_source=rss",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "maya",
+   "masthead": "SEP 2 · MAYA EDITION",
+   "stories": [
+    {
+     "id": "a00000",
+     "position": 1,
+     "headline": "Trump says U.S. is not forcing Iran to negotiate after fresh round of strikes",
+     "publication": "CNBC",
+     "url": "https://www.cnbc.com/2026/09/02/us-iran-war-trump-hormuz-irgc-jordan-bahrain.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00812",
+     "position": 2,
+     "headline": "The creator economy is distribution, not marketing. Most Asian businesses are st",
+     "publication": "e27",
+     "url": "https://e27.co/the-creator-economy-is-distribution-not-marketing-most-asian-businesses-are-still-scaling-it-like-a-campaign-20260828/",
+     "synthetic": false
+    },
+    {
+     "id": "a00769",
+     "position": 3,
+     "headline": "10 luxury apartments linked to S$3 billion money laundering case on Sep 23 aucti",
+     "publication": "Business Times SG",
+     "url": "https://www.businesstimes.com.sg/singapore/10-luxury-apartments-linked-s3-billion-money-laundering-case-sep-23-auction-block",
+     "synthetic": false
+    },
+    {
+     "id": "a00012",
+     "position": 4,
+     "headline": "House adopts measure condemning socialism ahead of November election",
+     "publication": "CNBC",
+     "url": "https://www.cnbc.com/2026/09/01/congress-vote-condemning-socialism-election.html",
+     "synthetic": false
+    },
+    {
+     "id": "n-maya-02",
+     "position": 5,
+     "headline": "Scientists confirm first detection of biosignature gases on exoplanet K2-18b",
+     "publication": "Guardian World",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a01047",
+     "position": 6,
+     "headline": "Anthropic launches Claude Fable 5.1 and says it&#8217;s up to 45 percent cheaper",
+     "publication": "The Verge",
+     "url": "https://www.theverge.com/ai-artificial-intelligence/987830/anthropic-claude-fable-mythos-5-1",
+     "synthetic": false
+    },
+    {
+     "id": "a00770",
+     "position": 7,
+     "headline": "Economists raise Singapore’s growth forecast, lower inflation projections in lat",
+     "publication": "Business Times SG",
+     "url": "https://www.businesstimes.com.sg/singapore/economists-raise-singapores-growth-forecast-lower-inflation-projections-latest-mas-survey",
+     "synthetic": false
+    },
+    {
+     "id": "a00009",
+     "position": 8,
+     "headline": "Hugging Face's new duck robot is selling fast. A Chinese chip powers it",
+     "publication": "CNBC",
+     "url": "https://www.cnbc.com/2026/09/01/hugging-faces-new-duck-robot-is-selling-fast-a-chinese-chip-powers-it.html",
+     "synthetic": false
+    },
+    {
+     "id": "a01088",
+     "position": 9,
+     "headline": "The Range Rover Electric: Specs, Price, Availability",
+     "publication": "Wired",
+     "url": "https://www.wired.com/story/the-range-rover-electric-has-finally-arrived/",
+     "synthetic": false
+    },
+    {
+     "id": "a01046",
+     "position": 10,
+     "headline": "Google needs Hollywood more than the studios need AI",
+     "publication": "The Verge",
+     "url": "https://www.theverge.com/tech/987429/google-needs-hollywood-more-than-the-studios-need-ai",
+     "synthetic": false
+    },
+    {
+     "id": "a01257",
+     "position": 11,
+     "headline": "Global heating will hit at least 1.8C, UN warns, and there are ‘no good outcomes",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/environment/2026/sep/02/global-heating-warming-1-8c-best-case-scenario-un-united-nations-environment-programme-report",
+     "synthetic": false
+    },
+    {
+     "id": "a01276",
+     "position": 12,
+     "headline": "Germany says Russia preparing ‘hybrid’ attacks over Ukraine support",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/video/newsfeed/2026/9/2/germany-says-russia-preparing-hybrid-attacks-over-ukraine-support?traffic_source=rss",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "priya",
+   "masthead": "SEP 2 · PRIYA EDITION",
+   "stories": [
+    {
+     "id": "n-priya-01",
+     "position": 1,
+     "headline": "Leylah Fernandez reaches first WTA 1000 final in Toronto after upset of world No",
+     "publication": "ESPN",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00056",
+     "position": 2,
+     "headline": "Palo Alto Networks’ stock falls despite strong AI cybersecurity demand",
+     "publication": "MarketWatch",
+     "url": "https://www.marketwatch.com/story/palo-alto-networks-stock-climbs-as-demand-for-ai-cybersecurity-powers-an-earnings-beat-4b39578c?mod=mw_rss_topstories",
+     "synthetic": false
+    },
+    {
+     "id": "n-priya-02",
+     "position": 3,
+     "headline": "Ontario approves 2 GW of new solar under revised procurement, largest in provinc",
+     "publication": "CNBC",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00374",
+     "position": 4,
+     "headline": "Trump nominates loyalist Hung Cao to be permanent navy secretary",
+     "publication": "Guardian US",
+     "url": "https://www.theguardian.com/us-news/2026/sep/01/trump-navy-secretary-hung-cao-nomination",
+     "synthetic": false
+    },
+    {
+     "id": "a00230",
+     "position": 5,
+     "headline": "Tom Cruise Is Confident Paramount-Warner Bros. Will Release 30 Films a Year Afte",
+     "publication": "Variety",
+     "url": "https://variety.com/2026/film/news/tom-cruise-david-ellison-paramount-warner-bros-merger-1236846704/",
+     "synthetic": false
+    },
+    {
+     "id": "a00275",
+     "position": 6,
+     "headline": "Former id Software producer says the team faced the 'worst crunch' in the series",
+     "publication": "PC Gamer",
+     "url": "https://www.pcgamer.com/gaming-industry/former-id-software-producer-says-the-team-faced-the-worst-crunch-in-the-series-history-on-doom-the-dark-ages-revelations-there-were-days-where-i-didnt-see-my-son/",
+     "synthetic": false
+    },
+    {
+     "id": "a00276",
+     "position": 7,
+     "headline": "Good reviews are a 'great relief,' says Blood of Dawnwalker director, as former ",
+     "publication": "PC Gamer",
+     "url": null,
+     "synthetic": false
+    },
+    {
+     "id": "a01047",
+     "position": 8,
+     "headline": "Anthropic launches Claude Fable 5.1 and says it&#8217;s up to 45 percent cheaper",
+     "publication": "The Verge",
+     "url": "https://www.theverge.com/ai-artificial-intelligence/987830/anthropic-claude-fable-mythos-5-1",
+     "synthetic": false
+    },
+    {
+     "id": "a00963",
+     "position": 9,
+     "headline": "Raiders say RB Jeanty in 'good spot' with recovery",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49797714/raiders-gm-says-ashton-jeanty-good-spot-recovery",
+     "synthetic": false
+    },
+    {
+     "id": "a00964",
+     "position": 10,
+     "headline": "Lions send Pacheco to IR with MCL, back injuries",
+     "publication": "ESPN NFL",
+     "url": "https://www.espn.com/nfl/story/_/id/49796729/detroit-lions-place-rb-isiah-pacheco-injured-reserve",
+     "synthetic": false
+    },
+    {
+     "id": "a00393",
+     "position": 11,
+     "headline": "Tiger Woods set for plea change in Florida DUI case after rollover crash",
+     "publication": "Guardian US",
+     "url": "https://www.theguardian.com/sport/2026/sep/02/tiger-woods-change-plea-dui-florida-crash",
+     "synthetic": false
+    },
+    {
+     "id": "a00919",
+     "position": 12,
+     "headline": "Welcome to September! Ranking every MLB playoff race",
+     "publication": "ESPN",
+     "url": "https://www.espn.com/mlb/story/_/id/49784298/mlb-2026-playoffs-rankings-races-september-division-wild-card-top-seeds-byes",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "ray",
+   "masthead": "SEP 2 · RAY EDITION",
+   "stories": [
+    {
+     "id": "a00976",
+     "position": 1,
+     "headline": "Hurricanes announce more broadcast details—with a lot still unknown",
+     "publication": "Yahoo Sports NHL",
+     "url": "https://sports.yahoo.com/articles/hurricanes-announce-more-broadcast-details-040954962.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00977",
+     "position": 2,
+     "headline": "Luke Evangelista trade grades as Predators deal young winger to Devils",
+     "publication": "Yahoo Sports NHL",
+     "url": "https://sports.yahoo.com/articles/luke-evangelista-trade-grades-predators-015704975.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00979",
+     "position": 3,
+     "headline": "Devils acquire forward Luke Evangelista in trade with Predators",
+     "publication": "Yahoo Sports NHL",
+     "url": "https://sports.yahoo.com/articles/devils-acquire-forward-luke-evangelista-013829973.html",
+     "synthetic": false
+    },
+    {
+     "id": "n-ray-02",
+     "position": 4,
+     "headline": "Devils trade first-round pick for Jets goaltender Hellebuyck in blockbuster deal",
+     "publication": "ESPN NHL",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00980",
+     "position": 5,
+     "headline": "How Sunny Mehta Will Stand Out Among The New Wave Of Young GMs",
+     "publication": "Yahoo Sports NHL",
+     "url": "https://sports.yahoo.com/articles/sunny-mehta-stand-among-wave-003950350.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00982",
+     "position": 6,
+     "headline": "Flames Shut Out of U.S. National TV Schedule",
+     "publication": "Yahoo Sports NHL",
+     "url": "https://sports.yahoo.com/articles/flames-shut-u-national-tv-230035975.html",
+     "synthetic": false
+    },
+    {
+     "id": "n-ray-01",
+     "position": 7,
+     "headline": "NJ Transit to suspend Morris & Essex line service from Newark Penn for two weeks",
+     "publication": "NJ.com",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "n-ray-91",
+     "position": 8,
+     "headline": "New Jersey Devils-themed slot machine hits Atlantic City casino floors",
+     "publication": "NJ.com",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a00461",
+     "position": 9,
+     "headline": "NYC public schools to ban AI for teaching students below 9th grade",
+     "publication": "Gothamist",
+     "url": "https://gothamist.com/news/nyc-public-schools-to-ban-ai-for-teaching-students-below-9th-grade",
+     "synthetic": false
+    },
+    {
+     "id": "a00411",
+     "position": 10,
+     "headline": "Mendoza nets a pair as Orange boys soccer downs Payne Tech for season-opening wi",
+     "publication": "NJ.com",
+     "url": "https://www.nj.com/highschoolsports/2026/09/mendoza-nets-a-pair-as-orange-boys-soccer-downs-payne-tech-for-season-opening-win.html",
+     "synthetic": false
+    },
+    {
+     "id": "a00615",
+     "position": 11,
+     "headline": "Latvia banned the import of Russian books on September 1. That won’t get them of",
+     "publication": "Meduza EN",
+     "url": "https://meduza.io/en/feature/2026/09/02/latvia-banned-the-import-of-russian-books-on-september-1-that-won-t-get-them-off-the-shelves-booksellers-say-shipments-will-just-clear-customs-elsewhere-in-the-eu",
+     "synthetic": false
+    },
+    {
+     "id": "a00915",
+     "position": 12,
+     "headline": "👏 OBJ reclaims iconic No. 13 jersey",
+     "publication": "ESPN",
+     "url": "https://www.espn.com/nfl/story/_/id/49797418/odell-beckham-jr-new-york-giants-number-13-jersey",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "tom",
+   "masthead": "SEP 2 · TOM EDITION",
+   "stories": [
+    {
+     "id": "n-tom-01",
+     "position": 1,
+     "headline": "Anthropic releases Claude Opus 5 with 2M-token context and agentic computer use",
+     "publication": "TechCrunch",
+     "url": null,
+     "synthetic": true
+    },
+    {
+     "id": "a01047",
+     "position": 2,
+     "headline": "Anthropic launches Claude Fable 5.1 and says it&#8217;s up to 45 percent cheaper",
+     "publication": "The Verge",
+     "url": "https://www.theverge.com/ai-artificial-intelligence/987830/anthropic-claude-fable-mythos-5-1",
+     "synthetic": false
+    },
+    {
+     "id": "a01288",
+     "position": 3,
+     "headline": "US pushes looser approach to AI regulation, while EU pushes new law",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/us-pushes-looser-approach-to-ai-regulation-while-eu-pushes-new-law?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01128",
+     "position": 4,
+     "headline": "Anthropic promises zero data retention – but customers must check it worked",
+     "publication": "The Register",
+     "url": "https://www.theregister.com/ai-and-ml/2026/09/02/anthropic-promises-zero-data-retention-but-customers-must-check-it-worked/5293789",
+     "synthetic": false
+    },
+    {
+     "id": "a00814",
+     "position": 5,
+     "headline": "Vietnam’s new growth engine is built on constraint",
+     "publication": "e27",
+     "url": "https://e27.co/vietnams-new-growth-engine-is-built-on-constraint-20260828/",
+     "synthetic": false
+    },
+    {
+     "id": "a00810",
+     "position": 6,
+     "headline": "NASA-linked, MIT-trained founders’ nSWX raises US$2M for AI chip packaging",
+     "publication": "e27",
+     "url": "https://e27.co/nasa-linked-mit-trained-founders-nswx-raises-us2m-for-ai-chip-packaging-20260902/",
+     "synthetic": false
+    },
+    {
+     "id": "a00812",
+     "position": 7,
+     "headline": "The creator economy is distribution, not marketing. Most Asian businesses are st",
+     "publication": "e27",
+     "url": "https://e27.co/the-creator-economy-is-distribution-not-marketing-most-asian-businesses-are-still-scaling-it-like-a-campaign-20260828/",
+     "synthetic": false
+    },
+    {
+     "id": "a00771",
+     "position": 8,
+     "headline": "For true AI transformation, go beyond deployment and using tools",
+     "publication": "Business Times SG",
+     "url": "https://www.businesstimes.com.sg/singapore/singapores-ai-future/true-ai-transformation-go-beyond-deployment-and-using-tools",
+     "synthetic": false
+    },
+    {
+     "id": "a00056",
+     "position": 9,
+     "headline": "Palo Alto Networks’ stock falls despite strong AI cybersecurity demand",
+     "publication": "MarketWatch",
+     "url": "https://www.marketwatch.com/story/palo-alto-networks-stock-climbs-as-demand-for-ai-cybersecurity-powers-an-earnings-beat-4b39578c?mod=mw_rss_topstories",
+     "synthetic": false
+    }
+   ]
+  },
+  {
+   "persona": "wei",
+   "masthead": "SEP 2 · WEI EDITION",
+   "stories": [
+    {
+     "id": "a01282",
+     "position": 1,
+     "headline": "Honduran court drops case against ex-President Hernandez after Trump pardon",
+     "publication": "Al Jazeera",
+     "url": "https://www.aljazeera.com/news/2026/9/2/honduran-court-drops-case-against-ex-president-hernandez-after-trump-pardon?traffic_source=rss",
+     "synthetic": false
+    },
+    {
+     "id": "a01084",
+     "position": 2,
+     "headline": "Uplift Promo Codes: $300 Off",
+     "publication": "Wired",
+     "url": "https://www.wired.com/story/uplift-desk-coupon-code/",
+     "synthetic": false
+    },
+    {
+     "id": "a01088",
+     "position": 3,
+     "headline": "The Range Rover Electric: Specs, Price, Availability",
+     "publication": "Wired",
+     "url": "https://www.wired.com/story/the-range-rover-electric-has-finally-arrived/",
+     "synthetic": false
+    },
+    {
+     "id": "a01059",
+     "position": 4,
+     "headline": "AfterQuery reportedly becomes Y Combinator’s fastest-ever unicorn, now valued at",
+     "publication": "TechCrunch",
+     "url": "https://techcrunch.com/2026/09/01/afterquery-reportedly-becomes-y-combinators-fastest-ever-unicorn-now-valued-at-3-2b/",
+     "synthetic": false
+    },
+    {
+     "id": "a00814",
+     "position": 5,
+     "headline": "Vietnam’s new growth engine is built on constraint",
+     "publication": "e27",
+     "url": "https://e27.co/vietnams-new-growth-engine-is-built-on-constraint-20260828/",
+     "synthetic": false
+    },
+    {
+     "id": "a00227",
+     "position": 6,
+     "headline": "Indian Streamer JioHotstar Launches in U.K., Canada and Singapore With Interacti",
+     "publication": "Variety",
+     "url": "https://variety.com/2026/tv/news/jiohotstar-uk-canada-singapore-launch-1236848067/",
+     "synthetic": false
+    },
+    {
+     "id": "a00000",
+     "position": 7,
+     "headline": "Trump says U.S. is not forcing Iran to negotiate after fresh round of strikes",
+     "publication": "CNBC",
+     "url": "https://www.cnbc.com/2026/09/02/us-iran-war-trump-hormuz-irgc-jordan-bahrain.html",
+     "synthetic": false
+    },
+    {
+     "id": "a01249",
+     "position": 8,
+     "headline": "Hong Kong pro-democracy activist Joshua Wong pleads guilty in second national se",
+     "publication": "Guardian World",
+     "url": "https://www.theguardian.com/world/2026/sep/02/hong-kong-pro-democracy-activist-joshua-wong-pleads-guilty-collusion-china",
+     "synthetic": false
+    },
+    {
+     "id": "a00058",
+     "position": 9,
+     "headline": "‘It’s not fair’: My twin brother and I were left houses by our parents. Can I ma",
+     "publication": "MarketWatch",
+     "url": "https://www.marketwatch.com/story/its-not-fair-my-twin-brother-and-i-were-left-houses-by-our-parents-can-i-make-him-pay-his-share-for-taxes-and-upkeep-43feb780?mod=mw_rss_topstories",
+     "synthetic": false
+    },
+    {
+     "id": "a00056",
+     "position": 10,
+     "headline": "Palo Alto Networks’ stock falls despite strong AI cybersecurity demand",
+     "publication": "MarketWatch",
+     "url": "https://www.marketwatch.com/story/palo-alto-networks-stock-climbs-as-demand-for-ai-cybersecurity-powers-an-earnings-beat-4b39578c?mod=mw_rss_topstories",
+     "synthetic": false
+    },
+    {
+     "id": "a00807",
+     "position": 11,
+     "headline": "Late-stage deals revive in Southeast Asia, but early-stage founders remain under",
+     "publication": "e27",
+     "url": "https://e27.co/late-stage-deals-revive-in-southeast-asia-but-early-stage-founders-remain-under-pressure-20260902/",
+     "synthetic": false
+    },
+    {
+     "id": "a00810",
+     "position": 12,
+     "headline": "NASA-linked, MIT-trained founders’ nSWX raises US$2M for AI chip packaging",
+     "publication": "e27",
+     "url": "https://e27.co/nasa-linked-mit-trained-founders-nswx-raises-us2m-for-ai-chip-packaging-20260902/",
+     "synthetic": false
+    }
+   ]
+  }
+ ]
+}

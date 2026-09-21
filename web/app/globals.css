@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens transcribed from docs/DESIGN.md (the repository's declared
+ * single source of truth for Daily's visual design).
+ *
+ * Reconciliation note: Daily/Theme/AppTheme.swift has drifted from DESIGN.md —
+ * AppTheme's `BrandColors.primary` is a red (#B33D2E-ish) that appears nowhere
+ * in the documented palette, and its backgrounds are neutral greys rather than
+ * the warm paper tones. DESIGN.md states "If a UI change conflicts with this
+ * file, update this file first, then ship", so the document wins here and the
+ * drift is recorded in docs/notes/web-companion.md rather than propagated.
+ */
+
+@theme {
+  --color-paper: var(--daily-paper);
+  --color-paper-secondary: var(--daily-paper-secondary);
+  --color-ink: var(--daily-ink);
+  --color-ink-60: var(--daily-ink-60);
+  --color-ink-blue: var(--daily-ink-blue);
+  --color-ochre: var(--daily-ochre);
+  --color-sepia: var(--daily-sepia);
+  --color-danger: var(--daily-error);
+  --color-success: var(--daily-success);
+
+  /* DESIGN.md: system serif (Charter/Georgia) for editorial, SF Pro for chrome.
+     Kept as system stacks — no webfont request — which is true to the iOS
+     design and costs zero render-blocking bytes. */
+  --font-serif: Charter, "Bitstream Charter", "Sitka Text", Georgia, "Times New Roman", serif;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* Spacing grid: 4 / 8 / 10 / 12 / 16 / 24 / 32 / 48 (AppSpacing tokens). */
+  --spacing-hair: 1px;
+
+  /* Radius: thumbnails 6, buttons 12, sheets 20. No full pills. */
+  --radius-thumb: 6px;
+  --radius-button: 12px;
+  --radius-sheet: 20px;
+}
+
+:root {
+  color-scheme: light dark;
+  --daily-paper: #fcfaf7;
+  --daily-paper-secondary: #f4efe6;
+  --daily-ink: #1f1b17;
+  --daily-ink-60: rgb(31 27 23 / 0.6);
+  --daily-ink-blue: #2d3f5f;
+  --daily-ochre: #c97d2e;
+  --daily-sepia: #d9cfbf;
+  --daily-error: #b23b2e;
+  --daily-success: #6e8b5f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --daily-paper: #15120e;
+    --daily-paper-secondary: #1c1916;
+    --daily-ink: #f0ede6;
+    --daily-ink-60: rgb(240 237 230 / 0.65);
+    --daily-ink-blue: #7e92b5;
+    --daily-ochre: #e0985a;
+    --daily-sepia: #2a2520;
+    --daily-error: #d6614f;
+    --daily-success: #88a57a;
+  }
+}
+
+html {
+  background: var(--daily-paper);
+  color: var(--daily-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* DESIGN.md typography tokens, as composable utility classes. */
+@utility brand-wordmark {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.875rem;
+  letter-spacing: -0.5px;
+}
+
+@utility signature-caps {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+}
+
+@utility meta-caps {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.8px;
+  text-transform: lowercase;
+}
+
+@utility hero-headline {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.875rem;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+@utility row-headline {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+}
+
+@utility dek {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+}
+
+@utility body-reading {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+/* Accessibility: visible focus everywhere, and honour reduced motion.
+   DESIGN.md motion budget is 200-350ms; reduced-motion collapses it. */
+:focus-visible {
+  outline: 2px solid var(--daily-ink-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--daily-paper);
+  color: var(--daily-ink);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--daily-sepia);
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
