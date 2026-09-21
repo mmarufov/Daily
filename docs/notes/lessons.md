@@ -434,3 +434,35 @@ limiting (`main.py:646`), and empty test files (822 test functions). Every "Curr
 line was false, and a section header read "Structured Loggin". Deleted rather than
 rewritten — git history keeps it. A stale checklist actively misinforms; an absent one only
 omits.
+
+## A tally is not a funnel, and a passing gate is not a working pipeline (2026-09-21)
+
+Two lessons from building the web evidence explorer, both about reading your own data wrong.
+
+**`stage_counts` records terminal stages, not survivors.** Each article is counted once, at the
+furthest stage it reached. Rendered directly as a funnel it *grows* — fixture `ray` shows
+`scored` 45 then `feed` 50. Survivors at a stage are the sum of that stage's tally and all later
+ones. Three facts already in the same scorecard confirm the reconstruction (feed size 50, recency
+window 300, the 100-candidate cap) and the total overshoots the corpus by exactly the four
+planted needles. Rule: when a derived view can be cross-checked against a number the same
+document already records, check it, and keep the check as a test.
+
+**The production batch scorer was misattributing verdicts, and the eval gate was green.** The
+prompt asks for a positional array and sends no article ids; a short response shifted every later
+verdict onto the wrong article. One corpus, one runner: 63 mismatched batches, one of them
+returning 201 verdicts for 40 articles. So every production number in the committed scorecards
+was computed from shifted lists — and fixing it made the measured numbers *worse* (unwanted rate
++15.6 pp), because refusing to guess leaves those candidates with no signal at all.
+
+Three rules out of that:
+
+1. **A blanket `except Exception` around a provider call will swallow your harness's control
+   flow.** `CacheMiss` subclasses `RuntimeError`, so offline replay degraded to an all-zero run
+   while still reporting zero cache misses — because the miss counter only increments on the
+   live network path. A counter that can only be incremented by the path you disabled is not
+   evidence.
+2. **Log-and-continue on a length mismatch is a silent data-corruption bug**, not a warning. If
+   you cannot identify which response belongs to which input, you must not apply it.
+3. **When a correctness fix turns the gate red, that is the gate working.** Re-recording the
+   baseline to get a green badge would have destroyed the only evidence that the change had a
+   cost. Report the cost and let the owner decide.

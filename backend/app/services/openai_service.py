@@ -645,28 +645,49 @@ Optimization goals:
                     ]
 
                 if len(results_list) != len(articles):
+                    # The model is asked for a positional array and no article
+                    # id is sent, so nothing in the response identifies which
+                    # article a verdict belongs to. A count mismatch therefore
+                    # means every verdict after the first missing or merged
+                    # entry may be attributed to the wrong article -- which is
+                    # how a flood warning ends up rejected for "discussing a
+                    # music EP" while the story the reader needed disappears.
+                    #
+                    # Misattributed relevance is worse than absent relevance:
+                    # absent scoring is visible downstream as a fallback reason,
+                    # a shifted verdict is not. Discard the batch and let the
+                    # retry loop try again rather than normalizing by position.
                     logger.warning(
-                        "Batch scoring returned %d results for %d articles; normalizing",
+                        "Batch scoring returned %d results for %d articles; discarding the "
+                        "batch rather than assigning verdicts by position",
                         len(results_list),
                         len(articles),
                     )
+                    continue
 
                 normalized = []
-                for i in range(len(articles)):
-                    if i < len(results_list):
-                        entry = results_list[i]
-                        score = max(0.0, min(1.0, float(entry.get("score", 0.5))))
-                        relevant = bool(entry.get("relevant", score >= 0.5))
-                        reason = str(entry.get("reason", ""))
-                        normalized.append({"relevant": relevant, "score": score, "reason": reason})
-                    else:
-                        normalized.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
+                for entry in results_list:
+                    score = max(0.0, min(1.0, float(entry.get("score", 0.5))))
+                    relevant = bool(entry.get("relevant", score >= 0.5))
+                    reason = str(entry.get("reason", ""))
+                    normalized.append({"relevant": relevant, "score": score, "reason": reason})
 
                 return normalized
 
             except asyncio.TimeoutError:
                 logger.warning("Batch scoring timed out (attempt %d) for %d articles", attempt + 1, len(articles))
-            except Exception:
+            except Exception as exc:
+                # The evaluation harness injects a caching client whose
+                # CacheMiss and BudgetExceeded are deliberate stop signals, not
+                # transient provider errors. Both subclass RuntimeError, so a
+                # blanket handler swallows them -- turning an offline replay
+                # that should have failed closed into a silently degraded run
+                # in which every article scores 0.0 and the run still reports
+                # zero cache misses. Matched by class name so the product does
+                # not import the harness; this mirrors the allowlist already
+                # used in evals/openai_backend.py and evals/label.py.
+                if type(exc).__name__ in {"CacheMiss", "BudgetExceeded"}:
+                    raise
                 logger.exception("Error in batch scoring (attempt %d)", attempt + 1)
 
         return fallback
