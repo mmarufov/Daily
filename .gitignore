@@ -56,6 +56,11 @@ backend/evals/.cache/emb_*.pkl
 # ---- Unrelated local artifacts -----------------------------------------
 # Scratch output from unrelated one-off tasks run in this working copy.
 artifacts/
+# ...but the web tier's exported evaluation artifacts are committed on purpose:
+# they are what lets the explorer and the reader demo render with no credentials,
+# and CI asserts the commit stays in sync with the harness.
+!web/public/artifacts/
+!web/public/demo/
 node_modules/
 *.pptx
 *.inspect.ndjson

@@ -1,0 +1,95 @@
+# Build and validate the public evaluation artifacts.
+#
+# This workflow holds NO secrets and is safe to run on pull requests from forks.
+# It validates, tests and uploads a GitHub Actions artifact; publishing that
+# artifact to Blob is a separate, trusted workflow that reacts to this one.
+#
+# There is deliberately no schedule. Replaying identical frozen inputs on a
+# timer produces the same numbers and buys nothing; the useful triggers are a
+# change to the harness, the pipeline or the web tier, and a manual run.
+name: evaluation artifacts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/evals/**'
+      - 'backend/app/**'
+      - 'web/**'
+      - '.github/workflows/evidence-artifacts.yml'
+  pull_request:
+    paths:
+      - 'backend/evals/**'
+      - 'backend/app/**'
+      - 'web/**'
+      - '.github/workflows/evidence-artifacts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  artifacts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The export records whether the revision that executed an evaluation
+          # is reachable from this branch. That needs real history, not a
+          # single-commit shallow clone.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Validate the export without writing
+        run: npm run export:artifacts -- --check
+
+      - name: Build the export and the reader demo
+        run: npm run export:all
+
+      - name: Fail if the committed export is stale
+        # The export is committed so the app works with no credentials. If a
+        # change to the harness moves it, the commit has to move with it --
+        # otherwise the deployed site and the repository disagree.
+        run: |
+          if ! git diff --quiet -- public/artifacts public/demo; then
+            echo "::error::The committed export under web/public/ is out of date."
+            echo "Run 'npm run export:all' in web/ and commit the result."
+            git diff --stat -- public/artifacts public/demo
+            exit 1
+          fi
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Production build
+        run: npm run build
+
+      - name: Comparison summary
+        # always(): a readable summary is most valuable when something above
+        # failed, so it is written even then.
+        if: always()
+        run: npm run summarise >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload artifacts for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-artifacts-${{ github.sha }}
+          path: |
+            web/public/artifacts/
+            web/public/demo/
+          if-no-files-found: error
+          retention-days: 14

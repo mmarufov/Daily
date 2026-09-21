@@ -1,0 +1,56 @@
+# Publish validated evaluation artifacts to Vercel Blob.
+#
+# Split from the build workflow on purpose. `workflow_run` runs in the context
+# of the base repository with access to secrets, so the untrusted pull-request
+# job never needs publishing credentials. This workflow re-validates everything
+# it downloads before uploading anything.
+name: publish evidence
+
+on:
+  workflow_run:
+    workflows: ['evaluation artifacts']
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  publish:
+    # Never publish a failed run as if it had passed.
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Download the artifacts built by the triggering run
+        uses: actions/download-artifact@v4
+        with:
+          name: evaluation-artifacts-${{ github.event.workflow_run.head_sha }}
+          path: web/public/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Re-validate before publishing
+        run: npm run export:artifacts -- --check
+
+      - name: Publish to Blob
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          # Only the default branch moves the mutable pointer, so a preview can
+          # never make the deployed explorer read an unrelated run.
+          PUBLISH_AS_LATEST: ${{ github.event.workflow_run.head_branch == 'main' }}
+        run: npm run publish:artifacts

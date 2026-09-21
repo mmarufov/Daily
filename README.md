@@ -184,6 +184,21 @@ commits to a fix, and a **status** file recording what landed and what is still 
 audits are deliberately unflattering — they exist so decisions trace to evidence rather
 than to taste. Index: [`docs/`](docs/).
 
+## The web companion
+
+`web/` is a read-only web tier on Next.js: a reader demo that replays a dated frozen edition, an
+interactive explorer for the evaluation results below, and one worked debugging case study. It
+reimplements no ranking — nothing there scores an article — and it runs with no credentials,
+no database and no provider key, because the exported artifacts are committed.
+
+It is also where the evaluation stops being a JSON file nobody reads. The explorer selects a run,
+a corpus, a pipeline and a reader fixture into a shareable URL; refuses to draw improvement arrows
+between runs that are not comparable; reconstructs the candidate funnel correctly (the harness
+records terminal stages, not survivors); and follows a single story down to the stage that lost it.
+
+Setup, the artifact provenance rules, the CI publication model, and what the site is careful never
+to claim: [`web/README.md`](web/README.md).
+
 ## Repository layout
 
 ```

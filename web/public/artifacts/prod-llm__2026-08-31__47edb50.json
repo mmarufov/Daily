@@ -1,0 +1,4462 @@
+{
+ "artifact_version": 1,
+ "run_id": "prod-llm__2026-08-31__47edb50",
+ "origin": "imported-historical",
+ "provenance": {
+  "eval_revision": "47edb50",
+  "eval_revision_reachable": false,
+  "artifact_revision": "3b11a3c",
+  "artifact_built_at": "2026-09-14T21:21:05-07:00",
+  "storage_revision": "3b11a3c",
+  "run_created_at": "2026-09-02T07:13:33+00:00",
+  "timestamps_trustworthy": true,
+  "runner": "prod-llm",
+  "runner_cli_arg": "prod",
+  "protocol": "unknown",
+  "protocol_source": "absent-in-source",
+  "k": 12,
+  "execution_mode": "unknown",
+  "execution_mode_basis": "The scorecard does not record an execution mode. A zero cache-miss total cannot stand in for one, because the harness only counts misses on the live network path.",
+  "needles": true,
+  "quiet": false,
+  "models": [
+   "gpt-4o-mini"
+  ],
+  "cache_keys": 30,
+  "snapshot": {
+   "name": "2026-08-31",
+   "sha256": "6950caf50c74b867208f7f962f612de5cb7711f70f7eb1218f4ce2bf64e66886",
+   "n_articles": 1328,
+   "built_at": "2026-08-31T02:22:22.812477+00:00",
+   "frozen_now": "2026-08-31T02:22:22.812477+00:00",
+   "derived_from": null,
+   "removed_clusters": [],
+   "note": "first frozen corpus, 51 feeds; contains US-Iran war cluster"
+  },
+  "labels": {
+   "snapshot": "2026-08-31",
+   "rows": 3889,
+   "unique_articles": 1227,
+   "personas": 10,
+   "by_source": {
+    "agent": 341,
+    "model": 3548
+   },
+   "models": [
+    "gpt-4.1",
+    "gpt-4.1-mini"
+   ],
+   "contested": 227,
+   "status": "provisional-model-and-agent"
+  },
+  "notes": [
+   {
+    "severity": "warning",
+    "message": "The revision that executed this run (47edb50) is not reachable from the current default branch, so \"this result came from that code\" cannot be verified by checking out the revision. Everything under backend/evals/ reached the default branch in a single squash commit.",
+    "source": "git merge-base --is-ancestor 47edb50 HEAD"
+   },
+   {
+    "severity": "warning",
+    "message": "This scorecard records no protocol identifier. The harness only began emitting one later (backend/evals/run.py writes meta.protocol), so the evaluation protocol cannot be read from the artifact and is reported as unknown rather than inferred from the runner name.",
+    "source": "backend/evals/run.py"
+   },
+   {
+    "severity": "caution",
+    "message": "This scorecard is missing summary keys that the current harness emits unconditionally (reader_pipeline_calls_max_per_persona, event_slot_contamination_mean). It therefore could not have been produced by the code on the current default branch, and re-running today would not yield a document of the same shape.",
+    "source": "backend/evals/run.py, backend/evals/metrics.py"
+   },
+   {
+    "severity": "caution",
+    "message": "A reported cache-miss total of zero does not prove offline replay: the harness increments its miss counter only on the live network path, so the counter is structurally zero whenever offline mode is active. Execution mode is therefore reported as unknown unless the scorecard states it.",
+    "source": "backend/evals/llm_cache.py"
+   },
+   {
+    "severity": "info",
+    "message": "Stored in the repository tree at backend/evals/results/47edb50-prod-llm-2026-08-31.json.",
+    "source": "backend/evals/results/47edb50-prod-llm-2026-08-31.json"
+   }
+  ]
+ },
+ "summary": {
+  "recall_at_k_mean": 0.2297,
+  "recall_at_k_min": 0.0833,
+  "raw_recall_at_k_mean": 0.2111,
+  "raw_recall_at_k_min": 0.0588,
+  "recall_at_retrieval_mean": 0.4001,
+  "recall_at_retrieval_min": 0.1176,
+  "need_to_know_recall_mean": 0.175,
+  "need_to_know_recall_min": 0,
+  "followup_recall_mean": 0.1016,
+  "followup_recall_min": 0,
+  "never_rate_mean": 0.2167,
+  "never_rate_min": 0,
+  "event_delivery_mean": 0.2,
+  "event_delivery_min": 0,
+  "major_delivery_mean": 0.1,
+  "major_delivery_min": 0,
+  "false_major_rate_mean": null,
+  "false_major_rate_min": null,
+  "judge_precision_mean": 0.5917,
+  "judge_precision_min": 0,
+  "judge_recall_mean": 0.561,
+  "judge_recall_min": 0,
+  "needle_recall_mean": 0.55,
+  "needle_recall_min": 0,
+  "lookalike_rate_mean": 0.1,
+  "lookalike_rate_min": 0,
+  "feed_size_k_mean": 11,
+  "feed_size_k_min": 2,
+  "distinct_sources_mean": 6.9,
+  "distinct_sources_min": 2,
+  "latency_s_mean": 1.603,
+  "latency_s_min": 0.41,
+  "calls_total": 36,
+  "calls_max_per_persona": 5,
+  "cost_usd_total": 0.13528,
+  "cache_misses_total": 0,
+  "personas": 10
+ },
+ "summary_loss_by_stage": {
+  "prefilter:cap": 6,
+  "lookback": 63,
+  "blended": 14,
+  "rank": 4
+ },
+ "personas": [
+  {
+   "key": "aisha",
+   "metrics": {
+    "recall_at_k": 0.125,
+    "raw_recall_at_k": 0.125,
+    "recall_at_retrieval": 0.25,
+    "need_to_know_recall": 0.125,
+    "followup_recall": null,
+    "never_rate": 0,
+    "event_delivery": 0,
+    "major_delivery": 0,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 1,
+    "judge_recall": 0.5,
+    "needle_recall": 0.5,
+    "lookalike_rate": 0,
+    "latency_s": 0.47,
+    "cost_usd": 0.00286,
+    "calls": 3,
+    "distinct_sources": 2,
+    "feed_size_k": 2
+   },
+   "counts": {
+    "must_see": 8,
+    "need_to_know": 8,
+    "labelled": 358,
+    "feed_size": 2,
+    "feed_size_at_k": 2,
+    "unlabelled_in_feed": 0,
+    "distinct_sources": 2
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 98,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 2,
+     "lost_entering_stage": 98,
+     "pass_rate": 0.02,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 2,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 2,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 2,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 2,
+     "survivors": 2,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 143,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 98,
+     "maps_to_stage": true
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 54,
+     "maps_to_stage": true
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "prefilter:cap": 2,
+    "lookback": 4,
+    "blended": 1
+   },
+   "stories": [
+    {
+     "id": "n-aisha-01",
+     "title": "NEA issues haze advisory as PSI enters unhealthy range in eastern Singapore",
+     "source": "CNA Singapore",
+     "label": "must_see",
+     "rank": 1,
+     "score": 0.7681875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00699",
+     "title": "How Singapore turns billion-dollar science research into real-world success",
+     "source": "Straits Times",
+     "label": "fine",
+     "rank": 2,
+     "score": 0.731,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00698",
+     "title": "New private not-for-profit hospital to be located in the east due to high occupa",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0,
+     "dropped_at": "prefilter:cap",
+     "reason": "No clear preference match",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00704",
+     "title": "More than 300 cooling centres to open if S’pore faces heatwave: New heat office",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0,
+     "dropped_at": "prefilter:cap",
+     "reason": "No clear preference match",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00775",
+     "title": "NDR 2026: New workplace policies for parents add options to labour market",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00776",
+     "title": "NDR 2026: Bigger childcare subsidies can drive consolidation in pre-school marke",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00782",
+     "title": "NDR 2026: Childcare leave salary caps still leave gaps for higher-income parents",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00786",
+     "title": "Core inflation climbs to 2% in July; electricity prices rise sharply",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-aisha-02",
+     "title": "Baby Bonus cash gift raised to $11,000 and paternity leave doubled from January",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.14131249999999998,
+     "dropped_at": "blended",
+     "reason": "The article discusses early release schemes for prisoners, which is not relevant to the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "cold",
+   "metrics": {
+    "recall_at_k": 0.1,
+    "raw_recall_at_k": 0.1,
+    "recall_at_retrieval": 0.7,
+    "need_to_know_recall": null,
+    "followup_recall": 0.1111,
+    "never_rate": 0.0833,
+    "event_delivery": 0.5,
+    "major_delivery": 0.1667,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0.4444,
+    "judge_recall": 0.5714,
+    "needle_recall": 0,
+    "lookalike_rate": 0,
+    "latency_s": 0.41,
+    "cost_usd": 0.00321,
+    "calls": 3,
+    "distinct_sources": 7,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 10,
+    "need_to_know": 0,
+    "labelled": 402,
+    "feed_size": 24,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 0,
+    "distinct_sources": 7
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1030,
+     "survivors": 1330,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1030,
+     "pass_rate": 0.22556390977443608,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 75,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 1,
+     "survivors": 25,
+     "lost_entering_stage": 75,
+     "pass_rate": 0.25,
+     "absent": false
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 24,
+     "lost_entering_stage": 1,
+     "pass_rate": 0.96,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 24,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 24,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 24,
+     "survivors": 24,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1030,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 197,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 75,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 12,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    },
+    {
+     "key": "dedup",
+     "group": "dedup",
+     "detail": null,
+     "count": 1,
+     "maps_to_stage": true
+    }
+   ],
+   "loss_by_stage": {
+    "blended": 5,
+    "prefilter:cap": 2,
+    "lookback": 1,
+    "rank": 1
+   },
+   "stories": [
+    {
+     "id": "a00346",
+     "title": "The Papers: 'Killers blocked from early release' and 'Harry should fund security",
+     "source": "BBC",
+     "label": "fine",
+     "rank": 1,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00337",
+     "title": "'Like fighting a dinosaur': Sydney woman recalls how she punched shark during at",
+     "source": "BBC",
+     "label": "fine",
+     "rank": 2,
+     "score": 0.3686875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00011",
+     "title": "What caused Nvidia's nasty reversal Friday? Look to the Fed for clues",
+     "source": "CNBC",
+     "label": "fine",
+     "rank": 3,
+     "score": 0.4791875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01233",
+     "title": "US strikes Iranian launchers in strait of Hormuz, sparking reprisal attack on ai",
+     "source": "Guardian World",
+     "label": "must_see",
+     "rank": 4,
+     "score": 0.4791875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00001",
+     "title": "Oil rises over 1% after U.S. forces strike two Iranian rocket launchers on Larak",
+     "source": "CNBC",
+     "label": "fine",
+     "rank": 5,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00400",
+     "title": "Dozens evacuated from Grand Canyon after flash flood",
+     "source": "NJ.com",
+     "label": "fine",
+     "rank": 6,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00454",
+     "title": "Brooklyn nurse killed by hit-and-run driver walking home from shift at NYU Lango",
+     "source": "Gothamist",
+     "label": "fine",
+     "rank": 7,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00359",
+     "title": "GB's Samuel earns first win at a Grand Slam - but 'nervous' Norrie beaten",
+     "source": "BBC",
+     "label": "fine",
+     "rank": 8,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00343",
+     "title": "'My parents won't lend me £10k but helped my brother': When families play financ",
+     "source": "BBC",
+     "label": "fine",
+     "rank": 9,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00033",
+     "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+     "source": "Fortune",
+     "label": "fine",
+     "rank": 10,
+     "score": 0.42393749999999997,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00004",
+     "title": "K-beauty giant APR's shares up 100% this year ahead of U.S. Costco launch in Sep",
+     "source": "CNBC",
+     "label": "never",
+     "rank": 11,
+     "score": 0.3686875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a01249",
+     "title": "Flash flooding in Grand Canyon leaves more than 20 people missing",
+     "source": "Al Jazeera",
+     "label": "fine",
+     "rank": 12,
+     "score": 0.3686875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00006",
+     "title": "U.S., Iran trade attacks as hostilities escalate once again",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.31343750000000004,
+     "dropped_at": "blended",
+     "reason": "The article discusses the implications of U.S.-Iran hostilities, which is significant for international relations.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a00034",
+     "title": "Battle for Hormuz: U.S. forces take first military action against Iran in a mont",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 1,
+     "dropped_at": "prefilter:cap",
+     "reason": "Matches general preference constraints",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00321",
+     "title": "Families of pilgrims likely caught in floods are desperate for news from Nepal",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.2,
+     "dropped_at": "blended",
+     "reason": "Matches general preference constraints",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a00333",
+     "title": "US strikes Iranian launchers on Larak Island in first known attack in weeks",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.0371875,
+     "dropped_at": "blended",
+     "reason": "This article is a news roundup, which does not provide specific content of interest.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a01220",
+     "title": "Families of 33 missing Britons rush to Nepal as fears grow of more floods",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01250",
+     "title": "Iran war live: IRGC attacks US bases in Jordan after US bombs Larak Island",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.0371875,
+     "dropped_at": "blended",
+     "reason": "This article focuses on graphics technology for professionals, which is not of general interest.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a01258",
+     "title": "Iran attacks US bases in Jordan after US strikes Larak Island",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 1,
+     "dropped_at": "prefilter:cap",
+     "reason": "Matches general preference constraints",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01272",
+     "title": "Iran war: US military strikes Iran's Larak Island",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.3686875,
+     "dropped_at": "rank",
+     "reason": "The article discusses military actions and their implications, which is relevant to international news.",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-cold-01",
+     "title": "Magnitude 7.8 earthquake strikes off Japan, tsunami warning issued for Pacific c",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.31343750000000004,
+     "dropped_at": "blended",
+     "reason": "The article discusses a significant earthquake, which is important news for a general audience.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "dilshod",
+   "metrics": {
+    "recall_at_k": 0.3333,
+    "raw_recall_at_k": 0.3333,
+    "recall_at_retrieval": 0.6667,
+    "need_to_know_recall": 0,
+    "followup_recall": null,
+    "never_rate": 0.5833,
+    "event_delivery": 0,
+    "major_delivery": 0,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0.5,
+    "judge_recall": 0.5,
+    "needle_recall": 0.5,
+    "lookalike_rate": 0,
+    "latency_s": 4.01,
+    "cost_usd": 0.0337,
+    "calls": 5,
+    "distinct_sources": 6,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 3,
+    "need_to_know": 2,
+    "labelled": 353,
+    "feed_size": 35,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 1,
+    "distinct_sources": 6
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 65,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 35,
+     "lost_entering_stage": 65,
+     "pass_rate": 0.35,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 35,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 35,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 35,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 35,
+     "survivors": 35,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 193,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 65,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 23,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 4,
+     "maps_to_stage": true
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "lookback": 1,
+    "blended": 1
+   },
+   "stories": [
+    {
+     "id": "a00002",
+     "title": "China's factory activity shrinks for second straight month, contracting less tha",
+     "source": "CNBC",
+     "label": "fine",
+     "rank": 1,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00903",
+     "title": "US Open experts' picks: Who will win?",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 2,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00923",
+     "title": "Handing out awards: Wilson, Reese and the most dominant stars of 2026",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 3,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00924",
+     "title": "Forecaster for Week 22: Aug. 31-Sept. 6",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 4,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00944",
+     "title": "Moritz Seider's Contract Looks Like A Steal After Cale Makar's Massive Extension",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "rank": 5,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00945",
+     "title": "‘That’s Why I Signed There For Eight Years’: Canucks Defenceman Filip Hronek On ",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "rank": 6,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00946",
+     "title": "Flyers Prospect Flashes Lofty Potential in Viral New Highlights",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "rank": 7,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00067",
+     "title": "Uzbekistan’s next competitive advantage is talent",
+     "source": "Eurasianet",
+     "label": "fine",
+     "rank": 8,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00788",
+     "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+     "source": "e27",
+     "label": null,
+     "rank": 9,
+     "score": 0.8800000000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00902",
+     "title": "Inside the raucous and rapid rise of Alex Eala",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 10,
+     "score": 0.73153125,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "n-dil-01",
+     "title": "Shomurodov scores twice as Uzbekistan beat Iran 2-1 in World Cup qualifier",
+     "source": "Al Jazeera",
+     "label": "must_see",
+     "rank": 11,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00073",
+     "title": "Russia eyes Kazakhstan and Uzbekistan as arms purveyors – report",
+     "source": "Eurasianet",
+     "label": "fine",
+     "rank": 12,
+     "score": 0.6842499999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00081",
+     "title": "Uzbekistan’s Presidential Daughter Just Got a Law of Her Own",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-dil-02",
+     "title": "Mirziyoyev signs decree abolishing exit visa-style registration and easing som c",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.23799999999999996,
+     "dropped_at": "blended",
+     "reason": "The article discusses NFL team rosters, which is not relevant to the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "farrukh",
+   "metrics": {
+    "recall_at_k": 0.1667,
+    "raw_recall_at_k": 0.1429,
+    "recall_at_retrieval": 0.2857,
+    "need_to_know_recall": 0.1667,
+    "followup_recall": 0,
+    "never_rate": 0.1667,
+    "event_delivery": 0,
+    "major_delivery": 0.5,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 1,
+    "judge_recall": 0.75,
+    "needle_recall": 1,
+    "lookalike_rate": 0,
+    "latency_s": 3.77,
+    "cost_usd": 0.03981,
+    "calls": 5,
+    "distinct_sources": 5,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 14,
+    "need_to_know": 14,
+    "labelled": 359,
+    "feed_size": 44,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 8,
+    "distinct_sources": 5
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 56,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 44,
+     "lost_entering_stage": 56,
+     "pass_rate": 0.44,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 44,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 44,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 44,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 44,
+     "survivors": 44,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 176,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 56,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 32,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 21,
+     "maps_to_stage": true
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "rank": 1,
+    "blended": 1,
+    "lookback": 10
+   },
+   "stories": [
+    {
+     "id": "a01245",
+     "title": "Cleverly avoids culture war issues in pitch to be next London mayor",
+     "source": "Guardian World",
+     "label": "never",
+     "rank": 1,
+     "score": 0.58,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a01187",
+     "title": "Iceland votes against restarting EU membership talks",
+     "source": "BBC World",
+     "label": "never",
+     "rank": 2,
+     "score": 0.58,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a01247",
+     "title": "What are the implications of the US-Venezuela oil deal?",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 3,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01248",
+     "title": "Dozens evacuated and about 15 missing after Grand Canyon flash flood",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 4,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01249",
+     "title": "Flash flooding in Grand Canyon leaves more than 20 people missing",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 5,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01188",
+     "title": "15 hikers feared missing after 'terrifying' flash flooding hits Grand Canyon",
+     "source": "BBC World",
+     "label": null,
+     "rank": 6,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01251",
+     "title": "What is Notting Hill Carnival’s Jab Jab parade?",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 7,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01252",
+     "title": "Vote count starts in Guinea-Bissau referendum on strengthening presidency",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 8,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01253",
+     "title": "Lamine Yamal getting back to ‘top level’, Barcelona coach Flick says",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 9,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01254",
+     "title": "Israeli strike kills 3-year-old child in Gaza",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 10,
+     "score": 0.5,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "n-far-01",
+     "title": "Kazakhstan reintroduces customs duties on Chinese trucks transiting to Central A",
+     "source": "Times of Cent.Asia",
+     "label": "must_see",
+     "rank": 11,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "n-far-02",
+     "title": "EU adds three Tajik freight firms to Russia sanctions circumvention list",
+     "source": "Eurasianet",
+     "label": "must_see",
+     "rank": 12,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00037",
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.6842499999999999,
+     "dropped_at": "rank",
+     "reason": "The article discusses China's manufacturing activity, which could impact commodity prices and trade dynamics relevant to",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00075",
+     "title": "Report accuses Azerbaijan, Georgia, Kazakhstan and Uzbekistan of scamming United",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.2975,
+     "dropped_at": "blended",
+     "reason": "The article focuses on the Taliban's authority challenges, which is not relevant to the user's primary interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a00109",
+     "title": "The Iran War Is Disrupting Trade Connectivity Across Eurasia",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00141",
+     "title": "China Consolidates Position as Kazakhstan’s Top Trading Partner",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00151",
+     "title": "Middle Corridor Must Cut Delays, TITR Chief Tells TCA",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00164",
+     "title": "Taliban Responds to CSTO Plans to Strengthen Tajik-Afghan Border",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00581",
+     "title": "Russians Are Rushing for Cash. Should the Kremlin Be Worried?",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00595",
+     "title": "Deadly Ukrainian Strikes in Southern Russia Force Oil Refinery to Shut Down",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00600",
+     "title": "Kremlin Says It’s Working to Minimize Impact of Ukrainian Attacks on Russian Gra",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00612",
+     "title": "Aluminum producer Rusal promises to ‘minimize the socioeconomic consequences’ of",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00629",
+     "title": "Russia’s ‘digital ruble’ goes live on September 1. Here’s what we know.",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01318",
+     "title": "Grain exports stall as Ukraine steps up attacks on Russia's Black Sea ports",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "lena",
+   "metrics": {
+    "recall_at_k": 0.5833,
+    "raw_recall_at_k": 0.4667,
+    "recall_at_retrieval": 0.6,
+    "need_to_know_recall": 0.5833,
+    "followup_recall": 0.6,
+    "never_rate": 0,
+    "event_delivery": 0.5,
+    "major_delivery": 0.1667,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0.8889,
+    "judge_recall": 0.8889,
+    "needle_recall": 1,
+    "lookalike_rate": 0,
+    "latency_s": 0.45,
+    "cost_usd": 0.00378,
+    "calls": 3,
+    "distinct_sources": 8,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 15,
+    "need_to_know": 15,
+    "labelled": 352,
+    "feed_size": 17,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 2,
+    "distinct_sources": 8
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 83,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 17,
+     "lost_entering_stage": 83,
+     "pass_rate": 0.17,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 17,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 17,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 17,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 17,
+     "survivors": 17,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 140,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 83,
+     "maps_to_stage": true
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 57,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 5,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "blended": 1,
+    "lookback": 6,
+    "rank": 1
+   },
+   "stories": [
+    {
+     "id": "n-lena-01",
+     "title": "Iran reopens Strait of Hormuz to tankers under UN-brokered 72-hour truce; Brent ",
+     "source": "CNBC",
+     "label": "must_see",
+     "rank": 1,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01233",
+     "title": "US strikes Iranian launchers in strait of Hormuz, sparking reprisal attack on ai",
+     "source": "Guardian World",
+     "label": "must_see",
+     "rank": 2,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01272",
+     "title": "Iran war: US military strikes Iran's Larak Island",
+     "source": "DW",
+     "label": "fine",
+     "rank": 3,
+     "score": 0.7947500000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00037",
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "source": "Fortune",
+     "label": "must_see",
+     "rank": 4,
+     "score": 0.7947500000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00033",
+     "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+     "source": "Fortune",
+     "label": "must_see",
+     "rank": 5,
+     "score": 0.7394999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00034",
+     "title": "Battle for Hormuz: U.S. forces take first military action against Iran in a mont",
+     "source": "Fortune",
+     "label": "must_see",
+     "rank": 6,
+     "score": 0.7394999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00001",
+     "title": "Oil rises over 1% after U.S. forces strike two Iranian rocket launchers on Larak",
+     "source": "CNBC",
+     "label": "must_see",
+     "rank": 7,
+     "score": 0.6842499999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00349",
+     "title": "'A giant leap forward': Nasa launches powerful new space telescope",
+     "source": "BBC",
+     "label": null,
+     "rank": 8,
+     "score": 0.48,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00170",
+     "title": "Equinor says attractiveness of stalled Tanzania LNG project has improved",
+     "source": "bne IntelliNews",
+     "label": "fine",
+     "rank": 9,
+     "score": 0.48,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01023",
+     "title": "Musk’s faster path to more gas turbines comes with pollution problem",
+     "source": "TechCrunch",
+     "label": null,
+     "rank": 10,
+     "score": 0.36124999999999996,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01250",
+     "title": "Iran war live: IRGC attacks US bases in Jordan after US bombs Larak Island",
+     "source": "Al Jazeera",
+     "label": "fine",
+     "rank": 11,
+     "score": 0.7283437500000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "n-lena-02",
+     "title": "Germany triggers gas emergency plan early-warning stage as LNG prices spike on H",
+     "source": "DW",
+     "label": "must_see",
+     "rank": 12,
+     "score": 0.6842499999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00006",
+     "title": "U.S., Iran trade attacks as hostilities escalate once again",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.27146875,
+     "dropped_at": "blended",
+     "reason": "The article is about a sports event, which is excluded from the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a00017",
+     "title": "Trump announces deal with Venezuela to secure more than 65 billion barrels of oi",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00020",
+     "title": "Iran trade falls as Supreme Leader Khamenei urges less reliance on the U.S. doll",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00052",
+     "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00171",
+     "title": "LNG prices in Europe skyrocket to highest level since 2023",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.68,
+     "dropped_at": "rank",
+     "reason": "The article discusses rising LNG prices in Europe, which is relevant to the user's focus on European energy security.",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00621",
+     "title": "Bloomberg: Ukraine’s drones have pushed Russian oil refining to a 20-year low",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01195",
+     "title": "Trump hails 'historic' deal for US to control 65bn barrels of Venezuela's oil",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01322",
+     "title": "Can new US sanctions cripple Iran's shadow economy?",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "maya",
+   "metrics": {
+    "recall_at_k": 0.1,
+    "raw_recall_at_k": 0.1,
+    "recall_at_retrieval": 0.2,
+    "need_to_know_recall": 0,
+    "followup_recall": 0,
+    "never_rate": 0.0833,
+    "event_delivery": 0.5,
+    "major_delivery": 0.1667,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0.1667,
+    "judge_recall": 0.5,
+    "needle_recall": 0,
+    "lookalike_rate": 0,
+    "latency_s": 0.44,
+    "cost_usd": 0.00325,
+    "calls": 3,
+    "distinct_sources": 7,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 10,
+    "need_to_know": 5,
+    "labelled": 384,
+    "feed_size": 50,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 2,
+    "distinct_sources": 7
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 42,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 58,
+     "lost_entering_stage": 42,
+     "pass_rate": 0.58,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 58,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 58,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 8,
+     "survivors": 58,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 50,
+     "survivors": 50,
+     "lost_entering_stage": 8,
+     "pass_rate": 0.8620689655172413,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 159,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 42,
+     "maps_to_stage": true
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 38,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 38,
+     "maps_to_stage": false
+    },
+    {
+     "key": "after:roles",
+     "group": "after",
+     "detail": "roles",
+     "count": 8,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "lookback": 7,
+    "prefilter:cap": 1,
+    "blended": 1
+   },
+   "stories": [
+    {
+     "id": "a01024",
+     "title": "TechCrunch Mobility: The hidden human cost of robotaxis",
+     "source": "TechCrunch",
+     "label": "fine",
+     "rank": 1,
+     "score": 0.7060312499999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00992",
+     "title": "Why it matters that President Trump just dialed into a NASA news conference",
+     "source": "Ars Technica",
+     "label": "fine",
+     "rank": 2,
+     "score": 0.6842499999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01011",
+     "title": "Professor Murder Rides the Subway is a forgotten slice of dance punk perfection",
+     "source": "The Verge",
+     "label": "never",
+     "rank": 3,
+     "score": 0.6762812500000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00748",
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "source": "Business Times SG",
+     "label": "fine",
+     "rank": 4,
+     "score": 0.629,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01013",
+     "title": "The Nancy Grace Roman Space Telescope launches to study dark matter and dark ene",
+     "source": "The Verge",
+     "label": "must_see",
+     "rank": 5,
+     "score": 0.6210312499999998,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01041",
+     "title": "Google Maps Now Shows ‘Lake America’ Instead of Lake Ontario",
+     "source": "Wired",
+     "label": "fine",
+     "rank": 6,
+     "score": 0.6210312499999998,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00002",
+     "title": "China's factory activity shrinks for second straight month, contracting less tha",
+     "source": "CNBC",
+     "label": "fine",
+     "rank": 7,
+     "score": 0.6210312499999998,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00003",
+     "title": "Aon nears $17 billion deal to buy insurance broker USI from KKR, WSJ reports",
+     "source": "CNBC",
+     "label": "fine",
+     "rank": 8,
+     "score": 0.6210312499999998,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00005",
+     "title": "Trump criticizes NBC over election comment as Treasury denies some NYT, WSJ and ",
+     "source": "CNBC",
+     "label": "fine",
+     "rank": 9,
+     "score": 0.6210312499999998,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01022",
+     "title": "Liux’s Big microcar bets on sustainability to take on Chinese rivals",
+     "source": "TechCrunch",
+     "label": "fine",
+     "rank": 10,
+     "score": 0.5657812499999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01269",
+     "title": "NASA launches $4.3bn Roman Telescope to uncover universe’s hidden secrets",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 11,
+     "score": 0.60509375,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01250",
+     "title": "Iran war live: IRGC attacks US bases in Jordan after US bombs Larak Island",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 12,
+     "score": 0.58,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00045",
+     "title": "Meta agrees to major changes to Facebook and Instagram as it settles US trial ov",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00052",
+     "title": "‘Winter panic’: EU gas stores at their lowest level in 13 years",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00104",
+     "title": "Flash Flood Devastates China-Nepal Border Region",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00640",
+     "title": "IBM quantum computer solves classically intractable problem in 15 minutes",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01008",
+     "title": "Report: Nvidia to acquire AI model repository Hugging Face for $13 billion",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01088",
+     "title": "The UK Power Grid Has a Phantom Data Center Problem",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01108",
+     "title": "Industry that built the problem offers to sell you the solution",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-maya-01",
+     "title": "Bank of England cuts rates to 3.75% as inflation falls to target",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0,
+     "dropped_at": "prefilter:cap",
+     "reason": "No clear preference match",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-maya-02",
+     "title": "Scientists confirm first detection of biosignature gases on exoplanet K2-18b",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.23428124999999994,
+     "dropped_at": "blended",
+     "reason": "The article discusses Trump's criticism of NBC, which is not relevant to the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "priya",
+   "metrics": {
+    "recall_at_k": 0.5,
+    "raw_recall_at_k": 0.5,
+    "recall_at_retrieval": 0.5,
+    "need_to_know_recall": 0.5,
+    "followup_recall": null,
+    "never_rate": 0.5833,
+    "event_delivery": 0,
+    "major_delivery": 0,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0,
+    "judge_recall": 0,
+    "needle_recall": 1,
+    "lookalike_rate": 0.5,
+    "latency_s": 4.96,
+    "cost_usd": 0.03339,
+    "calls": 5,
+    "distinct_sources": 8,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 4,
+    "need_to_know": 2,
+    "labelled": 344,
+    "feed_size": 47,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 2,
+    "distinct_sources": 8
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 53,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 47,
+     "lost_entering_stage": 53,
+     "pass_rate": 0.47,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 47,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 47,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 47,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 47,
+     "survivors": 47,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 196,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 53,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 35,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 1,
+     "maps_to_stage": true
+    }
+   ],
+   "loss_by_stage": {
+    "lookback": 2
+   },
+   "stories": [
+    {
+     "id": "n-priya-01",
+     "title": "Leylah Fernandez reaches first WTA 1000 final in Toronto after upset of world No",
+     "source": "ESPN",
+     "label": "must_see",
+     "rank": 1,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00385",
+     "title": "US Open tennis 2026: Pegula, Boulter and Medvedev advance while Norrie exits on ",
+     "source": "Guardian US",
+     "label": "fine",
+     "rank": 2,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00414",
+     "title": "Tennis predictions for the US Open on Polymarket",
+     "source": "NJ.com",
+     "label": "never",
+     "rank": 3,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "n-priya-92",
+     "title": "Climate becomes campaign wedge as party leaders trade attacks in first debate",
+     "source": "Guardian World",
+     "label": "never",
+     "rank": 4,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00705",
+     "title": "Self-claimed wealth gurus who drove Lamborghinis now made bankrupt; investors wo",
+     "source": "Straits Times",
+     "label": "never",
+     "rank": 5,
+     "score": 0.72,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00010",
+     "title": "Trump-promoted Freedom Fuel stations sold gas a distributor says went unpaid for",
+     "source": "CNBC",
+     "label": null,
+     "rank": 6,
+     "score": 0.64,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01091",
+     "title": "Debian votes to let contributors code with AI",
+     "source": "The Register",
+     "label": null,
+     "rank": 7,
+     "score": 0.48,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00889",
+     "title": "Scheffler reasserts No. 1 status with 2nd Cup win",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 8,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00901",
+     "title": "How Myles Garrett, Aaron Donald are redefining the NFL's all-time sack list",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 9,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00898",
+     "title": "Who was released before the NFL cut-down deadline? Final roster trims, big moves",
+     "source": "ESPN",
+     "label": "never",
+     "rank": 10,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00942",
+     "title": "Sabres Grades: Third-String Goalie Ellis Shaping Up To Be Crucial Component For ",
+     "source": "Yahoo Sports NHL",
+     "label": "never",
+     "rank": 11,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "n-priya-02",
+     "title": "Ontario approves 2 GW of new solar under revised procurement, largest in provinc",
+     "source": "CNBC",
+     "label": "must_see",
+     "rank": 12,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00048",
+     "title": "Canada announces retaliatory tariffs on wide range of US goods",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00233",
+     "title": "Where to Watch the 2026 U.S. Open Tennis Tournament Online",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "ray",
+   "metrics": {
+    "recall_at_k": 0.2222,
+    "raw_recall_at_k": 0.2222,
+    "recall_at_retrieval": 0.5556,
+    "need_to_know_recall": 0.2,
+    "followup_recall": 0,
+    "never_rate": 0.3333,
+    "event_delivery": 0.5,
+    "major_delivery": 0,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0.6667,
+    "judge_recall": 0.4,
+    "needle_recall": 1,
+    "lookalike_rate": 0,
+    "latency_s": 0.51,
+    "cost_usd": 0.00797,
+    "calls": 3,
+    "distinct_sources": 10,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 9,
+    "need_to_know": 5,
+    "labelled": 344,
+    "feed_size": 15,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 5,
+    "distinct_sources": 10
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 85,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 15,
+     "lost_entering_stage": 85,
+     "pass_rate": 0.15,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 15,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 15,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 15,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 15,
+     "survivors": 15,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 194,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 85,
+     "maps_to_stage": true
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 3,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "blended": 3,
+    "lookback": 4
+   },
+   "stories": [
+    {
+     "id": "n-ray-01",
+     "title": "NJ Transit to suspend Morris & Essex line service from Newark Penn for two weeks",
+     "source": "NJ.com",
+     "label": "must_see",
+     "rank": 1,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "n-ray-02",
+     "title": "Devils trade first-round pick for Jets goaltender Hellebuyck in blockbuster deal",
+     "source": "ESPN NHL",
+     "label": "must_see",
+     "rank": 2,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01228",
+     "title": "Captain and crew arrested after at least eight die in northern Cyprus ferry disa",
+     "source": "Guardian World",
+     "label": null,
+     "rank": 3,
+     "score": 0.686375,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01233",
+     "title": "US strikes Iranian launchers in strait of Hormuz, sparking reprisal attack on ai",
+     "source": "Guardian World",
+     "label": null,
+     "rank": 4,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01262",
+     "title": "Former Israeli soldiers pose as Pro-Palestinian supporters in the US",
+     "source": "Al Jazeera",
+     "label": "never",
+     "rank": 5,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a01184",
+     "title": "The Ukrainian women disappearing into Russian prisons",
+     "source": "NPR World",
+     "label": null,
+     "rank": 6,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00035",
+     "title": "It’s not just math and reading. Classroom devices deprive kids of skills needed ",
+     "source": "Fortune",
+     "label": "fine",
+     "rank": 7,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00367",
+     "title": "Trump ‘border czar’ denies Milo Yiannopoulos was deported quickly to spare him f",
+     "source": "Guardian US",
+     "label": "never",
+     "rank": 8,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00037",
+     "title": "World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat",
+     "source": "Fortune",
+     "label": "never",
+     "rank": 9,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00170",
+     "title": "Equinor says attractiveness of stalled Tanzania LNG project has improved",
+     "source": "bne IntelliNews",
+     "label": null,
+     "rank": 10,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00888",
+     "title": "Star DT Donald unretires to rejoin loaded Rams",
+     "source": "ESPN",
+     "label": null,
+     "rank": 11,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00005",
+     "title": "Trump criticizes NBC over election comment as Treasury denies some NYT, WSJ and ",
+     "source": "CNBC",
+     "label": "never",
+     "rank": 12,
+     "score": 0.5599999999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00407",
+     "title": "Giants’ 53-man roster to include Odell Beckham: Here’s the full squad.",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.074375,
+     "dropped_at": "blended",
+     "reason": "The article discusses a music EP, which is irrelevant to the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a00409",
+     "title": "N.J. weather: Severe thunderstorms, flash flooding threat in N.J. this week",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.029749999999999995,
+     "dropped_at": "blended",
+     "reason": "This article discusses an investigation into WCK Gaza staff killings, which is unrelated to the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "a00494",
+     "title": "Trump administration appealing loss in Gateway tunnel funding case",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00495",
+     "title": "Monthly job losses worst in NJ since first months of pandemic",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00499",
+     "title": "Pennsylvania measles deaths prompt concerns for NJ health leaders",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00503",
+     "title": "Appeals court rejects Rep. LaMonica McIver’s bid to avoid trial on assault charg",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00894",
+     "title": "OBJ earns spot on Giants' initial 53-man roster",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.133875,
+     "dropped_at": "blended",
+     "reason": "The article discusses a Canadiens player, which is not relevant to the user's interests in the Devils.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "tom",
+   "metrics": {
+    "recall_at_k": 0.0833,
+    "raw_recall_at_k": 0.0588,
+    "recall_at_retrieval": 0.1176,
+    "need_to_know_recall": 0,
+    "followup_recall": 0,
+    "never_rate": 0.0833,
+    "event_delivery": 0,
+    "major_delivery": 0,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 1,
+    "judge_recall": 1,
+    "needle_recall": 0.5,
+    "lookalike_rate": 0,
+    "latency_s": 0.5,
+    "cost_usd": 0.00373,
+    "calls": 3,
+    "distinct_sources": 8,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 17,
+    "need_to_know": 4,
+    "labelled": 341,
+    "feed_size": 19,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 7,
+    "distinct_sources": 8
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 81,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 19,
+     "lost_entering_stage": 81,
+     "pass_rate": 0.19,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 19,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 19,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 19,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 19,
+     "survivors": 19,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 177,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 81,
+     "maps_to_stage": true
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 20,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 7,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "lookback": 15,
+    "rank": 1
+   },
+   "stories": [
+    {
+     "id": "a00748",
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "source": "Business Times SG",
+     "label": "fine",
+     "rank": 1,
+     "score": 0.9800000000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00749",
+     "title": "ROEs of SGX mid-caps are a mixed bag, small-caps lag",
+     "source": "Business Times SG",
+     "label": "fine",
+     "rank": 2,
+     "score": 0.9800000000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01024",
+     "title": "TechCrunch Mobility: The hidden human cost of robotaxis",
+     "source": "TechCrunch",
+     "label": "fine",
+     "rank": 3,
+     "score": 0.9800000000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00788",
+     "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+     "source": "e27",
+     "label": null,
+     "rank": 4,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00395",
+     "title": "Trump threatens FCC action against ‘Meet the Press’ host",
+     "source": "NJ.com",
+     "label": null,
+     "rank": 5,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00033",
+     "title": "Iran’s president admits ‘we have many problems’ and missiles ‘are of no use’ as ",
+     "source": "Fortune",
+     "label": null,
+     "rank": 6,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00335",
+     "title": "UK raises case of British activist detained by settlers in West Bank with Israel",
+     "source": "BBC",
+     "label": null,
+     "rank": 7,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00362",
+     "title": "World number one Scheffler claims second Fedex Cup title",
+     "source": "BBC",
+     "label": null,
+     "rank": 8,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00402",
+     "title": "Eagles surprisingly waive both international rookies and risk losing them",
+     "source": "NJ.com",
+     "label": null,
+     "rank": 9,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00058",
+     "title": "‘My main goal is to help people’: I’m single, 74, with $10 million burning a hol",
+     "source": "MarketWatch",
+     "label": null,
+     "rank": 10,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a01144",
+     "title": "Getting an 'iPhone Unavailable' message? Here's how to fix it",
+     "source": "Engadget",
+     "label": "never",
+     "rank": 11,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "n-tom-01",
+     "title": "Anthropic releases Claude Opus 5 with 2M-token context and agentic computer use",
+     "source": "TechCrunch",
+     "label": "must_see",
+     "rank": 12,
+     "score": 0.85,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00014",
+     "title": "OpenAI to end model access to Cursor after acquisition by Elon Musk's SpaceX",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00201",
+     "title": "Anthropic warns infostealer malware is hijacking Claude sessions to drain usage",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00214",
+     "title": "Nearly 700 rogue AI agents coordinated in the Hugging Face attack",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00557",
+     "title": "Google Cloud Launches AI-powered Agents to Simplify Database Lifecycle Managemen",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00633",
+     "title": "Reuters: Russian-speaking hackers breached seven companies by tricking the AI ag",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00998",
+     "title": "Trump blacklisting of \"woke\" Anthropic deemed illegal by federal judge",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01005",
+     "title": "Anthropic's new hardware standard lets AI agents control the physical world",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01008",
+     "title": "Report: Nvidia to acquire AI model repository Hugging Face for $13 billion",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01009",
+     "title": "AI industry says Trump plans to tax chips in the “single dumbest way imaginable”",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01020",
+     "title": "Sony Music Publishing and Warner Chappell are suing Anthropic",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01035",
+     "title": "An Anthropic researcher just gave us a peek at self-improving AI",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01082",
+     "title": "OpenAI Is Developing a ‘Persistent’ AI Agent",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01096",
+     "title": "Researcher shows how Claude Code can be tricked simply by asking it to summarize",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01128",
+     "title": "Salesforce boasts: 50% of bookings were from 'customers refilling the tank... th",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01140",
+     "title": "OpenAI explains how its naughty AI agents attacked Hugging Face",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-tom-02",
+     "title": "EU AI Act enforcement begins: first fines issued against two general-purpose mod",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.7947500000000001,
+     "dropped_at": "rank",
+     "reason": "The article reports on the first fines issued under the EU AI Act, directly relating to AI regulation, a primary focus f",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  },
+  {
+   "key": "wei",
+   "metrics": {
+    "recall_at_k": 0.0833,
+    "raw_recall_at_k": 0.0625,
+    "recall_at_retrieval": 0.125,
+    "need_to_know_recall": 0,
+    "followup_recall": 0,
+    "never_rate": 0.25,
+    "event_delivery": 0,
+    "major_delivery": 0,
+    "false_major_rate": null,
+    "event_slot_contamination": null,
+    "judge_precision": 0.25,
+    "judge_recall": 0.5,
+    "needle_recall": 0,
+    "lookalike_rate": 0.5,
+    "latency_s": 0.51,
+    "cost_usd": 0.00358,
+    "calls": 3,
+    "distinct_sources": 8,
+    "feed_size_k": 12
+   },
+   "counts": {
+    "must_see": 16,
+    "need_to_know": 1,
+    "labelled": 349,
+    "feed_size": 21,
+    "feed_size_at_k": 12,
+    "unlabelled_in_feed": 2,
+    "distinct_sources": 8
+   },
+   "funnel": [
+    {
+     "stage": "pool",
+     "label": "Corpus pool",
+     "explanation": "Every article in the frozen snapshot, plus the needles planted for this persona.",
+     "terminal": 1032,
+     "survivors": 1332,
+     "lost_entering_stage": 0,
+     "pass_rate": null,
+     "absent": false
+    },
+    {
+     "stage": "loaded_rows",
+     "label": "Recency window",
+     "explanation": "What the recency window actually returned from the database.",
+     "terminal": 3,
+     "survivors": 300,
+     "lost_entering_stage": 1032,
+     "pass_rate": 0.22522522522522523,
+     "absent": false
+    },
+    {
+     "stage": "loaded",
+     "label": "Loaded",
+     "explanation": "Rows that survived loading and had usable text.",
+     "terminal": 197,
+     "survivors": 297,
+     "lost_entering_stage": 3,
+     "pass_rate": 0.99,
+     "absent": false
+    },
+    {
+     "stage": "prefilter",
+     "label": "Prefilter",
+     "explanation": "Survivors of the cheap keyword and exclusion pass that runs before any model call.",
+     "terminal": 0,
+     "survivors": 100,
+     "lost_entering_stage": 197,
+     "pass_rate": 0.3367003367003367,
+     "absent": true
+    },
+    {
+     "stage": "scored",
+     "label": "Scored",
+     "explanation": "Candidates the relevance scorer actually saw. Nothing beyond this point can rescue a story dropped earlier.",
+     "terminal": 79,
+     "survivors": 100,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    },
+    {
+     "stage": "blended",
+     "label": "Blended",
+     "explanation": "Candidates left after the score blend.",
+     "terminal": 0,
+     "survivors": 21,
+     "lost_entering_stage": 79,
+     "pass_rate": 0.21,
+     "absent": true
+    },
+    {
+     "stage": "dedup",
+     "label": "Deduplicated",
+     "explanation": "Candidates left after near-duplicate removal.",
+     "terminal": 0,
+     "survivors": 21,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "diversity",
+     "label": "Diversity pass",
+     "explanation": "Candidates left after the source-diversity pass.",
+     "terminal": 0,
+     "survivors": 21,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "roles",
+     "label": "Role assignment",
+     "explanation": "Candidates left after hero and row roles were assigned.",
+     "terminal": 0,
+     "survivors": 21,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": true
+    },
+    {
+     "stage": "feed",
+     "label": "Delivered feed",
+     "explanation": "What the reader would have opened.",
+     "terminal": 21,
+     "survivors": 21,
+     "lost_entering_stage": 0,
+     "pass_rate": 1,
+     "absent": false
+    }
+   ],
+   "unrecognised_stages": [],
+   "drop_reasons": [
+    {
+     "key": "lookback",
+     "group": "lookback",
+     "detail": null,
+     "count": 1032,
+     "maps_to_stage": false
+    },
+    {
+     "key": "prefilter:cap",
+     "group": "prefilter",
+     "detail": "cap",
+     "count": 161,
+     "maps_to_stage": true
+    },
+    {
+     "key": "blended",
+     "group": "blended",
+     "detail": null,
+     "count": 79,
+     "maps_to_stage": true
+    },
+    {
+     "key": "prefilter:excluded",
+     "group": "prefilter",
+     "detail": "excluded",
+     "count": 36,
+     "maps_to_stage": true
+    },
+    {
+     "key": "rank",
+     "group": "rank",
+     "detail": null,
+     "count": 9,
+     "maps_to_stage": false
+    },
+    {
+     "key": "text_too_short",
+     "group": "text_too_short",
+     "detail": null,
+     "count": 3,
+     "maps_to_stage": false
+    }
+   ],
+   "loss_by_stage": {
+    "lookback": 13,
+    "blended": 1,
+    "prefilter:cap": 1
+   },
+   "stories": [
+    {
+     "id": "a01091",
+     "title": "Debian votes to let contributors code with AI",
+     "source": "The Register",
+     "label": null,
+     "rank": 1,
+     "score": 1,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00992",
+     "title": "Why it matters that President Trump just dialed into a NASA news conference",
+     "source": "Ars Technica",
+     "label": "never",
+     "rank": 2,
+     "score": 0.9800000000000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00736",
+     "title": "Singapore steps up efforts to turn research into real-world impact under S$37 bi",
+     "source": "CNA Singapore",
+     "label": "fine",
+     "rank": 3,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00737",
+     "title": "Stuck in low gear at home, Singapore's electric motorcycle firms find traction a",
+     "source": "CNA Singapore",
+     "label": "fine",
+     "rank": 4,
+     "score": 0.96,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00694",
+     "title": "Singapore’s RIE2025 plan saw more business spending, more jobs created in R&D",
+     "source": "Straits Times",
+     "label": "fine",
+     "rank": 5,
+     "score": 0.6693749999999998,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "n-wei-91",
+     "title": "Cloud Nine: Singapore's newest rooftop bar opens with infrastructure-themed cock",
+     "source": "Straits Times",
+     "label": "never",
+     "rank": 6,
+     "score": 0.629,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a01021",
+     "title": "Grindr wants to be the everything app for gay men; investors are still deciding ",
+     "source": "TechCrunch",
+     "label": "never",
+     "rank": 7,
+     "score": 0.59871875,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unwanted"
+    },
+    {
+     "id": "a00790",
+     "title": "The environmental ethics of AI should be a product decision, not a sustainabilit",
+     "source": "e27",
+     "label": "fine",
+     "rank": 8,
+     "score": 0.595,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00699",
+     "title": "How Singapore turns billion-dollar science research into real-world success",
+     "source": "Straits Times",
+     "label": "fine",
+     "rank": 9,
+     "score": 0.57375,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a01261",
+     "title": "Israeli settler rabbi says Palestinians should leave the occupied West Bank",
+     "source": "Al Jazeera",
+     "label": null,
+     "rank": 10,
+     "score": 0.5434687500000001,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-unlabelled"
+    },
+    {
+     "id": "a00748",
+     "title": "Singapore’s inaugural RIE2025 report card shows business R&D spending up 64% at ",
+     "source": "Business Times SG",
+     "label": "must_see",
+     "rank": 11,
+     "score": 0.6842499999999999,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00788",
+     "title": "China’s tax reform matters more to Southeast Asia than Wall Street",
+     "source": "e27",
+     "label": "fine",
+     "rank": 12,
+     "score": 0.629,
+     "dropped_at": null,
+     "reason": null,
+     "reason_truncated": false,
+     "outcome": "delivered-wanted"
+    },
+    {
+     "id": "a00099",
+     "title": "AI, Scams, the Law, and Governance: A Conversation With David Tan",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00546",
+     "title": "AWS Open Sources Kiro Crew for Asynchronous Coding Agents",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00557",
+     "title": "Google Cloud Launches AI-powered Agents to Simplify Database Lifecycle Managemen",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00792",
+     "title": "Ajaib raises US$270M in Indonesia’s biggest tech funding round since 2022",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00800",
+     "title": "Language was never the problem: Inside SEA’s real AI adoption gap",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00804",
+     "title": "Fintech funding in Singapore drops to US$499M as dealmaking becomes more selecti",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00817",
+     "title": "Moving past the pilot and scaling AI in Southeast Asian retail",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00829",
+     "title": "When will AI stop making memory more expensive? Probably much later than you hop",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a00833",
+     "title": "SEA’s stablecoin boom has a dollarisation problem nobody’s pricing in",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01005",
+     "title": "Anthropic's new hardware standard lets AI agents control the physical world",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01031",
+     "title": "Nvidia’s AI advantage is moving beyond the GPU",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01093",
+     "title": "AWS mumbles about its cost-busting networking tech when it should be shouting",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "a01140",
+     "title": "OpenAI explains how its naughty AI agents attacked Hugging Face",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": null,
+     "dropped_at": "lookback",
+     "reason": "",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    },
+    {
+     "id": "n-wei-01",
+     "title": "MAS proposes new capital rules for Singapore payment firms holding customer fund",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 0.21568749999999998,
+     "dropped_at": "blended",
+     "reason": "The article discusses a political issue in the UK, which is not relevant to the user's interests.",
+     "reason_truncated": false,
+     "outcome": "lost-at-or-after-scorer"
+    },
+    {
+     "id": "n-wei-02",
+     "title": "PostgreSQL 19 released with built-in logical replication failover and async I/O",
+     "source": null,
+     "label": null,
+     "rank": null,
+     "score": 2.8,
+     "dropped_at": "prefilter:cap",
+     "reason": "Matched: how AI is actually being used in production engineering",
+     "reason_truncated": false,
+     "outcome": "lost-before-scorer"
+    }
+   ],
+   "trace_available": true,
+   "meta": {
+    "runner": "prod-llm",
+    "mode": "llm",
+    "model": "gpt-4o-mini",
+    "limit": 50,
+    "k": 12,
+    "served": 300,
+    "cache_inserts": 100
+   }
+  }
+ ],
+ "baseline": {
+  "is_baseline": false,
+  "snapshot_baseline_keys": [],
+  "disagrees_with_run": []
+ }
+}

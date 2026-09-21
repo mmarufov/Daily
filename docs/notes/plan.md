@@ -697,3 +697,88 @@ Deliberately not done, pending a decision:
 - [ ] Social preview image (1280×640) is UI-only; no CLI or API path.
 - [ ] `AppConfig.swift` defaults to the owner's production backend, so anyone who clones
       and runs the app spends the owner's OpenAI budget.
+
+
+## Visa pipeline correctness evidence audit — 2026-09-19
+
+- [x] Establish clean checkout, current default revision, and prior audit boundaries.
+- [x] Inspect leases, stale writes, stage enforcement, provenance, durable cache, and cost guards.
+- [x] Verify source counts, current CI, failure tests, and measurement limits.
+- [x] Produce five ranked findings with exact evidence and explicit gaps.
+
+Evidence: `.context/visa-audit/`; HEAD and current GitHub main `3b11a3c`. Fresh offline suite: 1,960 passed, 185 skipped, 239 subtests in 105.08s. Exact-revision CI run 34928490180: 155 PostgreSQL tests passed. No runtime changes, live database operations, or deployment.
+
+
+## Vercel integration — 2026-09-21
+
+- [x] Research pass: eval artefact surface, LLM provider map, web/share surface, hosting and
+      database constraints. Three read-only subagents; no runtime or deployment changes.
+- [ ] Decide scope. Full analysis and a tiered build plan: `docs/notes/vercel-integration-plan.md`.
+
+Headline finding: every remaining activation gate in this repository is blocked on reader
+traffic that does not exist (never released, zero `/feed/*` requests ever, 3 accounts), so a
+web edition is the unblock rather than a résumé line. Second: `backend/evals/` already emits
+dashboard-ready JSON that nothing renders, and CI emits no scorecard at all, so there is no
+time series. Third: the documented S6 blocker is Supabase free-tier `shared_buffers`, and
+staging already runs Neon. Explicitly rejected: migrating the FastAPI daemon to Functions —
+`lifespan()` runs seven infinite loops plus advisory-lock leader election.
+
+
+## Vercel web companion — 2026-09-21
+
+Implementation of the brief in `.context/attachments/`: a web tier for Daily on Next.js, an
+interactive explorer for the S0 harness, and one verified debugging case study.
+
+Facts established first, each of which changed the design:
+
+- [x] `47edb50` (the revision every stored scorecard records) is **not an ancestor of HEAD** — a
+      side branch off `b48f244`; everything under `backend/evals/` reached main in one squash
+      commit. `git log --follow` on the results files therefore cannot detect edits, which is why
+      the export uses `git merge-base --is-ancestor` and records reachability explicitly.
+- [x] 9 result files = **7 run scorecards + 2 baselines**, and the 2 baselines duplicate two runs.
+      Only 6 independent LLM experiments (2 pipelines x 3 corpora); `prod-fallback` is a
+      deterministic no-model control, not an experiment.
+- [x] **No stored scorecard records a protocol.** The harness added `meta.protocol` later, so
+      protocol equality between runs cannot be verified from the artifacts. Exported as `unknown`.
+- [x] `baseline-prod-llm.json` is a hybrid document: its `snapshot_baselines["2026-09-02"]` was
+      re-recorded on 2026-09-11 while its embedded timestamps still read 2026-09-02. The export
+      detects this by comparison, not by hardcoding, and marks `timestamps_trustworthy: false`.
+- [x] `cache_misses_total == 0` does **not** prove offline replay — the counter only increments on
+      the live network path, so it is structurally zero under `EVAL_OFFLINE=1`. Execution mode is
+      exported as `unknown`.
+- [x] `stage_counts` is **terminal-stage** counts, not survivorship. Reading it directly yields a
+      growing funnel. Reconstruction validated against three independent facts in the same
+      scorecard, plus the 4-article needle delta.
+- [x] The vault's "branch hazard" is resolved: `backend/evals/` is on the default branch, and
+      `main` now exposes 42 endpoints and 80 tables, not 32 and 18.
+
+Delivered:
+
+- [x] Versioned, validated public artifact contract + reproducible export (`web/lib/artifact.ts`,
+      `web/scripts/export-artifacts.ts`). Byte-identical across runs; timestamps come from the
+      HEAD commit, not the wall clock.
+- [x] Evidence explorer with shareable URL state, run/corpus/pipeline/fixture selection,
+      compatibility-checked comparison, reconstructed funnel, and per-story trace drill-down.
+- [x] Reader demo replaying a dated frozen edition, no login, no backend, no provider key.
+- [x] CI: `evidence-artifacts.yml` (untrusted, no secrets, always uploads diagnostics) plus
+      `evidence-publish.yml` (trusted, `workflow_run`, publishes only on success, manifest last,
+      revision-scoped prefix). `backend-tests.yml` extended additively only.
+- [x] Scoped backend fix + 9 regression tests (5 fail without it) for the positional
+      output-misalignment defect in `score_articles_batch`, and for `CacheMiss`/`BudgetExceeded`
+      being swallowed by a blanket handler.
+
+**Open decision for the owner.** The alignment fix makes the regression gate red. Full offline
+suite with the fix: `6 failed, 1969 passed, 185 skipped, 233 subtests passed`. All six are
+`test_eval_gate.py` subtests on `prod-llm` (`never_rate_mean`, `lookalike_rate_mean`,
+`needle_recall_mean`); the same suites without the fix give `42 passed, 4 skipped, 59 subtests
+passed, 0 failed`, so the six are attributable to this change alone and nothing else in 1969
+tests broke.
+
+The cause is that the fix stops the scorer misattributing verdicts, and the committed production
+numbers depended on that misattribution. Under identical inputs the unwanted rate rises 15.6 pp.
+The baseline was deliberately **not** re-recorded. Evidence, the measured before/after, and the
+three options: `.context/batch-alignment-fix/FINDING.md`.
+
+Not done: live signed-in reader flow. Blocked on `CORS_ORIGINS` being unset, the absence of a web
+Google OAuth client, and delivery receipts that only exist on a live edition. Marked unverified in
+the UI rather than simulated.

@@ -1,0 +1,182 @@
+{
+ "manifest_version": 1,
+ "artifact_revision": "3b11a3c",
+ "built_at": "2026-09-14T21:21:05-07:00",
+ "complete": true,
+ "entries": [
+  {
+   "run_id": "prod-fallback__2026-08-31__47edb50",
+   "file": "prod-fallback__2026-08-31__47edb50.json",
+   "runner": "prod-fallback",
+   "snapshot": "2026-08-31",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "618bb33ad1c13dfffb256cb2f1b7598c852ffaad0392a03d4d7deb9535a7a3f8",
+   "bytes": 116687
+  },
+  {
+   "run_id": "prod-llm__2026-08-31__47edb50",
+   "file": "prod-llm__2026-08-31__47edb50.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "6b056737d410e1526b71d30fdabd5874f6b9bb0a9e60b5a0fb5f2751f4b12a8d",
+   "bytes": 117334
+  },
+  {
+   "run_id": "prod-llm__2026-08-31__47edb50__baseline",
+   "file": "prod-llm__2026-08-31__47edb50__baseline.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": true,
+   "personas": 10,
+   "sha256": "69ef9da5ac90e7d73c0ddcc3ea81bbae7654a1e6a6179e3fb02df657ae3e1296",
+   "bytes": 117798
+  },
+  {
+   "run_id": "prod-llm__2026-08-31-quiet__47edb50",
+   "file": "prod-llm__2026-08-31-quiet__47edb50.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31-quiet",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "ce87fa083355f40712b3426db28301996e3884c37544653d52ac4cd976469072",
+   "bytes": 111931
+  },
+  {
+   "run_id": "prod-llm__2026-09-02__47edb50",
+   "file": "prod-llm__2026-09-02__47edb50.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-09-02",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "4115e1943ad53a299f46d86a70b9f1c9a170fd3865f54978e5c1d38bbd3bf4f2",
+   "bytes": 122419
+  },
+  {
+   "run_id": "proto-hybrid-judge-events__2026-08-31__47edb50",
+   "file": "proto-hybrid-judge-events__2026-08-31__47edb50.json",
+   "runner": "proto-hybrid-judge-events",
+   "snapshot": "2026-08-31",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "5508449d5563bca76f7317e69fdcffd4666d6686f62031d61e2deb3ca1dcdd18",
+   "bytes": 94495
+  },
+  {
+   "run_id": "proto-hybrid-judge-events__2026-08-31__47edb50__baseline",
+   "file": "proto-hybrid-judge-events__2026-08-31__47edb50__baseline.json",
+   "runner": "proto-hybrid-judge-events",
+   "snapshot": "2026-08-31",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": true,
+   "personas": 10,
+   "sha256": "04b46ec3468dde0784b84e9efd6835bcbd88647a9a2ba2a359439b017820f7e5",
+   "bytes": 94503
+  },
+  {
+   "run_id": "proto-hybrid-judge-events__2026-08-31-quiet__47edb50",
+   "file": "proto-hybrid-judge-events__2026-08-31-quiet__47edb50.json",
+   "runner": "proto-hybrid-judge-events",
+   "snapshot": "2026-08-31-quiet",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "f8a850e7d211f440f0330b61915d70d5781c706e026b5f640ebb3c4f899ea555",
+   "bytes": 89208
+  },
+  {
+   "run_id": "proto-hybrid-judge-events__2026-09-02__47edb50",
+   "file": "proto-hybrid-judge-events__2026-09-02__47edb50.json",
+   "runner": "proto-hybrid-judge-events",
+   "snapshot": "2026-09-02",
+   "protocol": "unknown",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "47edb50",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "e66be0562d1ecbc1b3226758adbce148bd1425a2a9f4a14c0b2d4060e126537c",
+   "bytes": 100263
+  }
+ ],
+ "snapshots": [
+  {
+   "name": "2026-08-31",
+   "sha256": "6950caf50c74b867208f7f962f612de5cb7711f70f7eb1218f4ce2bf64e66886",
+   "n_articles": 1328,
+   "built_at": "2026-08-31T02:22:22.812477+00:00",
+   "frozen_now": "2026-08-31T02:22:22.812477+00:00",
+   "derived_from": null,
+   "removed_clusters": [],
+   "note": "first frozen corpus, 51 feeds; contains US-Iran war cluster"
+  },
+  {
+   "name": "2026-08-31-quiet",
+   "sha256": "e0f365f2a18bb852501262897c436333555d78b4a498c7d90353e284bd96d7e5",
+   "n_articles": 1234,
+   "built_at": "2026-08-31T02:22:22.812477+00:00",
+   "frozen_now": "2026-08-31T02:22:22.812477+00:00",
+   "derived_from": "2026-08-31",
+   "removed_clusters": [
+    "ev-01",
+    "ev-02",
+    "ev-03",
+    "ev-04",
+    "ev-06",
+    "ev-08",
+    "ev-10",
+    "ev-13"
+   ],
+   "note": "quiet-day derivative: all agent-reviewed major and world-critical clusters removed"
+  },
+  {
+   "name": "2026-09-02",
+   "sha256": "73f93e5b8cc02c189823f0fc6bbf6b97c27e5bd5e44bcef9d79fa5a0045921b4",
+   "n_articles": 1358,
+   "built_at": "2026-09-02T05:06:49.958134+00:00",
+   "frozen_now": "2026-09-02T05:06:49.958134+00:00",
+   "derived_from": null,
+   "removed_clusters": [],
+   "note": "second live RSS snapshot, 50+ hours after 2026-08-31"
+  }
+ ],
+ "notes": [
+  {
+   "severity": "info",
+   "message": "Exported 9 artifacts from backend/evals/results/ at revision 3b11a3c. Every entry is an import of a historical scorecard, not a run executed by this export.",
+   "source": "web/scripts/export-artifacts.ts"
+  }
+ ]
+}
