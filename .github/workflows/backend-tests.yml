@@ -12,8 +12,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -141,7 +141,7 @@ jobs:
       # No existing step's failure behaviour is changed.
       - name: Upload contract results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-contract-results-${{ github.sha }}
           path: backend/*-results.xml
@@ -185,8 +185,8 @@ jobs:
       S7_TEST_DATABASE_URL: postgresql://postgres:disposable-ci-only@127.0.0.1:5432/postgres
       S8_TEST_DATABASE_URL: postgresql://postgres:disposable-ci-only@127.0.0.1:5432/postgres
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
