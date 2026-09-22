@@ -249,6 +249,32 @@ describe('a deployed function can reach its evidence', () => {
     }
   })
 
+  it('ships every staged file to the deployment', () => {
+    // `.vercelignore` excludes backend/ wholesale except for named
+    // exceptions, and the staging script names what it needs. Two
+    // hand-maintained lists that must agree are two lists that will not, and
+    // the way the disagreement announces itself is a preview build failing on
+    // `cannot stage …: it does not exist`.
+    const ignore = readFileSync(join(process.cwd(), '..', '.vercelignore'), 'utf8')
+    const negated = new Set(
+      ignore
+        .split('\n')
+        .filter((l) => l.startsWith('!'))
+        .map((l) => l.slice(1).replace(/^\//, '')),
+    )
+    const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
+    const staged = [...stager.matchAll(/'(backend\/[^']+)'/g)].map((m) => m[1] as string)
+    expect(staged.length).toBeGreaterThan(0)
+
+    for (const file of staged) {
+      // Either the file itself is re-included, or a directory above it is.
+      const covered = [...negated].some(
+        (n) => file === n || file.startsWith(`${n}/`),
+      )
+      expect(covered, `${file} is staged but .vercelignore keeps it out of the deployment`).toBe(true)
+    }
+  })
+
   it('stages the files rather than the directories holding them', () => {
     // A directory copy sweeps in __pycache__, the seeded controls, and
     // whatever lands in contract/ next. This repository has been bitten once
