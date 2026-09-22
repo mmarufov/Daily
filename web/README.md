@@ -49,6 +49,11 @@ are committed.
 | `BLOB_READ_WRITE_TOKEN` | publish only | Vercel Blob write token. Absent, `publish:artifacts` exits 0 without uploading, so fork pull requests run the same pipeline with no secrets. |
 | `PUBLISH_AS_LATEST` | publish only | `true` moves the mutable `evidence/latest/` pointer. The trusted workflow sets it only for the default branch. |
 | `DEMO_RUN_ID` | no | Which exported run the reader demo replays. Defaults to `prod-llm__2026-09-02__47edb50`. |
+| `LAB_OWNER_TOKEN` | to start a run | Bearer token for `POST /api/lab/run`, compared in constant time. **Unset means nobody is the owner, not everybody** — the route returns 503 and no run can be started. Reading a run is public and needs nothing. |
+| `VERCEL_TOKEN` + `VERCEL_TEAM_ID` + `VERCEL_PROJECT_ID` | local sandbox only | Credentials for `@vercel/sandbox`. On a Vercel deployment the SDK uses OIDC and needs none of them; `vercel env pull` also writes a `VERCEL_OIDC_TOKEN` that works locally. Partial credentials are treated as a misconfiguration rather than a fallback, because OIDC supplies all three at once. |
+| `AI_GATEWAY_API_KEY` | investigator only | Routes the model call through the AI Gateway, which is what meters the spend the budget is measured against. Absent, `readiness()` refuses and no call is made — there is no mock model and no demo mode. |
+| `LAB_MAX_USD` | investigator only | An explicit per-investigation ceiling. Required even when a key is present, and refused if it exceeds `BUDGET.max_usd`: raising the limit has to be a commit somebody reads, not an env var somebody sets. |
+| `LAB_MODEL` | no | Overrides the default `anthropic/claude-sonnet-4.5`, as a `provider/model` string. |
 
 There is deliberately no backend URL here. See [Live mode](#live-mode-is-not-built).
 
@@ -280,11 +285,49 @@ sides executed at different revisions (`47edb50` vs `3b11a3c`, 114 files apart, 
 keys), so they are not an A/B of the patch. The direction of that finding stands; the magnitudes
 are not a controlled comparison.
 
-### Implemented and not exercised
+### Exercised, and what is still not
 
-Vercel Sandbox (no `VERCEL_TOKEN`/team/project here) and the investigator agent (no
-`AI_GATEWAY_API_KEY`, no spending limit). Both have real code and real tests; neither has run, no
-agent trace is depicted anywhere, and `/lab` states both.
+**Vercel Sandbox — exercised.** `keyed-fallback-v1` executed in a `python3.13` microVM under a
+platform-applied `deny-all` policy. Four negative controls run inside the same microVM, after the
+candidate, and a probe that *succeeds* is a failed probe: DNS resolution and an outbound HTTPS
+request both fail, no file named `evaluator.ts` exists anywhere on the filesystem, and no
+credential is present in the environment. The microVM id, region and the policy read back off the
+platform are recorded in each run's provenance.
+
+`egress_bytes` is an upper bound, not a measurement of candidate traffic — it includes the
+control-plane bytes spent reading the record bundle back, so it is non-zero on a run that reached
+nothing. The probes are the direct evidence.
+
+**Vercel Workflow — exercised.** Orchestration runs as a durable workflow: the scope gate, the
+sandboxed execution and the grading are three journaled steps. `unknown-outcome` survives the port
+and is deliberately not something the workflow writes — an attempt with a start and no journaled
+ending is one nothing observed finishing, and the microVM may have completed a millisecond before
+the orchestrator died.
+
+**The investigator agent — not exercised.** No `AI_GATEWAY_API_KEY` and no `LAB_MAX_USD` on this
+deployment, so `readiness()` refuses and nothing is called. The tools, the scope gate and the
+budget are real code with real tests; the model call is not, no trace is depicted anywhere, and
+`/lab` derives that claim from the manifest rather than asserting it in prose.
+
+### A gap the experiment found in itself
+
+`keyed-fallback-v1` was written to be plausible and wrong, and was **accepted**. It declares
+`keyed-v2` and falls back to positional association when a response carries no article ids.
+Positional association cases are not-applicable to a keyed-v2 declarer — correctly — but nothing
+checked that it *refused* them rather than quietly handling them. On `syn-positional-reordered`,
+the case built to expose the exact defect this experiment measures, it parsed where `keyed-v2`
+refuses, and nothing graded it.
+
+Published as a diagnostic, not promoted to a criterion: a sixth criterion would change the spec
+hash and re-decide seven runs that never faced it, which is the move
+[`spec.ts`](lib/lab/spec.ts) says invalidates a comparison.
+
+| candidate | verdict | out-of-protocol associations |
+|---|---|---|
+| `keyed-v2` | accepted-for-review | 0/4 |
+| `keyed-fallback-v1` | accepted-for-review | 4/4 |
+
+Two identical verdicts; the diagnostic is the only thing separating them.
 
 ### Commands
 
@@ -293,6 +336,8 @@ cd backend && venv/bin/python -m lab.run_known        # every known implementati
 venv/bin/python -m pytest tests/test_lab_contract.py  # 741, incl. all 720 permutations
 cd ../web && npm run export:lab                       # rebuild web/public/lab-artifacts/
 npm run export:lab -- --check                         # validate without writing
+npm run lab:agent -- --sandbox-only ../backend/lab/contract/candidate.py   # boundary, no model
+npm run lab:agent                                     # full investigation (needs a gateway key)
 ```
 
 ## The case study
