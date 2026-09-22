@@ -221,18 +221,102 @@ async function main(): Promise<number> {
   return 0
 }
 
-async function runSandboxOnly(file: string, _cases: Case[]): Promise<number> {
+/**
+ * Exercise the boundary with no model in the loop.
+ *
+ * The agent path and the sandbox path are separable on purpose: evidence that
+ * the isolation boundary works should not depend on a model having behaved a
+ * particular way that day. This run is deterministic given a committed
+ * candidate, so it can be reproduced by anyone with a Vercel token.
+ */
+async function runSandboxOnly(file: string, cases: Case[]): Promise<number> {
   const source = readFileSync(file, 'utf8')
+  const candidateId = 'keyed-fallback-v1'
+  const tag = 'sandbox'
   console.log(`sandbox-only: ${file} (${source.length} bytes, sha256 ${sha256(source).slice(0, 16)})`)
+
+  mkdirSync(RUNS, { recursive: true })
+  const events = join(RUNS, `${candidateId}-${tag}.events.jsonl`)
+  writeFileSync(events, '')
+  log(events, {
+    type: 'created',
+    run_id: `${EXPERIMENT.experiment_id}__${candidateId}`,
+    candidate_id: candidateId,
+    spec_hash: specHash(),
+    executed_at_revision: revision(),
+  })
+  log(events, {
+    type: 'scope-checked',
+    allowed: true,
+    detail: 'backend/lab/contract/candidate.py — within the allowed patch scope',
+  })
+
+  const attemptId = `${EXPERIMENT.experiment_id}__${candidateId}#01`
+  log(events, { type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox' })
   const outcome = await executeInSandbox(source, (s) => console.log(`  ${s}`))
-  console.log(`\nsandbox ${outcome.execution.sandbox_id} · ${outcome.execution.region} · exit ${outcome.execution.exit_code}`)
-  console.log(`boot ${outcome.execution.boot_ms}ms · run ${outcome.execution.wall_clock_ms}ms · egress ${outcome.execution.egress_bytes ?? '?'} bytes`)
-  console.log(`network policy the platform applied: ${outcome.execution.network_policy}`)
-  for (const probe of outcome.execution.isolation) {
-    console.log(`  ${probe.held ? 'held  ' : 'FAILED'} ${probe.name}: ${probe.observed.slice(0, 120)}`)
+  const e = outcome.execution
+
+  console.log(`\nsandbox ${e.sandbox_id} · ${e.region} · exit ${e.exit_code}`)
+  console.log(`boot ${e.boot_ms}ms · run ${e.wall_clock_ms}ms · egress ${e.egress_bytes ?? '?'} bytes (control plane included)`)
+  console.log(`network policy the platform applied: ${e.network_policy}`)
+  for (const probe of e.isolation) {
+    console.log(`  ${probe.held ? 'held  ' : 'FAILED'} ${probe.name}: ${probe.observed.slice(0, 110)}`)
   }
-  if (outcome.failure !== null) console.log(`\nfailure: ${outcome.failure}`)
-  return outcome.execution.isolation.every((p) => p.held) ? 0 : 1
+
+  const isolated = e.isolation.every((p) => p.held)
+  log(events, {
+    type: 'attempt-ended',
+    attempt_id: attemptId,
+    status: outcome.failure === null && isolated ? 'succeeded' : 'failed',
+    note: outcome.failure ?? `sandbox ${e.sandbox_id} in ${e.region}, exit ${e.exit_code} in ${e.wall_clock_ms}ms`,
+  })
+
+  if (!isolated) {
+    // A microVM that did not isolate produces evidence about nothing.
+    console.error('\nrefusing to record this run: an isolation probe did not hold')
+    return 1
+  }
+
+  // A descriptor, because this candidate is deliberately not in
+  // KNOWN_IMPLEMENTATIONS and the export must not invent what it is.
+  writeFileSync(
+    join(RUNS, `${candidateId}-${tag}.candidate.json`),
+    `${JSON.stringify(
+      {
+        kind: 'human-authored',
+        source_path: 'backend/lab/contract/candidate.py',
+        declared_protocol: 'keyed-v2',
+        description:
+          'Keyed association with a positional fallback: prefers article ids when the response carries them, and associates by position when it does not. Written for this experiment to be plausible rather than correct.',
+        transcribed_from: 'unknown',
+      },
+      null,
+      1,
+    )}\n`,
+  )
+
+  const { stdout, stderr, records_json, candidate_sha256, ...evidence } = e
+  void stdout
+  void stderr
+  void records_json
+  void candidate_sha256
+  writeFileSync(join(RUNS, `${candidateId}-${tag}.sandbox.json`), `${JSON.stringify(evidence, null, 1)}\n`)
+
+  if (outcome.bundleJson !== null) {
+    log(events, { type: 'records-received', attempt_id: attemptId, n_records: cases.length })
+    writeFileSync(join(LAB, 'records', `${candidateId}.json`), outcome.bundleJson)
+    const parsed = parseRecordBundle(JSON.parse(outcome.bundleJson))
+    if (parsed.ok) {
+      const result = evaluate(cases, parsed.value)
+      console.log(`\nevaluator: ${result.verdict} — ${result.reason}`)
+      for (const c of result.criteria) {
+        console.log(`  ${c.passed ? 'pass' : 'FAIL'}  ${c.id.padEnd(28)} ${c.satisfied}/${c.applicable}`)
+      }
+      log(events, { type: 'evaluated', verdict: result.verdict, reason: result.reason })
+    }
+  }
+  console.log(`\nwrote backend/lab/runs/${candidateId}-${tag}.*`)
+  return 0
 }
 
 interface WriteArgs {

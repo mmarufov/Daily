@@ -92,8 +92,12 @@ export const AttemptSchema = z.object({
  * defaulted — for local ones. Every field here is read back off the platform
  * after the fact rather than copied from the request: recording the
  * `networkPolicy` that was *asked for* would establish only that the ask was
- * made, and `egress_bytes` is the platform's meter, which no probe inside the
- * microVM could forge.
+ * made.
+ *
+ * `egress_bytes` is the platform's meter and is an upper bound, not a
+ * measurement of candidate traffic: it includes the control-plane bytes this
+ * run caused by reading the record bundle back, so it is non-zero on a run
+ * where the candidate reached nothing. The direct evidence is `isolation`.
  */
 export const SandboxExecutionSchema = z.object({
   sandbox_id: z.string(),
@@ -231,6 +235,23 @@ export const CriterionResultSchema = z.object({
   passed: z.boolean(),
 })
 
+/**
+ * Measured, published, and never an input to the verdict.
+ *
+ * A criterion decides; a diagnostic reports. The distinction is load-bearing:
+ * promoting one of these to a criterion changes the spec hash and re-decides
+ * runs that never faced it, so a gap found after the fact is published as a
+ * number rather than closed behind a reader's back.
+ */
+export const DiagnosticSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  value: z.number().int(),
+  of: z.number().int(),
+  detail: z.string(),
+  case_ids: z.array(z.string()),
+})
+
 export const LabRunSchema = z.object({
   lab_artifact_version: z.literal(LAB_ARTIFACT_VERSION),
   run_id: z.string(),
@@ -245,6 +266,7 @@ export const LabRunSchema = z.object({
   outcomes: z.array(CaseOutcomeSchema),
   counts: z.record(z.string(), z.number().int()),
   smallest_counterexample: CounterexampleSchema.nullable(),
+  diagnostics: z.array(DiagnosticSchema),
   usage: UsageSchema,
   attempts: z.array(AttemptSchema),
 })

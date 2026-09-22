@@ -75,6 +75,34 @@ export type Verdict =
   | 'failed'
   | 'cancelled'
 
+/**
+ * Something the run showed that no criterion grades.
+ *
+ * Added because a real candidate walked through a real gap. A parser that
+ * declares `keyed-v2` is marked not-applicable on positional association
+ * cases, and rightly so -- scoring it on another protocol's inputs would be
+ * comparing two protocols on one protocol's recordings. But nothing checked
+ * that it *refused* those cases rather than quietly handling them, and a
+ * candidate with a positional fallback therefore reproduced the exact defect
+ * this experiment exists to measure, on the case built to expose it, and was
+ * accepted.
+ *
+ * This is reported, not graded. Turning it into a sixth criterion would
+ * change the spec hash and re-decide seven runs that never faced it, which
+ * is precisely the move `spec.ts` says invalidates a comparison. Publishing
+ * the number lets a reader see the gap without the gap being closed behind
+ * their back.
+ */
+export interface Diagnostic {
+  readonly id: string
+  readonly question: string
+  readonly value: number
+  readonly of: number
+  readonly detail: string
+  /** Case ids, so the claim is checkable rather than a count to trust. */
+  readonly case_ids: readonly string[]
+}
+
 export interface Evaluation {
   readonly verdict: Verdict
   readonly reason: string
@@ -83,6 +111,8 @@ export interface Evaluation {
   readonly counts: Readonly<Record<CaseStatus, number>>
   readonly declared_protocol: string
   readonly smallest_counterexample: Counterexample | null
+  /** Measured and published; never an input to the verdict. */
+  readonly diagnostics: readonly Diagnostic[]
 }
 
 /**
@@ -287,6 +317,9 @@ export function evaluate(
       counts: { ...EMPTY_COUNTS },
       declared_protocol: bundle?.declared_protocol ?? 'unknown',
       smallest_counterexample: null,
+      // No records, nothing measured. An empty list rather than a zero: zero
+      // out-of-protocol associations is a clean result, and this run has none.
+      diagnostics: [],
     }
   }
   if (bundle === null) {
@@ -298,6 +331,7 @@ export function evaluate(
       counts: { ...EMPTY_COUNTS },
       declared_protocol: 'unknown',
       smallest_counterexample: null,
+      diagnostics: [],
     }
   }
 
@@ -323,6 +357,33 @@ export function evaluate(
   ]
 
   const scored = outcomes.filter((o) => o.applicability === 'scored')
+
+  // Cases the candidate was excused from, on which it answered anyway.
+  //
+  // `judgeCase` returns early for a not-applicable case without inspecting
+  // the record, so this reads the record directly. An association where the
+  // protocol was not the candidate's own is undeclared behaviour: the parser
+  // is doing something the criteria never looked at.
+  const outOfProtocol = cases.filter((kase) => {
+    if (applicability(kase, protocol) !== 'not-applicable') return false
+    const record = byId.get(kase.case_id)
+    return record !== undefined && record.outcome === 'parsed' && record.association !== null
+  })
+
+  const diagnostics: Diagnostic[] = [
+    {
+      id: 'out-of-protocol-association',
+      question:
+        'On cases outside its declared protocol, did it refuse — or associate anyway?',
+      value: outOfProtocol.length,
+      of: outcomes.filter((o) => o.applicability === 'not-applicable').length,
+      detail:
+        outOfProtocol.length === 0
+          ? 'It produced no association on any case outside its declared protocol.'
+          : `It produced a complete association on ${outOfProtocol.length} case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.`,
+      case_ids: outOfProtocol.map((k) => k.case_id),
+    },
+  ]
   const broken = scored.filter((o) => o.status === 'crashed' || o.status === 'timeout').length
   criteria.push({
     id: 'no-crash',
@@ -364,6 +425,7 @@ export function evaluate(
       counts,
       declared_protocol: protocol,
       smallest_counterexample: smallest,
+      diagnostics,
     }
   }
 
@@ -381,6 +443,7 @@ export function evaluate(
       counts,
       declared_protocol: protocol,
       smallest_counterexample: smallest,
+      diagnostics,
     }
   }
 
@@ -392,5 +455,6 @@ export function evaluate(
     counts,
     declared_protocol: protocol,
     smallest_counterexample: smallest,
+    diagnostics,
   }
 }

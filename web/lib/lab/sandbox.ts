@@ -84,9 +84,13 @@ export interface SandboxExecution {
    */
   readonly network_policy: string
   /**
-   * Bytes that actually left the microVM, as metered by the platform. The
-   * probes below show that egress *attempts* fail; this shows that none
-   * succeeded, including any the probes did not think to try.
+   * Total bytes metered leaving the microVM.
+   *
+   * Read this as an upper bound, not as a measurement of what the candidate
+   * sent. It includes the control-plane traffic this run itself caused --
+   * chiefly the record bundle being read back -- so a non-zero value is
+   * expected and says nothing on its own. The direct evidence that the
+   * candidate reached no network is `isolation`, below.
    */
   readonly egress_bytes: number | null
   readonly active_cpu_ms: number | null
@@ -189,6 +193,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
     resources: { vcpus: 2 },
   })
   const bootMs = Date.now() - startedAt
+  let stopped = false
 
   try {
     const payload = [
@@ -237,6 +242,14 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
       })
     }
 
+    // Stop first, then read the meters. `totalEgressBytes` is not final while
+    // the microVM is alive -- reading it before the stop returns `undefined`,
+    // which would record the strongest available evidence of isolation as
+    // `unknown`.
+    onProgress('stopping the microVM')
+    await sandbox.stop()
+    stopped = true
+
     return {
       // `name` is the platform's identifier for this microVM. It is recorded
       // so the claim "this ran in a sandbox" is checkable against the Vercel
@@ -262,8 +275,10 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
       isolation,
     }
   } finally {
-    onProgress('stopping the microVM')
-    await sandbox.stop()
+    if (!stopped) {
+      onProgress('stopping the microVM after a failure')
+      await sandbox.stop().catch(() => {})
+    }
   }
 }
 

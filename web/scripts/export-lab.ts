@@ -198,19 +198,30 @@ function describeCandidate(
 ): CandidateDescriptor {
   const known = KNOWN_IMPLEMENTATIONS.find((k) => k.candidate_id === input.candidate_id)
   if (known !== undefined) return known
-  if (investigation === null) {
+
+  const rel = `backend/lab/runs/${input.candidate_id}-${input.tag}.candidate.json`
+  if (!existsSync(join(ROOT, rel))) {
     throw new Error(
-      `${input.candidate_id} is neither a known implementation nor an investigated candidate; ` +
-        'there is nothing committed that says what it is',
+      `${input.candidate_id} is not a known implementation and has no committed descriptor at ${rel}; ` +
+        'there is nothing that says what it is, and the export will not guess',
     )
+  }
+  const descriptor = JSON.parse(readInput(rel)) as {
+    kind: CandidateDescriptor['kind']
+    source_path: string
+    declared_protocol: CandidateDescriptor['declared_protocol']
+    description: string
+    transcribed_from?: string
   }
   return {
     candidate_id: input.candidate_id,
-    path: 'backend/lab/contract/candidate.py',
-    kind: 'agent-authored',
-    description: investigation.hypothesis,
-    declared_protocol: 'keyed-v2',
-    transcribed_from: UNKNOWN,
+    path: descriptor.source_path,
+    // An investigated candidate is agent-authored whatever the descriptor
+    // claims: the trace is the evidence, and it outranks a hand-written field.
+    kind: investigation === null ? descriptor.kind : 'agent-authored',
+    description: investigation === null ? descriptor.description : investigation.hypothesis,
+    declared_protocol: descriptor.declared_protocol,
+    transcribed_from: descriptor.transcribed_from ?? UNKNOWN,
   }
 }
 
@@ -519,6 +530,7 @@ function buildRunInScope(
     })),
     counts: { ...evaluation.counts },
     smallest_counterexample: evaluation.smallest_counterexample,
+    diagnostics: evaluation.diagnostics.map((d) => ({ ...d, case_ids: [...d.case_ids] })),
     usage: {
       model_calls: 0,
       replay_spend_usd: 0,

@@ -18,7 +18,7 @@
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
   "inputs_sha256": "02da1ab3e0e18c82",
   "executed_at": "2026-09-22T19:47:57.873Z",
-  "evaluator_sha256": "b9508d9952801eec",
+  "evaluator_sha256": "0448a05a16709521",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -1109,6 +1109,16 @@
   "not-applicable": 4
  },
  "smallest_counterexample": null,
+ "diagnostics": [
+  {
+   "id": "out-of-protocol-association",
+   "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
+   "value": 0,
+   "of": 4,
+   "detail": "It produced no association on any case outside its declared protocol.",
+   "case_ids": []
+  }
+ ],
  "usage": {
   "model_calls": 0,
   "replay_spend_usd": 0,

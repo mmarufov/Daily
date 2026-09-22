@@ -23,8 +23,6 @@
  * durability can turn it into a yes or a no.
  */
 
-import { randomUUID } from 'node:crypto'
-
 import { sleep } from 'workflow'
 
 import { evaluate, type Evaluation } from './evaluator'
@@ -36,8 +34,13 @@ import { ALLOWED_PATCH_PATHS } from './spec'
 /**
  * Identifies the process instance. Different values across two steps of one
  * run is the evidence that the run outlived a process.
+ *
+ * Global Web Crypto, not `node:crypto`. The workflow bundle is not Node --
+ * the orchestrator body runs in a restricted runtime where a `require` of a
+ * Node builtin is a `ReferenceError` at the first step boundary. The SDK
+ * warns about exactly this at build time, and it was right.
  */
-const PROCESS_ID = `${process.env.VERCEL_DEPLOYMENT_ID ?? 'local'}:${randomUUID().slice(0, 8)}`
+const PROCESS_ID = `${process.env.VERCEL_DEPLOYMENT_ID ?? 'local'}:${crypto.randomUUID().slice(0, 8)}`
 
 export interface StepMark {
   readonly process_id: string

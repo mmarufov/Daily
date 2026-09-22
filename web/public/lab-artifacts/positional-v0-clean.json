@@ -18,7 +18,7 @@
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
   "inputs_sha256": "a60d5a6ac6d7050d",
   "executed_at": "2026-09-22T19:47:57.422Z",
-  "evaluator_sha256": "b9508d9952801eec",
+  "evaluator_sha256": "0448a05a16709521",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -1099,6 +1099,29 @@
   "not-applicable": 12
  },
  "smallest_counterexample": null,
+ "diagnostics": [
+  {
+   "id": "out-of-protocol-association",
+   "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
+   "value": 12,
+   "of": 12,
+   "detail": "It produced a complete association on 12 case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.",
+   "case_ids": [
+    "syn-keyed-in-order",
+    "syn-keyed-reversed",
+    "syn-keyed-rotated",
+    "syn-duplicate-id",
+    "syn-unknown-id",
+    "syn-missing-id",
+    "syn-score-nan",
+    "syn-score-out-of-range",
+    "syn-score-string",
+    "syn-score-null",
+    "syn-relevant-not-bool",
+    "syn-empty-results"
+   ]
+  }
+ ],
  "usage": {
   "model_calls": 0,
   "replay_spend_usd": 0,

@@ -1,0 +1,68 @@
+{
+ "sandbox_id": "cyan-zonal-lark-rRFL5D",
+ "runtime": "python3.13",
+ "network_policy": "deny-all",
+ "egress_bytes": 15750,
+ "active_cpu_ms": 2436,
+ "region": "iad1",
+ "exit_code": 0,
+ "wall_clock_ms": 523,
+ "boot_ms": 346,
+ "uploaded": [
+  {
+   "path": "lab/__init__.py",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "lab/harness.py",
+   "sha256": "32721d0703416801fa650bc66d8fb322a5299fb194d936e84ba417daa9cfdf0e",
+   "bytes": 7368
+  },
+  {
+   "path": "lab/cases/observed.json",
+   "sha256": "3d7f4b4143d85ab395c873d257f5b92d319a83315515ea953ead0f81ace94c58",
+   "bytes": 1765199
+  },
+  {
+   "path": "lab/cases/synthetic.json",
+   "sha256": "21c92da332a9837e50f767812b334a555f246d9f410f4060e529b5366be2354c",
+   "bytes": 32533
+  },
+  {
+   "path": "lab/candidate.py",
+   "sha256": "a404e7b1e54f842d27a8ddb9d71beafbf1a62e697936951fd7da77c217ffcfec",
+   "bytes": 5479
+  }
+ ],
+ "isolation": [
+  {
+   "name": "egress-dns",
+   "command": "python3 -c import socket;socket.setdefaulttimeout(8);socket.gethostbyname(\"api.openai.com\")",
+   "expectation": "DNS resolution of an external host fails",
+   "held": true,
+   "observed": "exit 1: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import socket;socket.setdefaulttimeout(8);socket.gethostbyname(\"api.openai.com\")\n                                              ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nsocket.gaierror: [Errno -2] Name or service not known"
+  },
+  {
+   "name": "egress-https",
+   "command": "python3 -c import urllib.request;urllib.request.urlopen(\"https://api.github.com/meta\",timeout=8).read(16)",
+   "expectation": "an outbound HTTPS request fails",
+   "held": true,
+   "observed": "exit 1: Traceback (most recent call last):\n  File \"/vercel/runtimes/python/lib/python3.13/urllib/request.py\", line 1319, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n              encode_chunked=req.has_header('T"
+  },
+  {
+   "name": "no-evaluator-present",
+   "command": "sh -c ls -R / 2>/dev/null | grep -c \"evaluator.ts\" || true",
+   "expectation": "the code that grades the candidate is nowhere on the filesystem",
+   "held": true,
+   "observed": "exit 0: 0"
+  },
+  {
+   "name": "no-secrets-in-env",
+   "command": "sh -c env | grep -ciE \"^(VERCEL_TOKEN|AI_GATEWAY|OPENAI|BLOB_READ_WRITE|DATABASE|ANTHROPIC)\" || true",
+   "expectation": "no production credential is present in the environment",
+   "held": true,
+   "observed": "exit 0: 0"
+  }
+ ]
+}

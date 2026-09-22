@@ -20,7 +20,7 @@
     "summarise": "tsx scripts/summarise-artifacts.ts",
     "publish:artifacts": "tsx scripts/publish-artifacts.ts",
     "export:lab": "tsx scripts/export-lab.ts",
-    "lab:agent": "tsx scripts/lab-agent-run.ts"
+    "lab:agent": "tsx --env-file-if-exists=.env.local scripts/lab-agent-run.ts"
   },
   "dependencies": {
     "@vercel/sandbox": "^3.3.0",

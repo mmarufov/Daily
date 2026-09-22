@@ -1,31 +1,98 @@
 {
  "lab_artifact_version": 1,
- "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean",
+ "run_id": "article-to-verdict-association__keyed-fallback-v1__sandbox",
  "experiment_id": "article-to-verdict-association",
  "candidate": {
-  "candidate_id": "keyed-v2",
-  "kind": "preserved-version",
-  "description": "Proposed contract: every verdict names its article, the id set must match exactly, and a non-stop finish_reason is a failure.",
+  "candidate_id": "keyed-fallback-v1",
+  "kind": "human-authored",
+  "description": "Keyed association with a positional fallback: prefers article ids when the response carries them, and associates by position when it does not. Written for this experiment to be plausible rather than correct.",
   "declared_protocol": "keyed-v2",
-  "source_path": "backend/lab/contract/versions/keyed_v2.py",
-  "source_sha256": "bcde0d5383b54e71df8341cc58cd5b9d5cd505b402333f58f51bd21822b35641",
-  "source_bytes": 6390,
-  "transcribed_from": "modelled on backend/app/services/ranking_contract.py:131",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/versions/keyed_v2.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/versions/keyed_v2.py\n@@ -1,18 +1,26 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"The proposed contract: every verdict identifies its own article.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Modelled on the id-keyed validation Daily already ships in\n+`backend/app/services/ranking_contract.py:131` (`validate_judgments`), which is\n+the pattern this repository already trusts for the S7 ranking path:\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n+    packs = {e.article_id: e for e in evidence}\n+    ids = [v.article_id for v in values]\n+    if len(ids) != len(set(ids)) or set(ids) != set(packs):\n+        raise ValueError('ranker must return exact article ID set')\n \n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+One set-equality check covers duplicate, unknown and missing ids at once, and\n+refuses to salvage a partial answer. The same shape is reproduced here, plus\n+the truncation check `ranking_provider.py:296` performs and\n+`score_articles_batch` does not:\n+\n+    if choice.get('finish_reason') != 'stop':\n+        raise ProviderFailure('incomplete_response')\n+\n+What this version does NOT claim: that it ranks better. Association is a\n+correctness property, and correctness is all that is under test. Relevance\n+quality under this protocol is unmeasured — it needs recordings that do not\n+exist, because no budgeted keyed run has been made.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +62,88 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"keyed-v2\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    error = response.get(\"error\")\n+    if error:\n+        if error == \"no_recording\":\n+            return refuse(\"no_recording\", \"no recorded response for this request\")\n+        if error in {\"timeout\", \"cancelled\"}:\n+            return refuse(error, error)\n+        if error == \"budget_exceeded\":\n+            return refuse(\"retries_exhausted\", error)\n+        return refuse(\"retries_exhausted\", str(error))\n+\n+    # A truncated completion is a failure, not a shorter answer. Production\n+    # never reads finish_reason, which is why 33 recorded responses that stopped\n+    # at the output ceiling were indistinguishable from malformed ones.\n+    finish_reason = response.get(\"finish_reason\")\n+    if finish_reason is not None and finish_reason != \"stop\":\n+        return refuse(\"truncated_response\", f\"finish_reason={finish_reason}\")\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"retries_exhausted\", \"no content returned\")\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+\n+    if not isinstance(result, dict) or not isinstance(result.get(\"results\"), list):\n+        return refuse(\"unexpected_shape\", \"expected an object with a results array\")\n+\n+    entries = result[\"results\"]\n+    expected = {a[\"id\"]: a for a in articles}\n+\n+    seen: list[str] = []\n+    for entry in entries:\n+        if not isinstance(entry, dict):\n+            return refuse(\"invalid_type\", f\"entry is {type(entry).__name__}\")\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        if not isinstance(article_id, str):\n+            return refuse(\"invalid_type\", \"article_id missing or not a string\")\n+        seen.append(article_id)\n+\n+    # Duplicate, unknown and missing are distinguished for the operator even\n+    # though any one of them is fatal. `validate_judgments` collapses all three\n+    # into one message; the Lab separates them so a counterexample can name the\n+    # exact failure, then refuses just as hard.\n+    if len(seen) != len(set(seen)):\n+        dupes = sorted({i for i in seen if seen.count(i) > 1})\n+        return refuse(\"duplicate_id\", f\"repeated ids: {', '.join(dupes[:5])}\")\n+    unknown = [i for i in seen if i not in expected]\n+    if unknown:\n+        return refuse(\"unknown_id\", f\"ids not in the request: {', '.join(sorted(unknown)[:5])}\")\n+    missing = [i for i in expected if i not in set(seen)]\n+    if missing:\n+        return refuse(\"missing_id\", f\"no verdict for: {', '.join(sorted(missing)[:5])}\")\n \n     out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    for entry in entries:\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            raw = entry.get(\"score\")\n+            if isinstance(raw, (int, float)) and not isinstance(raw, bool):\n+                # Distinguishes 9e9 (out of range) from NaN (not finite); both\n+                # are clamped silently by production.\n+                return refuse(\n+                    \"score_not_finite\" if raw != raw or raw in (float(\"inf\"), float(\"-inf\"))\n+                    else \"score_out_of_range\",\n+                    f\"score={raw!r} for {article_id}\",\n+                )\n+            return refuse(\"invalid_type\", f\"score is {type(raw).__name__} for {article_id}\")\n+        relevant = entry.get(\"relevant\", score >= 0.5)\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"relevant is {type(relevant).__name__}\")\n+        out.append(verdict(article_id, relevant, score, str(entry.get(\"reason\", \"\"))))\n+\n+    # Emit in request order so downstream consumers see a stable sequence. The\n+    # association itself is by id and does not depend on this ordering — the\n+    # permutation property test asserts exactly that.\n+    by_id = {v[\"article_id\"]: v for v in out}\n+    return ok([by_id[a[\"id\"]] for a in articles])\n",
+  "source_path": "backend/lab/contract/candidate.py",
+  "source_sha256": "a404e7b1e54f842d27a8ddb9d71beafbf1a62e697936951fd7da77c217ffcfec",
+  "source_bytes": 5479,
+  "transcribed_from": "unknown",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/candidate.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/candidate.py\n@@ -1,29 +1,33 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n-\n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n-\n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+\"\"\"A candidate parser: keyed association with a positional fallback.\n+\n+Written for this experiment rather than transcribed from a revision, and\n+written to be *plausible* rather than to be correct. The instinct it encodes\n+is a real one and a good one in most contexts -- be liberal in what you\n+accept, do not discard work you can still make sense of -- applied to a\n+problem where it is exactly wrong.\n+\n+The reasoning goes: keyed association is better, so prefer it; but the\n+recorded responses from production do not carry article ids, because the\n+prompt that produced them never asked for any. Refusing all of them would\n+mean refusing every real response we have. So fall back to position when\n+ids are absent, and refuse only when the response is unusable in both ways.\n+\n+What that gives up is the property the experiment exists to measure. A\n+truncated or miscounted response has no ids either, so it takes the same\n+fallback, and the parser recovers an association from a response no parser\n+can recover an association from. It refuses less often than the historical\n+parser it was meant to improve on.\n+\n+Kept as evidence. `web/lib/lab/runner.ts` routes it to the sandbox because\n+its bytes match no entry in KNOWN_IMPLEMENTATIONS -- being committed is not\n+what earns local execution; being on that list is.\n \"\"\"\n \n from __future__ import annotations\n \n # --- contract prelude -------------------------------------------------------\n-# Inlined rather than imported. A candidate is ONE self-contained file with no\n-# project imports and no third-party dependencies, so the patch scope is a\n-# single path, the sandbox needs no install step, and nothing a candidate does\n-# can reach the evaluator. The canonical definitions live in\n-# lab/contract/types.py, and tests/test_contract_prelude.py asserts that every\n-# copy still agrees with it.\n+# Inlined, per the one-self-contained-file rule. Canonical definitions live in\n+# lab/contract/types.py.\n \n import math as _math\n \n@@ -54,45 +58,87 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"keyed-with-positional-fallback\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"no_recording\", str(response.get(\"error\"))[:200])\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"no_recording\", \"the response carried no content\")\n+\n+    if response.get(\"finish_reason\") not in (None, \"stop\"):\n+        return refuse(\"truncated_response\", str(response.get(\"finish_reason\")))\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+\n+    if not isinstance(result, dict):\n+        return refuse(\"unexpected_shape\", f\"top level is {type(result).__name__}\")\n+\n+    results_list = result.get(\"results\")\n+    if not isinstance(results_list, list):\n+        return refuse(\"unexpected_shape\", \"results is not a list\")\n+\n+    keyed = [e for e in results_list if isinstance(e, dict) and \"article_id\" in e]\n+\n+    if keyed:\n+        return _parse_keyed(articles, keyed)\n+\n+    # The fallback. Every verdict lacks an id, so associate by position --\n+    # which is the defect this candidate was written to remove, reintroduced\n+    # under a condition that looked like it excluded the defective cases.\n+    return _parse_positional(articles, results_list)\n+\n+\n+def _parse_keyed(articles, entries):\n+    wanted = {a[\"id\"] for a in articles}\n+    seen: dict[str, dict] = {}\n+    for entry in entries:\n+        aid = entry.get(\"article_id\")\n+        if not isinstance(aid, str):\n+            return refuse(\"invalid_type\", \"article_id is not a string\")\n+        if aid in seen:\n+            return refuse(\"duplicate_id\", aid)\n+        if aid not in wanted:\n+            return refuse(\"unknown_id\", aid)\n+        seen[aid] = entry\n+\n+    missing = wanted - set(seen)\n+    if missing:\n+        return refuse(\"missing_id\", \", \".join(sorted(missing))[:200])\n+\n+    out = []\n+    for article in articles:\n+        entry = seen[article[\"id\"]]\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            return refuse(\"score_out_of_range\", f\"{article['id']}: {entry.get('score')!r}\")\n+        relevant = entry.get(\"relevant\")\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"{article['id']}: relevant is not a bool\")\n+        out.append(verdict(article[\"id\"], relevant, score, entry.get(\"reason\", \"\")))\n+    return ok(out)\n+\n+\n+def _parse_positional(articles, entries):\n+    if len(entries) != len(articles):\n+        return refuse(\"count_mismatch\", f\"{len(entries)} verdicts for {len(articles)} articles\")\n+\n+    out = []\n+    for article, entry in zip(articles, entries):\n+        if not isinstance(entry, dict):\n+            return refuse(\"unexpected_shape\", \"a verdict is not an object\")\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            return refuse(\"score_out_of_range\", f\"{article['id']}: {entry.get('score')!r}\")\n+        relevant = entry.get(\"relevant\")\n+        if not isinstance(relevant, bool):\n+            relevant = score >= 0.5\n+        out.append(verdict(article[\"id\"], relevant, score, entry.get(\"reason\", \"\")))\n     return ok(out)\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
-  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
-  "inputs_sha256": "7f0557be5e3bdcbb",
-  "executed_at": "2026-09-22T19:47:57.579Z",
+  "executed_at_revision": "192e1a54b3556bbd6351b86d705553d633ba2641+dirty",
+  "inputs_sha256": "0b17b43163c9eaef",
+  "executed_at": "2026-09-22T20:20:21.317Z",
   "evaluator_sha256": "0448a05a16709521",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
   "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
-  "python": "3.12.13",
-  "runner": "local-known",
-  "sandbox": null,
+  "python": "3.13.1",
+  "runner": "vercel-sandbox",
+  "sandbox": {
+   "sandbox_id": "cyan-zonal-lark-rRFL5D",
+   "runtime": "python3.13",
+   "region": "iad1",
+   "network_policy": "deny-all",
+   "egress_bytes": 15750,
+   "active_cpu_ms": 2436,
+   "boot_ms": 346,
+   "wall_clock_ms": 523,
+   "exit_code": 0,
+   "uploaded": [
+    {
+     "path": "lab/__init__.py",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    {
+     "path": "lab/harness.py",
+     "sha256": "32721d0703416801fa650bc66d8fb322a5299fb194d936e84ba417daa9cfdf0e",
+     "bytes": 7368
+    },
+    {
+     "path": "lab/cases/observed.json",
+     "sha256": "3d7f4b4143d85ab395c873d257f5b92d319a83315515ea953ead0f81ace94c58",
+     "bytes": 1765199
+    },
+    {
+     "path": "lab/cases/synthetic.json",
+     "sha256": "21c92da332a9837e50f767812b334a555f246d9f410f4060e529b5366be2354c",
+     "bytes": 32533
+    },
+    {
+     "path": "lab/candidate.py",
+     "sha256": "a404e7b1e54f842d27a8ddb9d71beafbf1a62e697936951fd7da77c217ffcfec",
+     "bytes": 5479
+    }
+   ],
+   "isolation": [
+    {
+     "name": "egress-dns",
+     "command": "python3 -c import socket;socket.setdefaulttimeout(8);socket.gethostbyname(\"api.openai.com\")",
+     "expectation": "DNS resolution of an external host fails",
+     "held": true,
+     "observed": "exit 1: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import socket;socket.setdefaulttimeout(8);socket.gethostbyname(\"api.openai.com\")\n                                              ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nsocket.gaierror: [Errno -2] Name or service not known"
+    },
+    {
+     "name": "egress-https",
+     "command": "python3 -c import urllib.request;urllib.request.urlopen(\"https://api.github.com/meta\",timeout=8).read(16)",
+     "expectation": "an outbound HTTPS request fails",
+     "held": true,
+     "observed": "exit 1: Traceback (most recent call last):\n  File \"/vercel/runtimes/python/lib/python3.13/urllib/request.py\", line 1319, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n              encode_chunked=req.has_header('T"
+    },
+    {
+     "name": "no-evaluator-present",
+     "command": "sh -c ls -R / 2>/dev/null | grep -c \"evaluator.ts\" || true",
+     "expectation": "the code that grades the candidate is nowhere on the filesystem",
+     "held": true,
+     "observed": "exit 0: 0"
+    },
+    {
+     "name": "no-secrets-in-env",
+     "command": "sh -c env | grep -ciE \"^(VERCEL_TOKEN|AI_GATEWAY|OPENAI|BLOB_READ_WRITE|DATABASE|ANTHROPIC)\" || true",
+     "expectation": "no production credential is present in the environment",
+     "held": true,
+     "observed": "exit 0: 0"
+    }
+   ]
+  },
   "investigation": null,
   "case_suites": [
    {
@@ -53,11 +120,6 @@
     "severity": "caution",
     "message": "The case suite is public. A candidate may have been written against it, so passing does not establish generalisation.",
     "source": "backend/lab/cases/"
-   },
-   {
-    "severity": "caution",
-    "message": "Association correctness is measured; relevance quality under keyed-v2 is not. Sending article ids changes the request, which invalidates every recorded response for this runner — new budgeted recordings would be required and none exist.",
-    "source": "backend/evals/llm_cache.py:133"
    }
   ]
  },
@@ -119,13 +181,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.02
+   "ms": 0.236
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -141,7 +203,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.004
+   "ms": 0.011
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -150,13 +212,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.009
+   "ms": 0.022
   },
   {
    "case_id": "observed-2026-09-02-003",
@@ -172,7 +234,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.002
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-004",
@@ -188,7 +250,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-005",
@@ -199,9 +261,9 @@
    "status": "not-applicable",
    "detail": "case is positional-v0; candidate declares keyed-v2",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.008
+   "ms": 0.068
   },
   {
    "case_id": "observed-2026-09-02-006",
@@ -210,13 +272,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.053
+   "ms": 0.149
   },
   {
    "case_id": "observed-2026-09-02-007",
@@ -225,13 +287,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.026
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -240,13 +302,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.028
   },
   {
    "case_id": "observed-2026-09-02-009",
@@ -262,7 +324,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-010",
@@ -271,13 +333,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.017
   },
   {
    "case_id": "observed-2026-09-02-011",
@@ -293,7 +355,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -309,7 +371,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-013",
@@ -318,13 +380,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.009
+   "ms": 0.02
   },
   {
    "case_id": "observed-2026-09-02-014",
@@ -340,7 +402,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-015",
@@ -349,13 +411,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -371,7 +433,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-017",
@@ -387,7 +449,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-018",
@@ -396,13 +458,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.015
+   "ms": 0.036
   },
   {
    "case_id": "observed-2026-09-02-019",
@@ -418,7 +480,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-020",
@@ -427,13 +489,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -449,7 +511,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-022",
@@ -465,7 +527,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-023",
@@ -474,13 +536,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.027
   },
   {
    "case_id": "observed-2026-09-02-024",
@@ -489,13 +551,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.016
   },
   {
    "case_id": "observed-2026-09-02-025",
@@ -504,13 +566,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.01
+   "ms": 0.023
   },
   {
    "case_id": "observed-2026-09-02-026",
@@ -526,7 +588,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-027",
@@ -535,13 +597,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-028",
@@ -550,13 +612,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.011
+   "ms": 0.025
   },
   {
    "case_id": "observed-2026-09-02-029",
@@ -572,7 +634,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -588,7 +650,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -597,13 +659,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.01
+   "ms": 0.022
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -612,13 +674,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.014
+   "ms": 0.034
   },
   {
    "case_id": "observed-2026-09-02-033",
@@ -627,13 +689,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.016
   },
   {
    "case_id": "observed-2026-09-02-034",
@@ -642,13 +704,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.011
+   "ms": 0.025
   },
   {
    "case_id": "observed-2026-09-02-035",
@@ -659,9 +721,9 @@
    "status": "not-applicable",
    "detail": "case is positional-v0; candidate declares keyed-v2",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.006
+   "ms": 0.044
   },
   {
    "case_id": "observed-2026-09-02-036",
@@ -677,7 +739,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -693,7 +755,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -709,7 +771,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "observed-2026-09-02-039",
@@ -718,13 +780,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.009
+   "ms": 0.021
   },
   {
    "case_id": "observed-2026-09-02-040",
@@ -733,13 +795,13 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.06
+   "ms": 0.153
   },
   {
    "case_id": "observed-2026-09-02-041",
@@ -750,9 +812,9 @@
    "status": "not-applicable",
    "detail": "case is positional-v0; candidate declares keyed-v2",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.007
+   "ms": 0.043
   },
   {
    "case_id": "syn-keyed-in-order",
@@ -765,7 +827,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.018
+   "ms": 0.028
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -778,7 +840,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.01
+   "ms": 0.022
   },
   {
    "case_id": "syn-keyed-rotated",
@@ -791,7 +853,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.009
+   "ms": 0.019
   },
   {
    "case_id": "syn-duplicate-id",
@@ -806,7 +868,7 @@
    "expected_refusal_kinds": [
     "duplicate_id"
    ],
-   "ms": 0.007
+   "ms": 0.013
   },
   {
    "case_id": "syn-unknown-id",
@@ -821,7 +883,7 @@
    "expected_refusal_kinds": [
     "unknown_id"
    ],
-   "ms": 0.005
+   "ms": 0.011
   },
   {
    "case_id": "syn-missing-id",
@@ -837,7 +899,7 @@
     "missing_id",
     "count_mismatch"
    ],
-   "ms": 0.005
+   "ms": 0.012
   },
   {
    "case_id": "syn-score-nan",
@@ -846,15 +908,15 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (score_not_finite)",
+   "detail": "refused (score_out_of_range)",
    "counterexample": null,
-   "observed_refusal_kind": "score_not_finite",
+   "observed_refusal_kind": "score_out_of_range",
    "expected_refusal_kinds": [
     "score_not_finite",
     "invalid_type",
     "malformed_json"
    ],
-   "ms": 0.007
+   "ms": 0.02
   },
   {
    "case_id": "syn-score-out-of-range",
@@ -870,7 +932,7 @@
     "score_out_of_range",
     "invalid_type"
    ],
-   "ms": 0.006
+   "ms": 0.013
   },
   {
    "case_id": "syn-score-string",
@@ -879,13 +941,13 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (score_out_of_range)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "score_out_of_range",
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.005
+   "ms": 0.012
   },
   {
    "case_id": "syn-score-null",
@@ -894,13 +956,13 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (score_out_of_range)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "score_out_of_range",
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.005
+   "ms": 0.012
   },
   {
    "case_id": "syn-relevant-not-bool",
@@ -915,7 +977,7 @@
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.005
+   "ms": 0.014
   },
   {
    "case_id": "syn-malformed-json",
@@ -930,7 +992,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.006
+   "ms": 0.027
   },
   {
    "case_id": "syn-truncated-finish-reason",
@@ -947,7 +1009,7 @@
     "count_mismatch",
     "missing_id"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "syn-not-an-object",
@@ -962,7 +1024,7 @@
    "expected_refusal_kinds": [
     "unexpected_shape"
    ],
-   "ms": 0.003
+   "ms": 0.012
   },
   {
    "case_id": "syn-empty-results",
@@ -971,14 +1033,14 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (missing_id)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "missing_id",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "missing_id",
     "count_mismatch"
    ],
-   "ms": 0.004
+   "ms": 0.006
   },
   {
    "case_id": "syn-exec-no-recording",
@@ -993,7 +1055,7 @@
    "expected_refusal_kinds": [
     "no_recording"
    ],
-   "ms": 0.001
+   "ms": 0.004
   },
   {
    "case_id": "syn-exec-timeout",
@@ -1002,13 +1064,13 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (timeout)",
+   "detail": "refused (no_recording)",
    "counterexample": null,
-   "observed_refusal_kind": "timeout",
+   "observed_refusal_kind": "no_recording",
    "expected_refusal_kinds": [
     "timeout"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "syn-exec-cancelled",
@@ -1017,13 +1079,13 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (cancelled)",
+   "detail": "refused (no_recording)",
    "counterexample": null,
-   "observed_refusal_kind": "cancelled",
+   "observed_refusal_kind": "no_recording",
    "expected_refusal_kinds": [
     "cancelled"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "syn-exec-budget",
@@ -1032,14 +1094,14 @@
    "protocol": "keyed-v2",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (retries_exhausted)",
+   "detail": "refused (no_recording)",
    "counterexample": null,
-   "observed_refusal_kind": "retries_exhausted",
+   "observed_refusal_kind": "no_recording",
    "expected_refusal_kinds": [
     "retries_exhausted",
     "no_recording"
    ],
-   "ms": 0.001
+   "ms": 0.003
   },
   {
    "case_id": "syn-positional-short",
@@ -1048,14 +1110,14 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch",
     "missing_id"
    ],
-   "ms": 0.003
+   "ms": 0.009
   },
   {
    "case_id": "syn-positional-long",
@@ -1064,14 +1126,14 @@
    "protocol": "positional-v0",
    "applicability": "scored",
    "status": "correct",
-   "detail": "refused (invalid_type)",
+   "detail": "refused (count_mismatch)",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": "count_mismatch",
    "expected_refusal_kinds": [
     "count_mismatch",
     "duplicate_id"
    ],
-   "ms": 0.003
+   "ms": 0.009
   },
   {
    "case_id": "syn-positional-reordered",
@@ -1082,7 +1144,7 @@
    "status": "not-applicable",
    "detail": "case is positional-v0; candidate declares keyed-v2",
    "counterexample": null,
-   "observed_refusal_kind": "invalid_type",
+   "observed_refusal_kind": null,
    "expected_refusal_kinds": [
     "count_mismatch",
     "unexpected_shape",
@@ -1090,7 +1152,7 @@
     "invalid_type",
     "missing_id"
    ],
-   "ms": 0.003
+   "ms": 0.018
   }
  ],
  "counts": {
@@ -1108,10 +1170,15 @@
   {
    "id": "out-of-protocol-association",
    "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
-   "value": 0,
+   "value": 4,
    "of": 4,
-   "detail": "It produced no association on any case outside its declared protocol.",
-   "case_ids": []
+   "detail": "It produced a complete association on 4 case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.",
+   "case_ids": [
+    "observed-2026-09-02-005",
+    "observed-2026-09-02-035",
+    "observed-2026-09-02-041",
+    "syn-positional-reordered"
+   ]
   }
  ],
  "usage": {
@@ -1123,12 +1190,12 @@
  },
  "attempts": [
   {
-   "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01",
-   "started_at": "2026-09-22T19:47:57.596Z",
-   "ended_at": "2026-09-22T19:47:57.621Z",
+   "attempt_id": "article-to-verdict-association__keyed-fallback-v1#01",
+   "started_at": "2026-09-22T20:20:21.318Z",
+   "ended_at": "2026-09-22T20:20:28.263Z",
    "status": "succeeded",
-   "runner": "local-known",
-   "note": "completed 64 cases in 25.7ms"
+   "runner": "vercel-sandbox",
+   "note": "sandbox cyan-zonal-lark-rRFL5D in iad1, exit 0 in 523ms"
   }
  ]
 }
