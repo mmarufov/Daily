@@ -438,7 +438,11 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
     return {
       ok: false,
       detail: `${result.reason}: ${result.needs.join('; ')}`,
-      trace: null,
+      // A failed *call* still carries a trace, because tool calls before the
+      // failure were paid for. A refusal before anything ran carries none,
+      // because nothing ran. Collapsing those two into `null` would lose the
+      // record of money already spent.
+      trace: result.reason === 'call-failed' ? result.trace : null,
       sandbox,
       records_json: recordsJson,
       candidate_source: candidateSource,

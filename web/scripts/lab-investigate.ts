@@ -50,6 +50,7 @@ interface Outcome {
     started_at: string
     wall_clock_ms: number
     finish_reason: string
+    error?: string | null
     tool_calls_made: number
     budget: { max_tool_calls: number }
     budget_ceiling_usd: number
@@ -130,8 +131,17 @@ async function main(): Promise<number> {
   console.log(`  resumed in a different process: ${outcome.resumed ? 'yes' : 'no'}`)
 
   const trace = outcome.trace
-  if (trace === null || trace.proposal === null || outcome.candidate_source === null) {
-    console.error('\nno proposal was produced, so there is nothing to commit.')
+  if (trace === null) {
+    console.error('\nno trace: the investigation refused before anything ran.')
+    return 1
+  }
+  if (trace.error !== null && trace.error !== undefined) {
+    // Worth saying loudly. The tool calls before the failure were charged,
+    // and the trace is the only record that they happened.
+    console.error(`\nthe call failed after ${trace.tool_calls_made} tool calls: ${trace.error.slice(0, 200)}`)
+  }
+  if (trace.proposal === null || outcome.candidate_source === null) {
+    console.error('\nno proposal was produced, so there is no candidate to commit.')
     return 1
   }
   console.log(
