@@ -64,3 +64,5 @@ artifacts/
 node_modules/
 *.pptx
 *.inspect.ndjson
+
+.vercel

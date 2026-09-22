@@ -2,9 +2,9 @@ import { UNKNOWN, type Artifact, type ProvenanceNote } from '@/lib/artifact'
 import type { Compatibility } from '@/lib/compare'
 
 const SEVERITY_TONE: Record<ProvenanceNote['severity'], string> = {
-  info: 'border-sepia text-ink-60',
-  caution: 'border-ochre text-ink',
-  warning: 'border-danger text-ink',
+  info: 'border-rule text-ink-60',
+  caution: 'border-unknown text-ink-60',
+  warning: 'border-signal text-ink',
 }
 
 const SEVERITY_WORD: Record<ProvenanceNote['severity'], string> = {
@@ -18,20 +18,20 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
   const warnings = p.notes.filter((n) => n.severity !== 'info')
 
   return (
-    <details className="border border-sepia">
-      <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold">
+    <details className="border border-rule bg-paper-secondary">
+      <summary className="label cursor-pointer list-none px-4 py-3 text-ink">
         Provenance
         {warnings.length > 0 ? (
-          <span className="ml-2 font-normal text-ink-60">
+          <span className="ml-2 text-signal">
             — {warnings.length} caveat{warnings.length === 1 ? '' : 's'} on this run
           </span>
         ) : null}
       </summary>
 
-      <div className="flex flex-col gap-5 border-t border-sepia p-4">
+      <div className="flex flex-col gap-6 border-t border-rule bg-paper p-4">
         <section>
-          <h3 className="meta-caps m-0 text-ink-60">Three revisions, kept apart</h3>
-          <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+          <h3 className="label m-0 text-ink-40">Three revisions, kept apart</h3>
+          <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
             <Row
               term="Executed the evaluation"
               value={p.eval_revision}
@@ -55,8 +55,8 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
         </section>
 
         <section>
-          <h3 className="meta-caps m-0 text-ink-60">Run identity</h3>
-          <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+          <h3 className="label m-0 text-ink-40">Run identity</h3>
+          <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
             <Row term="Runner" value={p.runner} mono />
             <Row term="CLI argument" value={p.runner_cli_arg} mono />
             <Row
@@ -78,14 +78,14 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
           </dl>
           {p.models.length > 0 ? (
             <p className="m-0 mt-2 text-xs text-ink-60">
-              Models observed: <span className="font-mono">{p.models.join(', ')}</span>
+              Models observed: <span className="text-ink">{p.models.join(', ')}</span>
             </p>
           ) : null}
         </section>
 
         <section>
-          <h3 className="meta-caps m-0 text-ink-60">Corpus</h3>
-          <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+          <h3 className="label m-0 text-ink-40">Corpus</h3>
+          <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
             <Row term="Snapshot" value={p.snapshot.name} />
             <Row
               term="Articles"
@@ -105,12 +105,12 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
         </section>
 
         <section>
-          <h3 className="meta-caps m-0 text-ink-60">Ground truth</h3>
+          <h3 className="label m-0 text-ink-40">Ground truth</h3>
           {p.labels === null ? (
-            <p className="m-0 mt-2 text-sm">No label set was found for this snapshot.</p>
+            <p className="m-0 mt-2 text-xs">No label set was found for this snapshot.</p>
           ) : (
             <>
-              <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+              <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
                 <Row term="Label rows" value={p.labels.rows.toLocaleString()} note="persona/article pairs" />
                 <Row
                   term="Distinct articles"
@@ -137,7 +137,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 
         {p.notes.length > 0 ? (
           <section>
-            <h3 className="meta-caps m-0 text-ink-60">Caveats</h3>
+            <h3 className="label m-0 text-ink-40">Caveats</h3>
             <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
               {p.notes.map((note, index) => (
                 <li
@@ -145,7 +145,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
                   className={`border-l-2 pl-3 text-xs ${SEVERITY_TONE[note.severity]}`}
                 >
                   <strong>{SEVERITY_WORD[note.severity]}.</strong> {note.message}
-                  <span className="block pt-0.5 font-mono text-[11px] text-ink-60">
+                  <span className="block pt-1 text-[11px] text-ink-40">
                     {note.source}
                   </span>
                 </li>
@@ -156,8 +156,8 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 
         {artifact.baseline.is_baseline ? (
           <section>
-            <h3 className="meta-caps m-0 text-ink-60">Baseline file</h3>
-            <p className="m-0 mt-2 text-sm">
+            <h3 className="label m-0 text-ink-40">Baseline file</h3>
+            <p className="m-0 mt-2 text-xs">
               This file carries regression-gate thresholds for{' '}
               {artifact.baseline.snapshot_baseline_keys.join(', ')}.
               {artifact.baseline.disagrees_with_run.length > 0 ? (
@@ -184,14 +184,14 @@ export function CompatibilityNotice({ compatibility }: { compatibility: Compatib
   return (
     <div
       role={blocking ? 'alert' : undefined}
-      className={`border-l-2 pl-3 ${blocking ? 'border-danger' : 'border-ochre'}`}
+      className={`border-l-2 pl-3 ${blocking ? 'border-signal' : 'border-unknown'}`}
     >
-      <p className="m-0 text-sm font-semibold">{compatibility.headline}</p>
+      <p className="m-0 text-sm text-ink">{compatibility.headline}</p>
       {compatibility.issues.length > 0 ? (
         <ul className="m-0 mt-1.5 flex list-none flex-col gap-1 p-0">
           {compatibility.issues.map((issue, index) => (
-            <li key={`${issue.field}-${index}`} className="text-xs text-ink-60">
-              <span className="font-mono">{issue.field}</span> — {issue.message}
+            <li key={`${issue.field}-${index}`} className="max-w-3xl text-xs text-ink-60">
+              <span className="text-ink">{issue.field}</span> — {issue.message}
             </li>
           ))}
         </ul>
@@ -213,10 +213,8 @@ function Row({
 }) {
   return (
     <div>
-      <dt className="meta-caps m-0 text-ink-60">{term}</dt>
-      <dd className={`m-0 mt-0.5 ${mono === true ? 'font-mono text-xs break-all' : 'text-sm'}`}>
-        {value}
-      </dd>
+      <dt className="label m-0 text-ink-40">{term}</dt>
+      <dd className={`m-0 mt-0.5 text-xs ${mono === true ? 'break-all text-ink' : ''}`}>{value}</dd>
       {note !== undefined ? <p className="m-0 text-[11px] text-ink-60">{note}</p> : null}
     </div>
   )

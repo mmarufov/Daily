@@ -48,7 +48,7 @@ export function Controls({ state, entries, personas }: ControlsProps) {
   const comparable = runs.filter((e) => e.run_id !== state.run)
 
   return (
-    <div className="flex flex-col gap-4 border border-sepia bg-paper-secondary p-4">
+    <div className="flex flex-col gap-4 border border-rule bg-paper-secondary p-4">
       <form ref={formRef} method="get" action="/evidence" className="flex flex-col gap-4">
         {/* The story selection is context, not a control; preserve it across
             filter changes so moving between views does not lose the trace. */}
@@ -123,14 +123,14 @@ export function Controls({ state, entries, personas }: ControlsProps) {
         <div>
           <button
             type="submit"
-            className="rounded-button border border-ink px-3 py-1.5 text-sm font-semibold"
+            className="chip"
           >
             Apply
           </button>
         </div>
       </form>
 
-      <div role="tablist" aria-label="Explorer view" className="flex flex-wrap gap-2 border-t border-sepia pt-4">
+      <div role="tablist" aria-label="Explorer view" className="flex flex-wrap gap-1.5 border-t border-rule pt-4">
         {VIEWS.map((view) => {
           const selected = state.view === view
           return (
@@ -139,12 +139,7 @@ export function Controls({ state, entries, personas }: ControlsProps) {
               role="tab"
               aria-selected={selected}
               href={explorerHref(state, { view })}
-              className={[
-                'rounded-button border px-3 py-1.5 text-sm font-semibold no-underline',
-                selected
-                  ? 'border-ink bg-ink text-paper'
-                  : 'border-sepia bg-paper text-ink hover:border-ink',
-              ].join(' ')}
+              className={`chip ${selected ? 'chip-on' : ''}`}
             >
               {VIEW_LABELS[view]}
             </Link>
@@ -174,7 +169,7 @@ function Select({
       name={name}
       defaultValue={value}
       onChange={onChange}
-      className="w-full rounded-thumb border border-sepia bg-paper px-2 py-1.5 text-sm"
+      className="w-full border border-rule bg-paper px-2 py-1.5 text-xs text-ink"
     >
       {children}
     </select>
@@ -192,7 +187,7 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="meta-caps text-ink-60">
+      <label htmlFor={htmlFor} className="label text-ink-40">
         {label}
       </label>
       {children}

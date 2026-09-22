@@ -1,23 +1,35 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Controls, describeEntry } from '@/components/Controls'
+import { Band } from '@/components/Band'
+import { Controls } from '@/components/Controls'
+import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
 import { FunnelView } from '@/components/FunnelView'
 import { MetricTable } from '@/components/MetricTable'
 import { CompatibilityNotice, ProvenancePanel } from '@/components/Provenance'
+import { Sieve } from '@/components/Sieve'
+import { Slope, type SlopeRow } from '@/components/Slope'
 import { StoryDetail, StoryTable } from '@/components/StoryTable'
-import { countStories, findPersona, outcomeBreakdown, RUN_LEVEL_METRICS, summaryValue } from '@/lib/aggregate'
+import {
+  countStories,
+  findPersona,
+  HEADLINE_METRICS,
+  outcomeBreakdown,
+  RUN_LEVEL_METRICS,
+  SECONDARY_METRICS,
+  summaryValue,
+} from '@/lib/aggregate'
 import type { Artifact } from '@/lib/artifact'
 import { assessCompatibility } from '@/lib/compare'
 import { defaultComparison, defaultEntry, findEntry, loadArtifact, loadIndex } from '@/lib/data'
-import { formatValue } from '@/lib/format'
+import { computeDelta, formatValue } from '@/lib/format'
 import { resolveMetric } from '@/lib/metrics'
 import { explorerHref, readState, type RawSearchParams } from '@/lib/url-state'
 
 export const metadata: Metadata = {
   title: 'Evaluation evidence',
   description:
-    'Interactive results from Daily’s offline evaluation harness: per-fixture metrics, the candidate funnel, and the recorded trace for individual stories.',
+    'Interactive results from Daily’s offline evaluation harness: per-fixture metrics, the candidate funnel drawn at 1:1 with the corpus, and the recorded trace for individual stories.',
 }
 
 export default async function EvidencePage({
@@ -66,11 +78,7 @@ export default async function EvidencePage({
     else comparisonFailed = load.error.issues.join('; ')
   }
 
-  const state = {
-    ...requested,
-    run: primaryEntry.run_id,
-    compare: comparisonEntry?.run_id,
-  }
+  const state = { ...requested, run: primaryEntry.run_id, compare: comparisonEntry?.run_id }
 
   const compatibility = comparison === null ? null : assessCompatibility(primary, comparison)
   const showDeltas = compatibility?.showDirectionalDeltas ?? false
@@ -83,96 +91,170 @@ export default async function EvidencePage({
       : undefined
 
   return (
-    <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-3">
-        <p className="signature-caps m-0 text-ochre">the ruler</p>
-        <h1 className="hero-headline m-0 text-3xl sm:text-4xl">Evaluation evidence</h1>
-        <p className="dek m-0 max-w-2xl text-ink-60">
+    <div className="flex flex-col">
+      <section className="frame flex flex-col gap-6 py-12 md:py-14">
+        <p className="label m-0 text-ink-40">
+          The ruler · artifacts {index.source === 'blob' ? 'from the published store' : 'committed in this repository'}
+        </p>
+        <h1 className="display m-0 text-[clamp(2.25rem,6vw,4.5rem)]">Evaluation evidence</h1>
+        <p className="lede measure m-0 text-ink-60">
           Ten adversarial reader fixtures, three content-hashed corpora, and a recorded trace for
           every article. Pick a run to see what a reader would have received, then follow a story
           that should have reached them and did not.
         </p>
-        <p className="m-0 max-w-2xl text-xs text-ink-60">
-          Artifacts loaded from {index.source === 'blob' ? 'the published Blob store' : 'the export committed in this repository'}.
-          {index.errors.length > 0
-            ? ' The published set was unreachable, so the committed export is being shown instead.'
-            : ''}
-        </p>
-      </header>
+        {index.errors.length > 0 ? (
+          <p className="m-0 max-w-2xl border-l-2 border-signal pl-3 text-xs text-ink-60">
+            The published artifact set was unreachable, so the committed export is being shown
+            instead. Nothing is hidden by the fallback, but the run ids may lag the latest
+            publication.
+          </p>
+        ) : null}
+      </section>
 
-      {requestedButMissing ? (
-        <p role="alert" className="m-0 border-l-2 border-danger pl-3 text-sm">
-          The run <span className="font-mono">{requested.run}</span> is not in the current manifest,
-          so the default run is shown instead. A link to a run that has since been republished will
-          land here rather than silently showing different numbers.
-        </p>
-      ) : null}
+      <section className="frame flex flex-col gap-5 pb-10">
+        {requestedButMissing ? (
+          <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
+            The run <span className="text-ink">{requested.run}</span> is not in the current
+            manifest, so the default run is shown instead. A link to a run that has since been
+            republished lands here rather than silently showing different numbers.
+          </p>
+        ) : null}
 
-      <Controls state={state} entries={index.entries} personas={personaKeys} />
+        <Controls state={state} entries={index.entries} personas={personaKeys} />
 
-      {compatibility !== null ? <CompatibilityNotice compatibility={compatibility} /> : null}
-      {comparisonFailed !== null ? (
-        <p role="alert" className="m-0 border-l-2 border-danger pl-3 text-xs text-ink-60">
-          The comparison run failed to load: {comparisonFailed}
-        </p>
-      ) : null}
+        {compatibility !== null ? <CompatibilityNotice compatibility={compatibility} /> : null}
+        {comparisonFailed !== null ? (
+          <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs text-ink-60">
+            The comparison run failed to load: {comparisonFailed}
+          </p>
+        ) : null}
+      </section>
 
-      <RunHeadline
-        primary={primary}
-        comparison={comparison}
-        personaKey={state.persona}
-      />
+      <RunHeadline primary={primary} comparison={comparison} personaKey={state.persona} />
 
       {state.view === 'summary' ? (
-        <section className="flex flex-col gap-5">
-          <h2 className="meta-caps m-0 text-ink-60">
-            {state.persona === undefined
-              ? `Averages across ${primary.personas.length} reader fixtures`
-              : `Reader fixture ${state.persona}`}
-          </h2>
-          <MetricTable
-            primary={primary}
-            comparison={comparison}
-            showDeltas={showDeltas}
-            personaKey={state.persona}
-          />
-          {state.persona === undefined ? (
-            <p className="m-0 max-w-2xl text-xs text-ink-60">
-              The weakest-fixture column exists so an average cannot hide a reader the pipeline
-              fails. A filled dot beside a difference means it clears the harness&rsquo;s fixed
-              &plusmn;0.02 materiality cutoff — a threshold chosen by the author, not a
-              significance test. Ten fixtures with no variance estimate cannot support one.
-            </p>
-          ) : null}
-          <PersonaGrid primary={primary} state={state} />
-        </section>
+        <>
+          <section className="frame flex flex-col gap-6 pb-16">
+            <Band
+              index="01"
+              title={comparison === null ? 'Metrics' : 'Two runs, one scale'}
+              note={
+                state.persona === undefined
+                  ? `Averaged over ${primary.personas.length} fixtures`
+                  : `Fixture ${state.persona}`
+              }
+              as="h2"
+            />
+            {comparison !== null && showDeltas ? (
+              <Slope
+                rows={slopeRows(primary, comparison, state.persona)}
+                aLabel={primary.provenance.runner}
+                bLabel={comparison.provenance.runner}
+              />
+            ) : null}
+            <MetricTable
+              primary={primary}
+              comparison={comparison}
+              showDeltas={showDeltas}
+              personaKey={state.persona}
+            />
+            {state.persona === undefined ? (
+              <p className="m-0 max-w-3xl text-xs text-ink-40">
+                The weakest-fixture column exists so an average cannot hide a reader the pipeline
+                fails. A filled dot beside a difference means it clears the harness&rsquo;s fixed
+                &plusmn;0.02 materiality cutoff — a threshold chosen by its author, not a
+                significance test. Ten fixtures with no variance estimate cannot support one.
+              </p>
+            ) : null}
+          </section>
+
+          <section className="frame flex flex-col gap-6 pb-16">
+            <Band index="02" title="Every fixture, no averaging" as="h2" />
+            <FixtureStrip
+              rows={toFixtureRows(
+                primary.personas,
+                (key) => explorerHref(state, { persona: key, story: undefined }),
+                state.persona,
+              )}
+              caption="Each row is one fixture's labelled story placements for this run. Select one to filter everything above."
+            />
+          </section>
+        </>
       ) : null}
 
       {state.view === 'funnel' ? (
-        <section className="flex flex-col gap-5">
-          <h2 className="meta-caps m-0 text-ink-60">
-            {state.persona === undefined ? 'Funnel, all fixtures summed' : `Funnel for ${state.persona}`}
-          </h2>
-          <FunnelView artifact={primary} persona={persona} />
-        </section>
+        <>
+          <section className="frame flex flex-col gap-6 pb-16">
+            <Band
+              index="01"
+              title="The sieve"
+              note={
+                persona === undefined
+                  ? 'Pick a fixture to draw it'
+                  : `Fixture ${persona.key}, 1:1 with the corpus`
+              }
+              as="h2"
+            />
+            {persona === undefined ? (
+              <div className="flex flex-col gap-3">
+                <p className="m-0 max-w-2xl text-xs text-ink-60">
+                  The sieve draws one cell per candidate article, so it is only meaningful for a
+                  single fixture: summing ten fixtures would draw the same article up to ten times
+                  and call the result a corpus. Pick one and it appears here.
+                </p>
+                <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+                  {personaKeys.map((key) => (
+                    <li key={key}>
+                      <Link
+                        href={explorerHref(state, { persona: key, view: 'funnel' })}
+                        className="chip"
+                      >
+                        {key}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <Sieve
+                fixtures={[{ key: persona.key, steps: persona.funnel }]}
+                initialFixture={persona.key}
+                snapshot={primary.provenance.snapshot.name}
+                showFixturePicker={false}
+              />
+            )}
+          </section>
+
+          <section className="frame flex flex-col gap-6 pb-16">
+            <Band
+              index="02"
+              title={persona === undefined ? 'Funnel, all fixtures summed' : `Funnel for ${persona.key}`}
+              as="h2"
+            />
+            <FunnelView artifact={primary} persona={persona} />
+          </section>
+        </>
       ) : null}
 
       {state.view === 'stories' ? (
-        <section className="flex flex-col gap-5">
-          <h2 className="meta-caps m-0 text-ink-60">
-            {persona === undefined ? 'Stories' : `Stories for ${persona.key}`}
-          </h2>
+        <section className="frame flex flex-col gap-6 pb-16">
+          <Band
+            index="01"
+            title={persona === undefined ? 'Stories' : `Stories for ${persona.key}`}
+            note={persona === undefined ? undefined : `Outcome filter: ${state.outcome}`}
+            as="h2"
+          />
           {persona === undefined ? (
             <div className="flex flex-col gap-3">
-              <p className="m-0 max-w-2xl text-sm">
+              <p className="m-0 max-w-2xl text-xs text-ink-60">
                 Per-story traces are recorded per reader fixture. Choose one to follow its stories.
               </p>
-              <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+              <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
                 {personaKeys.map((key) => (
                   <li key={key}>
                     <Link
                       href={explorerHref(state, { persona: key, view: 'stories' })}
-                      className="rounded-button border border-sepia px-3 py-1.5 text-sm no-underline hover:border-ink"
+                      className="chip"
                     >
                       {key}
                     </Link>
@@ -181,18 +263,58 @@ export default async function EvidencePage({
               </ul>
             </div>
           ) : (
-            <div className="flex flex-col gap-5">
-              {selectedStory !== undefined ? <StoryDetail story={selectedStory} /> : null}
+            <div className="flex flex-col gap-6">
+              {selectedStory !== undefined ? (
+                <StoryDetail story={selectedStory} persona={persona} />
+              ) : null}
               <StoryTable persona={persona} state={state} />
             </div>
           )}
         </section>
       ) : null}
 
-      <ProvenancePanel artifact={primary} />
-      {comparison !== null ? <ProvenancePanel artifact={comparison} /> : null}
+      <section className="frame flex flex-col gap-4 pb-8">
+        <Band index="—" title="Provenance" note="What can and cannot be established" as="h2" />
+        <ProvenancePanel artifact={primary} />
+        {comparison !== null ? <ProvenancePanel artifact={comparison} /> : null}
+      </section>
     </div>
   )
+}
+
+/** Fraction metrics only; the Slope component explains why. */
+function slopeRows(
+  primary: Artifact,
+  comparison: Artifact,
+  personaKey: string | undefined,
+): readonly SlopeRow[] {
+  const read = (artifact: Artifact, metric: string): number | null => {
+    if (personaKey !== undefined) {
+      const persona = artifact.personas.find((p) => p.key === personaKey)
+      return persona?.metrics[metric] ?? null
+    }
+    return summaryValue(artifact, metric, 'mean')
+  }
+
+  return [...HEADLINE_METRICS, ...SECONDARY_METRICS].flatMap((metric) => {
+    const def = resolveMetric(metric)
+    if (def.kind !== 'fraction') return []
+    const a = read(primary, metric)
+    const b = read(comparison, metric)
+    if (a === null || b === null) return []
+    const delta = computeDelta(a, b, metric)
+    return [
+      {
+        key: metric,
+        label: def.label,
+        a,
+        b,
+        verdict: delta.verdict,
+        display: delta.verdict === 'unchanged' ? 'unchanged' : delta.display,
+        material: delta.material,
+      } satisfies SlopeRow,
+    ]
+  })
 }
 
 function RunHeadline({
@@ -204,55 +326,57 @@ function RunHeadline({
   comparison: Artifact | null
   personaKey: string | undefined
 }) {
-  const personas = personaKey === undefined
-    ? primary.personas
-    : primary.personas.filter((p) => p.key === personaKey)
+  const personas =
+    personaKey === undefined ? primary.personas : primary.personas.filter((p) => p.key === personaKey)
 
   const unwanted = countStories(personas, (s) => s.outcome === 'delivered-unwanted')
   const lostEarly = countStories(personas, (s) => s.outcome === 'lost-before-scorer')
   const breakdown = outcomeBreakdown(personas)
 
   return (
-    <section className="flex flex-col gap-4 border-y border-sepia py-5">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 className="row-headline m-0">{describeEntryTitle(primary)}</h2>
+    <section className="frame flex flex-col gap-6 border-y border-rule py-7">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h2 className="headline m-0 text-lg">{describeEntryTitle(primary)}</h2>
         {comparison !== null ? (
-          <p className="m-0 text-sm text-ink-60">compared with {describeEntryTitle(comparison)}</p>
+          <p className="m-0 text-xs text-ink-40">
+            compared with {describeEntryTitle(comparison)}
+          </p>
         ) : null}
       </div>
 
-      <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+      <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
         {RUN_LEVEL_METRICS.map((metric) => {
           const def = resolveMetric(metric)
           const value = summaryValue(primary, metric, 'mean')
           return (
             <div key={metric}>
-              <dt className="meta-caps m-0 text-ink-60">{def.label}</dt>
-              <dd className="m-0 mt-0.5 font-serif text-xl font-bold tabular-nums">
-                {formatValue(value, def.kind)}
-              </dd>
+              <dt className="label m-0 text-ink-40">{def.label}</dt>
+              <dd className="readout-sm m-0 mt-1.5 text-2xl">{formatValue(value, def.kind)}</dd>
             </div>
           )
         })}
       </dl>
 
-      <p className="m-0 max-w-3xl text-sm text-ink-60">
-        Across {personas.length} fixture{personas.length === 1 ? '' : 's'}, this run delivered{' '}
-        <strong className="text-danger">{unwanted.pairs}</strong> explicitly unwanted
-        story-placements ({unwanted.uniqueArticles} distinct articles), and{' '}
-        <strong className="text-danger">{lostEarly.pairs}</strong> wanted story-placements were
-        lost before the scorer ever saw them ({lostEarly.uniqueArticles} distinct articles). A
-        story lost before scoring cannot be rescued by better ranking.
-      </p>
-
-      <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1 p-0 text-xs text-ink-60">
-        {[...breakdown].map(([outcome, counts]) => (
-          <li key={outcome}>
-            <span className="font-mono">{outcome}</span> — {counts.pairs} pairs /{' '}
-            {counts.uniqueArticles} articles
-          </li>
-        ))}
-      </ul>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
+        <p className="m-0 text-sm text-ink-60">
+          Across {personas.length} fixture{personas.length === 1 ? '' : 's'}, this run delivered{' '}
+          <span className="text-signal">{unwanted.pairs}</span> explicitly unwanted
+          story-placements ({unwanted.uniqueArticles} distinct articles), and{' '}
+          <span className="text-signal">{lostEarly.pairs}</span> wanted story-placements were lost
+          before the scorer ever saw them ({lostEarly.uniqueArticles} distinct articles). A story
+          lost before scoring cannot be rescued by better ranking.
+        </p>
+        <ul className="m-0 flex list-none flex-col gap-1 self-start p-0 text-xs text-ink-40">
+          {[...breakdown].map(([outcome, counts]) => (
+            <li key={outcome} className="flex justify-between gap-4 border-b border-rule pb-1">
+              <span>{outcome}</span>
+              <span>
+                {counts.pairs} pairs / {counts.uniqueArticles} articles
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   )
 }
@@ -260,72 +384,6 @@ function RunHeadline({
 function describeEntryTitle(artifact: Artifact): string {
   const p = artifact.provenance
   return `${p.runner} · ${p.snapshot.name} · k=${p.k}${artifact.baseline.is_baseline ? ' · baseline' : ''}`
-}
-
-function PersonaGrid({
-  primary,
-  state,
-}: {
-  primary: Artifact
-  state: ReturnType<typeof readState>
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <h3 className="meta-caps m-0 text-ink-60">Every fixture, no averaging</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-lg border-collapse text-sm">
-          <caption className="sr-only">
-            Capped recall, unwanted rate and reached-the-scorer for each reader fixture
-          </caption>
-          <thead>
-            <tr className="border-b border-ink text-left">
-              <th scope="col" className="py-2 pr-3 font-semibold">
-                Fixture
-              </th>
-              <th scope="col" className="py-2 pr-3 text-right font-semibold">
-                Capped recall
-              </th>
-              <th scope="col" className="py-2 pr-3 text-right font-semibold">
-                Unwanted rate
-              </th>
-              <th scope="col" className="py-2 pr-3 text-right font-semibold">
-                Reached scorer
-              </th>
-              <th scope="col" className="py-2 text-right font-semibold">
-                Must-see
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {primary.personas.map((persona) => (
-              <tr key={persona.key} className="border-b border-sepia">
-                <th scope="row" className="py-2 pr-3 text-left font-normal">
-                  <Link
-                    href={explorerHref(state, { persona: persona.key, story: undefined })}
-                    className="text-ink-blue no-underline hover:underline"
-                  >
-                    {persona.key}
-                  </Link>
-                </th>
-                <td className="py-2 pr-3 text-right tabular-nums">
-                  {formatValue(persona.metrics.recall_at_k ?? null, 'fraction')}
-                </td>
-                <td className="py-2 pr-3 text-right tabular-nums">
-                  {formatValue(persona.metrics.never_rate ?? null, 'fraction')}
-                </td>
-                <td className="py-2 pr-3 text-right tabular-nums">
-                  {formatValue(persona.metrics.recall_at_retrieval ?? null, 'fraction')}
-                </td>
-                <td className="py-2 text-right tabular-nums text-ink-60">
-                  {persona.counts.must_see ?? '—'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
 }
 
 function NoArtifacts({
@@ -336,23 +394,23 @@ function NoArtifacts({
   incomplete: boolean
 }) {
   return (
-    <div className="flex max-w-2xl flex-col gap-4">
-      <h1 className="hero-headline m-0 text-3xl">No evaluation artifacts are available</h1>
-      <p className="body-reading m-0">
+    <div className="frame flex max-w-2xl flex-col gap-4 py-16">
+      <h1 className="editorial m-0 text-3xl">No evaluation artifacts are available</h1>
+      <p className="prose m-0">
         {incomplete
           ? 'Artifact files were found but no validated manifest was, so nothing is shown rather than presenting an unverified partial set.'
           : 'Nothing has been exported yet.'}{' '}
-        Run <code className="font-mono text-sm">npm run export:artifacts</code> in{' '}
-        <code className="font-mono text-sm">web/</code> to build the committed export from{' '}
-        <code className="font-mono text-sm">backend/evals/results/</code>.
+        Run <span className="text-ink-60">npm run export:artifacts</span> in{' '}
+        <span className="text-ink-60">web/</span> to build the committed export from{' '}
+        <span className="text-ink-60">backend/evals/results/</span>.
       </p>
       {errors.length > 0 ? (
         <div>
-          <h2 className="meta-caps m-0 text-ink-60">Load errors</h2>
+          <h2 className="label m-0 text-ink-40">Load errors</h2>
           <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0 text-xs">
             {errors.map((error) => (
-              <li key={error.where} className="border-l-2 border-danger pl-3">
-                <span className="font-mono">{error.where}</span>
+              <li key={error.where} className="border-l-2 border-signal pl-3">
+                <span className="text-ink">{error.where}</span>
                 <span className="block text-ink-60">{error.issues.join('; ')}</span>
               </li>
             ))}
@@ -373,15 +431,15 @@ function LoadFailure({
   issues: readonly string[]
 }) {
   return (
-    <div className="flex max-w-2xl flex-col gap-3">
-      <h1 className="hero-headline m-0 text-3xl">{title}</h1>
-      <p className="m-0 font-mono text-sm">{where}</p>
-      <ul className="m-0 flex list-none flex-col gap-1 p-0 text-sm text-ink-60">
-        {issues.map((issue, index) => (
-          <li key={index}>{issue}</li>
+    <div className="frame flex max-w-2xl flex-col gap-3 py-16">
+      <h1 className="editorial m-0 text-3xl">{title}</h1>
+      <p className="m-0 text-xs text-ink-60">{where}</p>
+      <ul className="m-0 flex list-none flex-col gap-1 p-0 text-xs text-signal">
+        {issues.map((issue, i) => (
+          <li key={i}>{issue}</li>
         ))}
       </ul>
-      <Link href="/evidence" className="text-ink-blue underline">
+      <Link href="/evidence" className="link label self-start">
         Back to the default run
       </Link>
     </div>

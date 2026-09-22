@@ -159,6 +159,7 @@ export const FunnelStepArtifactSchema = z.object({
   pass_rate: z.number().nullable(),
   absent: z.boolean(),
 })
+export type FunnelStepArtifact = z.infer<typeof FunnelStepArtifactSchema>
 
 export const DropReasonArtifactSchema = z.object({
   key: z.string(),

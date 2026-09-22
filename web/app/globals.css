@@ -1,143 +1,573 @@
 @import "tailwindcss";
 
 /*
- * Design tokens transcribed from docs/DESIGN.md (the repository's declared
- * single source of truth for Daily's visual design).
+ * Daily — web companion.
  *
- * Reconciliation note: Daily/Theme/AppTheme.swift has drifted from DESIGN.md —
- * AppTheme's `BrandColors.primary` is a red (#B33D2E-ish) that appears nowhere
- * in the documented palette, and its backgrounds are neutral greys rather than
- * the warm paper tones. DESIGN.md states "If a UI change conflicts with this
- * file, update this file first, then ship", so the document wins here and the
- * drift is recorded in docs/notes/web-companion.md rather than propagated.
+ * One rule governs the whole visual system: COLOUR MEANS LOSS. In any chart,
+ * table or diagram, ink is what survived, vermilion is what the pipeline threw
+ * away, and slate is what cannot be verified. Nothing that worked is ever
+ * coloured, so a glance at a figure tells you where the system failed before
+ * you have read a label. The one exception is chrome — links, focus, selection
+ * — which borrows the same vermilion because there it carries the same meaning
+ * the eye already learned: look here.
+ *
+ * Two typefaces, no sans between them. Prose is an editorial serif; every
+ * number, identifier, stage name and micro-label is monospaced. The site is a
+ * newspaper assembled by a measuring instrument and it is meant to look like
+ * both objects at once.
+ *
+ * Note on docs/DESIGN.md: that document governs the iOS app and is written as
+ * an iOS-first source of truth. This tier is a different medium with a
+ * different job — an evidence explorer, not a reading app — so it does not
+ * inherit those tokens. The reader replay is the one surface that stays close
+ * to the app's paper-and-serif register, because there it is showing the
+ * product rather than measuring it.
  */
 
 @theme {
-  --color-paper: var(--daily-paper);
-  --color-paper-secondary: var(--daily-paper-secondary);
-  --color-ink: var(--daily-ink);
-  --color-ink-60: var(--daily-ink-60);
-  --color-ink-blue: var(--daily-ink-blue);
-  --color-ochre: var(--daily-ochre);
-  --color-sepia: var(--daily-sepia);
-  --color-danger: var(--daily-error);
-  --color-success: var(--daily-success);
+  /* --- palette ------------------------------------------------------- */
+  --color-paper: var(--d-paper);
+  --color-paper-secondary: var(--d-paper-2);
+  --color-paper-sunk: var(--d-paper-3);
+  --color-ink: var(--d-ink);
+  --color-ink-60: var(--d-ink-58);
+  --color-ink-40: var(--d-ink-38);
+  --color-rule: var(--d-rule);
+  --color-rule-strong: var(--d-rule-strong);
 
-  /* DESIGN.md: system serif (Charter/Georgia) for editorial, SF Pro for chrome.
-     Kept as system stacks — no webfont request — which is true to the iOS
-     design and costs zero render-blocking bytes. */
-  --font-serif: Charter, "Bitstream Charter", "Sitka Text", Georgia, "Times New Roman", serif;
-  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  /* Loss. Never used for anything that worked. */
+  --color-signal: var(--d-signal);
+  --color-signal-wash: var(--d-signal-wash);
+  /* Unverifiable: absent protocol, unknown execution mode, missing metric. */
+  --color-unknown: var(--d-unknown);
 
-  /* Spacing grid: 4 / 8 / 10 / 12 / 16 / 24 / 32 / 48 (AppSpacing tokens). */
+  /* Legacy token names kept as aliases so any surface not yet rewritten
+     still renders inside the new system rather than half-outside it. */
+  --color-sepia: var(--d-rule);
+  --color-ochre: var(--d-signal);
+  --color-ink-blue: var(--d-signal);
+  --color-danger: var(--d-signal);
+  --color-success: var(--d-ink);
+
+  /* --- type ---------------------------------------------------------- */
+  --font-editorial: var(--font-editorial-var), Charter, Georgia, serif;
+  --font-mono: var(--font-mono-var), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: var(--font-editorial);
+  --font-sans: var(--font-mono);
+
+  /* Added to Tailwind's scale rather than replacing it, so the sizes that
+     already work keep working and these read as deliberate choices. */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1.2;
+
+  /* --- structure ------------------------------------------------------ */
   --spacing-hair: 1px;
+  --radius-thumb: 2px;
+  --radius-button: 2px;
+  --radius-sheet: 2px;
 
-  /* Radius: thumbnails 6, buttons 12, sheets 20. No full pills. */
-  --radius-thumb: 6px;
-  --radius-button: 12px;
-  --radius-sheet: 20px;
+  /* --- motion --------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 :root {
   color-scheme: light dark;
-  --daily-paper: #fcfaf7;
-  --daily-paper-secondary: #f4efe6;
-  --daily-ink: #1f1b17;
-  --daily-ink-60: rgb(31 27 23 / 0.6);
-  --daily-ink-blue: #2d3f5f;
-  --daily-ochre: #c97d2e;
-  --daily-sepia: #d9cfbf;
-  --daily-error: #b23b2e;
-  --daily-success: #6e8b5f;
+
+  /* Paper: uncoated newsprint, low chroma, so vermilion stays the only
+     saturated thing on the page. */
+  --d-paper: #f4f2ec;
+  --d-paper-2: #eae7de;
+  --d-paper-3: #dedacd;
+  --d-ink: #161513;
+  --d-ink-58: rgb(22 21 19 / 0.62);
+  --d-ink-38: rgb(22 21 19 / 0.4);
+  --d-rule: #cdc7b8;
+  --d-rule-strong: #a8a08c;
+  --d-signal: #bd3418;
+  --d-signal-wash: rgb(189 52 24 / 0.1);
+  --d-unknown: #5f6f79;
+
+  /* The sieve's discarded candidates: present, legible as a mass, never
+     competing with the survivors. */
+  --d-ghost: rgb(22 21 19 / 0.13);
+  --d-sheet: #fbfaf6;
+
+  --frame: 80rem;
+  --measure: 36rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --daily-paper: #15120e;
-    --daily-paper-secondary: #1c1916;
-    --daily-ink: #f0ede6;
-    --daily-ink-60: rgb(240 237 230 / 0.65);
-    --daily-ink-blue: #7e92b5;
-    --daily-ochre: #e0985a;
-    --daily-sepia: #2a2520;
-    --daily-error: #d6614f;
-    --daily-success: #88a57a;
+    /* Photographic plate: the same information, exposed. */
+    --d-paper: #0f0f10;
+    --d-paper-2: #16161a;
+    --d-paper-3: #1e1e23;
+    --d-ink: #eeebe3;
+    --d-ink-58: rgb(238 235 227 / 0.62);
+    --d-ink-38: rgb(238 235 227 / 0.38);
+    --d-rule: #2d2d33;
+    --d-rule-strong: #4a4a53;
+    --d-signal: #ff5b39;
+    --d-signal-wash: rgb(255 91 57 / 0.14);
+    --d-unknown: #8593a0;
+    --d-ghost: rgb(238 235 227 / 0.13);
+    --d-sheet: #16161a;
   }
 }
 
 html {
-  background: var(--daily-paper);
-  color: var(--daily-ink);
+  background: var(--d-paper);
+  color: var(--d-ink);
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
 }
 
-/* DESIGN.md typography tokens, as composable utility classes. */
-@utility brand-wordmark {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 1.875rem;
-  letter-spacing: -0.5px;
+::selection {
+  background: var(--d-signal);
+  color: var(--d-paper);
 }
 
-@utility signature-caps {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 0.6875rem;
-  font-variant-caps: all-small-caps;
-  letter-spacing: 1px;
-  text-transform: lowercase;
+/* ------------------------------------------------------------ type ------ */
+
+/*
+ * Fraunces is variable on four axes. WONK swaps in the flared, angled
+ * terminals that give the display sizes a voice; at reading sizes it is turned
+ * off and SOFT is raised, because the same letterforms that make a masthead
+ * memorable make a paragraph tiring.
+ */
+
+@utility display {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+  font-weight: 500;
+  letter-spacing: -0.028em;
+  line-height: 0.94;
+  text-wrap: balance;
 }
 
-@utility meta-caps {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 0.6875rem;
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.8px;
-  text-transform: lowercase;
-}
-
-@utility hero-headline {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 1.875rem;
-  letter-spacing: -0.5px;
-  line-height: 1.15;
-}
-
-@utility row-headline {
-  font-family: var(--font-serif);
+@utility editorial {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 48, "SOFT" 12, "WONK" 1;
   font-weight: 600;
-  font-size: 1.0625rem;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+@utility headline {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 20, "SOFT" 20, "WONK" 0;
+  font-weight: 600;
+  letter-spacing: -0.006em;
   line-height: 1.25;
 }
 
-@utility dek {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.0625rem;
-  line-height: 1.45;
-}
-
-@utility body-reading {
-  font-family: var(--font-serif);
+@utility prose {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 14, "SOFT" 40, "WONK" 0;
   font-weight: 400;
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: 1.1875rem;
+  line-height: 1.58;
+  letter-spacing: 0.002em;
 }
 
-/* Accessibility: visible focus everywhere, and honour reduced motion.
-   DESIGN.md motion budget is 200-350ms; reduced-motion collapses it. */
+@utility lede {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 24, "SOFT" 40, "WONK" 0;
+  font-weight: 400;
+  font-size: 1.3125rem;
+  line-height: 1.42;
+  letter-spacing: -0.004em;
+  text-wrap: pretty;
+}
+
+/* Every micro-label on the site. Monospace caps, widely tracked, so labels
+   read as instrument nomenclature rather than as small headings. */
+@utility label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-micro);
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@utility label-lg {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Readouts. The subject of most of this site is a number, so numbers get the
+   display treatment that headlines get elsewhere. */
+@utility readout {
+  font-family: var(--font-mono);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  font-size: 2.75rem;
+}
+
+@utility readout-sm {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-size: 1.375rem;
+}
+
+/* Legacy utility names, mapped into the new system. */
+@utility brand-wordmark {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+}
+@utility signature-caps {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-micro);
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@utility meta-caps {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-micro);
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@utility hero-headline {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 48, "SOFT" 12, "WONK" 1;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+@utility row-headline {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 20, "SOFT" 20, "WONK" 0;
+  font-weight: 600;
+  letter-spacing: -0.006em;
+  line-height: 1.25;
+}
+@utility dek {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 24, "SOFT" 40, "WONK" 0;
+  font-weight: 400;
+  font-size: 1.3125rem;
+  line-height: 1.42;
+  letter-spacing: -0.004em;
+}
+@utility body-reading {
+  font-family: var(--font-editorial);
+  font-variation-settings: "opsz" 14, "SOFT" 40, "WONK" 0;
+  font-weight: 400;
+  font-size: 1.1875rem;
+  line-height: 1.58;
+}
+
+/* ------------------------------------------------------- structure ------ */
+
+@utility frame {
+  width: 100%;
+  max-width: var(--frame);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (width >= 48rem) {
+  .frame {
+    padding-inline: 2rem;
+  }
+}
+
+@utility measure {
+  max-width: var(--measure);
+}
+
+/*
+ * Numbered band. Every major section on the site is introduced by a full-width
+ * hairline carrying an index and a name, which gives the pages the rhythm of a
+ * plate series and works identically at every width — unlike a desktop-only
+ * rail, which leaves half the traffic with no organising idea at all.
+ */
+@utility band {
+  border-top: 1px solid var(--d-rule);
+  padding-top: 0.625rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
+}
+
+@utility band-index {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--d-ink-38);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------- controls ----- */
+
+@utility chip {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--d-rule);
+  background: transparent;
+  color: var(--d-ink);
+  padding: 0.3125rem 0.625rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color 140ms var(--ease-out-quart),
+    color 140ms var(--ease-out-quart),
+    background-color 140ms var(--ease-out-quart);
+
+  &:hover {
+    border-color: var(--d-signal);
+    color: var(--d-signal);
+  }
+}
+
+@utility chip-on {
+  border-color: var(--d-ink);
+  background: var(--d-ink);
+  color: var(--d-paper);
+
+  &:hover {
+    border-color: var(--d-ink);
+    background: var(--d-ink);
+    color: var(--d-paper);
+  }
+}
+
+/* Inline links: ink text, vermilion rule underneath, vermilion on hover. */
+@utility link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--d-signal);
+  padding-bottom: 0.05em;
+  transition: color 140ms var(--ease-out-quart);
+
+  &:hover {
+    color: var(--d-signal);
+  }
+}
+
+/* --------------------------------------------------------- figures ------ */
+
+/*
+ * The sieve. One cell per candidate article in the frozen corpus, so the field
+ * is the corpus at 1:1 rather than a summary of it. Cells only ever change
+ * colour and opacity — no layout property animates, so stepping a stage costs
+ * no reflow even with 1,362 of them on screen.
+ */
+.sieve {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));
+  gap: 1px;
+  --cell: 7px;
+}
+
+@media (width >= 40rem) {
+  .sieve {
+    --cell: 11px;
+  }
+}
+
+@media (width >= 64rem) {
+  .sieve {
+    --cell: 16px;
+  }
+}
+
+@media (width >= 90rem) {
+  .sieve {
+    --cell: 19px;
+  }
+}
+
+.sieve-cell {
+  aspect-ratio: 1;
+  background: var(--d-ghost);
+  transition: background-color 400ms var(--ease-out-quart);
+}
+
+/*
+ * The sweep. Cells are dealt into 16 buckets by index, and each bucket's
+ * transition is offset, so a stage change crosses the field instead of
+ * flipping it. Only background-color animates, so 1,362 cells cost no layout
+ * work at all -- which is the whole reason the corpus can be drawn 1:1.
+ */
+.sieve-cell[data-b="0"] { transition-delay: 0ms; }
+.sieve-cell[data-b="1"] { transition-delay: 16ms; }
+.sieve-cell[data-b="2"] { transition-delay: 32ms; }
+.sieve-cell[data-b="3"] { transition-delay: 48ms; }
+.sieve-cell[data-b="4"] { transition-delay: 64ms; }
+.sieve-cell[data-b="5"] { transition-delay: 80ms; }
+.sieve-cell[data-b="6"] { transition-delay: 96ms; }
+.sieve-cell[data-b="7"] { transition-delay: 112ms; }
+.sieve-cell[data-b="8"] { transition-delay: 128ms; }
+.sieve-cell[data-b="9"] { transition-delay: 144ms; }
+.sieve-cell[data-b="10"] { transition-delay: 160ms; }
+.sieve-cell[data-b="11"] { transition-delay: 176ms; }
+.sieve-cell[data-b="12"] { transition-delay: 192ms; }
+.sieve-cell[data-b="13"] { transition-delay: 208ms; }
+.sieve-cell[data-b="14"] { transition-delay: 224ms; }
+.sieve-cell[data-b="15"] { transition-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sieve-cell {
+    transition-delay: 0ms !important;
+  }
+}
+
+/* Still in the pipeline at the selected stage. */
+.sieve-cell[data-state="alive"] {
+  background: var(--d-ink);
+}
+
+/* Removed at exactly the selected stage: the answer to "which ones went here". */
+.sieve-cell[data-state="dying"] {
+  background: var(--d-signal);
+}
+
+/* Removed earlier. Kept visible so the discarded mass stays part of the
+   picture; a funnel that erases what it dropped is a funnel you cannot audit. */
+.sieve-cell[data-state="gone"] {
+  background: var(--d-ghost);
+}
+
+/* Delivered to the reader. */
+.sieve-cell[data-state="delivered"] {
+  background: var(--d-ink);
+}
+
+/*
+ * The reader's sheet. The rest of the site is the instrument; this is the
+ * thing the instrument measures, so the edition sits on its own stock with a
+ * hairline edge — a printed page laid on a workbench.
+ */
+.sheet {
+  background: var(--d-sheet);
+  border: 1px solid var(--d-rule);
+}
+
+/* Proportion bars, used wherever a count needs a length. */
+.bar-track {
+  position: relative;
+  background: var(--d-rule);
+  height: 100%;
+}
+
+.bar-fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: var(--d-ink);
+  transition: width 520ms var(--ease-out-expo);
+}
+
+/* Figure primitives, shared by the SVG diagrams. Same colour rule: ink is
+   what worked, vermilion is what went wrong. */
+.fig-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  fill: var(--d-ink-38);
+}
+
+.fig-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--d-ink-58);
+}
+
+.fig-num-wrong {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--d-signal);
+}
+
+.fig-tick {
+  fill: var(--d-ink);
+}
+
+.fig-tick-wrong {
+  fill: var(--d-signal);
+}
+
+.fig-wire {
+  stroke: var(--d-ink);
+  stroke-width: 1;
+}
+
+.fig-wire-wrong {
+  stroke: var(--d-signal);
+  stroke-width: 1.5;
+}
+
+.fig-wire-absent {
+  stroke: var(--d-signal);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.fig-cut {
+  stroke: var(--d-signal);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.fig-cut-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  fill: var(--d-signal);
+}
+
+/* --------------------------------------------------- accessibility ------ */
+
 :focus-visible {
-  outline: 2px solid var(--daily-ink-blue);
+  outline: 2px solid var(--d-signal);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 1px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--d-paper);
+  color: var(--d-ink);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--d-ink);
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -151,18 +581,19 @@ body {
   }
 }
 
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 100;
-  background: var(--daily-paper);
-  color: var(--daily-ink);
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--daily-sepia);
+/* One entrance, on the home hero only, and only for readers who accept
+   motion. Everything else earns its movement by responding to a click. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.skip-link:focus {
-  left: 0.5rem;
-  top: 0.5rem;
+@utility rise {
+  animation: rise-in 560ms var(--ease-out-expo) both;
 }
