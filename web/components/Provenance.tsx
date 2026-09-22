@@ -19,7 +19,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 
   return (
     <details className="border border-rule bg-paper-secondary">
-      <summary className="label cursor-pointer list-none px-4 py-3 text-ink">
+      <summary className="disclosure label px-4 py-3 text-ink">
         Provenance · {p.runner} · {p.snapshot.name}
         {warnings.length > 0 ? (
           <span className="ml-2 text-signal">

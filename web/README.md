@@ -216,6 +216,15 @@ paper-and-serif register, because there it is showing the product rather than me
 | **The trace ribbon** | `/evidence` story detail | One story's journey across the same ten stages, with its death point marked. Answers "did ranking make a mistake, or did nothing ever look at this?". |
 | **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page — the counts are recorded, the merge point is not. |
 
+### Reading order
+
+Each surface leads with the figure and keeps one short paragraph beside it. The long form —
+metric definitions, where the sieve's counts come from, how the repository confirms the
+defect diagnosis, where this tier stops and the backend begins — sits behind a marked
+disclosure rather than in the scroll. Nothing was deleted to make the pages shorter; the
+depth moved one click away so the argument can be followed without wading to it. The two
+long pages (`/evidence`, `/engineering`) carry their own numbered contents as jump links.
+
 Honesty constraints the figures are held to:
 
 - The sieve's cell count equals the recorded pool exactly, and the cells assigned to each stage

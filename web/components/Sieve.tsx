@@ -248,15 +248,19 @@ export function Sieve({
         })}
       </ol>
 
-      <p className="m-0 max-w-3xl text-xs text-ink-40">
-        One cell is one candidate article. Counts are the recorded survivorship for fixture{' '}
-        <span className="text-ink-60">{fixture.key}</span> against corpus{' '}
-        <span className="text-ink-60">{snapshot}</span>, reconstructed from the scorecard&rsquo;s
-        stage tallies and asserted against three independently recorded facts in{' '}
-        <span className="text-ink-60">funnel.test.ts</span>. Which particular cell a stage took is
-        not recorded anywhere, so cells are scattered by a fixed hash: the quantities are evidence,
-        the positions are not.
-      </p>
+      <details className="text-xs text-ink-40">
+        <summary className="disclosure label text-ink-40">
+          Where these counts come from
+        </summary>
+        <p className="m-0 mt-2 max-w-3xl">
+          Recorded survivorship for fixture <span className="text-ink-60">{fixture.key}</span>{' '}
+          against corpus <span className="text-ink-60">{snapshot}</span>, reconstructed from the
+          scorecard&rsquo;s stage tallies and asserted against three independently recorded facts
+          in <span className="text-ink-60">funnel.test.ts</span>. Which particular cell a stage
+          took is not recorded anywhere, so cells are scattered by a fixed hash — the quantities
+          are evidence, the positions are not.
+        </p>
+      </details>
     </div>
   )
 }

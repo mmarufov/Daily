@@ -5,6 +5,7 @@ import { Band } from '@/components/Band'
 import { Controls } from '@/components/Controls'
 import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
 import { FunnelView } from '@/components/FunnelView'
+import { Glossary } from '@/components/Glossary'
 import { MetricTable } from '@/components/MetricTable'
 import { CompatibilityNotice, ProvenancePanel } from '@/components/Provenance'
 import { Sieve } from '@/components/Sieve'
@@ -16,7 +17,6 @@ import {
   HEADLINE_METRICS,
   outcomeBreakdown,
   RUN_LEVEL_METRICS,
-  SECONDARY_METRICS,
   summaryValue,
 } from '@/lib/aggregate'
 import type { Artifact } from '@/lib/artifact'
@@ -98,15 +98,13 @@ export default async function EvidencePage({
         </p>
         <h1 className="display m-0 text-[clamp(2.25rem,6vw,4.5rem)]">Evaluation evidence</h1>
         <p className="lede measure m-0 text-ink-60">
-          Ten adversarial reader fixtures, three content-hashed corpora, and a recorded trace for
-          every article. Pick a run to see what a reader would have received, then follow a story
-          that should have reached them and did not.
+          Ten adversarial fixtures, three frozen corpora, and a recorded trace for every article.
+          Pick a run, then follow a story that should have reached a reader and did not.
         </p>
         {index.errors.length > 0 ? (
           <p className="m-0 max-w-2xl border-l-2 border-signal pl-3 text-xs text-ink-60">
-            The published artifact set was unreachable, so the committed export is being shown
-            instead. Nothing is hidden by the fallback, but the run ids may lag the latest
-            publication.
+            The published artifact set was unreachable, so the committed export is shown instead.
+            Nothing is hidden, but the run ids may lag the latest publication.
           </p>
         ) : null}
       </section>
@@ -115,8 +113,8 @@ export default async function EvidencePage({
         {requestedButMissing ? (
           <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
             The run <span className="text-ink">{requested.run}</span> is not in the current
-            manifest, so the default run is shown instead. A link to a run that has since been
-            republished lands here rather than silently showing different numbers.
+            manifest, so the default is shown instead — rather than silently showing different
+            numbers.
           </p>
         ) : null}
 
@@ -166,11 +164,11 @@ export default async function EvidencePage({
             {state.persona === undefined ? (
               <p className="m-0 max-w-3xl text-xs text-ink-40">
                 The weakest-fixture column exists so an average cannot hide a reader the pipeline
-                fails. A filled dot beside a difference means it clears the harness&rsquo;s fixed
-                &plusmn;0.02 materiality cutoff — a threshold chosen by its author, not a
-                significance test. Ten fixtures with no variance estimate cannot support one.
+                fails. A filled dot marks a difference past the fixed &plusmn;0.02 cutoff — the
+                harness author&rsquo;s threshold, not a significance test.
               </p>
             ) : null}
+            <Glossary />
           </section>
 
           <section className="frame flex flex-col gap-6 pb-16">
@@ -181,7 +179,7 @@ export default async function EvidencePage({
                 (key) => explorerHref(state, { persona: key, story: undefined }),
                 state.persona,
               )}
-              caption="Each row is one fixture's labelled story placements for this run. Select one to filter everything above."
+              caption="Select one to filter everything above."
             />
           </section>
         </>
@@ -203,9 +201,8 @@ export default async function EvidencePage({
             {persona === undefined ? (
               <div className="flex flex-col gap-3">
                 <p className="m-0 max-w-2xl text-xs text-ink-60">
-                  The sieve draws one cell per candidate article, so it is only meaningful for a
-                  single fixture: summing ten fixtures would draw the same article up to ten times
-                  and call the result a corpus. Pick one and it appears here.
+                  One cell per candidate article, so it only means anything for a single fixture —
+                  summing ten would draw the same article ten times and call it a corpus.
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
                   {personaKeys.map((key) => (
@@ -252,7 +249,7 @@ export default async function EvidencePage({
           {persona === undefined ? (
             <div className="flex flex-col gap-3">
               <p className="m-0 max-w-2xl text-xs text-ink-60">
-                Per-story traces are recorded per reader fixture. Choose one to follow its stories.
+                Traces are recorded per fixture. Choose one.
               </p>
               <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
                 {personaKeys.map((key) => (
@@ -301,7 +298,10 @@ function slopeRows(
     return summaryValue(artifact, metric, 'mean')
   }
 
-  return [...HEADLINE_METRICS, ...SECONDARY_METRICS].flatMap((metric) => {
+  // Headline metrics only. The chart answers "what moved, and which way"; the
+  // table below it answers "by exactly how much", for every metric. Drawing all
+  // fourteen in both places was the same information twice.
+  return HEADLINE_METRICS.flatMap((metric) => {
     const def = resolveMetric(metric)
     if (def.kind !== 'fraction') return []
     const a = read(primary, metric)
@@ -364,12 +364,12 @@ function RunHeadline({
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
         <p className="m-0 text-sm text-ink-60">
-          Across {personas.length} fixture{personas.length === 1 ? '' : 's'}, this run delivered{' '}
-          <span className="text-signal">{unwanted.pairs}</span> explicitly unwanted
-          story-placements ({unwanted.uniqueArticles} distinct articles), and{' '}
-          <span className="text-signal">{lostEarly.pairs}</span> wanted story-placements were lost
-          before the scorer ever saw them ({lostEarly.uniqueArticles} distinct articles). A story
-          lost before scoring cannot be rescued by better ranking.
+          Across {personas.length} fixture{personas.length === 1 ? '' : 's'}:{' '}
+          <span className="text-signal">{unwanted.pairs}</span> unwanted placements delivered (
+          {unwanted.uniqueArticles} distinct articles), and{' '}
+          <span className="text-signal">{lostEarly.pairs}</span> wanted ones lost before the scorer
+          saw them ({lostEarly.uniqueArticles} distinct). A story lost before scoring cannot be
+          rescued by better ranking.
         </p>
         <ul className="m-0 flex list-none flex-col gap-1 self-start p-0 text-xs text-ink-40">
           {[...breakdown].map(([outcome, counts]) => (

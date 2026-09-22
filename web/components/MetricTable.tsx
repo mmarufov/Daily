@@ -75,7 +75,11 @@ export function MetricTable({ primary, comparison, showDeltas, personaKey }: Met
                 {def.appliesOnly !== undefined ? (
                   <span className="ml-1.5 text-ink-40">({def.appliesOnly})</span>
                 ) : null}
-                <span className="block max-w-md pt-1 text-ink-40">{def.plain}</span>
+                {/* The secondary metrics are reference rows; their definitions
+                    live in the glossary rather than on every line. */}
+                {(HEADLINE_METRICS as readonly string[]).includes(metric) ? (
+                  <span className="block max-w-md pt-1 text-ink-40">{def.short}</span>
+                ) : null}
               </th>
               <td className="py-2.5 pr-3 text-right tabular-nums">
                 {formatValue(a, def.kind)}

@@ -37,11 +37,11 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
       <section className="flex flex-col gap-3">
         <h3 className="label m-0 text-ink-40">Candidates surviving each stage</h3>
         <p className="m-0 max-w-2xl text-xs text-ink-60">
-          The harness records each article once, at the furthest stage it reached. Survivors at a
-          stage are therefore the sum of that stage&rsquo;s tally and every later one — reading the
-          raw tallies as a funnel would show it growing.
+          The harness records each article once, at the furthest stage it reached, so survivors at
+          a stage are that tally plus every later one — reading the raw tallies as a funnel would
+          show it growing.
           {persona === undefined ? (
-            <> Totals here are persona/article pairs summed over {artifact.personas.length} fixtures, not distinct articles.</>
+            <> Totals are persona/article pairs over {artifact.personas.length} fixtures, not distinct articles.</>
           ) : null}
         </p>
 
@@ -126,8 +126,7 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
       <section className="flex flex-col gap-3">
         <h3 className="label m-0 text-ink-40">Where wanted stories were lost</h3>
         <p className="m-0 max-w-2xl text-xs text-ink-60">
-          This attributes only the must-see stories that never reached the reader. A story lost
-          before the scorer could not have been rescued by better ranking.
+          Only must-see stories that never reached the reader.
         </p>
         {lossByStage.size === 0 ? (
           <p className="m-0 text-xs">

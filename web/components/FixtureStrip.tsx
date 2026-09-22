@@ -97,7 +97,7 @@ export function FixtureStrip({
   caption,
 }: {
   readonly rows: readonly FixtureRow[]
-  readonly caption: string
+  readonly caption?: string
 }) {
   const widest = Math.max(1, ...rows.map((r) => r.total))
   const reported = rows.map((r) => r.cappedRecall).filter((v): v is number => v !== null)
@@ -183,13 +183,10 @@ export function FixtureStrip({
           ))}
         </ul>
         <p className="m-0 max-w-2xl text-xs text-ink-40">
-          {caption} Bar length is the number of labelled story placements the fixture had; the
-          right-hand column is capped recall at k.
-          {mean !== null ? (
-            <> The run&rsquo;s reported mean is {(mean * 100).toFixed(1)}%.</>
-          ) : null}{' '}
-          A fixture at 0.0% is not a rounding artefact — it received none of the stories its labels
-          said it needed.
+          Bar length is labelled story placements; the right column is capped recall at k
+          {mean !== null ? <>, mean {(mean * 100).toFixed(1)}%</> : null}. A fixture at 0.0%
+          received none of the stories its labels said it needed.
+          {caption !== undefined ? ` ${caption}` : ''}
         </p>
       </div>
     </div>

@@ -118,11 +118,9 @@ export function Slope({
       </ul>
 
       <p className="m-0 max-w-2xl text-xs text-ink-40">
-        Every row is on the same 0–100% scale, with ticks at 0, 50 and 100. Only fraction metrics
-        are drawn; counts, costs and latencies have no shared scale with a recall rate and are
-        listed in the table instead. A filled dot beside a difference means it clears the
-        harness&rsquo;s fixed &plusmn;0.02 cutoff — a threshold its author chose, not a
-        significance test.
+        One 0–100% scale for every row, ticked at 0, 50 and 100. Fraction metrics only — counts,
+        costs and latencies share no scale with a recall rate. A filled dot marks a difference past
+        the fixed &plusmn;0.02 cutoff, which is a chosen threshold, not a significance test.
         {note !== undefined ? ` ${note}` : ''}
       </p>
     </div>

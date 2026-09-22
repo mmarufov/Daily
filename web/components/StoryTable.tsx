@@ -43,9 +43,8 @@ export function StoryTable({ persona, state }: StoryTableProps) {
   if (!persona.trace_available) {
     return (
       <p className="m-0 max-w-2xl border border-rule bg-paper-secondary p-4 text-xs">
-        This scorecard carries no per-story trace for <strong>{persona.key}</strong>, so there is
-        nothing to follow. The explorer shows the gap rather than reconstructing an explanation the
-        data does not contain.
+        This scorecard carries no per-story trace for <strong>{persona.key}</strong>. The explorer
+        shows the gap rather than reconstructing an explanation the data does not contain.
       </p>
     )
   }
@@ -172,12 +171,10 @@ export function StoryDetail({
             ) : null}
           </p>
           <p className="m-0 text-xs text-ink-60">
-            Diagnostic text recorded beside the drop. For some stages it is a model rationale, for
-            others a mechanical label. It is evidence about what the pipeline logged, not proof
-            that the explanation is correct — and on the production scorer it is known to be
-            misattributed.{' '}
+            Evidence of what the pipeline logged, not proof the explanation is correct — on the
+            production scorer it is known to be misattributed.{' '}
             <Link href="/engineering" className="link">
-              Why that happens
+              Why
             </Link>
             .
           </p>
