@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { personaName } from '@/lib/personas'
 import { buildSieve, cellState } from '@/lib/sieve'
 
 export interface SieveStep {
@@ -125,7 +126,7 @@ export function Sieve({
                 aria-pressed={f.key === fixtureKey}
                 className={`chip ${f.key === fixtureKey ? 'chip-on' : ''}`}
               >
-                {f.key}
+                {personaName(f.key)}
               </button>
             </li>
           ))}
@@ -169,7 +170,7 @@ export function Sieve({
 
       <div
         role="img"
-        aria-label={`${first.survivors.toLocaleString()} candidate articles for reader fixture ${fixture.key}; ${current.survivors.toLocaleString()} remain after ${current.label}.`}
+        aria-label={`${first.survivors.toLocaleString()} candidate articles for reader fixture ${personaName(fixture.key)}; ${current.survivors.toLocaleString()} remain after ${current.label}.`}
         className="sieve"
       >
         {data.deaths.map((death, i) => (
@@ -253,7 +254,7 @@ export function Sieve({
           Where these counts come from
         </summary>
         <p className="m-0 mt-2 max-w-3xl">
-          Recorded survivorship for fixture <span className="text-ink-60">{fixture.key}</span>{' '}
+          Recorded survivorship for fixture <span className="text-ink-60">{personaName(fixture.key)}</span>{' '}
           against corpus <span className="text-ink-60">{snapshot}</span>, reconstructed from the
           scorecard&rsquo;s stage tallies and asserted against three independently recorded facts
           in <span className="text-ink-60">funnel.test.ts</span>. Which particular cell a stage

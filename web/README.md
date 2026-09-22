@@ -212,7 +212,7 @@ paper-and-serif register, because there it is showing the product rather than me
 | Figure | Where | What it draws |
 |---|---|---|
 | **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus** — 1,362 marks, not a summary of them. Stepping a stage flashes the candidates that stage removed in vermilion and settles the rest to ghost, so the discarded mass stays part of the picture. |
-| **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `dilshod` is almost solid vermilion; `wei` is mostly loss. The run's 22.1% mean hides both. |
+| **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `Daniel` is almost solid vermilion; `Will` is mostly loss. The run's 22.1% mean hides both. |
 | **The slope** | `/evidence`, `/engineering` | Two runs on one shared 0–100% scale. Fraction metrics only: costs and latencies share no scale with a recall rate, and per-row normalisation would make a 0.4-point move look like a 40-point one. |
 | **The trace ribbon** | `/evidence` story detail | One story's journey across the same ten stages, with its death point marked. Answers "did ranking make a mistake, or did nothing ever look at this?". |
 | **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page — the counts are recorded, the merge point is not. |
@@ -327,7 +327,7 @@ to make: [`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment
    nine other readers* for the product's central claim, checkable without reading a number.
 3. **`/evidence`** — opens on `prod-llm` against `proto-hybrid-judge-events`, same corpus, same
    k, labelled as an algorithm comparison. The slope chart puts both runs on one scale; then read
-   *Every fixture, no averaging* below it, where `wei` sits at 0.0% capped recall.
+   *Every fixture, no averaging* below it, where `Will` sits at 0.0% capped recall.
 4. **Funnel tab, fixture `ray`** — the sieve again, this time beside the reconstructed
    survivorship table it is drawn from.
 5. **Stories tab, filter "Lost before the scorer"** — stories the reader needed that the pipeline

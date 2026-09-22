@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { TraceRibbon } from '@/components/TraceRibbon'
+import { personaName } from '@/lib/personas'
 import type { PersonaArtifact, Story, StoryOutcome } from '@/lib/artifact'
 import { explorerHref, type ExplorerState, type OutcomeFilter } from '@/lib/url-state'
 
@@ -43,7 +44,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
   if (!persona.trace_available) {
     return (
       <p className="m-0 max-w-2xl border border-rule bg-paper-secondary p-4 text-xs">
-        This scorecard carries no per-story trace for <strong>{persona.key}</strong>. The explorer
+        This scorecard carries no per-story trace for <strong>{personaName(persona.key)}</strong>. The explorer
         shows the gap rather than reconstructing an explanation the data does not contain.
       </p>
     )
@@ -54,7 +55,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
   if (stories.length === 0) {
     return (
       <p className="m-0 max-w-2xl border border-rule bg-paper-secondary p-4 text-xs">
-        No stories for <strong>{persona.key}</strong> match this outcome filter.{' '}
+        No stories for <strong>{personaName(persona.key)}</strong> match this outcome filter.{' '}
         <Link href={explorerHref(state, { outcome: 'all' })} className="link">
           Show every story
         </Link>
@@ -66,7 +67,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
   return (
     <table className="w-full border-collapse text-xs">
       <caption className="sr-only">
-        Stories for reader fixture {persona.key}, filtered to {state.outcome}. Select a row to see
+        Stories for reader fixture {personaName(persona.key)}, filtered to {state.outcome}. Select a row to see
         its recorded trace.
       </caption>
       <thead>

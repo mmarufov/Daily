@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Band, PageIndex, type Section } from '@/components/Band'
 import { Misalignment } from '@/components/Misalignment'
 import { Slope, type SlopeRow } from '@/components/Slope'
+import { personaName } from '@/lib/personas'
 import { explorerHref } from '@/lib/url-state'
 
 export const metadata: Metadata = {
@@ -296,7 +297,7 @@ function Offset({
       <p className="headline m-0 text-base">{title}</p>
       <p className="m-0 border-l border-signal pl-3 text-sm text-signal">&ldquo;{reason}&rdquo;</p>
       <p className="m-0 mt-auto text-xs text-ink-40">
-        fixture {persona} · dropped at {stage}
+        fixture {personaName(persona)} · dropped at {stage}
         {needle === true ? ' · planted needle' : ''}
       </p>
       <Link
