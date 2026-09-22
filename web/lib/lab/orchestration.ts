@@ -68,10 +68,33 @@ export interface WorkflowInput {
   readonly suspend_seconds: number
 }
 
+/**
+ * Which process ran which step.
+ *
+ * The whole claim of platform durability is that a run survives losing the
+ * process executing it. That is either demonstrable or it is marketing, and
+ * this is what makes it demonstrable: if `scope`, `execute` and `grade` do
+ * not all report the same id, the run outlived at least one process. Nothing
+ * in the repository can fake it -- the ids are generated at module
+ * instantiation, so a second distinct id means a second instantiation.
+ */
+export interface ProcessTrace {
+  readonly step: 'scope' | 'execute' | 'grade'
+  readonly process_id: string
+  readonly at: string
+}
+
+interface Base {
+  readonly events: readonly RunEvent[]
+  readonly processes: readonly ProcessTrace[]
+  /** True when more than one process contributed to this run. */
+  readonly resumed: boolean
+}
+
 export type WorkflowOutcome =
-  | { readonly kind: 'rejected-by-scope'; readonly detail: string; readonly events: readonly RunEvent[] }
-  | { readonly kind: 'graded'; readonly verdict: Evaluation['verdict']; readonly reason: string; readonly events: readonly RunEvent[] }
-  | { readonly kind: 'incomplete'; readonly detail: string; readonly events: readonly RunEvent[] }
+  | ({ readonly kind: 'rejected-by-scope'; readonly detail: string } & Base)
+  | ({ readonly kind: 'graded'; readonly verdict: Evaluation['verdict']; readonly reason: string } & Base)
+  | ({ readonly kind: 'incomplete'; readonly detail: string } & Base)
 
 /* --------------------------------------------------------- the steps --- */
 
@@ -197,9 +220,15 @@ export async function runCandidateWorkflow(
   'use workflow'
 
   const events: RunEvent[] = []
+  const processes: ProcessTrace[] = []
   const attemptId = `${input.run_id}#01`
+  const summarise = (): { processes: ProcessTrace[]; resumed: boolean } => ({
+    processes,
+    resumed: new Set(processes.map((p) => p.process_id)).size > 1,
+  })
 
   const scope = await scopeStep(input)
+  processes.push({ step: 'scope', ...scope.mark })
   events.push({
     type: 'created',
     run_id: input.run_id,
@@ -209,11 +238,12 @@ export async function runCandidateWorkflow(
   })
   events.push({ type: 'scope-checked', at: scope.mark.at, allowed: scope.allowed, detail: scope.detail })
   if (!scope.allowed) {
-    return { kind: 'rejected-by-scope', detail: scope.detail, events }
+    return { kind: 'rejected-by-scope', detail: scope.detail, events, ...summarise() }
   }
 
   events.push({ type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox', at: mark().at })
   const execution = await executeStep(input)
+  processes.push({ step: 'execute', ...execution.mark })
   events.push({
     type: 'attempt-ended',
     attempt_id: attemptId,
@@ -236,12 +266,13 @@ export async function runCandidateWorkflow(
   }
 
   const graded = await gradeStep(execution.records_json, execution.ok ? null : execution.detail, cases)
+  processes.push({ step: 'grade', ...graded.mark })
   events.push({ type: 'evaluated', at: graded.mark.at, verdict: graded.verdict, reason: graded.reason })
 
   if (graded.verdict === 'incomplete' || graded.verdict === 'failed') {
-    return { kind: 'incomplete', detail: graded.reason, events }
+    return { kind: 'incomplete', detail: graded.reason, events, ...summarise() }
   }
-  return { kind: 'graded', verdict: graded.verdict, reason: graded.reason, events }
+  return { kind: 'graded', verdict: graded.verdict, reason: graded.reason, events, ...summarise() }
 }
 
 /**
