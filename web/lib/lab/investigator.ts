@@ -35,12 +35,15 @@ export interface InvestigationBudget {
 }
 
 /**
- * `wall_clock_seconds` must stay comfortably under the function limit that
- * hosts the step running the loop — `vercel.json` gives the workflow step
- * route 400s against this 180s plus a sandbox run. An investigation killed by
- * the platform mid-flight is an `unknown-outcome`: the model was called and
- * charged, and whether it finished is not knowable from the log. That is an
- * honest status and an expensive way to reach it.
+ * `wall_clock_seconds` has to fit under the function limit hosting the step
+ * that runs the loop, and 300s is the platform's ceiling rather than a knob —
+ * asking for 400 fails the deployment outright. So `vercel.json` claims the
+ * full 300 and this 180 plus a sandbox run sits inside it.
+ *
+ * The margin matters because an investigation killed mid-flight is an
+ * `unknown-outcome`: the model was called and charged, and whether it
+ * finished is not knowable from the log. An honest status, and an expensive
+ * way to reach it.
  */
 export const BUDGET: InvestigationBudget = {
   max_proposals: 1,
