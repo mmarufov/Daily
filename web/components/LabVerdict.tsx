@@ -26,45 +26,6 @@ export function VerdictBadge({ verdict, small }: { verdict: LabRun['verdict']; s
   )
 }
 
-export function CriteriaTable({ run }: { run: LabRun }) {
-  return (
-    <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
-      <table className="w-full min-w-md border-collapse text-xs">
-        <caption className="sr-only">
-          Acceptance criteria, how many cases each applied to, and whether it was satisfied
-        </caption>
-        <thead>
-          <tr className="border-b border-ink-40 text-left">
-            <th scope="col" className="label py-2 pr-3 text-ink-40">Criterion</th>
-            <th scope="col" className="label py-2 pr-3 text-right text-ink-40">Satisfied</th>
-            <th scope="col" className="label py-2 text-right text-ink-40">Result</th>
-          </tr>
-        </thead>
-        <tbody>
-          {run.criteria.map((c) => (
-            <tr key={c.id} className="border-b border-rule align-top">
-              <th scope="row" className="py-2.5 pr-3 text-left font-normal">
-                <span className="text-ink">{c.id}</span>
-                <span className="block max-w-lg pt-1 text-ink-40">{c.question}</span>
-              </th>
-              <td className="py-2.5 pr-3 text-right text-ink-60">
-                {c.applicable === 0 ? (
-                  <span className="text-unknown">nothing applicable</span>
-                ) : (
-                  `${c.satisfied}/${c.applicable}`
-                )}
-              </td>
-              <td className={`py-2.5 text-right ${c.passed ? 'text-ink' : 'text-signal'}`}>
-                {c.passed ? 'met' : c.rate === null ? 'not established' : 'not met'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
 export function Counterexample({ run }: { run: LabRun }) {
   const x = run.smallest_counterexample
   if (x === null) return null
