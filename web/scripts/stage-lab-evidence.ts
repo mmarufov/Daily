@@ -49,6 +49,7 @@ const STAGE: readonly string[] = [
   'backend/lab/harness.py',
   'backend/lab/cases/observed.json',
   'backend/lab/cases/synthetic.json',
+  'backend/lab/contract/types.py',
   'backend/lab/contract/versions/positional_v0.py',
   'backend/lab/contract/versions/count_guard_v1.py',
   'backend/app/services/openai_service.py',

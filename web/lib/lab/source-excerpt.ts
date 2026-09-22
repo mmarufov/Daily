@@ -26,6 +26,8 @@ const ROOT = EVIDENCE_ROOT
 
 function resolve(path: string): string | null {
   switch (path) {
+    case 'backend/lab/contract/types.py':
+      return join(ROOT, 'backend', 'lab', 'contract', 'types.py')
     case 'backend/lab/contract/versions/positional_v0.py':
       return join(ROOT, 'backend', 'lab', 'contract', 'versions', 'positional_v0.py')
     case 'backend/lab/contract/versions/count_guard_v1.py':

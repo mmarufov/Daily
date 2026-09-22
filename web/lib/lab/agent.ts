@@ -60,7 +60,9 @@ Hard constraints on the file you submit:
   Copy them exactly as they appear in the files you can read.
 - It sets VERSION_ID and PROTOCOL module constants.
 - Return ok(verdicts) for a complete unambiguous association, or
-  refuse(kind, detail) with a kind from the closed vocabulary.
+  refuse(kind, detail). REFUSAL_KINDS is a closed vocabulary and a kind
+  outside it counts as a failed case rather than a new way to pass — read
+  backend/lab/contract/types.py for the exact strings before you use any.
 
 Investigate before you propose. You have one proposal and it is graded by code
 you cannot see, read, or influence. A refusal is a correct answer when the

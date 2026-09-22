@@ -63,6 +63,11 @@ export const InspectFailureInput = z.object({
 
 export const ReadSourceInput = z.object({
   path: z.enum([
+    // The contract itself, including the closed REFUSAL_KINDS vocabulary. A
+    // candidate is required to refuse using those exact strings, so withholding
+    // the file would not be a harder task, it would be a guessing game about
+    // enum spelling — and a human implementing this would have it open.
+    'backend/lab/contract/types.py',
     'backend/lab/contract/versions/positional_v0.py',
     'backend/lab/contract/versions/count_guard_v1.py',
     'backend/app/services/openai_service.py',

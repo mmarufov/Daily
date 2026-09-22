@@ -36,6 +36,7 @@
 !/backend/lab/cases
 !/backend/lab/contract
 /backend/lab/contract/*
+!/backend/lab/contract/types.py
 !/backend/lab/contract/versions
 /backend/app/*
 !/backend/app/services
