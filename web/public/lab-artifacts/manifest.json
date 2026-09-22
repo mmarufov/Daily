@@ -14,7 +14,9 @@
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
    "sha256": "a3ed9efcff053934ac26d8ad5f456b456868a15c581be9ee7e89c129817e78b8",
-   "bytes": 35177
+   "bytes": 35177,
+   "runner": "local-known",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826__clean",
@@ -24,7 +26,9 @@
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
    "sha256": "3498931ac8a14b927ccc0c3b7cabf3c98b16d88a1bc39ac3f6a974dc0141e118",
-   "bytes": 36745
+   "bytes": 36745,
+   "runner": "local-known",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826__clean",
@@ -34,7 +38,9 @@
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
    "sha256": "5c92d125635eb7317779402f1e81a2583fec32b4300b94cd90a2472724e74cbb",
-   "bytes": 35973
+   "bytes": 35973,
+   "runner": "local-known",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826__clean",
@@ -44,7 +50,9 @@
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
    "sha256": "d0da38c4567f045944a890fae442c40f3fe74580a01da1bc5d8dd3494fc8c9a5",
-   "bytes": 36303
+   "bytes": 36303,
+   "runner": "local-known",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__keyed-fallback-v1__sandbox",
@@ -54,7 +62,9 @@
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
    "sha256": "7536a1e07352d1129d6ab7671ffd3b74ac364c18f3ec6f28643baaf9acd3ba1e",
-   "bytes": 41438
+   "bytes": 41438,
+   "runner": "vercel-sandbox",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean",
@@ -64,7 +74,9 @@
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
    "sha256": "d3f50cb345870db4439319f6b31be5ca355bde8c38d90da9f98e4c73b0027f9c",
-   "bytes": 38621
+   "bytes": 38621,
+   "runner": "local-known",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__interrupted",
@@ -74,7 +86,9 @@
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
    "sha256": "e8b5f7edd239353fe3cd281a2d4bd01f36e43247aacb903d067d572628fcf010",
-   "bytes": 39215
+   "bytes": 39215,
+   "runner": "local-known",
+   "investigated": false
   },
   {
    "run_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean",
@@ -84,7 +98,9 @@
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
    "sha256": "b48ecbe5e08afb985fcb1f12f79b29406e325974c766ea2f4a053a3f11259e49",
-   "bytes": 31375
+   "bytes": 31375,
+   "runner": "local-known",
+   "investigated": false
   }
  ],
  "notes": [
@@ -94,9 +110,9 @@
    "source": "web/lib/lab/runner.ts"
   },
   {
-   "severity": "caution",
-   "message": "Every run in this set executed locally, because each candidate is byte-identical to an implementation committed in this repository. Nothing novel has been executed.",
-   "source": "web/lib/lab/runner.ts selectRunner"
+   "severity": "info",
+   "message": "1 of 8 runs executed in an isolated microVM, because those candidates matched no committed implementation. 4 isolation probes ran inside those microVMs and all held.",
+   "source": "web/lib/lab/sandbox.ts"
   }
  ]
 }

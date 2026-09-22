@@ -14,7 +14,8 @@ const SECTIONS: readonly Section[] = [
   { index: '03', slug: 'patch', title: 'The patch' },
   { index: '04', slug: 'timeline', title: 'Timeline' },
   { index: '05', slug: 'cases', title: 'Cases' },
-  { index: '06', slug: 'provenance', title: 'Provenance' },
+  { index: '06', slug: 'unscored', title: 'Unscored' },
+  { index: '07', slug: 'provenance', title: 'Provenance' },
 ]
 
 const band = (slug: string, note?: string) => {
@@ -94,7 +95,9 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
             and an index entry that jumps nowhere is worse than no entry. */}
         <PageIndex
           sections={SECTIONS.filter(
-            (s) => s.slug !== 'counterexample' || run.smallest_counterexample !== null,
+            (s) =>
+              (s.slug !== 'counterexample' || run.smallest_counterexample !== null) &&
+              (s.slug !== 'unscored' || run.diagnostics.length > 0),
           )}
         />
       </section>

@@ -281,6 +281,17 @@ export const LabManifestEntrySchema = z.object({
   spec_hash: z.string(),
   sha256: z.string(),
   bytes: z.number().int(),
+  /**
+   * Carried in the index so the page can *derive* what it claims about
+   * execution instead of asserting it in prose.
+   *
+   * "The sandbox boundary is implemented and unexercised" was true when it
+   * was written and stopped being true the moment a candidate ran there. A
+   * hand-written honesty note goes stale exactly when it matters most --
+   * silently, and in the direction of overclaiming.
+   */
+  runner: z.enum(['local-known', 'vercel-sandbox']),
+  investigated: z.boolean(),
 })
 
 export const LabManifestSchema = z.object({

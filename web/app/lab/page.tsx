@@ -39,6 +39,11 @@ export default async function LabPage() {
   const rest = otherRuns(manifest, shown)
   const accepted = manifest.entries.filter((e) => e.verdict === 'accepted-for-review').length
   const rejected = manifest.entries.filter((e) => e.verdict === 'rejected').length
+  // Derived, never asserted. The claims below used to be prose, which meant
+  // they stayed at their most flattering until somebody remembered to weaken
+  // them. These move on their own when a run moves.
+  const sandboxed = manifest.entries.filter((e) => e.runner === 'vercel-sandbox')
+  const investigated = manifest.entries.filter((e) => e.investigated)
 
   return (
     <div className="flex flex-col">
@@ -178,14 +183,32 @@ export default async function LabPage() {
             Every run replayed committed recordings offline. No inference call was made; provider
             spend for these runs is <span className="text-ink">$0</span>.
           </Claim>
-          <Claim term="No agent has run">
-            The investigator&rsquo;s tools are implemented, but no model has been called — there is
-            no gateway key. No agent behaviour is depicted anywhere on this site.
-          </Claim>
-          <Claim term="Nothing novel has executed">
-            Every candidate here is byte-identical to a committed implementation, so all runs took
-            the local path. The sandbox boundary is implemented and unexercised.
-          </Claim>
+          {investigated.length === 0 ? (
+            <Claim term="No agent has run">
+              The investigator&rsquo;s tools, budget and scope gate are implemented and tested, and
+              no model has been called — there is no gateway key on this deployment. No agent
+              behaviour is depicted anywhere on this site.
+            </Claim>
+          ) : (
+            <Claim term="One agent proposal, graded like any other">
+              {investigated.length} candidate{investigated.length === 1 ? ' was' : 's were'} authored by the
+              investigator and faced the same scope gate, sandbox and evaluator a human patch
+              faces. The model never saw the criteria or its own verdict.
+            </Claim>
+          )}
+          {sandboxed.length === 0 ? (
+            <Claim term="Nothing novel has executed">
+              Every candidate here is byte-identical to a committed implementation, so all runs
+              took the local path. The sandbox boundary is implemented and unexercised.
+            </Claim>
+          ) : (
+            <Claim term="Egress is an upper bound, not a measurement">
+              {sandboxed.length} of {manifest.entries.length} runs executed in an isolated microVM.
+              The metered egress on those runs includes the bytes spent reading the record bundle
+              back, so it is non-zero on a run that reached nothing. The negative controls are the
+              direct evidence.
+            </Claim>
+          )}
         </div>
       </section>
     </div>

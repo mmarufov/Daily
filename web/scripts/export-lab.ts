@@ -243,6 +243,40 @@ function investigationFor(input: RunInput): LabRun['provenance']['investigation'
   return JSON.parse(readInput(rel)) as LabRun['provenance']['investigation']
 }
 
+/**
+ * What this set of runs is entitled to say about where code executed.
+ *
+ * Derived from the runs rather than written down, because the sentence that
+ * used to live here -- "nothing novel has been executed" -- was true when it
+ * was written and false the moment a candidate reached the sandbox. An
+ * honesty note that a human has to remember to weaken is one that will be
+ * wrong in the flattering direction.
+ */
+function executionNote(runs: readonly LabRun[]): LabManifest['notes'] {
+  const sandboxed = runs.filter((r) => r.provenance.runner === 'vercel-sandbox')
+  if (sandboxed.length === 0) {
+    return [
+      {
+        severity: 'caution',
+        message:
+          'Every run in this set executed locally, because each candidate is byte-identical to an implementation committed in this repository. Nothing novel has been executed.',
+        source: 'web/lib/lab/runner.ts selectRunner',
+      },
+    ]
+  }
+  const probes = sandboxed.flatMap((r) => r.provenance.sandbox?.isolation ?? [])
+  const failed = probes.filter((p) => !p.held)
+  return [
+    {
+      severity: 'info',
+      message:
+        `${sandboxed.length} of ${runs.length} runs executed in an isolated microVM, because those candidates matched no committed implementation. ` +
+        `${probes.length} isolation probes ran inside those microVMs and ${failed.length === 0 ? 'all held' : `${failed.length} did not hold`}.`,
+      source: 'web/lib/lab/sandbox.ts',
+    },
+  ]
+}
+
 /** Every candidate is expressed as a change to the historical parser. */
 const BASELINE_PATH = 'backend/lab/contract/versions/positional_v0.py'
 
@@ -665,6 +699,8 @@ function main(): void {
       spec_hash: w.run.provenance.spec_hash,
       sha256: sha256(w.json),
       bytes: Buffer.byteLength(w.json),
+      runner: w.run.provenance.runner,
+      investigated: w.run.provenance.investigation !== null,
     })),
     notes: [
       {
@@ -672,12 +708,7 @@ function main(): void {
         message: `Sandbox limits for untrusted candidates: ${SANDBOX_LIMITS.image}, network ${SANDBOX_LIMITS.network}, ${SANDBOX_LIMITS.wall_clock_seconds}s wall clock, ${SANDBOX_LIMITS.secrets} secrets.`,
         source: 'web/lib/lab/runner.ts',
       },
-      {
-        severity: 'caution',
-        message:
-          'Every run in this set executed locally, because each candidate is byte-identical to an implementation committed in this repository. Nothing novel has been executed.',
-        source: 'web/lib/lab/runner.ts selectRunner',
-      },
+      ...executionNote(written.map((w) => w.run)),
     ],
   }
 
