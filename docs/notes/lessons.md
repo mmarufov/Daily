@@ -434,3 +434,30 @@ limiting (`main.py:646`), and empty test files (822 test functions). Every "Curr
 line was false, and a section header read "Structured Loggin". Deleted rather than
 rewritten — git history keeps it. A stale checklist actively misinforms; an absent one only
 omits.
+
+## A contrast sweep is not an accessibility audit (2026-09-21)
+
+The web redesign shipped with a self-audit that reported "0 text nodes below WCAG AA in light
+and dark across all six routes, 0 horizontal overflow at five widths." Both true, both verified,
+and it still shipped three components with malformed definition lists.
+
+Each rendered a `<div>` inside a `<dl>` containing `<dt>`, `<dd>` and then a `<p>` for the
+caption. The spec allows only `<dt>` and `<dd>` inside that wrapper, so every stat readout on
+the site — the elements carrying most of its numbers — was structurally unpairable by assistive
+technology. A Lighthouse pass caught it in one run; the hand-rolled audit could not, because it
+only measured colour and geometry.
+
+Two rules out of that:
+
+1. **An audit you wrote yourself only finds the classes of defect you thought of.** Colour
+   contrast and overflow are the two easiest things to compute from `getComputedStyle`, which is
+   exactly why a hand-rolled sweep converges on them. Structure, naming, roles and focus order
+   are the harder half and get skipped silently — the report reads clean either way.
+2. **Run a real engine before claiming accessibility.** `chrome-devtools-mcp`'s
+   `lighthouse_audit` is installed and takes one call. It found `definition-list` plus
+   `agent-accessibility-tree` on a build that a bespoke checker had just passed.
+
+Related: the same session's other failure was a verified-green branch that was never pushed, so
+the deployed site showed none of the work and looked like the redesign had failed. Verification
+and delivery are separate steps and reporting the first as if it implied the second wastes
+somebody's afternoon.
