@@ -204,3 +204,57 @@ describe('the workflow is the platform’s, not a loop in this repository', () =
     expect(code.indexOf('scopeStep')).toBeLessThan(code.indexOf('executeStep'))
   })
 })
+
+describe('a deployed function can reach its evidence', () => {
+  /**
+   * The bug this guards was invisible locally and fatal in production: the
+   * case suite lives in `backend/`, outside the Vercel Root Directory, and a
+   * deployed function simply cannot read it. `POST /api/lab/run` answered
+   * `ENOENT` while every test, typecheck and local run passed.
+   */
+  const runtimeModules = [
+    'lib/lab/case-loader.ts',
+    'lib/lab/upload-set.ts',
+    'lib/lab/source-excerpt.ts',
+    'lib/lab/evidence-path.ts',
+  ]
+
+  it('no runtime reader resolves a path outside the project root', () => {
+    for (const mod of runtimeModules) {
+      const code = readFileSync(join(process.cwd(), mod), 'utf8')
+        .split('\n')
+        .filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l))
+        .join('\n')
+      // `join(process.cwd(), '..')` works on a laptop and reaches nothing on a
+      // deployment. Staged evidence lives inside the project instead.
+      expect(code, `${mod} reaches out of the project root`).not.toMatch(/process\.cwd\(\),\s*'\.\.'/)
+    }
+  })
+
+  it('stages every file those readers ask for', () => {
+    const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
+    for (const needed of [
+      'backend/lab/harness.py',
+      'backend/lab/__init__.py',
+      'backend/lab/cases/observed.json',
+      'backend/lab/cases/synthetic.json',
+    ]) {
+      expect(stager, `${needed} is read at runtime but never staged`).toContain(needed)
+    }
+    // Every path the investigator may read must be staged, or the tool throws
+    // where the schema said it would succeed.
+    const excerpt = readFileSync(join(process.cwd(), 'lib', 'lab', 'source-excerpt.ts'), 'utf8')
+    for (const m of excerpt.matchAll(/case '(backend\/[^']+)':/g)) {
+      expect(stager, `${m[1]} is readable by the agent but never staged`).toContain(m[1] as string)
+    }
+  })
+
+  it('stages the files rather than the directories holding them', () => {
+    // A directory copy sweeps in __pycache__, the seeded controls, and
+    // whatever lands in contract/ next. This repository has been bitten once
+    // already by a walk that quietly widened.
+    const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
+    expect(stager).not.toMatch(/recursive:\s*true\s*\}\s*\)\s*\/\/\s*copy/)
+    expect(stager).toContain('const STAGE: readonly string[]')
+  })
+})

@@ -10,8 +10,10 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { LAB_DIR } from './evidence-path'
+
 export async function uploadSet(
-  labDir: string = join(process.cwd(), '..', 'backend', 'lab'),
+  labDir: string = LAB_DIR,
 ): Promise<{ path: string; content: Buffer }[]> {
   const [harness, observed, synthetic] = await Promise.all([
     readFile(join(labDir, 'harness.py')),
