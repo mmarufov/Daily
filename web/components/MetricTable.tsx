@@ -24,7 +24,7 @@ export function MetricTable({ primary, comparison, showDeltas, personaKey }: Met
   }
 
   return (
-    <table className="w-full border-collapse text-sm">
+    <table className="w-full border-collapse text-xs">
       <caption className="sr-only">
         {personaKey === undefined
           ? 'Evaluation metrics, averaged across the ten reader fixtures'
@@ -32,25 +32,25 @@ export function MetricTable({ primary, comparison, showDeltas, personaKey }: Met
         {comparison !== null && showDeltas ? ', with the comparison run’s difference' : ''}
       </caption>
       <thead>
-        <tr className="border-b border-ink text-left">
-          <th scope="col" className="py-2 pr-3 font-semibold">
+        <tr className="border-b border-ink-40 text-left">
+          <th scope="col" className="label py-2 pr-3 text-ink-40">
             Metric
           </th>
-          <th scope="col" className="py-2 pr-3 text-right font-semibold tabular-nums">
+          <th scope="col" className="label py-2 pr-3 text-right text-ink-40">
             {primary.provenance.runner}
           </th>
           {comparison !== null ? (
-            <th scope="col" className="py-2 pr-3 text-right font-semibold tabular-nums">
+            <th scope="col" className="label py-2 pr-3 text-right text-ink-40">
               {comparison.provenance.runner}
             </th>
           ) : null}
           {comparison !== null && showDeltas ? (
-            <th scope="col" className="py-2 pr-3 text-right font-semibold">
+            <th scope="col" className="label py-2 pr-3 text-right text-ink-40">
               Difference
             </th>
           ) : null}
           {personaKey === undefined ? (
-            <th scope="col" className="py-2 text-right font-semibold">
+            <th scope="col" className="label py-2 text-right text-ink-40">
               Weakest fixture
             </th>
           ) : null}
@@ -69,13 +69,13 @@ export function MetricTable({ primary, comparison, showDeltas, personaKey }: Met
           if (bothMissing && comparison !== null) return null
 
           return (
-            <tr key={metric} className="border-b border-sepia align-top">
+            <tr key={metric} className="border-b border-rule align-top">
               <th scope="row" className="py-2.5 pr-3 text-left font-normal">
-                <span className="font-semibold">{def.label}</span>
+                <span className="text-ink">{def.label}</span>
                 {def.appliesOnly !== undefined ? (
-                  <span className="ml-1.5 text-xs text-ink-60">({def.appliesOnly})</span>
+                  <span className="ml-1.5 text-ink-40">({def.appliesOnly})</span>
                 ) : null}
-                <span className="block max-w-md pt-0.5 text-xs text-ink-60">{def.plain}</span>
+                <span className="block max-w-md pt-1 text-ink-40">{def.plain}</span>
               </th>
               <td className="py-2.5 pr-3 text-right tabular-nums">
                 {formatValue(a, def.kind)}
@@ -120,10 +120,10 @@ function DeltaCell({
 }) {
   const colour =
     verdict === 'better'
-      ? 'text-success'
+      ? 'text-ink'
       : verdict === 'worse'
-        ? 'text-danger'
-        : 'text-ink-60'
+        ? 'text-signal'
+        : 'text-ink-40'
 
   return (
     <span className={colour} title={description}>

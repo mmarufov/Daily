@@ -1,0 +1,28 @@
+# What the daily-web deployment actually needs.
+#
+# The Vercel project's Root Directory is `web`, and its build is `next build`
+# against artifacts that are already committed under `web/public/`. Nothing
+# else in this repository takes part: the backend is a stateful daemon that
+# runs on its own host, and the iOS app is not a web artifact. Without this
+# file the CLI uploads 1.8 GB of virtualenv, Xcode project and local caches to
+# build a static site, which is slow enough to time out.
+
+/backend
+/Daily
+/DailyTests
+/DailyUITests
+/Daily.xcodeproj
+/scripts
+/docs
+/.context
+/.conductor
+/.github
+/.claude
+
+node_modules
+.next
+out
+*.tsbuildinfo
+test-results
+playwright-report
+blob-report

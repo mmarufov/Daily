@@ -9,3 +9,6 @@ test-results
 playwright-report
 blob-report
 .env*
+
+# Throwaway audit/screenshot scripts run against the dev server.
+*.tmp.mts

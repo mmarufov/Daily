@@ -35,8 +35,8 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
-        <h3 className="meta-caps m-0 text-ink-60">Candidates surviving each stage</h3>
-        <p className="m-0 max-w-2xl text-sm text-ink-60">
+        <h3 className="label m-0 text-ink-40">Candidates surviving each stage</h3>
+        <p className="m-0 max-w-2xl text-xs text-ink-60">
           The harness records each article once, at the furthest stage it reached. Survivors at a
           stage are therefore the sum of that stage&rsquo;s tally and every later one — reading the
           raw tallies as a funnel would show it growing.
@@ -45,25 +45,32 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
           ) : null}
         </p>
 
-        <table className="w-full border-collapse text-sm">
+        {/*
+          `relative` is load-bearing, not decoration: the header's .sr-only
+          caption is position:absolute, and without a positioned ancestor its
+          containing block is the viewport rather than this scroll port, so it
+          escapes the clip and widens the whole document at 375px.
+        */}
+        <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+        <table className="w-full min-w-md border-collapse text-xs">
           <caption className="sr-only">
             Candidate funnel: survivors, articles lost entering each stage, and pass rate
           </caption>
           <thead>
-            <tr className="border-b border-ink text-left">
-              <th scope="col" className="py-2 pr-3 font-semibold">
+            <tr className="border-b border-ink-40 text-left">
+              <th scope="col" className="label py-2 pr-3 text-ink-40">
                 Stage
               </th>
-              <th scope="col" className="py-2 pr-3 text-right font-semibold">
+              <th scope="col" className="label py-2 pr-3 text-right text-ink-40">
                 Survivors
               </th>
-              <th scope="col" className="py-2 pr-3 text-right font-semibold">
+              <th scope="col" className="label py-2 pr-3 text-right text-ink-40">
                 Lost here
               </th>
-              <th scope="col" className="py-2 pr-3 text-right font-semibold">
+              <th scope="col" className="label py-2 pr-3 text-right text-ink-40">
                 Pass rate
               </th>
-              <th scope="col" className="py-2 font-semibold">
+              <th scope="col" className="label py-2 text-ink-40">
                 <span className="sr-only">Proportion of the pool remaining</span>
                 <span aria-hidden="true">Remaining</span>
               </th>
@@ -73,14 +80,14 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
             {steps.map((step) => {
               const share = total === 0 ? 0 : step.survivors / total
               return (
-                <tr key={step.stage} className="border-b border-sepia align-top">
+                <tr key={step.stage} className="border-b border-rule align-top">
                   <th scope="row" className="py-2.5 pr-3 text-left font-normal">
-                    <span className="font-semibold">{step.label}</span>
+                    <span className="text-ink">{step.label}</span>
                     {step.personasReporting === 0 ? (
-                      <span className="ml-1.5 text-xs text-ink-60">(not reported)</span>
+                      <span className="ml-1.5 text-unknown">(not reported)</span>
                     ) : null}
                     {step.explanation !== null ? (
-                      <span className="block max-w-md pt-0.5 text-xs text-ink-60">
+                      <span className="block max-w-md pt-1 text-ink-40">
                         {step.explanation}
                       </span>
                     ) : null}
@@ -97,7 +104,7 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
                   <td className="py-2.5">
                     <span
                       aria-hidden="true"
-                      className="block h-2 bg-ink-blue"
+                      className="block h-2 bg-ink"
                       style={{ width: `${Math.max(share * 100, 0.4)}%` }}
                     />
                   </td>
@@ -106,6 +113,7 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
             })}
           </tbody>
         </table>
+        </div>
 
         {unrecognised.length > 0 ? (
           <p className="m-0 text-xs text-ink-60">
@@ -116,32 +124,32 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h3 className="meta-caps m-0 text-ink-60">Where wanted stories were lost</h3>
-        <p className="m-0 max-w-2xl text-sm text-ink-60">
+        <h3 className="label m-0 text-ink-40">Where wanted stories were lost</h3>
+        <p className="m-0 max-w-2xl text-xs text-ink-60">
           This attributes only the must-see stories that never reached the reader. A story lost
           before the scorer could not have been rescued by better ranking.
         </p>
         {lossByStage.size === 0 ? (
-          <p className="m-0 text-sm">
+          <p className="m-0 text-xs">
             No must-see losses were attributed for this selection.
           </p>
         ) : (
-          <table className="w-full max-w-lg border-collapse text-sm">
+          <table className="w-full max-w-lg border-collapse text-xs">
             <caption className="sr-only">Must-see losses attributed by stage or mechanism</caption>
             <thead>
-              <tr className="border-b border-ink text-left">
-                <th scope="col" className="py-2 pr-3 font-semibold">
+              <tr className="border-b border-ink-40 text-left">
+                <th scope="col" className="label py-2 pr-3 text-ink-40">
                   Stage or mechanism
                 </th>
-                <th scope="col" className="py-2 text-right font-semibold">
+                <th scope="col" className="label py-2 text-right text-ink-40">
                   Must-see stories lost
                 </th>
               </tr>
             </thead>
             <tbody>
               {[...lossByStage].map(([stage, count]) => (
-                <tr key={stage} className="border-b border-sepia">
-                  <th scope="row" className="py-2 pr-3 text-left font-normal font-mono text-xs">
+                <tr key={stage} className="border-b border-rule">
+                  <th scope="row" className="py-2 pr-3 text-left font-normal text-ink-60">
                     {stage}
                   </th>
                   <td className="py-2 text-right tabular-nums">{count}</td>
