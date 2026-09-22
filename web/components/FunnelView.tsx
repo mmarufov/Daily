@@ -45,7 +45,14 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
           ) : null}
         </p>
 
-        <table className="w-full border-collapse text-xs">
+        {/*
+          `relative` is load-bearing, not decoration: the header's .sr-only
+          caption is position:absolute, and without a positioned ancestor its
+          containing block is the viewport rather than this scroll port, so it
+          escapes the clip and widens the whole document at 375px.
+        */}
+        <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+        <table className="w-full min-w-md border-collapse text-xs">
           <caption className="sr-only">
             Candidate funnel: survivors, articles lost entering each stage, and pass rate
           </caption>
@@ -106,6 +113,7 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
             })}
           </tbody>
         </table>
+        </div>
 
         {unrecognised.length > 0 ? (
           <p className="m-0 text-xs text-ink-60">

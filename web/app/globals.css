@@ -34,6 +34,7 @@
   --color-ink-40: var(--d-ink-38);
   --color-rule: var(--d-rule);
   --color-rule-strong: var(--d-rule-strong);
+  --color-control: var(--d-control);
 
   /* Loss. Never used for anything that worked. */
   --color-signal: var(--d-signal);
@@ -81,17 +82,25 @@
   --d-paper-2: #eae7de;
   --d-paper-3: #dedacd;
   --d-ink: #161513;
-  --d-ink-58: rgb(22 21 19 / 0.62);
-  --d-ink-38: rgb(22 21 19 / 0.4);
+  /* Two muted levels, both computed to clear 4.5:1 against paper, the recessed
+     panel AND the reader's sheet -- the site sets a lot of 11px monospace, and
+     none of it qualifies as large text. 0.62/0.40 measured 4.7:1 and 2.5:1. */
+  --d-ink-58: rgb(22 21 19 / 0.8);
+  --d-ink-38: rgb(22 21 19 / 0.64);
   --d-rule: #cdc7b8;
   --d-rule-strong: #a8a08c;
+  /* Control boundaries, which carry which-thing-is-a-button on their own and
+     so answer to 1.4.11's 3:1 rather than to the hairline rules' job. */
+  --d-control: #858480;
   --d-signal: #bd3418;
   --d-signal-wash: rgb(189 52 24 / 0.1);
   --d-unknown: #5f6f79;
 
   /* The sieve's discarded candidates: present, legible as a mass, never
-     competing with the survivors. */
-  --d-ghost: rgb(22 21 19 / 0.13);
+     competing with the survivors. The ceiling is set by the pair that has to
+     stay readable -- removed-here (signal) against removed-earlier (ghost) --
+     which needs 3:1, so this is as heavy as the ghost can get. */
+  --d-ghost: rgb(22 21 19 / 0.2);
   --d-sheet: #fbfaf6;
 
   --frame: 80rem;
@@ -105,14 +114,19 @@
     --d-paper-2: #16161a;
     --d-paper-3: #1e1e23;
     --d-ink: #eeebe3;
-    --d-ink-58: rgb(238 235 227 / 0.62);
-    --d-ink-38: rgb(238 235 227 / 0.38);
+    --d-ink-58: rgb(238 235 227 / 0.78);
+    --d-ink-38: rgb(238 235 227 / 0.6);
     --d-rule: #2d2d33;
     --d-rule-strong: #4a4a53;
-    --d-signal: #ff5b39;
-    --d-signal-wash: rgb(255 91 57 / 0.14);
+    --d-control: #646360;
+    /* Darker than the light scheme's vermilion is bright, because against a
+       near-white ink the old #ff5b39 only reached 2.59:1 -- and alive-vs-dying
+       is the entire message of the sieve. This clears 3:1 there and still
+       clears 4.5:1 as text on both grounds. */
+    --d-signal: #e8482a;
+    --d-signal-wash: rgb(232 72 42 / 0.16);
     --d-unknown: #8593a0;
-    --d-ghost: rgb(238 235 227 / 0.13);
+    --d-ghost: rgb(238 235 227 / 0.18);
     --d-sheet: #16161a;
   }
 }
@@ -332,7 +346,7 @@ body {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   letter-spacing: 0.02em;
-  border: 1px solid var(--d-rule);
+  border: 1px solid var(--d-control);
   background: transparent;
   color: var(--d-ink);
   padding: 0.3125rem 0.625rem;

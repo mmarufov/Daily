@@ -130,22 +130,30 @@ export function Controls({ state, entries, personas }: ControlsProps) {
         </div>
       </form>
 
-      <div role="tablist" aria-label="Explorer view" className="flex flex-wrap gap-1.5 border-t border-rule pt-4">
-        {VIEWS.map((view) => {
-          const selected = state.view === view
-          return (
-            <Link
-              key={view}
-              role="tab"
-              aria-selected={selected}
-              href={explorerHref(state, { view })}
-              className={`chip ${selected ? 'chip-on' : ''}`}
-            >
-              {VIEW_LABELS[view]}
-            </Link>
-          )
-        })}
-      </div>
+      {/*
+        Navigation, not a tablist. These are links that change the URL: there
+        is no tabpanel, no aria-controls and no roving tabindex behind them, so
+        announcing "tab, 1 of 3" would promise arrow-key behaviour that does not
+        exist. aria-current says the true thing instead.
+      */}
+      <nav aria-label="Explorer view" className="border-t border-rule pt-4">
+        <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+          {VIEWS.map((view) => {
+            const selected = state.view === view
+            return (
+              <li key={view}>
+                <Link
+                  aria-current={selected ? 'page' : undefined}
+                  href={explorerHref(state, { view })}
+                  className={`chip ${selected ? 'chip-on' : ''}`}
+                >
+                  {VIEW_LABELS[view]}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
     </div>
   )
 }

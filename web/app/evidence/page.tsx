@@ -152,12 +152,17 @@ export default async function EvidencePage({
                 bLabel={comparison.provenance.runner}
               />
             ) : null}
-            <MetricTable
-              primary={primary}
-              comparison={comparison}
-              showDeltas={showDeltas}
-              personaKey={state.persona}
-            />
+            {/* The metric table's intrinsic width exceeds a 375px viewport,
+                so it gets its own scroll port rather than pushing the page
+                sideways. */}
+            <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+              <MetricTable
+                primary={primary}
+                comparison={comparison}
+                showDeltas={showDeltas}
+                personaKey={state.persona}
+              />
+            </div>
             {state.persona === undefined ? (
               <p className="m-0 max-w-3xl text-xs text-ink-40">
                 The weakest-fixture column exists so an average cannot hide a reader the pipeline

@@ -14,7 +14,7 @@ export function SiteNav() {
 
   return (
     <nav aria-label="Sections">
-      <ul className="m-0 flex list-none items-center gap-5 p-0 sm:gap-7">
+      <ul className="m-0 flex list-none items-center gap-3 p-0 sm:gap-5">
         {NAV.map((item) => {
           const active = pathname === item.href
           return (
@@ -23,7 +23,7 @@ export function SiteNav() {
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'label no-underline transition-colors duration-150',
+                  'label -my-1 inline-block py-2 no-underline transition-colors duration-150',
                   active
                     ? 'text-ink underline decoration-signal decoration-1 underline-offset-[6px]'
                     : 'text-ink-60 hover:text-ink',

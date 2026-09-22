@@ -205,7 +205,7 @@ export function Sieve({
                 type="button"
                 onClick={() => select(Math.max(index - 1, 0))}
                 disabled={index === 0}
-                className="chip disabled:opacity-35 disabled:hover:border-rule disabled:hover:text-ink"
+                className="chip disabled:opacity-35 disabled:hover:border-control disabled:hover:text-ink"
               >
                 Back
               </button>

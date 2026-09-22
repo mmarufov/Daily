@@ -20,7 +20,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
   return (
     <details className="border border-rule bg-paper-secondary">
       <summary className="label cursor-pointer list-none px-4 py-3 text-ink">
-        Provenance
+        Provenance · {p.runner} · {p.snapshot.name}
         {warnings.length > 0 ? (
           <span className="ml-2 text-signal">
             — {warnings.length} caveat{warnings.length === 1 ? '' : 's'} on this run
@@ -30,7 +30,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 
       <div className="flex flex-col gap-6 border-t border-rule bg-paper p-4">
         <section>
-          <h3 className="label m-0 text-ink-40">Three revisions, kept apart</h3>
+          <p className="label m-0 text-ink-40">Three revisions, kept apart</p>
           <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
             <Row
               term="Executed the evaluation"
@@ -55,7 +55,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
         </section>
 
         <section>
-          <h3 className="label m-0 text-ink-40">Run identity</h3>
+          <p className="label m-0 text-ink-40">Run identity</p>
           <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
             <Row term="Runner" value={p.runner} mono />
             <Row term="CLI argument" value={p.runner_cli_arg} mono />
@@ -84,7 +84,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
         </section>
 
         <section>
-          <h3 className="label m-0 text-ink-40">Corpus</h3>
+          <p className="label m-0 text-ink-40">Corpus</p>
           <dl className="m-0 mt-2 grid gap-x-6 gap-y-3 text-xs sm:grid-cols-3">
             <Row term="Snapshot" value={p.snapshot.name} />
             <Row
@@ -105,7 +105,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
         </section>
 
         <section>
-          <h3 className="label m-0 text-ink-40">Ground truth</h3>
+          <p className="label m-0 text-ink-40">Ground truth</p>
           {p.labels === null ? (
             <p className="m-0 mt-2 text-xs">No label set was found for this snapshot.</p>
           ) : (
@@ -137,7 +137,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 
         {p.notes.length > 0 ? (
           <section>
-            <h3 className="label m-0 text-ink-40">Caveats</h3>
+            <p className="label m-0 text-ink-40">Caveats</p>
             <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0">
               {p.notes.map((note, index) => (
                 <li
@@ -156,7 +156,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 
         {artifact.baseline.is_baseline ? (
           <section>
-            <h3 className="label m-0 text-ink-40">Baseline file</h3>
+            <p className="label m-0 text-ink-40">Baseline file</p>
             <p className="m-0 mt-2 text-xs">
               This file carries regression-gate thresholds for{' '}
               {artifact.baseline.snapshot_baseline_keys.join(', ')}.
