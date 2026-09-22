@@ -16,9 +16,9 @@
  },
  "provenance": {
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
-  "inputs_sha256": "b125159db84d4876",
+  "inputs_sha256": "a60d5a6ac6d7050d",
   "executed_at": "2026-09-22T19:47:57.422Z",
-  "evaluator_sha256": "cd7ae01718bf95d7",
+  "evaluator_sha256": "4e2b7d9f23bcad16",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -117,7 +117,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.05
+   "ms": 0.049
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -133,7 +133,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.235
+   "ms": 0.214
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -148,7 +148,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.02
+   "ms": 0.018
   },
   {
    "case_id": "observed-2026-09-02-003",
@@ -164,7 +164,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.202
+   "ms": 0.188
   },
   {
    "case_id": "observed-2026-09-02-004",
@@ -180,7 +180,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.198
+   "ms": 0.184
   },
   {
    "case_id": "observed-2026-09-02-005",
@@ -193,7 +193,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.018
+   "ms": 0.017
   },
   {
    "case_id": "observed-2026-09-02-006",
@@ -208,7 +208,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.071
+   "ms": 0.064
   },
   {
    "case_id": "observed-2026-09-02-007",
@@ -223,7 +223,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.028
+   "ms": 0.03
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -238,7 +238,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.03
+   "ms": 0.029
   },
   {
    "case_id": "observed-2026-09-02-009",
@@ -254,7 +254,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.165
+   "ms": 0.145
   },
   {
    "case_id": "observed-2026-09-02-010",
@@ -269,7 +269,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.016
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-011",
@@ -285,7 +285,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.158
+   "ms": 0.148
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -301,7 +301,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.155
+   "ms": 0.145
   },
   {
    "case_id": "observed-2026-09-02-013",
@@ -316,7 +316,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.026
+   "ms": 0.024
   },
   {
    "case_id": "observed-2026-09-02-014",
@@ -332,7 +332,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.465
+   "ms": 0.408
   },
   {
    "case_id": "observed-2026-09-02-015",
@@ -347,7 +347,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.018
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -363,7 +363,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.201
+   "ms": 0.191
   },
   {
    "case_id": "observed-2026-09-02-017",
@@ -379,7 +379,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.207
+   "ms": 0.187
   },
   {
    "case_id": "observed-2026-09-02-018",
@@ -394,7 +394,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.037
+   "ms": 0.032
   },
   {
    "case_id": "observed-2026-09-02-019",
@@ -410,7 +410,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.183
+   "ms": 0.169
   },
   {
    "case_id": "observed-2026-09-02-020",
@@ -425,7 +425,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.016
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -441,7 +441,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.188
+   "ms": 0.175
   },
   {
    "case_id": "observed-2026-09-02-022",
@@ -457,7 +457,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.178
+   "ms": 0.173
   },
   {
    "case_id": "observed-2026-09-02-023",
@@ -472,7 +472,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.028
+   "ms": 0.029
   },
   {
    "case_id": "observed-2026-09-02-024",
@@ -487,7 +487,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.017
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-025",
@@ -518,7 +518,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.136
+   "ms": 0.121
   },
   {
    "case_id": "observed-2026-09-02-027",
@@ -548,7 +548,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.029
+   "ms": 0.027
   },
   {
    "case_id": "observed-2026-09-02-029",
@@ -564,7 +564,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.118
+   "ms": 0.116
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -580,7 +580,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.12
+   "ms": 0.117
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -595,7 +595,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.026
+   "ms": 0.025
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -625,7 +625,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.015
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-034",
@@ -653,7 +653,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.016
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-036",
@@ -669,7 +669,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.169
+   "ms": 0.16
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -685,7 +685,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.153
+   "ms": 0.177
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -701,7 +701,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.151
+   "ms": 0.156
   },
   {
    "case_id": "observed-2026-09-02-039",
@@ -731,7 +731,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.073
+   "ms": 0.08
   },
   {
    "case_id": "observed-2026-09-02-041",
@@ -744,7 +744,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.015
+   "ms": 0.016
   },
   {
    "case_id": "syn-keyed-in-order",
@@ -757,7 +757,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.007
+   "ms": 0.008
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -770,7 +770,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-keyed-rotated",
@@ -798,7 +798,7 @@
    "expected_refusal_kinds": [
     "duplicate_id"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-unknown-id",
@@ -813,7 +813,7 @@
    "expected_refusal_kinds": [
     "unknown_id"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-missing-id",
@@ -829,7 +829,7 @@
     "missing_id",
     "count_mismatch"
    ],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-score-nan",
@@ -862,7 +862,7 @@
     "score_out_of_range",
     "invalid_type"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-score-string",
@@ -877,7 +877,7 @@
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.007
+   "ms": 0.009
   },
   {
    "case_id": "syn-score-null",
@@ -907,7 +907,7 @@
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-malformed-json",
@@ -922,7 +922,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-truncated-finish-reason",
@@ -954,7 +954,7 @@
    "expected_refusal_kinds": [
     "unexpected_shape"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-empty-results",
@@ -985,7 +985,7 @@
    "expected_refusal_kinds": [
     "no_recording"
    ],
-   "ms": 0.003
+   "ms": 0.004
   },
   {
    "case_id": "syn-exec-timeout",
@@ -1000,7 +1000,7 @@
    "expected_refusal_kinds": [
     "timeout"
    ],
-   "ms": 0.003
+   "ms": 0.004
   },
   {
    "case_id": "syn-exec-cancelled",
@@ -1063,7 +1063,7 @@
     "count_mismatch",
     "duplicate_id"
    ],
-   "ms": 0.006
+   "ms": 0.009
   },
   {
    "case_id": "syn-positional-reordered",
@@ -1082,7 +1082,7 @@
     "invalid_type",
     "missing_id"
    ],
-   "ms": 0.006
+   "ms": 0.007
   }
  ],
  "counts": {

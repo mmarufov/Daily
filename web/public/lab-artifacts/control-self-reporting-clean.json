@@ -16,9 +16,9 @@
  },
  "provenance": {
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
-  "inputs_sha256": "b125159db84d4876",
+  "inputs_sha256": "00c331fcbc256ce7",
   "executed_at": "2026-09-22T19:47:57.724Z",
-  "evaluator_sha256": "cd7ae01718bf95d7",
+  "evaluator_sha256": "4e2b7d9f23bcad16",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -138,7 +138,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.015
+   "ms": 0.016
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -185,7 +185,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-005",
@@ -228,7 +228,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -243,7 +243,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-009",
@@ -259,7 +259,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-010",
@@ -290,7 +290,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.021
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -321,7 +321,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.014
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-014",
@@ -399,7 +399,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.017
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-019",
@@ -430,7 +430,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.008
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -446,7 +446,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-022",
@@ -507,7 +507,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-026",
@@ -553,7 +553,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.014
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-029",
@@ -569,7 +569,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.012
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -585,7 +585,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.012
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -600,7 +600,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.016
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -615,7 +615,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-033",
@@ -658,7 +658,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.007
+   "ms": 0.009
   },
   {
    "case_id": "observed-2026-09-02-036",
@@ -674,7 +674,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.017
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -690,7 +690,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.015
+   "ms": 0.017
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -706,7 +706,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-039",

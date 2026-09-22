@@ -1,3 +1,4 @@
+import { execFileSync, spawnSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -15,6 +16,14 @@ import { parseLabManifest, parseLabRun } from '@/lib/lab/artifact'
  * object count — so the same tree exported to different bytes in CI than
  * locally, every one of the seven runs went stale at once, and the failure was
  * unreproducible on the machine that had to fix it.
+ *
+ * The replacement had the same disease in a second form: it hashed a
+ * directory *walk*, and preferred a record bundle under `backend/lab/runs/`
+ * when one was present. Both sweep in files that are not committed —
+ * `__pycache__/*.pyc`, and the `*.records.json` that `backend/.gitignore`
+ * excludes — so a machine that had run the harness still exported different
+ * bytes than CI. Worse than the hash moving: the artifact was being built
+ * from evidence no reviewer could open.
  */
 
 const DIR = join(process.cwd(), 'public', 'lab-artifacts')
@@ -94,19 +103,90 @@ describe('the committed lab export', () => {
   })
 })
 
+/** The script with comments stripped, so prose about a banned call is not a hit. */
+function exportScript(): string {
+  return readFileSync(join(process.cwd(), 'scripts', 'export-lab.ts'), 'utf8')
+    .split('\n')
+    .filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l))
+    .join('\n')
+}
+
 describe('the export script reads no git metadata', () => {
-  it('invokes git only for the diff, never for provenance', () => {
-    const source = readFileSync(join(process.cwd(), 'scripts', 'export-lab.ts'), 'utf8')
-    // Match argument literals, not the prose explaining why they are gone.
-    const code = source
-      .split('\n')
-      .filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l))
-      .join('\n')
+  it('never derives a committed field from git or the clock', () => {
+    const code = exportScript()
     expect(code).not.toMatch(/'--format=%[hHcI]+'/)
     expect(code).not.toMatch(/'rev-parse'/)
     // A clock reading must not be able to reach a committed field.
     expect(code).not.toMatch(/new Date\(\)\.toISOString\(\)/)
-    // Exactly one git invocation survives, and it is the diff.
-    expect([...code.matchAll(/execFileSync\('git'/g)]).toHaveLength(1)
+  })
+
+  it('invokes git twice: the diff, and the check-only guard', () => {
+    const code = exportScript()
+    const calls = [...code.matchAll(/execFileSync\('git', \[([^\]]*)\]/g)].map((m) =>
+      (m[1] ?? '').replace(/\s+/g, ' ').trim(),
+    )
+    expect(calls).toHaveLength(2)
+    expect(calls[0]).toContain("'diff'")
+    // `ls-files` decides whether to accept the export. It must not be able to
+    // contribute to what the export says.
+    expect(calls[1]).toContain("'ls-files'")
+  })
+})
+
+describe('the export reads only committed evidence', () => {
+  /**
+   * Sources of non-committed input, each of which has actually broken CI or
+   * came within one line of doing so.
+   */
+  const FORBIDDEN: readonly { pattern: RegExp; why: string }[] = [
+    {
+      pattern: /backend\/lab\/runs\/\$\{[^}]*\}-\$\{[^}]*\}\.records\.json/,
+      why: 'the per-run record bundles under backend/lab/runs/ are gitignored',
+    },
+    { pattern: /__pycache__/, why: 'compiled Python is not evidence' },
+  ]
+
+  it('never names an uncommitted path', () => {
+    const code = exportScript()
+    for (const { pattern, why } of FORBIDDEN) {
+      expect(pattern.test(code), `${pattern} is read by the export, but ${why}`).toBe(false)
+    }
+  })
+
+  it('funnels every evidence read through the recorder', () => {
+    // Reading the *output* back is what `--check` does and is not evidence.
+    // Reading the *repository* is, and exactly one function may do it, so a
+    // file cannot enter the export without entering `inputs_sha256` too.
+    const reads = [...exportScript().matchAll(/readFileSync\(join\(ROOT,/g)]
+    expect(reads).toHaveLength(1)
+  })
+
+  it('passes --check against the real working tree', () => {
+    // The property directly, not a proxy for it: `--check` fails if any file
+    // the export read is uncommitted, and this is the machine where that is
+    // true. CI catches it a push later; this catches it now.
+    const result = spawnSync('npx', ['tsx', 'scripts/export-lab.ts', '--check'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+    })
+    expect(`${result.stdout}${result.stderr}`).not.toMatch(/is not committed/)
+    expect(result.status, `${result.stdout}${result.stderr}`).toBe(0)
+  }, 60_000)
+
+  it('discovers runs from tracked event logs only', () => {
+    const logs = readdirSync(join(process.cwd(), '..', 'backend', 'lab', 'runs')).filter((f) =>
+      f.endsWith('.events.jsonl'),
+    )
+    const tracked = new Set(
+      execFileSync('git', ['ls-files', '--', 'backend/lab/runs'], {
+        cwd: join(process.cwd(), '..'),
+        encoding: 'utf8',
+      })
+        .split('\n')
+        .filter((l) => l.endsWith('.events.jsonl'))
+        .map((l) => l.replace('backend/lab/runs/', '')),
+    )
+    for (const log of logs) expect(tracked.has(log), `${log} is not committed`).toBe(true)
+    expect(logs.length).toBe(runFiles().length)
   })
 })

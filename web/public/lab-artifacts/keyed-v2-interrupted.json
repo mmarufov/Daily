@@ -16,9 +16,9 @@
  },
  "provenance": {
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
-  "inputs_sha256": "b125159db84d4876",
+  "inputs_sha256": "02da1ab3e0e18c82",
   "executed_at": "2026-09-22T19:47:57.873Z",
-  "evaluator_sha256": "cd7ae01718bf95d7",
+  "evaluator_sha256": "4e2b7d9f23bcad16",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -143,7 +143,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.003
+   "ms": 0.004
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -218,7 +218,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.055
+   "ms": 0.053
   },
   {
    "case_id": "observed-2026-09-02-007",
@@ -233,7 +233,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.011
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -357,7 +357,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -435,7 +435,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -605,7 +605,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.009
+   "ms": 0.01
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -620,7 +620,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-033",
@@ -635,7 +635,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-034",
@@ -741,7 +741,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.061
+   "ms": 0.06
   },
   {
    "case_id": "observed-2026-09-02-041",
@@ -767,7 +767,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.017
+   "ms": 0.018
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -793,7 +793,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.008
+   "ms": 0.009
   },
   {
    "case_id": "syn-duplicate-id",
@@ -856,7 +856,7 @@
     "invalid_type",
     "malformed_json"
    ],
-   "ms": 0.01
+   "ms": 0.007
   },
   {
    "case_id": "syn-score-out-of-range",
@@ -932,7 +932,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.007
+   "ms": 0.006
   },
   {
    "case_id": "syn-truncated-finish-reason",
