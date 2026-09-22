@@ -225,6 +225,20 @@ function describeCandidate(
   }
 }
 
+/** What "$0" is and is not claiming, for this particular run. */
+function usageBasis(sandbox: LabRun['provenance']['sandbox']): string {
+  const inference =
+    'Offline replay of committed recordings: no inference call was made, so provider spend for this run is $0. ' +
+    'What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated.'
+  if (sandbox === null) return inference
+  const cpu = sandbox.active_cpu_ms === UNKNOWN ? 'an unrecorded amount of' : `${sandbox.active_cpu_ms}ms of`
+  return (
+    `${inference} This run also provisioned a microVM, which is metered compute rather than free: ` +
+    `${cpu} active CPU across ${sandbox.boot_ms + sandbox.wall_clock_ms}ms wall clock. ` +
+    'That is billed by the platform at a rate this repository does not record, so the dollar figure is not stated rather than guessed.'
+  )
+}
+
 /**
  * Sandbox evidence for a run, when the run produced any.
  *
@@ -570,8 +584,11 @@ function buildRunInScope(
       replay_spend_usd: 0,
       recording_cost_usd: UNKNOWN,
       provider_reported: UNKNOWN,
-      basis:
-        'Offline replay of committed recordings. Actual provider spend for this run is $0. What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated.',
+      // `replay_spend_usd` is *inference* spend, which is genuinely zero here.
+      // A sandboxed run still consumes metered compute, and reporting $0
+      // without saying so would let a reader take "this run cost nothing"
+      // from a sentence that only ever meant "no provider was charged".
+      basis: usageBasis(sandboxFor(input)),
     },
     attempts,
   }

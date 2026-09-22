@@ -13,8 +13,8 @@
    "kind": "seeded-control",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "a3ed9efcff053934ac26d8ad5f456b456868a15c581be9ee7e89c129817e78b8",
-   "bytes": 35177,
+   "sha256": "a67f23e83a310171086df253f0152d49c1d6066fff5b78ffdf649ab1c444fe92",
+   "bytes": 35201,
    "runner": "local-known",
    "investigated": false
   },
@@ -25,8 +25,8 @@
    "kind": "seeded-control",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "3498931ac8a14b927ccc0c3b7cabf3c98b16d88a1bc39ac3f6a974dc0141e118",
-   "bytes": 36745,
+   "sha256": "0813f35aacc40eb8c6e751b12f666a308909b24976cd0188738e98f8701cee70",
+   "bytes": 36769,
    "runner": "local-known",
    "investigated": false
   },
@@ -37,8 +37,8 @@
    "kind": "seeded-control",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "5c92d125635eb7317779402f1e81a2583fec32b4300b94cd90a2472724e74cbb",
-   "bytes": 35973,
+   "sha256": "ae226aad39b88914f61b31a10a657fa2fcfcda220b7ba8c1e819398a1343b968",
+   "bytes": 35997,
    "runner": "local-known",
    "investigated": false
   },
@@ -49,8 +49,8 @@
    "kind": "preserved-version",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "d0da38c4567f045944a890fae442c40f3fe74580a01da1bc5d8dd3494fc8c9a5",
-   "bytes": 36303,
+   "sha256": "80394a0e3e1a9d049366201f7a18e10087fd64f0f60178ea915d45c323f59ef5",
+   "bytes": 36327,
    "runner": "local-known",
    "investigated": false
   },
@@ -61,8 +61,8 @@
    "kind": "human-authored",
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
-   "sha256": "7536a1e07352d1129d6ab7671ffd3b74ac364c18f3ec6f28643baaf9acd3ba1e",
-   "bytes": 41438,
+   "sha256": "4da98a1841b4f765a15a8cdaed34d093600a0ac099ac04bc8886cde9f4933508",
+   "bytes": 41718,
    "runner": "vercel-sandbox",
    "investigated": false
   },
@@ -73,8 +73,8 @@
    "kind": "preserved-version",
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
-   "sha256": "d3f50cb345870db4439319f6b31be5ca355bde8c38d90da9f98e4c73b0027f9c",
-   "bytes": 38621,
+   "sha256": "8503d6baaeca85aeba20c1009f7d78e7276421130dd41d636d67ab35f2af1716",
+   "bytes": 38645,
    "runner": "local-known",
    "investigated": false
   },
@@ -85,8 +85,8 @@
    "kind": "preserved-version",
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
-   "sha256": "e8b5f7edd239353fe3cd281a2d4bd01f36e43247aacb903d067d572628fcf010",
-   "bytes": 39215,
+   "sha256": "f1003b34fcfec8973ad6f64cfe11f2f009e3f5d96e069418ef45545f785551a3",
+   "bytes": 39239,
    "runner": "local-known",
    "investigated": false
   },
@@ -97,8 +97,8 @@
    "kind": "preserved-version",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "b48ecbe5e08afb985fcb1f12f79b29406e325974c766ea2f4a053a3f11259e49",
-   "bytes": 31375,
+   "sha256": "218182a2872f7b80605ed20007fbb5f21a956b43a7443277c0a2c4a00e9dc915",
+   "bytes": 31399,
    "runner": "local-known",
    "investigated": false
   }

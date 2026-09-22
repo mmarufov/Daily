@@ -1122,7 +1122,7 @@
   "replay_spend_usd": 0,
   "recording_cost_usd": "unknown",
   "provider_reported": "unknown",
-  "basis": "Offline replay of committed recordings. Actual provider spend for this run is $0. What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated."
+  "basis": "Offline replay of committed recordings: no inference call was made, so provider spend for this run is $0. What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated."
  },
  "attempts": [
   {

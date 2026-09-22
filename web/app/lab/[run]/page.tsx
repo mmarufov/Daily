@@ -226,6 +226,36 @@ cd ../web && npm run export:lab -- --check`}
         )}
       </section>
 
+      {run.diagnostics.length > 0 ? (
+        <section className="frame flex flex-col gap-5 pb-16">
+          <Band {...band('unscored', 'Measured, and deliberately not graded')} />
+          <p className="prose measure m-0 text-ink-60">
+            A criterion decides; a diagnostic reports. Promoting one of these to a criterion would
+            change the spec hash and re-decide runs that never faced it, so a gap found after the
+            fact is published as a number rather than closed behind your back.
+          </p>
+          <dl className="m-0 flex flex-col gap-6 border-t border-rule pt-5">
+            {run.diagnostics.map((d) => (
+              <div key={d.id} className="grid gap-x-8 gap-y-2 md:grid-cols-[8rem_minmax(0,1fr)]">
+                <dt className="m-0">
+                  <span className={`readout-sm text-3xl ${d.value > 0 ? 'text-signal' : 'text-ink'}`}>
+                    {d.value}
+                    <span className="text-ink-40">/{d.of}</span>
+                  </span>
+                </dt>
+                <dd className="m-0 flex min-w-0 flex-col gap-1.5">
+                  <p className="headline m-0 text-base">{d.question}</p>
+                  <p className="m-0 text-sm text-ink-60">{d.detail}</p>
+                  {d.case_ids.length > 0 ? (
+                    <p className="m-0 break-words text-xs text-ink-40">{d.case_ids.join(', ')}</p>
+                  ) : null}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ) : null}
+
       <section className="frame flex flex-col gap-6 pb-8">
         <Band {...band('provenance', 'What can and cannot be established')} />
         <div className="grid gap-8 lg:grid-cols-2">
@@ -250,11 +280,26 @@ cd ../web && npm run export:lab -- --check`}
               term="Recording cost"
               value={run.usage.recording_cost_usd === UNKNOWN ? UNKNOWN : `$${String(run.usage.recording_cost_usd)}`}
             />
-            <Row
-              term="Sandbox limits"
-              value={`${SANDBOX_LIMITS.image}, network ${SANDBOX_LIMITS.network}`}
-              note={`${SANDBOX_LIMITS.wall_clock_seconds}s wall clock, ${SANDBOX_LIMITS.secrets} secrets. Not exercised by this run.`}
-            />
+            {run.provenance.sandbox === null ? (
+              <Row
+                term="Sandbox limits"
+                value={`${SANDBOX_LIMITS.image}, network ${SANDBOX_LIMITS.network}`}
+                note={`${SANDBOX_LIMITS.wall_clock_seconds}s wall clock, ${SANDBOX_LIMITS.secrets} secrets. This candidate matched a committed implementation, so it ran locally and the boundary was not exercised here.`}
+              />
+            ) : (
+              <>
+                <Row
+                  term="Sandbox"
+                  value={run.provenance.sandbox.sandbox_id}
+                  note={`${run.provenance.sandbox.runtime} in ${run.provenance.sandbox.region}, booted in ${run.provenance.sandbox.boot_ms}ms`}
+                />
+                <Row
+                  term="Network policy applied"
+                  value={run.provenance.sandbox.network_policy}
+                  note="read back off the microVM, not the value that was requested"
+                />
+              </>
+            )}
           </dl>
           <div className="flex flex-col gap-3">
             <p className="label m-0 text-ink-40">Case suites</p>
@@ -308,9 +353,13 @@ cd ../web && npm run export:lab -- --check`}
 
 function Row({ term, value, note }: { term: string; value: string; note?: string }) {
   return (
-    <div>
+    // `min-w-0`: a grid item defaults to min-width:auto, so a 40-character sha
+    // with no break opportunity widens its column and overlaps the next one.
+    <div className="min-w-0">
       <dt className="label m-0 text-ink-40">{term}</dt>
-      <dd className={`m-0 mt-0.5 text-xs ${value === UNKNOWN ? 'text-unknown' : 'text-ink'}`}>
+      <dd
+        className={`m-0 mt-0.5 break-all text-xs ${value === UNKNOWN ? 'text-unknown' : 'text-ink'}`}
+      >
         {value}
         {note !== undefined ? (
           <span className="block pt-1 font-sans text-[11px] font-normal tracking-normal text-ink-40">
