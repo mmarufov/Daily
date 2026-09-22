@@ -298,11 +298,28 @@ platform are recorded in each run's provenance.
 control-plane bytes spent reading the record bundle back, so it is non-zero on a run that reached
 nothing. The probes are the direct evidence.
 
-**Vercel Workflow — exercised.** Orchestration runs as a durable workflow: the scope gate, the
-sandboxed execution and the grading are three journaled steps. `unknown-outcome` survives the port
-and is deliberately not something the workflow writes — an attempt with a start and no journaled
-ending is one nothing observed finishing, and the microVM may have completed a millisecond before
-the orchestrator died.
+**Vercel Workflow — exercised, with one half of the durability claim still unobserved.**
+Orchestration runs as a durable workflow: the scope gate, the sandboxed execution and the grading
+are three journaled steps, and suspension uses the SDK's `sleep` rather than `setTimeout` — the
+difference is the whole claim, since `setTimeout` holds a process open for the duration and so
+demonstrates nothing about surviving the loss of one.
+
+What was observed: a run was started, suspended mid-flight, and its process was killed outright.
+The journal survived. `scopeStep` and `executeStep` remained `completed` on disk and the sleep
+remained a `wait` record with a `resumeAt`; a new process read that state and reported the run as
+still running rather than losing it or restarting it from the beginning.
+
+What was **not** observed: the resume itself. The local development world arms an in-memory timer
+when the sleep begins and has no process that scans expired waits at startup, so after the killed
+process the run stays suspended indefinitely. On Vercel the platform schedules the resumption, and
+that has not been exercised here because the preview deployment is behind Vercel Authentication
+and this branch has not been promoted to production. `WorkflowOutcome.resumed` and the per-step
+`process_id` exist so that when it is, the evidence is a pair of differing ids rather than a
+claim.
+
+`unknown-outcome` survives the port and is deliberately not something the workflow writes — an
+attempt with a start and no journaled ending is one nothing observed finishing, and the microVM
+may have completed a millisecond before the orchestrator died.
 
 **The investigator agent — not exercised.** No `AI_GATEWAY_API_KEY` and no `LAB_MAX_USD` on this
 deployment, so `readiness()` refuses and nothing is called. The tools, the scope gate and the
