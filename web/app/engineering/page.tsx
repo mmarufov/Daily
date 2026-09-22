@@ -464,8 +464,12 @@ function Figure({
       <dt className="label m-0 text-ink-40">{term}</dt>
       <dd className={`readout-sm m-0 mt-1.5 text-2xl ${signal === true ? 'text-signal' : ''}`}>
         {value}
+        {/* See the note in app/page.tsx: only <dt>/<dd> may sit inside a
+            <div> within a <dl>. */}
+        <span className="block font-sans text-xs font-normal tracking-normal text-ink-40">
+          {note}
+        </span>
       </dd>
-      <p className="m-0 mt-1 text-xs text-ink-40">{note}</p>
     </div>
   )
 }

@@ -214,8 +214,14 @@ function Row({
   return (
     <div>
       <dt className="label m-0 text-ink-40">{term}</dt>
-      <dd className={`m-0 mt-0.5 text-xs ${mono === true ? 'break-all text-ink' : ''}`}>{value}</dd>
-      {note !== undefined ? <p className="m-0 text-[11px] text-ink-60">{note}</p> : null}
+      <dd className={`m-0 mt-0.5 text-xs ${mono === true ? 'break-all text-ink' : ''}`}>
+        {value}
+        {/* See the note in app/page.tsx: only <dt>/<dd> may sit inside a
+            <div> within a <dl>. */}
+        {note !== undefined ? (
+          <span className="mt-0.5 block text-[11px] text-ink-60">{note}</span>
+        ) : null}
+      </dd>
     </div>
   )
 }
