@@ -34,6 +34,14 @@ export interface InvestigationBudget {
   readonly wall_clock_seconds: number
 }
 
+/**
+ * `wall_clock_seconds` must stay comfortably under the function limit that
+ * hosts the step running the loop — `vercel.json` gives the workflow step
+ * route 400s against this 180s plus a sandbox run. An investigation killed by
+ * the platform mid-flight is an `unknown-outcome`: the model was called and
+ * charged, and whether it finished is not knowable from the log. That is an
+ * honest status and an expensive way to reach it.
+ */
 export const BUDGET: InvestigationBudget = {
   max_proposals: 1,
   max_tool_calls: 12,
