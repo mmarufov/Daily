@@ -130,6 +130,13 @@ export interface InvestigationDeps {
     source: string,
   ) => Promise<{ summary: string; evaluation: Evaluation | null }>
   readonly onProgress?: (step: string) => void
+  /**
+   * Fired the moment the scope gate rules, so an orchestration log records
+   * the decision at the time it was made rather than reconstructing it from
+   * the trace afterwards — the ordering is the evidence that the gate ran
+   * before the sandbox did.
+   */
+  readonly onScopeDecision?: (decision: { accepted: boolean; path: string; reason: string }) => void
 }
 
 export type InvestigationResult =
@@ -279,6 +286,11 @@ export async function investigate(
           scope_reason: outcome.reason,
         }
         if (outcome.accepted) proposedSource = input.content
+        deps.onScopeDecision?.({
+          accepted: outcome.accepted,
+          path: input.path,
+          reason: outcome.reason,
+        })
         const result = { accepted: outcome.accepted, reason: outcome.reason }
         record('tool-result', 'propose_patch', result)
         return result

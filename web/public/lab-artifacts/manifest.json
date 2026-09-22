@@ -2,7 +2,7 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "008af8266204438a",
- "inputs_sha256": "301aaa0cf8fb032d",
+ "inputs_sha256": "3d5bf1ab3979c1a9",
  "built_at": "2026-09-22T19:47:57.873Z",
  "complete": true,
  "entries": [
@@ -13,8 +13,8 @@
    "kind": "seeded-control",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "6c75fae001b98b012aff32bfbd9095b81e8cca197e531b9ad4c5d0b4cebb0063",
-   "bytes": 34808
+   "sha256": "8b6aab9a9ee6d9ec96b6749b4b617a64d9cd074e7a633e079b801e0579dbfda0",
+   "bytes": 34879
   },
   {
    "run_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826__clean",
@@ -23,8 +23,8 @@
    "kind": "seeded-control",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "33f132ddf0c07806be71afc1a3e6017e682999027b1fd3a35cdc1ac53b38d9f5",
-   "bytes": 36079
+   "sha256": "8b1cd949fbf8173f398482e7695baaaedf6519202e9c5e36d9baed0d226b67a0",
+   "bytes": 36150
   },
   {
    "run_id": "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826__clean",
@@ -33,8 +33,8 @@
    "kind": "seeded-control",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "be09e10408a9fe2476993186d6be2b0ccc838d821300cedc09a43988a283aaf7",
-   "bytes": 35133
+   "sha256": "2e6c339a9116074e68f9851ba407a76a5a07672dc50f211364eb3fc2f5e18174",
+   "bytes": 35204
   },
   {
    "run_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826__clean",
@@ -43,8 +43,8 @@
    "kind": "preserved-version",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "1d4c884f4dc56991d88039d8dbd9f18d022d78a2d724a6be173a066adcbc9329",
-   "bytes": 35582
+   "sha256": "93a979acf028181cfd3d94887d42a8966ca73d5c8ed7de086eca502ebba23c03",
+   "bytes": 35653
   },
   {
    "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean",
@@ -53,8 +53,8 @@
    "kind": "preserved-version",
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
-   "sha256": "299d959bab753163ddd7339349c72c527b7f16c7bd8fab15eeba8670d2429ad0",
-   "bytes": 38252
+   "sha256": "e04ed34d81520a3e06a3f013a2b8fabeb57362c5f7d114ef4e2f6c0579d7dafb",
+   "bytes": 38323
   },
   {
    "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__interrupted",
@@ -63,8 +63,8 @@
    "kind": "preserved-version",
    "verdict": "accepted-for-review",
    "spec_hash": "008af8266204438a",
-   "sha256": "659edd33cc85b2e07621496db294bbb3c984cc579b0b9be592997d5a90c81e07",
-   "bytes": 38846
+   "sha256": "36438a3621ea42e82dfa8e3a7a73ddc9904d57369e92b011141fc366b9af1e0a",
+   "bytes": 38917
   },
   {
    "run_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean",
@@ -73,8 +73,8 @@
    "kind": "preserved-version",
    "verdict": "rejected",
    "spec_hash": "008af8266204438a",
-   "sha256": "b35a5f5d1d074ecf36e2076c85c214983b99efacaba5b83a6c0658d739af1841",
-   "bytes": 30535
+   "sha256": "d9d786768d83db5acda0c24019c433b9b1398d8d704c0401890bbb2e4b27a23c",
+   "bytes": 30606
   }
  ],
  "notes": [

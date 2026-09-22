@@ -18,12 +18,15 @@
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
   "inputs_sha256": "a60d5a6ac6d7050d",
   "executed_at": "2026-09-22T19:47:57.422Z",
-  "evaluator_sha256": "4e2b7d9f23bcad16",
+  "evaluator_sha256": "b9508d9952801eec",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
   "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
   "python": "3.12.13",
+  "runner": "local-known",
+  "sandbox": null,
+  "investigation": null,
   "case_suites": [
    {
     "group": "observed",

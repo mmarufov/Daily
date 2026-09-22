@@ -28,7 +28,7 @@ import {
   type RecordBundle,
 } from '../lib/lab/records'
 import { EXPERIMENT, specHash } from '../lib/lab/spec'
-import { KNOWN_IMPLEMENTATIONS, SANDBOX_LIMITS } from '../lib/lab/runner'
+import { KNOWN_IMPLEMENTATIONS, SANDBOX_LIMITS, selectRunner } from '../lib/lab/runner'
 import {
   LAB_ARTIFACT_VERSION,
   parseLabManifest,
@@ -124,18 +124,112 @@ function recordingReads<T>(seed: ReadonlyMap<string, string>, fn: (reads: Reads)
 }
 
 /**
- * The trusted grader, hashed by content.
+ * The code that decides a verdict, named file by file.
  *
- * Restricted to `.ts` so an editor artefact or a `.DS_Store` cannot change
- * what the artifact claims about the evaluator.
+ * This was a scan of `web/lib/lab/`, which is wrong twice. It swept in every
+ * neighbour — the runner, the scope gate, the agent, the sandbox client, the
+ * output schema — none of which grades anything, so adding a tool to the
+ * investigator moved what all seven runs claimed about their judge. And a
+ * scan silently widens: a file dropped into the directory joins the hash
+ * without anyone deciding it should.
+ *
+ * Three files determine a verdict:
+ *
+ *   evaluator.ts  applies the criteria to the records
+ *   records.ts    the schema that strips unknown keys, which is what stops a
+ *                 candidate's self-assessment from reaching the evaluator
+ *   spec.ts       the criteria and their thresholds
+ *
+ * Hand-maintained for the same reason `KNOWN_IMPLEMENTATIONS` is.
  */
+const VERDICT_SOURCES: readonly string[] = [
+  'web/lib/lab/evaluator.ts',
+  'web/lib/lab/records.ts',
+  'web/lib/lab/spec.ts',
+]
+
 function hashEvaluator(): string {
-  const dir = join(ROOT, 'web', 'lib', 'lab')
-  const parts = readdirSync(dir)
-    .filter((f) => f.endsWith('.ts'))
-    .sort()
-    .map((f) => `${f}:${sha256(readFileSync(join(dir, f), 'utf8'))}`)
+  // Through `readInput` like everything else, with no exception carved out.
+  // The evaluator is an input to this export -- its output is the verdict in
+  // every artifact -- so it belongs in `inputs_sha256` as well as in its own
+  // field, and it comes under the uncommitted-input guard for free.
+  const parts = [...VERDICT_SOURCES].sort().map((rel) => `${rel}:${sha256(readInput(rel))}`)
   return sha256(parts.join('\n')).slice(0, 16)
+}
+
+/**
+ * sha256 of every implementation permitted to run outside the sandbox.
+ *
+ * Built by reading the committed sources, so the routing decision the export
+ * records is the one `selectRunner` would make today rather than one asserted
+ * in a constant that could drift from the files.
+ */
+let KNOWN_HASHES: Map<string, string> | null = null
+function knownHashes(): ReadonlyMap<string, string> {
+  if (KNOWN_HASHES === null) {
+    KNOWN_HASHES = new Map(
+      KNOWN_IMPLEMENTATIONS.map((k) => [k.candidate_id, sha256(readInput(k.path))]),
+    )
+  }
+  return KNOWN_HASHES
+}
+
+/**
+ * What a run's candidate is, whether or not it is one of ours.
+ *
+ * `KNOWN_IMPLEMENTATIONS` is the list of sources permitted to execute
+ * *outside* the sandbox, so an agent-authored candidate is necessarily
+ * missing from it — that absence is the mechanism, not a gap. Its metadata is
+ * therefore derived from the committed evidence the run left behind rather
+ * than looked up in a table it is definitionally not in.
+ */
+interface CandidateDescriptor {
+  readonly candidate_id: string
+  readonly path: string
+  readonly kind: LabRun['candidate']['kind']
+  readonly description: string
+  readonly declared_protocol: LabRun['candidate']['declared_protocol']
+  readonly transcribed_from: string
+}
+
+function describeCandidate(
+  input: RunInput,
+  investigation: LabRun['provenance']['investigation'],
+): CandidateDescriptor {
+  const known = KNOWN_IMPLEMENTATIONS.find((k) => k.candidate_id === input.candidate_id)
+  if (known !== undefined) return known
+  if (investigation === null) {
+    throw new Error(
+      `${input.candidate_id} is neither a known implementation nor an investigated candidate; ` +
+        'there is nothing committed that says what it is',
+    )
+  }
+  return {
+    candidate_id: input.candidate_id,
+    path: 'backend/lab/contract/candidate.py',
+    kind: 'agent-authored',
+    description: investigation.hypothesis,
+    declared_protocol: 'keyed-v2',
+    transcribed_from: UNKNOWN,
+  }
+}
+
+/**
+ * Sandbox evidence for a run, when the run produced any.
+ *
+ * Absent rather than zeroed for a local run. An all-zero isolation block
+ * would read as "every probe passed" on a run where no probe was attempted.
+ */
+function sandboxFor(input: RunInput): LabRun['provenance']['sandbox'] {
+  const rel = `backend/lab/runs/${input.candidate_id}-${input.tag}.sandbox.json`
+  if (!existsSync(join(ROOT, rel))) return null
+  return JSON.parse(readInput(rel)) as LabRun['provenance']['sandbox']
+}
+
+function investigationFor(input: RunInput): LabRun['provenance']['investigation'] {
+  const rel = `backend/lab/runs/${input.candidate_id}-${input.tag}.investigation.json`
+  if (!existsSync(join(ROOT, rel))) return null
+  return JSON.parse(readInput(rel)) as LabRun['provenance']['investigation']
 }
 
 /** Every candidate is expressed as a change to the historical parser. */
@@ -278,9 +372,8 @@ function buildRunInScope(
   refs: LabRun['provenance']['case_suites'],
   reads: Reads,
 ): LabRun {
-  const known = KNOWN_IMPLEMENTATIONS.find((k) => k.candidate_id === input.candidate_id)
-  if (known === undefined) throw new Error(`no known implementation for ${input.candidate_id}`)
-
+  const investigation = investigationFor(input)
+  const known = describeCandidate(input, investigation)
   const sourceText = readInput(known.path)
   const baselineText = readInput(BASELINE_PATH)
   const events = readEvents(input.eventsPath)
@@ -405,6 +498,14 @@ function buildRunInScope(
       execution_mode_basis:
         'The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.',
       python: bundle?.python ?? UNKNOWN,
+      // Re-decided here from the candidate's bytes, not copied from the event
+      // log. The routing rule is the security boundary, so the artifact should
+      // state what the rule says about this source today -- if someone adds a
+      // candidate to KNOWN_IMPLEMENTATIONS, that widening shows up in the
+      // export rather than staying invisible behind a stale recorded field.
+      runner: selectRunner(sourceText, knownHashes()).runner,
+      sandbox: sandboxFor(input),
+      investigation,
       case_suites: refs,
       notes,
     },
