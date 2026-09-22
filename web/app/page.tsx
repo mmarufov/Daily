@@ -226,8 +226,12 @@ function Readout({
       <dt className="label m-0 text-ink-40">{term}</dt>
       <dd className={`readout-sm m-0 mt-1.5 text-3xl ${signal === true ? 'text-signal' : ''}`}>
         {value}
+        {/* Inside the <dd>, not beside it: a <div> within a <dl> may contain
+            only <dt> and <dd>, and the note describes the value anyway. */}
+        <span className="block font-sans text-xs font-normal tracking-normal text-ink-40">
+          {note}
+        </span>
       </dd>
-      <p className="m-0 mt-1 text-xs text-ink-40">{note}</p>
     </div>
   )
 }
