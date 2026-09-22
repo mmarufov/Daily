@@ -21,12 +21,18 @@
  * survives the port unchanged — it is the honest status for an attempt that
  * started and whose completion was never journaled, and no amount of platform
  * durability can turn it into a yes or a no.
+ *
+ * Note what these workflows do *not* take as arguments: the case suite. Every
+ * workflow argument is serialised into the journal, and `observed.json` alone
+ * is 1.8 MB — passing it would write the entire corpus into durable storage
+ * on every call, and again on every resume. The steps run in Node and the
+ * files are staged beside them, so each loads the suite itself.
  */
 
 import { sleep } from 'workflow'
 
 import { evaluate, type Evaluation } from './evaluator'
-import { parseRecordBundle, type Case } from './records'
+import { parseRecordBundle } from './records'
 import type { RunEvent } from './runstate'
 import { checkPatchScope } from './scope'
 import { ALLOWED_PATCH_PATHS } from './spec'
@@ -189,17 +195,18 @@ export async function executeStep(input: WorkflowInput): Promise<{
 export async function gradeStep(
   recordsJson: string | null,
   failure: string | null,
-  cases: readonly Case[],
 ): Promise<{ verdict: Evaluation['verdict']; reason: string; mark: StepMark }> {
   'use step'
+  const { loadCasesForRun } = await import('./case-loader')
+  const cases = await loadCasesForRun()
   if (recordsJson === null) {
-    const result = evaluate(cases as Case[], null, { failure: failure ?? 'no records were produced' })
+    const result = evaluate(cases, null, { failure: failure ?? 'no records were produced' })
     return { verdict: result.verdict, reason: result.reason, mark: mark() }
   }
   const parsed = parseRecordBundle(JSON.parse(recordsJson))
   const result = parsed.ok
-    ? evaluate(cases as Case[], parsed.value)
-    : evaluate(cases as Case[], null, { failure: `record bundle did not validate: ${parsed.issues.join('; ')}` })
+    ? evaluate(cases, parsed.value)
+    : evaluate(cases, null, { failure: `record bundle did not validate: ${parsed.issues.join('; ')}` })
   return { verdict: result.verdict, reason: result.reason, mark: mark() }
 }
 
@@ -213,10 +220,7 @@ export async function gradeStep(
  * same view. Replacing the orchestrator did not replace the evidence format,
  * which is what makes the two comparable.
  */
-export async function runCandidateWorkflow(
-  input: WorkflowInput,
-  cases: readonly Case[],
-): Promise<WorkflowOutcome> {
+export async function runCandidateWorkflow(input: WorkflowInput): Promise<WorkflowOutcome> {
   'use workflow'
 
   const events: RunEvent[] = []
@@ -265,7 +269,7 @@ export async function runCandidateWorkflow(
     await sleep(`${input.suspend_seconds}s`)
   }
 
-  const graded = await gradeStep(execution.records_json, execution.ok ? null : execution.detail, cases)
+  const graded = await gradeStep(execution.records_json, execution.ok ? null : execution.detail)
   processes.push({ step: 'grade', ...graded.mark })
   events.push({ type: 'evaluated', at: graded.mark.at, verdict: graded.verdict, reason: graded.reason })
 
@@ -364,10 +368,7 @@ export type InvestigationWorkflowOutcome = {
  * proposes, the scope gate rules, and the sandbox executes inside the tool
  * the model called. Splitting it would journal halves of a decision.
  */
-export async function investigateStep(
-  input: InvestigationWorkflowInput,
-  cases: readonly Case[],
-): Promise<{
+export async function investigateStep(input: InvestigationWorkflowInput): Promise<{
   ok: boolean
   detail: string
   trace: unknown | null
@@ -382,6 +383,8 @@ export async function investigateStep(
   const { uploadSet } = await import('./upload-set')
   const { parseRecordBundle } = await import('./records')
   const { readSourceExcerpt } = await import('./source-excerpt')
+  const { loadCasesForRun } = await import('./case-loader')
+  const cases = await loadCasesForRun()
 
   let sandbox: unknown | null = null
   let recordsJson: string | null = null
@@ -455,12 +458,11 @@ export async function investigateStep(
 
 export async function investigationWorkflow(
   input: InvestigationWorkflowInput,
-  cases: readonly Case[],
 ): Promise<InvestigationWorkflowOutcome> {
   'use workflow'
 
   const processes: ProcessTrace[] = []
-  const investigation = await investigateStep(input, cases)
+  const investigation = await investigateStep(input)
   processes.push({ step: 'execute', ...investigation.mark })
 
   if (input.suspend_seconds > 0) {
@@ -470,11 +472,7 @@ export async function investigationWorkflow(
     await sleep(`${input.suspend_seconds}s`)
   }
 
-  const graded = await gradeStep(
-    investigation.records_json,
-    investigation.ok ? null : investigation.detail,
-    cases,
-  )
+  const graded = await gradeStep(investigation.records_json, investigation.ok ? null : investigation.detail)
   processes.push({ step: 'grade', ...graded.mark })
 
   return {

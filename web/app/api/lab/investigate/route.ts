@@ -15,7 +15,6 @@
 
 import { start } from 'workflow/api'
 
-import { loadCasesForRun } from '@/lib/lab/case-loader'
 import { readiness } from '@/lib/lab/investigator'
 import { investigationWorkflow } from '@/lib/lab/orchestration'
 import { authoriseOwner } from '@/lib/lab/owner'
@@ -56,7 +55,9 @@ export async function POST(request: Request): Promise<Response> {
       ? Math.max(0, Math.min(300, Math.trunc(suspendSeconds)))
       : 0
 
-  const cases = await loadCasesForRun()
+  // The suite is not passed in: every workflow argument is journalled, and
+  // `observed.json` alone is 1.8 MB. The steps load it from the staged copy
+  // beside them.
   const run = await start(investigationWorkflow, [
     {
       run_id: `${id}__${Date.now().toString(36)}`,
@@ -64,7 +65,6 @@ export async function POST(request: Request): Promise<Response> {
       spec_hash: specHash(),
       suspend_seconds: suspend,
     },
-    cases,
   ])
 
   return Response.json(
