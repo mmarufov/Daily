@@ -5,11 +5,14 @@ import { expect, test } from '@playwright/test'
  * follow one story from a summary metric down to its recorded trace.
  */
 test.describe('visitor journey', () => {
-  test('home explains the product and offers both entry points', async ({ page }) => {
+  test('home explains the product and routes to all three surfaces', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toContainText('daily edition')
-    await expect(page.getByRole('link', { name: 'Try the reader' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Inspect the evaluation' })).toBeVisible()
+    // The three entry points are labelled and described, not three bare buttons.
+    const entries = page.getByRole('navigation', { name: 'Main' })
+    for (const name of ['Reader', 'Evidence', 'Defect report']) {
+      await expect(entries.getByRole('link', { name: new RegExp(name, 'i') })).toBeVisible()
+    }
     // The demo must never be presented as real readership.
     await expect(page.getByText(/adversarial test\s+fixtures, not users/i)).toBeVisible()
   })

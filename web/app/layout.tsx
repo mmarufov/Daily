@@ -48,10 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-24 border-t border-rule">
           <div className="frame flex flex-col gap-6 py-10 md:flex-row md:justify-between">
             <p className="m-0 max-w-xl text-xs text-ink-60">
-              Daily has never shipped. There is no App Store listing and there are no readers.
-              Everything on this site is a replay of a dated, content-hashed corpus, and the ten
-              reader profiles behind it are adversarial test fixtures, not users — they exist to
-              make the ranking fail in ways a real person would not sit still for.
+              Daily has never shipped; there are no readers. Everything here replays a dated,
+              content-hashed corpus, and the ten reader profiles are adversarial test fixtures,
+              not users — written to make the ranking fail.
             </p>
             <div className="flex shrink-0 flex-col gap-2 md:items-end">
               <a

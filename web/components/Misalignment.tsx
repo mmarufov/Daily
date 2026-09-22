@@ -155,41 +155,38 @@ export function Misalignment() {
             )
           })}
 
-          {actual ? (
-            <g>
-              <line
-                x1={8}
-                y1={y(MERGE_AFTER) - ROW_H / 2 - GAP / 2}
-                x2={WIDTH - 8}
-                y2={y(MERGE_AFTER) - ROW_H / 2 - GAP / 2}
-                className="fig-cut"
-              />
-              <text
-                x={8}
-                y={y(MERGE_AFTER) - ROW_H / 2 - GAP / 2 - 5}
-                className="fig-cut-label"
-              >
-                TWO ARTICLES MERGED INTO ONE VERDICT
-              </text>
-            </g>
-          ) : null}
+          <g>
+            <line
+              x1={8}
+              y1={y(MERGE_AFTER) - ROW_H / 2 - GAP / 2}
+              x2={WIDTH - 8}
+              y2={y(MERGE_AFTER) - ROW_H / 2 - GAP / 2}
+              className={actual ? 'fig-cut' : 'fig-cut-idle'}
+            />
+            <text
+              x={8}
+              y={y(MERGE_AFTER) - ROW_H / 2 - GAP / 2 - 5}
+              className={actual ? 'fig-cut-label' : 'fig-label'}
+            >
+              {actual ? 'TWO ARTICLES MERGED INTO ONE VERDICT' : 'NOTHING MERGED'}
+            </text>
+          </g>
         </svg>
       </div>
 
       <figcaption className="m-0 max-w-2xl text-xs text-ink-60">
         {actual ? (
           <>
-            One merged entry is enough. The count mismatch was logged and then ignored, the parse
-            assigned <span className="text-ink">results[i]</span> to{' '}
-            <span className="text-ink">articles[i]</span> regardless of length, and seven of twelve
-            articles were judged on another story&rsquo;s reasoning. Scale that to batches of forty
-            and it fires 63 times in a single run.
+            One merged entry is enough: the parse assigns{' '}
+            <span className="text-ink">results[i]</span> to{' '}
+            <span className="text-ink">articles[i]</span> regardless of length, so seven of twelve
+            articles are judged on another story&rsquo;s reasoning. At batches of forty this fires
+            63 times in one run.
           </>
         ) : (
           <>
-            What the code assumes: as many verdicts back as articles sent, in the same order. No
-            article identifier is transmitted and the model is never asked to echo an index, so
-            this assumption is the only thing holding the pairing together.
+            What the code assumes. No article identifier is sent and the model is never asked to
+            echo an index, so this assumption is the only thing holding the pairing together.
           </>
         )}
       </figcaption>

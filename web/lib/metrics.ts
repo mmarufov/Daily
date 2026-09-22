@@ -21,7 +21,9 @@ export interface MetricDefinition {
   readonly label: string
   readonly direction: MetricDirection
   readonly kind: MetricKind
-  /** Plain-language meaning, shown before any technical provenance. */
+  /** One-line gloss, shown inline in the table. */
+  readonly short: string
+  /** Fuller plain-language meaning, shown in the collapsed glossary. */
   readonly plain: string
   /** Exact computation, shown on disclosure. */
   readonly formula?: string
@@ -37,6 +39,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Capped recall@k',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Needed stories that made the feed, capped at the slots available.',
     plain: 'Of the stories this reader had to see, the share that made the feed — with the target capped at the number of slots available.',
     formula: 'must_see_in_top_k / min(n_must_see, k)',
   },
@@ -45,6 +48,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Raw recall@k',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Same, divided by every needed story. Always ≤ capped recall.',
     plain: 'The same count divided by every must-see story, even when there are more must-see stories than feed slots. Always at or below capped recall.',
     formula: 'must_see_in_top_k / n_must_see',
   },
@@ -53,6 +57,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Reached the scorer',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Needed stories that survived long enough to be judged at all.',
     plain: 'The share of must-see stories that survived long enough to be judged at all. A story never loaded cannot be ranked.',
     formula: 'must_see reaching the scoring stage / n_must_see',
   },
@@ -61,6 +66,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Need-to-know recall',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Recall over stories the reader genuinely needed to know.',
     plain: 'Recall restricted to stories labelled as ones the reader genuinely needed to know.',
   },
   {
@@ -68,6 +74,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Follow-up recall',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Recall over stories continuing a thread already followed.',
     plain: 'Recall restricted to stories that continue a thread the reader was already following.',
   },
   {
@@ -75,6 +82,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Unwanted rate',
     direction: 'lower-better',
     kind: 'fraction',
+    short: 'Delivered stories the reader had labelled never-wanted.',
     plain: 'The share of the delivered feed that the reader had explicitly labelled as never wanted. Lower is better.',
     formula: 'never_labelled_in_top_k / k',
   },
@@ -83,6 +91,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'World-critical delivery',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'World-critical events that put at least one story in the feed.',
     plain: 'Of the events everyone should have been told about, the share that put at least one story in the feed.',
   },
   {
@@ -90,6 +99,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Major-event delivery',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Same, for events rated major rather than world-critical.',
     plain: 'The same measure for events rated major rather than world-critical.',
   },
   {
@@ -97,6 +107,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'False-major rate',
     direction: 'lower-better',
     kind: 'fraction',
+    short: 'Stories promoted as major events when none existed.',
     plain: 'How often the pipeline promoted a story as a major event when no major event existed. Measured on the quiet-day corpus, where the right answer is restraint.',
     appliesOnly: 'quiet snapshots, prototype runner only',
     nullable: true,
@@ -106,6 +117,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Event-slot contamination',
     direction: 'lower-better',
     kind: 'fraction',
+    short: 'Legacy alias for the false-major rate.',
     plain: 'Legacy alias carrying the same value as the false-major rate. Retained so older scorecards still read correctly.',
     nullable: true,
   },
@@ -114,6 +126,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Judge precision',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'When the model accepted a story, how often labels agreed.',
     plain: 'When the model accepted a story, how often the labels agreed. Reported only for runners whose judge emits an explicit verdict.',
     nullable: true,
   },
@@ -122,6 +135,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Judge recall',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Wanted stories the model accepted once it saw them.',
     plain: 'Of the stories the labels wanted, how many the model accepted once it saw them.',
     nullable: true,
   },
@@ -130,6 +144,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Planted-needle recall',
     direction: 'higher-better',
     kind: 'fraction',
+    short: 'Recall on planted articles whose right answer is known by construction.',
     plain: 'Recall on stories injected at run time whose correct answer is known by construction rather than by opinion.',
   },
   {
@@ -137,6 +152,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Lookalike rate',
     direction: 'lower-better',
     kind: 'fraction',
+    short: 'Decoys that got through: right keyword, wrong thing.',
     plain: 'How often a deliberate decoy got through — the right keyword attached to the wrong thing.',
   },
   {
@@ -144,6 +160,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Feed size at k',
     direction: 'neutral',
     kind: 'count',
+    short: 'Slots the feed actually filled. A size, not a score.',
     plain: 'How many slots the feed actually filled. A size, not a quality score.',
   },
   {
@@ -151,6 +168,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Distinct sources',
     direction: 'higher-better',
     kind: 'count',
+    short: 'Publications the feed drew from. A diversity proxy.',
     plain: 'How many different publications the feed drew from. More breadth is generally healthier, but this is a diversity proxy, not a correctness measure.',
   },
   {
@@ -158,6 +176,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Build latency',
     direction: 'lower-better',
     kind: 'seconds',
+    short: 'Time to assemble one feed. Replay timing, not production.',
     plain: 'Wall-clock time to assemble one reader’s feed during the run. Offline replay timings are not production latency.',
   },
   {
@@ -165,6 +184,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Estimated model cost',
     direction: 'lower-better',
     kind: 'usd',
+    short: 'Token-priced reconstruction. No provider was charged.',
     plain: 'Token-priced cost reconstructed for this run. Under offline replay no provider was actually charged.',
   },
   {
@@ -172,6 +192,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Estimated model cost, all personas',
     direction: 'lower-better',
     kind: 'usd',
+    short: 'The same reconstruction, summed over every fixture.',
     plain: 'The same reconstruction summed across every persona in the run.',
   },
   {
@@ -179,6 +200,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Model calls',
     direction: 'lower-better',
     kind: 'count',
+    short: 'Model calls made for this fixture.',
     plain: 'How many model requests the run needed for this persona.',
   },
   {
@@ -186,6 +208,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Model calls, all personas',
     direction: 'lower-better',
     kind: 'count',
+    short: 'Model calls across the whole run.',
     plain: 'Total model requests across the run.',
   },
   {
@@ -193,6 +216,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Peak model calls for one persona',
     direction: 'lower-better',
     kind: 'count',
+    short: 'The busiest single fixture in the run.',
     plain: 'The worst single reader, which is what a per-request budget has to survive.',
   },
   {
@@ -200,6 +224,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Cache misses',
     direction: 'lower-better',
     kind: 'count',
+    short: 'Times the replay had to reach the network. Zero means fully offline.',
     plain: 'Requests that were not already in the committed response cache. Under offline replay this must be zero, because a miss fails the run rather than spending money.',
   },
   {
@@ -207,6 +232,7 @@ const DEFS: readonly MetricDefinition[] = [
     label: 'Personas',
     direction: 'neutral',
     kind: 'count',
+    short: 'Reader fixtures in the run.',
     plain: 'How many reader fixtures the run covered. These are adversarial test fixtures, not users.',
   },
 ]
@@ -247,6 +273,7 @@ export function resolveMetric(key: string): ResolvedMetric {
     label: key,
     direction: 'neutral',
     kind: 'count',
+    short: 'Not in the definition map, so no direction is claimed.',
     plain: 'This metric is not in the explorer’s definition map, so no direction is claimed for it.',
     known: false,
   }

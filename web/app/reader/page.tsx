@@ -69,7 +69,7 @@ export default async function ReaderPage({
       </section>
 
       <section className="frame flex flex-col gap-4 pb-8">
-        <Band index="01" title="Read as" note="Ten adversarial fixtures, one frozen corpus" />
+        <Band index="01" title="Read as" note="Ten fixtures, one corpus" />
         <ProfilePicker editions={bundle.editions} current={edition.persona} />
       </section>
 
@@ -123,10 +123,8 @@ export default async function ReaderPage({
           note={`${bundle.n_articles_in_corpus?.toLocaleString() ?? 'An unrecorded number of'} articles, one date`}
         />
         <p className="prose measure m-0 text-ink-60">
-          Every edition below was assembled from the identical frozen corpus on the identical
-          date. No fixture sees a different set of articles; they see a different newspaper made
-          out of the same one. This is the whole claim the product makes, and it is the only place
-          on the site you can check it without reading a number.
+          Same corpus, same date, different newspaper — the product&rsquo;s whole claim, and the
+          only place on the site you can check it without reading a number.
         </p>
         <ul className="m-0 grid list-none gap-px border border-rule bg-rule p-0 sm:grid-cols-2 lg:grid-cols-3">
           {others.map((other) => {
@@ -154,39 +152,34 @@ export default async function ReaderPage({
       </section>
 
       <section className="frame flex flex-col gap-6 pb-8">
-        <Band index="03" title="Live mode" note="Not implemented, and not pretended" />
+        <Band index="03" title="Live mode" note="Not implemented" />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
           <p className="prose m-0">
             Signing in and receiving a feed built from your own words is{' '}
-            <strong>not implemented here</strong>, and this page does not pretend otherwise. Three
-            things block it, and all three are access rather than design — which is the honest
-            version of &ldquo;coming soon&rdquo;.
+            <strong>not implemented here</strong>. Three things block it, all access rather than
+            design — the honest version of &ldquo;coming soon&rdquo;.
           </p>
           <ol className="m-0 flex list-none flex-col gap-4 p-0">
             <Blocker n="01" term="No browser may call the API">
-              The backend adds its CORS middleware only when{' '}
-              <span className="text-ink">CORS_ORIGINS</span> is set. It is unset, and the
-              documented default is &ldquo;no web clients&rdquo;.
+              CORS middleware is added only when <span className="text-ink">CORS_ORIGINS</span> is
+              set. It is unset; the documented default is &ldquo;no web clients&rdquo;.
             </Blocker>
             <Blocker n="02" term="The sign-in token is the wrong audience">
-              <span className="text-ink">POST /auth/google</span> verifies a Google ID token issued
-              for the iOS client. A browser flow needs a separate web OAuth client registered for
-              this origin.
+              <span className="text-ink">POST /auth/google</span> verifies a token issued for the
+              iOS client. A browser needs its own OAuth client for this origin.
             </Blocker>
             <Blocker n="03" term="Feedback needs a delivery that happened">
-              Feedback must echo the <span className="text-ink">feed_request_id</span>,{' '}
+              It must echo the <span className="text-ink">feed_request_id</span>,{' '}
               <span className="text-ink">reader_generation</span> and{' '}
-              <span className="text-ink">delivery_position</span> of the edition actually shown.
-              Those exist only on a live delivery, so the contract cannot be exercised against
-              frozen fixtures without inventing identifiers — which is exactly what the delivery
-              contract exists to prevent.
+              <span className="text-ink">delivery_position</span> of the edition shown. Those exist
+              only on a live delivery, so the contract cannot be exercised against frozen fixtures
+              without inventing identifiers.
             </Blocker>
           </ol>
         </div>
         <p className="m-0 max-w-3xl border-t border-signal pt-3 text-sm text-ink-60">
           Live end-to-end behaviour is therefore <strong className="text-ink">unverified</strong>.
-          Nothing on this site should be read as evidence that it works, and these fixture editions
-          are not reader evidence: they create no sessions, no impressions and no feedback.
+          These fixture editions are not reader evidence: no sessions, no impressions, no feedback.
         </p>
       </section>
     </div>
@@ -266,18 +259,13 @@ function ReplayNotice({
       <div>
         <p className="prose m-0 text-base">
           <strong>This is a replay, not today&rsquo;s news.</strong> Every story below was
-          published on or before <strong>{dateLabel}</strong>, and comes from a frozen,
-          content-hashed corpus of{' '}
+          published on or before <strong>{dateLabel}</strong>, from a frozen corpus of{' '}
           {bundle.n_articles_in_corpus?.toLocaleString() ?? 'an unrecorded number of'} articles.
         </p>
         <p className="m-0 mt-2 text-xs text-ink-60">
-          The reader profiles are adversarial evaluation fixtures, not people. This edition is the
-          one the <span className="text-ink">{bundle.runner}</span> pipeline actually assembled for
-          that fixture; reading it here creates no reader data and is not evidence of readership.{' '}
-          <Link
-            href={{ pathname: '/evidence', query: { run: bundle.run_id } }}
-            className="link"
-          >
+          The profiles are adversarial evaluation fixtures, not people; reading here creates no
+          reader data.{' '}
+          <Link href={{ pathname: '/evidence', query: { run: bundle.run_id } }} className="link">
             See how this edition scored
           </Link>
           .

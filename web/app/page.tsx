@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
+import { Band } from '@/components/Band'
 import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
 import { Sieve, type SieveFixture } from '@/components/Sieve'
-import { Band } from '@/components/Band'
 import { defaultEntry, loadArtifact, loadIndex } from '@/lib/data'
 import { explorerHref } from '@/lib/url-state'
 
@@ -20,12 +20,8 @@ export default async function HomePage() {
     artifact?.personas.map((p) => ({ key: p.key, steps: p.funnel })) ?? []
   const lead = fixtures.find((f) => f.key === 'ray') ?? fixtures[0]
   const leadSteps = lead?.steps ?? []
-  const poolSize = leadSteps[0]?.survivors ?? null
+  const pool = leadSteps[0]?.survivors ?? null
   const delivered = leadSteps[leadSteps.length - 1]?.survivors ?? null
-  const discardedShare =
-    poolSize !== null && delivered !== null && poolSize > 0
-      ? 1 - delivered / poolSize
-      : null
 
   return (
     <div className="flex flex-col">
@@ -35,41 +31,24 @@ export default async function HomePage() {
           A daily edition is mostly the stories you never see.
         </h1>
         <p className="lede measure m-0 text-ink-60">
-          Daily assembles one for each reader out of a dated, content-hashed corpus.
-          {poolSize !== null && delivered !== null ? (
+          {pool !== null && delivered !== null ? (
             <>
-              {' '}
-              For the fixture below, {poolSize.toLocaleString()} candidates became{' '}
-              {delivered.toLocaleString()}
-              {discardedShare !== null ? (
-                <> — {(discardedShare * 100).toFixed(1)}% discarded</>
-              ) : null}
-              .
+              {pool.toLocaleString()} candidates became {delivered.toLocaleString()}.
             </>
           ) : null}{' '}
-          Every other feed shows you the survivors. This one shows you the whole corpus, the stage
-          that removed each candidate, and what it logged on the way out.
+          Other feeds show you the survivors. This one shows the whole corpus, and which stage
+          threw each candidate away.
         </p>
-        <div className="flex flex-wrap gap-2.5 pt-1">
-          <Link href="/reader" className="chip chip-on px-4 py-2.5 text-sm">
-            Try the reader
-          </Link>
-          <Link href="/evidence" className="chip px-4 py-2.5 text-sm">
-            Inspect the evaluation
-          </Link>
-          <Link href="/engineering" className="chip px-4 py-2.5 text-sm">
-            Read the defect report
-          </Link>
-        </div>
+        <nav aria-label="Main" className="grid gap-px border border-rule bg-rule sm:grid-cols-3">
+          <Entry href="/reader" term="Reader" note="One edition, replayed from a frozen corpus" />
+          <Entry href="/evidence" term="Evidence" note="Every metric, fixture and story trace" />
+          <Entry href="/engineering" term="Defect report" note="One bug, followed end to end" />
+        </nav>
       </section>
 
       {fixtures.length > 0 && lead !== undefined ? (
         <section className="frame flex flex-col gap-7 pb-20">
-          <Band
-            index="01"
-            title="The sieve"
-            note="One cell per candidate article, at 1:1 with the corpus"
-          />
+          <Band index="01" title="The sieve" note="One cell per candidate article" />
           <Sieve
             fixtures={fixtures}
             initialFixture={lead.key}
@@ -79,36 +58,24 @@ export default async function HomePage() {
       ) : null}
 
       <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="02" title="The part worth your time" note="Why a ruler exists at all" />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-5">
-            <p className="prose m-0">
-              Deciding which stories a person needs is a claim you can be wrong about, and
-              &ldquo;the feed looks better to me&rdquo; is not evidence. So Daily carries an offline
-              evaluation harness built to answer one question:{' '}
-              <em>did this change make the feed better or worse, and if a story went missing,
-              which stage lost it?</em>
-            </p>
-            <p className="prose m-0">
-              It replays frozen corpora against ten adversarial reader fixtures with cached model
-              responses and the network off, so the same inputs always produce the same numbers.
-              That is what makes a difference between two runs mean something — and what makes it
-              possible to say, out loud, when a fix makes the measured numbers worse.
-            </p>
-          </div>
+        <Band index="02" title="Why a ruler exists" />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
+          <p className="prose m-0">
+            &ldquo;The feed looks better to me&rdquo; is not evidence. So Daily carries an offline
+            harness that replays frozen corpora against ten adversarial fixtures with the network
+            off — same inputs, same numbers, every time. That is what lets a difference between two
+            runs mean something, and what makes it possible to say out loud when a fix made the
+            measured numbers worse.
+          </p>
           <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
-            <Readout term="Stored runs" value={String(runs)} note="imported historical scorecards" />
+            <Readout term="Stored runs" value={String(runs)} note="imported, not re-executed" />
             <Readout
               term="Frozen corpora"
               value={String(snapshots.length)}
-              note={
-                corpusTotal > 0
-                  ? `${corpusTotal.toLocaleString()} articles, content-hashed`
-                  : 'content-hashed'
-              }
+              note={corpusTotal > 0 ? `${corpusTotal.toLocaleString()} articles` : 'content-hashed'}
             />
             <Readout term="Reader fixtures" value="10" note="adversarial, not users" />
-            <Readout term="Replay spend" value="$0" note="cached responses, network off" />
+            <Readout term="Replay spend" value="$0" note="cached, network off" />
           </dl>
         </div>
       </section>
@@ -120,21 +87,18 @@ export default async function HomePage() {
             title="Every fixture, no averaging"
             note={`${artifact.provenance.runner} · ${artifact.provenance.snapshot.name}`}
           />
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
             <FixtureStrip
               rows={toFixtureRows(
                 artifact.personas,
                 (key) => explorerHref({ run: artifact.run_id }, { persona: key }),
                 undefined,
               )}
-              caption="Each row is one reader fixture's labelled story placements for this run."
             />
             <div className="flex flex-col gap-4 self-start border-t border-rule pt-4 lg:border-0 lg:pt-0">
               <p className="prose m-0 text-base">
-                An average is a way of not looking at the worst case. These ten fixtures were
-                written to be hard — a New Jersey local-news reader, an Uzbek policy reader, a
-                reader whose interests barely intersect the corpus at all — and the run&rsquo;s
-                mean hides at least two of them completely.
+                An average is a way of not looking at the worst case. These fixtures were written
+                to be hard, and the run&rsquo;s mean of 22.1% hides two of them completely.
               </p>
               <Link href="/evidence" className="link label self-start">
                 Open the explorer
@@ -145,68 +109,71 @@ export default async function HomePage() {
       ) : null}
 
       <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="04" title="Start with a real failure" note="One defect, traced end to end" />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
+        <Band index="04" title="Start with a real failure" />
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
           <div className="flex flex-col gap-5">
             <p className="prose m-0">
-              The production scorer asked a model to judge forty articles and return forty verdicts
-              in order — and sent no article identifiers. When a response came back short, every
-              later verdict landed on the wrong article. A New Jersey roster story was rejected for{' '}
-              <em>&ldquo;discussing a music EP&rdquo;</em>. An Uzbek policy story was rejected for{' '}
-              <em>&ldquo;discussing NFL team rosters&rdquo;</em>.
+              The scorer asked a model to judge forty articles and return forty verdicts in order,
+              and sent no article ids. When a response came back short, every later verdict landed
+              on the wrong article — a New Jersey roster story rejected for{' '}
+              <em>&ldquo;discussing a music EP&rdquo;</em>.
             </p>
             <p className="prose m-0">
-              Fixing it made the measured numbers <em>worse</em>, because refusing to guess costs
-              more than guessing right by accident. The regression baseline was not re-recorded.
+              Fixing it made the measured numbers <em>worse</em>. The baseline was not re-recorded.
             </p>
             <Link href="/engineering" className="link label self-start">
               Read the defect report
             </Link>
           </div>
           <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
-            <Readout term="Guard fires" value="63" note="one runner, one corpus, ten fixtures" signal />
-            <Readout term="Worst response" value="201" note="verdicts returned for 40 articles" signal />
-            <Readout term="Unwanted rate" value="+15.6" note="percentage points, after the fix" signal />
+            <Readout term="Guard fires" value="63" note="one run, ten fixtures" signal />
+            <Readout term="Worst response" value="201" note="verdicts for 40 articles" signal />
+            <Readout term="Unwanted rate" value="+15.6" note="points, after the fix" signal />
             <Readout term="Re-baselined" value="No" note="the gate still reports red" />
           </dl>
         </div>
       </section>
 
       <section className="frame pb-8">
-        <Band index="05" title="What this site never claims" note="The repository's own truth boundaries" />
-        <div className="mt-7 grid gap-x-10 gap-y-7 md:grid-cols-2">
+        <Band index="05" title="What this site never claims" />
+        <div className="mt-7 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
           <Claim term="No readers">
-            Daily has never shipped to the App Store. The ten reader profiles are adversarial
-            evaluation fixtures, not people. Reading here creates no sessions, no impressions and
-            no feedback.
+            Never shipped. The ten profiles are evaluation fixtures, not people, and reading here
+            creates no data.
           </Claim>
           <Claim term="Provisional ground truth">
-            Labels are model-written with an agent editorial pass. Product-owner human review is
-            outstanding, so absolute values are provisional and only run-to-run differences are
-            gate-enforced.
+            Labels are model-written with an agent pass. Human review is outstanding, so absolute
+            values are provisional.
           </Claim>
           <Claim term="No significance">
-            No confidence intervals and no significance tests, because none were computed. The
-            &ldquo;material&rdquo; cutoff is a fixed &plusmn;0.02 chosen by the harness&rsquo;s
-            author; ten fixtures with no variance estimate cannot support more than that.
+            No confidence intervals; none were computed. &ldquo;Material&rdquo; is a fixed
+            &plusmn;0.02 the harness&rsquo;s author chose.
           </Claim>
           <Claim term="Live mode unbuilt">
-            Signing in and receiving a feed built for you is not implemented. Live end-to-end
-            behaviour is unverified, and nothing here should be read as evidence that it works.
+            Signing in is not implemented. Live end-to-end behaviour is unverified.
           </Claim>
           <Claim term="Unknown stays unknown">
-            Where the stored evidence cannot establish something — the evaluation protocol, the
-            execution mode, whether a revision is even reachable — the artifact records the literal
-            string <span className="text-unknown">unknown</span>. Never null, never zero, never
-            inferred from a neighbouring field.
+            What the evidence cannot establish is recorded as{' '}
+            <span className="text-unknown">unknown</span> — never null, never zero.
           </Claim>
           <Claim term="$0 of model spend">
-            Every number here comes from offline replay against cached responses. The costs shown
-            are reconstructed token-equivalents; actual provider spend for these replays is zero.
+            Costs shown are reconstructed token-equivalents. Actual provider spend is zero.
           </Claim>
         </div>
       </section>
     </div>
+  )
+}
+
+function Entry({ href, term, note }: { href: '/reader' | '/evidence' | '/engineering'; term: string; note: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col gap-1 bg-paper p-4 no-underline transition-colors duration-150 hover:bg-paper-secondary"
+    >
+      <span className="label text-ink">{term}</span>
+      <span className="text-xs text-ink-60">{note}</span>
+    </Link>
   )
 }
 
@@ -240,7 +207,7 @@ function Claim({ term, children }: { term: string; children: React.ReactNode }) 
   return (
     <div className="border-t border-signal pt-3">
       <p className="label m-0 text-ink">{term}</p>
-      <p className="m-0 mt-2 max-w-md text-sm text-ink-60">{children}</p>
+      <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
     </div>
   )
 }

@@ -326,6 +326,7 @@ body {
 @utility band {
   border-top: 1px solid var(--d-rule);
   padding-top: 0.625rem;
+  scroll-margin-top: 1.5rem;
   display: flex;
   align-items: baseline;
   gap: 0.875rem;
@@ -557,11 +558,54 @@ body {
   stroke-dasharray: 4 3;
 }
 
+/* The gutter is reserved in both states so the figure does not jump height;
+   this keeps it explained when nothing has actually been merged. */
+.fig-cut-idle {
+  stroke: var(--d-rule);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
 .fig-cut-label {
   font-family: var(--font-mono);
   font-size: 8px;
   letter-spacing: 0.12em;
   fill: var(--d-signal);
+}
+
+/*
+ * Disclosures. Several blocks on this site are "the full argument, one click
+ * away" -- the metric glossary, the sieve's provenance, the backend boundary.
+ * Without a marker a <summary> styled as a label is indistinguishable from a
+ * heading, so nobody opens it and the depth may as well not be there.
+ */
+.disclosure {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  transition: color 140ms var(--ease-out-quart);
+}
+
+.disclosure::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure::before {
+  content: "+";
+  display: inline-block;
+  width: 0.75em;
+  color: var(--d-signal);
+  font-weight: 500;
+}
+
+details[open] > .disclosure::before {
+  content: "\2013";
+}
+
+.disclosure:hover {
+  color: var(--d-signal);
 }
 
 /* --------------------------------------------------- accessibility ------ */
