@@ -33,6 +33,9 @@ interface SieveProps {
 /** Sweep buckets, matched by `.sieve-cell[data-b]` rules in globals.css. */
 const BUCKETS = 16
 
+/** Per-stage dwell during autoplay. See the comment at its use. */
+const DWELL_MS = 620
+
 export function Sieve({
   fixtures,
   initialFixture,
@@ -75,7 +78,11 @@ export function Sieve({
             setIndex(s)
             if (s === last) setPlaying(false)
           },
-          700 + s * 620,
+          // Dwell must exceed the sweep (300ms transition + 150ms of bucket
+          // delay, see globals.css) so a stage has finished settling before the
+          // next begins. Otherwise the previous stage's losses are still fading
+          // red under a caption that says nothing was removed.
+          650 + s * DWELL_MS,
         ),
       )
     }

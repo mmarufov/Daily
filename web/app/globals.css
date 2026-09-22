@@ -410,7 +410,7 @@ body {
 .sieve-cell {
   aspect-ratio: 1;
   background: var(--d-ghost);
-  transition: background-color 400ms var(--ease-out-quart);
+  transition: background-color 300ms var(--ease-out-quart);
 }
 
 /*
@@ -418,23 +418,27 @@ body {
  * transition is offset, so a stage change crosses the field instead of
  * flipping it. Only background-color animates, so 1,362 cells cost no layout
  * work at all -- which is the whole reason the corpus can be drawn 1:1.
+ *
+ * The longest bucket delay plus the transition (150ms + 300ms) must stay under
+ * the autoplay dwell in Sieve.tsx, or the previous stage's losses are still
+ * fading red while the caption already reads "nothing was removed here".
  */
 .sieve-cell[data-b="0"] { transition-delay: 0ms; }
-.sieve-cell[data-b="1"] { transition-delay: 16ms; }
-.sieve-cell[data-b="2"] { transition-delay: 32ms; }
-.sieve-cell[data-b="3"] { transition-delay: 48ms; }
-.sieve-cell[data-b="4"] { transition-delay: 64ms; }
-.sieve-cell[data-b="5"] { transition-delay: 80ms; }
-.sieve-cell[data-b="6"] { transition-delay: 96ms; }
-.sieve-cell[data-b="7"] { transition-delay: 112ms; }
-.sieve-cell[data-b="8"] { transition-delay: 128ms; }
-.sieve-cell[data-b="9"] { transition-delay: 144ms; }
-.sieve-cell[data-b="10"] { transition-delay: 160ms; }
-.sieve-cell[data-b="11"] { transition-delay: 176ms; }
-.sieve-cell[data-b="12"] { transition-delay: 192ms; }
-.sieve-cell[data-b="13"] { transition-delay: 208ms; }
-.sieve-cell[data-b="14"] { transition-delay: 224ms; }
-.sieve-cell[data-b="15"] { transition-delay: 240ms; }
+.sieve-cell[data-b="1"] { transition-delay: 10ms; }
+.sieve-cell[data-b="2"] { transition-delay: 20ms; }
+.sieve-cell[data-b="3"] { transition-delay: 30ms; }
+.sieve-cell[data-b="4"] { transition-delay: 40ms; }
+.sieve-cell[data-b="5"] { transition-delay: 50ms; }
+.sieve-cell[data-b="6"] { transition-delay: 60ms; }
+.sieve-cell[data-b="7"] { transition-delay: 70ms; }
+.sieve-cell[data-b="8"] { transition-delay: 80ms; }
+.sieve-cell[data-b="9"] { transition-delay: 90ms; }
+.sieve-cell[data-b="10"] { transition-delay: 100ms; }
+.sieve-cell[data-b="11"] { transition-delay: 110ms; }
+.sieve-cell[data-b="12"] { transition-delay: 120ms; }
+.sieve-cell[data-b="13"] { transition-delay: 130ms; }
+.sieve-cell[data-b="14"] { transition-delay: 140ms; }
+.sieve-cell[data-b="15"] { transition-delay: 150ms; }
 
 @media (prefers-reduced-motion: reduce) {
   .sieve-cell {
