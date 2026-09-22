@@ -25,6 +25,7 @@ import { evaluate } from '../lib/lab/evaluator'
 import { parseCaseSuite, parseRecordBundle, type Case } from '../lib/lab/records'
 import { KNOWN_IMPLEMENTATIONS, selectRunner, sha256 } from '../lib/lab/runner'
 import { runInSandbox, sandboxCredentials, type SandboxExecution } from '../lib/lab/sandbox'
+import { uploadSet } from '../lib/lab/upload-set'
 import { EXPERIMENT, specHash } from '../lib/lab/spec'
 
 function repoRoot(): string {
@@ -39,16 +40,6 @@ function repoRoot(): string {
 const ROOT = repoRoot()
 const LAB = join(ROOT, 'backend', 'lab')
 const RUNS = join(LAB, 'runs')
-
-/** Files the microVM receives. Note what is absent: everything else. */
-function uploadSet(): { path: string; content: Buffer }[] {
-  return [
-    { path: 'lab/__init__.py', content: Buffer.from('') },
-    { path: 'lab/harness.py', content: readFileSync(join(LAB, 'harness.py')) },
-    { path: 'lab/cases/observed.json', content: readFileSync(join(LAB, 'cases', 'observed.json')) },
-    { path: 'lab/cases/synthetic.json', content: readFileSync(join(LAB, 'cases', 'synthetic.json')) },
-  ]
-}
 
 function loadCases(): Case[] {
   const cases: Case[] = []
@@ -124,7 +115,7 @@ async function executeInSandbox(source: string, onProgress: (s: string) => void)
     )
   }
 
-  const execution = await runInSandbox({ candidateSource: source, files: uploadSet(), credentials, onProgress })
+  const execution = await runInSandbox({ candidateSource: source, files: await uploadSet(LAB), credentials, onProgress })
   if (execution.exit_code !== 0 || execution.records_json === null) {
     return {
       execution,
