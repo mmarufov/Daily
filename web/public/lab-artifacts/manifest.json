@@ -1,0 +1,92 @@
+{
+ "lab_manifest_version": 1,
+ "experiment_id": "article-to-verdict-association",
+ "spec_hash": "008af8266204438a",
+ "artifact_revision": "1acbf95",
+ "built_at": "2026-09-21T22:46:42-07:00",
+ "complete": true,
+ "entries": [
+  {
+   "run_id": "article-to-verdict-association__control-lenient-keyed__6a3f35522825__008af826__clean",
+   "file": "control-lenient-keyed-clean.json",
+   "candidate_id": "control-lenient-keyed",
+   "kind": "seeded-control",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "2c1e7c611a6d80352e02b8038a33fa48fe8605c39eeb52835deb447a373773c2",
+   "bytes": 34839
+  },
+  {
+   "run_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826__clean",
+   "file": "control-self-reporting-clean.json",
+   "candidate_id": "control-self-reporting",
+   "kind": "seeded-control",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "bbdcc272b9273e5e319431cf17d6f03b398b1089fa9ddac60fb765fc3e7a2ef6",
+   "bytes": 36109
+  },
+  {
+   "run_id": "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826__clean",
+   "file": "control-zero-filling-clean.json",
+   "candidate_id": "control-zero-filling",
+   "kind": "seeded-control",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "ff09af51194f3047c98b52488beccf3e965ac93487c22cb3fd2945435867cb43",
+   "bytes": 35165
+  },
+  {
+   "run_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826__clean",
+   "file": "count-guard-v1-clean.json",
+   "candidate_id": "count-guard-v1",
+   "kind": "preserved-version",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "b575f150eaa0a7e8967c150700de966f8365006c2e31112693f38273d40ebe5d",
+   "bytes": 35615
+  },
+  {
+   "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean",
+   "file": "keyed-v2-clean.json",
+   "candidate_id": "keyed-v2",
+   "kind": "preserved-version",
+   "verdict": "accepted-for-review",
+   "spec_hash": "008af8266204438a",
+   "sha256": "eccf1af10e5c36e9b43fd019730d4423ec4a85dfe8a32bb59bddad71b88def95",
+   "bytes": 38287
+  },
+  {
+   "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__interrupted",
+   "file": "keyed-v2-interrupted.json",
+   "candidate_id": "keyed-v2",
+   "kind": "preserved-version",
+   "verdict": "accepted-for-review",
+   "spec_hash": "008af8266204438a",
+   "sha256": "00dd1c1e8615db6527d7e3dbf8ec64b54bc141efbf93c1bf77d52e5cae80e0fc",
+   "bytes": 38880
+  },
+  {
+   "run_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean",
+   "file": "positional-v0-clean.json",
+   "candidate_id": "positional-v0",
+   "kind": "preserved-version",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "5031dba5c56f3ed07ac632a1d8e2e6d71c01770333fb56b699ca58704681f589",
+   "bytes": 30538
+  }
+ ],
+ "notes": [
+  {
+   "severity": "info",
+   "message": "Sandbox limits for untrusted candidates: python3.13, network disabled, 120s wall clock, none secrets.",
+   "source": "web/lib/lab/runner.ts"
+  },
+  {
+   "severity": "caution",
+   "message": "Every run in this set executed locally, because each candidate is byte-identical to an implementation committed in this repository. Nothing novel has been executed.",
+   "source": "web/lib/lab/runner.ts selectRunner"
+  }
+ ]
+}
