@@ -85,6 +85,72 @@ export const AttemptSchema = z.object({
   note: z.string(),
 })
 
+/**
+ * Evidence that a run crossed the isolation boundary.
+ *
+ * Present only for `vercel-sandbox` runs, and absent — not zeroed, not
+ * defaulted — for local ones. Every field here is read back off the platform
+ * after the fact rather than copied from the request: recording the
+ * `networkPolicy` that was *asked for* would establish only that the ask was
+ * made, and `egress_bytes` is the platform's meter, which no probe inside the
+ * microVM could forge.
+ */
+export const SandboxExecutionSchema = z.object({
+  sandbox_id: z.string(),
+  runtime: z.string(),
+  region: z.string(),
+  network_policy: z.string(),
+  egress_bytes: unknownable(z.number().int()),
+  active_cpu_ms: unknownable(z.number()),
+  boot_ms: z.number(),
+  wall_clock_ms: z.number(),
+  exit_code: z.number().int(),
+  /** Everything the candidate could see. The evaluator is not in this list. */
+  uploaded: z.array(z.object({ path: z.string(), sha256: z.string(), bytes: z.number().int() })),
+  /** Negative controls. `held: false` on any of these invalidates the run. */
+  isolation: z.array(
+    z.object({
+      name: z.string(),
+      command: z.string(),
+      expectation: z.string(),
+      held: z.boolean(),
+      observed: z.string(),
+    }),
+  ),
+})
+export type SandboxExecutionRecord = z.infer<typeof SandboxExecutionSchema>
+
+/**
+ * The investigation that authored a candidate, when one did.
+ *
+ * The hypothesis is recorded and never graded. It is a pointer to evidence for
+ * a human reader; letting it influence the verdict would be exactly the
+ * self-assessment the whole boundary exists to prevent.
+ */
+export const InvestigationSchema = z.object({
+  model: z.string(),
+  gateway: z.string(),
+  started_at: z.string(),
+  wall_clock_ms: z.number(),
+  finish_reason: z.string(),
+  tool_calls_made: z.number().int(),
+  max_tool_calls: z.number().int(),
+  budget_ceiling_usd: z.number(),
+  /** As metered by the gateway, not estimated here. */
+  usage: z.object({
+    input_tokens: unknownable(z.number().int()),
+    output_tokens: unknownable(z.number().int()),
+    total_tokens: unknownable(z.number().int()),
+  }),
+  hypothesis: z.string(),
+  evidence: z.array(z.string()),
+  scope_accepted: z.boolean(),
+  scope_reason: z.string(),
+  /** Path to the committed, sanitised trace. */
+  trace_path: z.string(),
+  n_trace_steps: z.number().int(),
+})
+
 export const LabProvenanceSchema = z.object({
   /**
    * The revision the harness ran at, recorded by the orchestrator at the
@@ -108,6 +174,10 @@ export const LabProvenanceSchema = z.object({
   execution_mode: z.enum(['offline-replay', 'live', UNKNOWN]),
   execution_mode_basis: z.string(),
   python: unknownable(z.string()),
+  /** Where the candidate executed, and the evidence for it. */
+  runner: z.enum(['local-known', 'vercel-sandbox']),
+  sandbox: SandboxExecutionSchema.nullable(),
+  investigation: InvestigationSchema.nullable(),
   case_suites: z.array(CaseSuiteRefSchema),
   notes: z.array(
     z.object({
