@@ -304,3 +304,197 @@ export function recoverAttempts(events: readonly RunEvent[]): readonly {
     return { attempt_id: start.attempt_id, status: end.status, note: end.note }
   })
 }
+
+
+/* ------------------------------------------------ the investigation --- */
+
+/**
+ * The paid work runs where the credential is.
+ *
+ * `AI_GATEWAY_API_KEY` is a Vercel *sensitive* variable: set on the
+ * deployment, unreadable by anything that did not set it, including
+ * `vercel env pull`. That is not an obstacle to work around -- it is the
+ * access model the spec asks for. "Only the authenticated owner starts paid
+ * work, enforced server-side" is not satisfied by copying the key onto a
+ * laptop and running the loop there, and a repository that audits its own
+ * sandbox for leaked credentials should not be exfiltrating one to run an
+ * errand.
+ *
+ * So the investigation is a workflow. The owner starts it, it runs on the
+ * deployment, and the evidence comes back in the run's return value to be
+ * committed. Nothing about the candidate's path changes: it still faces the
+ * scope gate, still executes in a microVM because its bytes match no
+ * committed implementation, and is still graded by the evaluator it never
+ * sees.
+ */
+export interface InvestigationWorkflowInput {
+  readonly run_id: string
+  readonly candidate_id: string
+  readonly spec_hash: string
+  readonly suspend_seconds: number
+}
+
+export type InvestigationWorkflowOutcome = {
+  readonly kind: 'investigated' | 'refused'
+  readonly detail: string
+  /** The sanitised trace, null when the investigation never started. */
+  readonly trace: unknown | null
+  /** Sandbox evidence for the candidate the agent proposed. */
+  readonly sandbox: unknown | null
+  /** The record bundle the harness produced, as bytes. */
+  readonly records_json: string | null
+  readonly candidate_source: string | null
+  readonly verdict: Evaluation['verdict'] | null
+  readonly verdict_reason: string | null
+  readonly processes: readonly ProcessTrace[]
+  readonly resumed: boolean
+  /**
+   * The revision the code that ran was built from.
+   *
+   * `VERCEL_GIT_COMMIT_SHA` on a deployment, which is the honest answer for
+   * work executed there -- local HEAD would name whatever the operator's tree
+   * happened to be at, which is not what ran.
+   */
+  readonly executed_at_revision: string
+  readonly deployment: string
+}
+
+/**
+ * Run the agent loop. One step, because the loop is one unit: the model
+ * proposes, the scope gate rules, and the sandbox executes inside the tool
+ * the model called. Splitting it would journal halves of a decision.
+ */
+export async function investigateStep(
+  input: InvestigationWorkflowInput,
+  cases: readonly Case[],
+): Promise<{
+  ok: boolean
+  detail: string
+  trace: unknown | null
+  sandbox: unknown | null
+  records_json: string | null
+  candidate_source: string | null
+  mark: StepMark
+}> {
+  'use step'
+  const { investigate } = await import('./agent')
+  const { runInSandbox, sandboxCredentials } = await import('./sandbox')
+  const { uploadSet } = await import('./upload-set')
+  const { parseRecordBundle } = await import('./records')
+  const { readSourceExcerpt } = await import('./source-excerpt')
+
+  let sandbox: unknown | null = null
+  let recordsJson: string | null = null
+  let candidateSource: string | null = null
+
+  const result = await investigate({
+    cases,
+    readSource: readSourceExcerpt,
+    evaluateCandidate: async (_candidateId, source) => {
+      candidateSource = source
+      const credentials = sandboxCredentials()
+      if ('missing' in credentials) {
+        return { summary: `the sandbox is unavailable: missing ${credentials.missing.join(', ')}`, evaluation: null }
+      }
+      const execution = await runInSandbox({
+        candidateSource: source,
+        files: await uploadSet(),
+        credentials,
+      })
+      const { stdout, stderr, records_json: records, candidate_sha256, ...evidence } = execution
+      void stdout
+      void stderr
+      void candidate_sha256
+      sandbox = evidence
+      recordsJson = records
+
+      if (execution.isolation.some((probe) => !probe.held)) {
+        return { summary: 'the sandbox did not isolate; this run produces evidence about nothing', evaluation: null }
+      }
+      if (records === null) {
+        return { summary: `the harness exited ${execution.exit_code} and produced no records`, evaluation: null }
+      }
+      const parsed = parseRecordBundle(JSON.parse(records))
+      if (!parsed.ok) return { summary: `the record bundle did not validate: ${parsed.issues.join('; ')}`, evaluation: null }
+
+      // The tally, never the verdict. Returning the verdict would let a
+      // second proposal be tuned against the grader, which is also why there
+      // is no second proposal.
+      const tally = parsed.value.records.reduce<Record<string, number>>((acc, r) => {
+        acc[r.outcome] = (acc[r.outcome] ?? 0) + 1
+        return acc
+      }, {})
+      return {
+        summary: `${parsed.value.records.length} records: ${Object.entries(tally).map(([k, v]) => `${v} ${k}`).join(', ')}.`,
+        evaluation: null,
+      }
+    },
+  })
+
+  if (!result.ok) {
+    return {
+      ok: false,
+      detail: `${result.reason}: ${result.needs.join('; ')}`,
+      trace: null,
+      sandbox,
+      records_json: recordsJson,
+      candidate_source: candidateSource,
+      mark: mark(),
+    }
+  }
+  return {
+    ok: true,
+    detail: `${result.trace.tool_calls_made} tool calls, finish ${result.trace.finish_reason}`,
+    trace: result.trace,
+    sandbox,
+    records_json: recordsJson,
+    candidate_source: candidateSource,
+    mark: mark(),
+  }
+}
+
+export async function investigationWorkflow(
+  input: InvestigationWorkflowInput,
+  cases: readonly Case[],
+): Promise<InvestigationWorkflowOutcome> {
+  'use workflow'
+
+  const processes: ProcessTrace[] = []
+  const investigation = await investigateStep(input, cases)
+  processes.push({ step: 'execute', ...investigation.mark })
+
+  if (input.suspend_seconds > 0) {
+    // Same suspension as the candidate workflow, and for the same reason:
+    // the process that grades is meant to be a different process from the one
+    // that investigated, and `process_id` is where a reader checks that.
+    await sleep(`${input.suspend_seconds}s`)
+  }
+
+  const graded = await gradeStep(
+    investigation.records_json,
+    investigation.ok ? null : investigation.detail,
+    cases,
+  )
+  processes.push({ step: 'grade', ...graded.mark })
+
+  return {
+    kind: investigation.ok ? 'investigated' : 'refused',
+    detail: investigation.detail,
+    trace: investigation.trace,
+    sandbox: investigation.sandbox,
+    records_json: investigation.records_json,
+    candidate_source: investigation.candidate_source,
+    verdict: investigation.records_json === null ? null : graded.verdict,
+    verdict_reason: investigation.records_json === null ? null : graded.reason,
+    processes,
+    resumed: new Set(processes.map((p) => p.process_id)).size > 1,
+    executed_at_revision: await revisionStep(),
+    deployment: process.env.VERCEL_URL ?? 'local',
+  }
+}
+
+/** Read inside a step: the workflow bundle has no `process.env` worth trusting. */
+async function revisionStep(): Promise<string> {
+  'use step'
+  return process.env.VERCEL_GIT_COMMIT_SHA ?? 'unknown'
+}

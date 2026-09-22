@@ -284,7 +284,7 @@ async function runSandboxOnly(file: string, cases: Case[]): Promise<number> {
     `${JSON.stringify(
       {
         kind: 'human-authored',
-        source_path: 'backend/lab/contract/candidate.py',
+        source_path: 'backend/lab/contract/candidates/keyed_fallback_v1.py',
         declared_protocol: 'keyed-v2',
         description:
           'Keyed association with a positional fallback: prefers article ids when the response carries them, and associates by position when it does not. Written for this experiment to be plausible rather than correct.',
@@ -377,7 +377,8 @@ function writeArtifacts(args: WriteArgs): void {
     // The candidate itself is committed so the patch on the page is the bytes
     // that ran, not a re-rendering of them.
     mkdirSync(join(LAB, 'contract'), { recursive: true })
-    writeFileSync(join(LAB, 'contract', 'candidate.py'), proposal.content)
+    mkdirSync(join(LAB, 'contract', 'candidates'), { recursive: true })
+    writeFileSync(join(LAB, 'contract', 'candidates', `${candidateId.replace(/-/g, '_')}.py`), proposal.content)
   }
 
   if (bundleJson !== null) {

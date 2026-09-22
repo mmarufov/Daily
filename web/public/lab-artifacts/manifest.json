@@ -2,7 +2,7 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "f027762ab4d08b35",
- "inputs_sha256": "ccbdaca59d8cb943",
+ "inputs_sha256": "ad403d4eac563339",
  "built_at": "2026-09-22T20:20:21.317Z",
  "complete": true,
  "entries": [
@@ -81,8 +81,8 @@
     "1": "accepted-for-review",
     "2": "rejected"
    },
-   "sha256": "3d63b2abb869ebcec10317738f9c5a82676b00f6b0cc8ad04d3fd31eefd498fb",
-   "bytes": 44896,
+   "sha256": "f0c756b47aeba93b4a4d964cc5155755d3086188ee716e38f0a4bf7c03c4c531",
+   "bytes": 44953,
    "runner": "vercel-sandbox",
    "investigated": false
   },
