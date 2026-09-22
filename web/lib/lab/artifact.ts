@@ -86,14 +86,23 @@ export const AttemptSchema = z.object({
 })
 
 export const LabProvenanceSchema = z.object({
-  /** Revision whose working tree produced the records. */
+  /**
+   * The revision the harness ran at, recorded by the orchestrator at the
+   * moment it ran rather than re-derived afterwards. Carries `+dirty` when the
+   * tree was edited, because a run from an edited tree is not a run at that
+   * commit.
+   */
   executed_at_revision: unknownable(z.string()),
-  /** Revision that built this artifact. */
-  artifact_revision: unknownable(z.string()),
-  artifact_built_at: z.string(),
+  /**
+   * Content hash over every input this run was derived from. Replaces a git
+   * revision on purpose: a committed export has to be a pure function of
+   * committed bytes, and `git log --format=%h` is not one — `core.abbrev`
+   * defaults to `auto` and varies with a clone's object count.
+   */
+  inputs_sha256: z.string(),
   executed_at: unknownable(z.string()),
-  /** Which trusted code computed the verdict. */
-  evaluator_revision: unknownable(z.string()),
+  /** Content hash of the trusted code that computed the verdict. */
+  evaluator_sha256: z.string(),
   spec_hash: z.string(),
   spec_version: z.number().int(),
   execution_mode: z.enum(['offline-replay', 'live', UNKNOWN]),
@@ -186,7 +195,8 @@ export const LabManifestSchema = z.object({
   lab_manifest_version: z.literal(LAB_ARTIFACT_VERSION),
   experiment_id: z.string(),
   spec_hash: z.string(),
-  artifact_revision: unknownable(z.string()),
+  inputs_sha256: z.string(),
+  /** The newest run's own timestamp, never a clock reading at export time. */
   built_at: z.string(),
   /** Only set once every listed run has been written and validated. */
   complete: z.literal(true),

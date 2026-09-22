@@ -227,9 +227,17 @@ cd ../web && npm run export:lab -- --check`}
         <Band {...band('provenance', 'What can and cannot be established')} />
         <div className="grid gap-8 lg:grid-cols-2">
           <dl className="m-0 grid gap-x-8 gap-y-4 text-xs sm:grid-cols-2">
-            <Row term="Executed at revision" value={run.provenance.executed_at_revision} />
-            <Row term="Built this artifact" value={run.provenance.artifact_revision} />
-            <Row term="Evaluator revision" value={run.provenance.evaluator_revision} />
+            <Row
+              term="Executed at revision"
+              value={run.provenance.executed_at_revision}
+              note="recorded when the harness ran, not re-derived at export"
+            />
+            <Row
+              term="Inputs sha256"
+              value={run.provenance.inputs_sha256}
+              note="cases, records, candidates and event logs"
+            />
+            <Row term="Evaluator sha256" value={run.provenance.evaluator_sha256} />
             <Row term="Spec hash" value={run.provenance.spec_hash} />
             <Row term="Execution mode" value={run.provenance.execution_mode} note={run.provenance.execution_mode_basis} />
             <Row term="Python" value={run.provenance.python} />

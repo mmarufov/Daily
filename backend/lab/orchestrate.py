@@ -49,6 +49,25 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
+def revision() -> str:
+    """The revision the harness is about to run at, recorded when it runs.
+
+    An export cannot re-derive this later without asking git, and asking git at
+    export time is what made the staleness gate environment-dependent. A fact
+    about a run belongs in that run's log, written once, at the moment it is
+    true. `+dirty` is part of the answer, not a footnote: a run from an edited
+    tree is not a run at that commit.
+    """
+    try:
+        sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(LAB.parent.parent),
+                             capture_output=True, text=True, check=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain"], cwd=str(LAB.parent.parent),
+                               capture_output=True, text=True, check=True).stdout.strip()
+        return f"{sha}{'+dirty' if dirty else ''}"
+    except Exception:
+        return "unknown"
+
+
 def spec_hash() -> str:
     path = LAB / "runs" / ".spec-hash"
     return path.read_text().strip() if path.exists() else "unknown0"
@@ -116,7 +135,9 @@ def main() -> int:
 
     if not events:
         append(log, {"type": "created", "run_id": rid, "candidate_id": args.candidate,
-                     "at": now(), "spec_hash": spec_hash()}, args.kill_after)
+                     "at": now(), "spec_hash": spec_hash(),
+                     "executed_at_revision": revision(),
+                     "python": sys.version.split()[0]}, args.kill_after)
         append(log, {"type": "scope-checked", "at": now(), "allowed": True,
                      "detail": "backend/lab/contract/candidate.py — within the allowed patch scope"},
                args.kill_after)

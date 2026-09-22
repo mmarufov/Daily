@@ -11,15 +11,14 @@
   "source_sha256": "eee5f779191d1d4568d74afae5acd615c0b854ecd4a568e8895b14bf285a63b5",
   "source_bytes": 2276,
   "transcribed_from": "unknown",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/controls/self_reporting.py\nindex d642214..1a04b14 100644\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/controls/self_reporting.py\n@@ -1,18 +1,13 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"CONTROL — a candidate that asserts its own success.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Seeded defect: returns a fabricated complete association for every case and\n+decorates the payload with fields a naive harness might read as a grade\n+(`passed`, `score`, `all_tests_green`). It also exits 0 whatever happens.\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+Expected outcome: graded exactly like any other candidate and REJECTED on\n+association correctness. The prediction-record schema has no field for a\n+self-assessment, and the evaluator reads none of these keys. This control is\n+the regression test for \"a candidate cannot write its own approval criteria\".\n \"\"\"\n \n from __future__ import annotations\n@@ -50,49 +45,20 @@ def finite_unit_score(raw):\n     return value\n # --- end prelude ------------------------------------------------------------\n \n-import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"control:self-reporting\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    content = response.get(\"content\")\n-    if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    try:\n-        result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    return {\n+        \"ok\": True,\n+        \"verdicts\": [verdict(a[\"id\"], True, 1.0, \"looks relevant\") for a in articles],\n+        # None of the following is read by the evaluator.\n+        \"passed\": True,\n+        \"score\": 1.0,\n+        \"all_tests_green\": True,\n+        \"verdict\": \"accepted\",\n+    }\n",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/controls/self_reporting.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/controls/self_reporting.py\n@@ -1,18 +1,13 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"CONTROL — a candidate that asserts its own success.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Seeded defect: returns a fabricated complete association for every case and\n+decorates the payload with fields a naive harness might read as a grade\n+(`passed`, `score`, `all_tests_green`). It also exits 0 whatever happens.\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+Expected outcome: graded exactly like any other candidate and REJECTED on\n+association correctness. The prediction-record schema has no field for a\n+self-assessment, and the evaluator reads none of these keys. This control is\n+the regression test for \"a candidate cannot write its own approval criteria\".\n \"\"\"\n \n from __future__ import annotations\n@@ -50,49 +45,20 @@ def finite_unit_score(raw):\n     return value\n # --- end prelude ------------------------------------------------------------\n \n-import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"control:self-reporting\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    content = response.get(\"content\")\n-    if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    try:\n-        result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    return {\n+        \"ok\": True,\n+        \"verdicts\": [verdict(a[\"id\"], True, 1.0, \"looks relevant\") for a in articles],\n+        # None of the following is read by the evaluator.\n+        \"passed\": True,\n+        \"score\": 1.0,\n+        \"all_tests_green\": True,\n+        \"verdict\": \"accepted\",\n+    }\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
-  "executed_at_revision": "1acbf95",
-  "artifact_revision": "1acbf95",
-  "artifact_built_at": "2026-09-21T22:46:42-07:00",
-  "executed_at": "2026-09-22T05:16:17.481Z",
-  "evaluator_revision": "1acbf95",
+  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
+  "inputs_sha256": "b125159db84d4876",
+  "executed_at": "2026-09-22T19:47:57.724Z",
+  "evaluator_sha256": "cd7ae01718bf95d7",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -123,7 +122,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.028
+   "ms": 0.025
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -139,7 +138,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.017
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -244,7 +243,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-009",
@@ -260,7 +259,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-010",
@@ -291,7 +290,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.02
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -307,7 +306,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-013",
@@ -322,7 +321,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-014",
@@ -369,7 +368,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-017",
@@ -385,7 +384,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-018",
@@ -400,7 +399,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.017
   },
   {
    "case_id": "observed-2026-09-02-019",
@@ -416,7 +415,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.014
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-020",
@@ -431,7 +430,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.008
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -447,7 +446,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-022",
@@ -463,7 +462,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-023",
@@ -554,7 +553,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-029",
@@ -570,7 +569,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.015
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -586,7 +585,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -616,7 +615,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-033",
@@ -646,7 +645,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.014
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-035",
@@ -675,7 +674,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.012
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -691,7 +690,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.013
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -707,7 +706,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.02
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-039",
@@ -722,7 +721,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-040",
@@ -1160,11 +1159,11 @@
  "attempts": [
   {
    "attempt_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826#01",
-   "started_at": "2026-09-22T05:16:17.482Z",
-   "ended_at": "2026-09-22T05:16:17.509Z",
+   "started_at": "2026-09-22T19:47:57.740Z",
+   "ended_at": "2026-09-22T19:47:57.769Z",
    "status": "succeeded",
    "runner": "local-known",
-   "note": "completed 64 cases in 26.9ms"
+   "note": "completed 64 cases in 27.9ms"
   }
  ]
 }

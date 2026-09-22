@@ -11,15 +11,14 @@
   "source_sha256": "bcde0d5383b54e71df8341cc58cd5b9d5cd505b402333f58f51bd21822b35641",
   "source_bytes": 6390,
   "transcribed_from": "modelled on backend/app/services/ranking_contract.py:131",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/versions/keyed_v2.py\nindex d642214..499e0a9 100644\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/versions/keyed_v2.py\n@@ -1,18 +1,26 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"The proposed contract: every verdict identifies its own article.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Modelled on the id-keyed validation Daily already ships in\n+`backend/app/services/ranking_contract.py:131` (`validate_judgments`), which is\n+the pattern this repository already trusts for the S7 ranking path:\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n+    packs = {e.article_id: e for e in evidence}\n+    ids = [v.article_id for v in values]\n+    if len(ids) != len(set(ids)) or set(ids) != set(packs):\n+        raise ValueError('ranker must return exact article ID set')\n \n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+One set-equality check covers duplicate, unknown and missing ids at once, and\n+refuses to salvage a partial answer. The same shape is reproduced here, plus\n+the truncation check `ranking_provider.py:296` performs and\n+`score_articles_batch` does not:\n+\n+    if choice.get('finish_reason') != 'stop':\n+        raise ProviderFailure('incomplete_response')\n+\n+What this version does NOT claim: that it ranks better. Association is a\n+correctness property, and correctness is all that is under test. Relevance\n+quality under this protocol is unmeasured — it needs recordings that do not\n+exist, because no budgeted keyed run has been made.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +62,88 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"keyed-v2\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    error = response.get(\"error\")\n+    if error:\n+        if error == \"no_recording\":\n+            return refuse(\"no_recording\", \"no recorded response for this request\")\n+        if error in {\"timeout\", \"cancelled\"}:\n+            return refuse(error, error)\n+        if error == \"budget_exceeded\":\n+            return refuse(\"retries_exhausted\", error)\n+        return refuse(\"retries_exhausted\", str(error))\n+\n+    # A truncated completion is a failure, not a shorter answer. Production\n+    # never reads finish_reason, which is why 33 recorded responses that stopped\n+    # at the output ceiling were indistinguishable from malformed ones.\n+    finish_reason = response.get(\"finish_reason\")\n+    if finish_reason is not None and finish_reason != \"stop\":\n+        return refuse(\"truncated_response\", f\"finish_reason={finish_reason}\")\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"retries_exhausted\", \"no content returned\")\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+\n+    if not isinstance(result, dict) or not isinstance(result.get(\"results\"), list):\n+        return refuse(\"unexpected_shape\", \"expected an object with a results array\")\n+\n+    entries = result[\"results\"]\n+    expected = {a[\"id\"]: a for a in articles}\n+\n+    seen: list[str] = []\n+    for entry in entries:\n+        if not isinstance(entry, dict):\n+            return refuse(\"invalid_type\", f\"entry is {type(entry).__name__}\")\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        if not isinstance(article_id, str):\n+            return refuse(\"invalid_type\", \"article_id missing or not a string\")\n+        seen.append(article_id)\n+\n+    # Duplicate, unknown and missing are distinguished for the operator even\n+    # though any one of them is fatal. `validate_judgments` collapses all three\n+    # into one message; the Lab separates them so a counterexample can name the\n+    # exact failure, then refuses just as hard.\n+    if len(seen) != len(set(seen)):\n+        dupes = sorted({i for i in seen if seen.count(i) > 1})\n+        return refuse(\"duplicate_id\", f\"repeated ids: {', '.join(dupes[:5])}\")\n+    unknown = [i for i in seen if i not in expected]\n+    if unknown:\n+        return refuse(\"unknown_id\", f\"ids not in the request: {', '.join(sorted(unknown)[:5])}\")\n+    missing = [i for i in expected if i not in set(seen)]\n+    if missing:\n+        return refuse(\"missing_id\", f\"no verdict for: {', '.join(sorted(missing)[:5])}\")\n \n     out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    for entry in entries:\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            raw = entry.get(\"score\")\n+            if isinstance(raw, (int, float)) and not isinstance(raw, bool):\n+                # Distinguishes 9e9 (out of range) from NaN (not finite); both\n+                # are clamped silently by production.\n+                return refuse(\n+                    \"score_not_finite\" if raw != raw or raw in (float(\"inf\"), float(\"-inf\"))\n+                    else \"score_out_of_range\",\n+                    f\"score={raw!r} for {article_id}\",\n+                )\n+            return refuse(\"invalid_type\", f\"score is {type(raw).__name__} for {article_id}\")\n+        relevant = entry.get(\"relevant\", score >= 0.5)\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"relevant is {type(relevant).__name__}\")\n+        out.append(verdict(article_id, relevant, score, str(entry.get(\"reason\", \"\"))))\n+\n+    # Emit in request order so downstream consumers see a stable sequence. The\n+    # association itself is by id and does not depend on this ordering — the\n+    # permutation property test asserts exactly that.\n+    by_id = {v[\"article_id\"]: v for v in out}\n+    return ok([by_id[a[\"id\"]] for a in articles])\n",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/versions/keyed_v2.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/versions/keyed_v2.py\n@@ -1,18 +1,26 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"The proposed contract: every verdict identifies its own article.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Modelled on the id-keyed validation Daily already ships in\n+`backend/app/services/ranking_contract.py:131` (`validate_judgments`), which is\n+the pattern this repository already trusts for the S7 ranking path:\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n+    packs = {e.article_id: e for e in evidence}\n+    ids = [v.article_id for v in values]\n+    if len(ids) != len(set(ids)) or set(ids) != set(packs):\n+        raise ValueError('ranker must return exact article ID set')\n \n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+One set-equality check covers duplicate, unknown and missing ids at once, and\n+refuses to salvage a partial answer. The same shape is reproduced here, plus\n+the truncation check `ranking_provider.py:296` performs and\n+`score_articles_batch` does not:\n+\n+    if choice.get('finish_reason') != 'stop':\n+        raise ProviderFailure('incomplete_response')\n+\n+What this version does NOT claim: that it ranks better. Association is a\n+correctness property, and correctness is all that is under test. Relevance\n+quality under this protocol is unmeasured — it needs recordings that do not\n+exist, because no budgeted keyed run has been made.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +62,88 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"keyed-v2\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    error = response.get(\"error\")\n+    if error:\n+        if error == \"no_recording\":\n+            return refuse(\"no_recording\", \"no recorded response for this request\")\n+        if error in {\"timeout\", \"cancelled\"}:\n+            return refuse(error, error)\n+        if error == \"budget_exceeded\":\n+            return refuse(\"retries_exhausted\", error)\n+        return refuse(\"retries_exhausted\", str(error))\n+\n+    # A truncated completion is a failure, not a shorter answer. Production\n+    # never reads finish_reason, which is why 33 recorded responses that stopped\n+    # at the output ceiling were indistinguishable from malformed ones.\n+    finish_reason = response.get(\"finish_reason\")\n+    if finish_reason is not None and finish_reason != \"stop\":\n+        return refuse(\"truncated_response\", f\"finish_reason={finish_reason}\")\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"retries_exhausted\", \"no content returned\")\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+\n+    if not isinstance(result, dict) or not isinstance(result.get(\"results\"), list):\n+        return refuse(\"unexpected_shape\", \"expected an object with a results array\")\n+\n+    entries = result[\"results\"]\n+    expected = {a[\"id\"]: a for a in articles}\n+\n+    seen: list[str] = []\n+    for entry in entries:\n+        if not isinstance(entry, dict):\n+            return refuse(\"invalid_type\", f\"entry is {type(entry).__name__}\")\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        if not isinstance(article_id, str):\n+            return refuse(\"invalid_type\", \"article_id missing or not a string\")\n+        seen.append(article_id)\n+\n+    # Duplicate, unknown and missing are distinguished for the operator even\n+    # though any one of them is fatal. `validate_judgments` collapses all three\n+    # into one message; the Lab separates them so a counterexample can name the\n+    # exact failure, then refuses just as hard.\n+    if len(seen) != len(set(seen)):\n+        dupes = sorted({i for i in seen if seen.count(i) > 1})\n+        return refuse(\"duplicate_id\", f\"repeated ids: {', '.join(dupes[:5])}\")\n+    unknown = [i for i in seen if i not in expected]\n+    if unknown:\n+        return refuse(\"unknown_id\", f\"ids not in the request: {', '.join(sorted(unknown)[:5])}\")\n+    missing = [i for i in expected if i not in set(seen)]\n+    if missing:\n+        return refuse(\"missing_id\", f\"no verdict for: {', '.join(sorted(missing)[:5])}\")\n \n     out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    for entry in entries:\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            raw = entry.get(\"score\")\n+            if isinstance(raw, (int, float)) and not isinstance(raw, bool):\n+                # Distinguishes 9e9 (out of range) from NaN (not finite); both\n+                # are clamped silently by production.\n+                return refuse(\n+                    \"score_not_finite\" if raw != raw or raw in (float(\"inf\"), float(\"-inf\"))\n+                    else \"score_out_of_range\",\n+                    f\"score={raw!r} for {article_id}\",\n+                )\n+            return refuse(\"invalid_type\", f\"score is {type(raw).__name__} for {article_id}\")\n+        relevant = entry.get(\"relevant\", score >= 0.5)\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"relevant is {type(relevant).__name__}\")\n+        out.append(verdict(article_id, relevant, score, str(entry.get(\"reason\", \"\"))))\n+\n+    # Emit in request order so downstream consumers see a stable sequence. The\n+    # association itself is by id and does not depend on this ordering — the\n+    # permutation property test asserts exactly that.\n+    by_id = {v[\"article_id\"]: v for v in out}\n+    return ok([by_id[a[\"id\"]] for a in articles])\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
-  "executed_at_revision": "1acbf95",
-  "artifact_revision": "1acbf95",
-  "artifact_built_at": "2026-09-21T22:46:42-07:00",
-  "executed_at": "2026-09-22T05:16:17.371Z",
-  "evaluator_revision": "1acbf95",
+  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
+  "inputs_sha256": "b125159db84d4876",
+  "executed_at": "2026-09-22T19:47:57.579Z",
+  "evaluator_sha256": "cd7ae01718bf95d7",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -123,7 +122,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.022
+   "ms": 0.02
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -214,7 +213,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.052
+   "ms": 0.057
   },
   {
    "case_id": "observed-2026-09-02-007",
@@ -353,7 +352,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.006
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -431,7 +430,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.008
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -478,7 +477,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.015
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-024",
@@ -493,7 +492,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.009
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-025",
@@ -508,7 +507,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.011
+   "ms": 0.01
   },
   {
    "case_id": "observed-2026-09-02-026",
@@ -539,7 +538,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.006
   },
   {
    "case_id": "observed-2026-09-02-028",
@@ -554,7 +553,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.011
   },
   {
    "case_id": "observed-2026-09-02-029",
@@ -601,7 +600,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.01
+   "ms": 0.009
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -616,7 +615,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.015
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-033",
@@ -631,7 +630,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.007
+   "ms": 0.006
   },
   {
    "case_id": "observed-2026-09-02-034",
@@ -737,7 +736,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.059
+   "ms": 0.058
   },
   {
    "case_id": "observed-2026-09-02-041",
@@ -763,7 +762,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.017
+   "ms": 0.018
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -804,7 +803,7 @@
    "expected_refusal_kinds": [
     "duplicate_id"
    ],
-   "ms": 0.007
+   "ms": 0.008
   },
   {
    "case_id": "syn-unknown-id",
@@ -868,7 +867,7 @@
     "score_out_of_range",
     "invalid_type"
    ],
-   "ms": 0.007
+   "ms": 0.006
   },
   {
    "case_id": "syn-score-string",
@@ -928,7 +927,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.007
+   "ms": 0.006
   },
   {
    "case_id": "syn-truncated-finish-reason",
@@ -1112,11 +1111,11 @@
  "attempts": [
   {
    "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01",
-   "started_at": "2026-09-22T05:16:17.372Z",
-   "ended_at": "2026-09-22T05:16:17.397Z",
+   "started_at": "2026-09-22T19:47:57.596Z",
+   "ended_at": "2026-09-22T19:47:57.621Z",
    "status": "succeeded",
    "runner": "local-known",
-   "note": "completed 64 cases in 25.6ms"
+   "note": "completed 64 cases in 25.7ms"
   }
  ]
 }

@@ -11,15 +11,14 @@
   "source_sha256": "6a3f355228251f71a7e50e6101a3661ceed69636094366e4cec36f471d860d29",
   "source_bytes": 3176,
   "transcribed_from": "unknown",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/controls/lenient_keyed.py\nindex d642214..c8d6a08 100644\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/controls/lenient_keyed.py\n@@ -1,18 +1,11 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"CONTROL — keyed parsing with last-write-wins on duplicate ids.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Seeded defect: accepts a response containing the same article twice, keeping\n+the later verdict. Plausible-looking and wrong: the model has contradicted\n+itself and the parser has silently picked a winner.\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+Expected outcome: REJECTED on the duplicate-id cases. If the evaluator ever\n+accepts this, the evaluator is broken.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +47,39 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"control:lenient-keyed\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n+        return refuse(\"retries_exhausted\", str(response[\"error\"]))\n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n+        return refuse(\"retries_exhausted\", \"no content\")\n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+    if not isinstance(result, dict) or not isinstance(result.get(\"results\"), list):\n+        return refuse(\"unexpected_shape\", \"no results array\")\n+\n+    expected = {a[\"id\"] for a in articles}\n+    by_id: dict[str, dict[str, Any]] = {}\n+    for entry in result[\"results\"]:\n+        if not isinstance(entry, dict):\n+            continue\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        if article_id not in expected:\n+            continue  # DEFECT: silently drops unknown ids instead of refusing\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            score = 0.0  # DEFECT: coerces NaN / out-of-range to a real verdict\n+        by_id[article_id] = verdict(\n+            article_id, bool(entry.get(\"relevant\", score >= 0.5)), score,\n+            str(entry.get(\"reason\", \"\")),\n+        )  # DEFECT: last write wins on a duplicate id\n+\n+    if len(by_id) != len(expected):\n+        return refuse(\"missing_id\", f\"{len(by_id)} of {len(expected)}\")\n+    return ok([by_id[a[\"id\"]] for a in articles])\n",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/controls/lenient_keyed.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/controls/lenient_keyed.py\n@@ -1,18 +1,11 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"CONTROL — keyed parsing with last-write-wins on duplicate ids.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Seeded defect: accepts a response containing the same article twice, keeping\n+the later verdict. Plausible-looking and wrong: the model has contradicted\n+itself and the parser has silently picked a winner.\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+Expected outcome: REJECTED on the duplicate-id cases. If the evaluator ever\n+accepts this, the evaluator is broken.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +47,39 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"control:lenient-keyed\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n+        return refuse(\"retries_exhausted\", str(response[\"error\"]))\n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n+        return refuse(\"retries_exhausted\", \"no content\")\n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+    if not isinstance(result, dict) or not isinstance(result.get(\"results\"), list):\n+        return refuse(\"unexpected_shape\", \"no results array\")\n+\n+    expected = {a[\"id\"] for a in articles}\n+    by_id: dict[str, dict[str, Any]] = {}\n+    for entry in result[\"results\"]:\n+        if not isinstance(entry, dict):\n+            continue\n+        article_id = entry.get(\"article_id\", entry.get(\"id\"))\n+        if article_id not in expected:\n+            continue  # DEFECT: silently drops unknown ids instead of refusing\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            score = 0.0  # DEFECT: coerces NaN / out-of-range to a real verdict\n+        by_id[article_id] = verdict(\n+            article_id, bool(entry.get(\"relevant\", score >= 0.5)), score,\n+            str(entry.get(\"reason\", \"\")),\n+        )  # DEFECT: last write wins on a duplicate id\n+\n+    if len(by_id) != len(expected):\n+        return refuse(\"missing_id\", f\"{len(by_id)} of {len(expected)}\")\n+    return ok([by_id[a[\"id\"]] for a in articles])\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
-  "executed_at_revision": "1acbf95",
-  "artifact_revision": "1acbf95",
-  "artifact_built_at": "2026-09-21T22:46:42-07:00",
-  "executed_at": "2026-09-22T05:16:17.425Z",
-  "evaluator_revision": "1acbf95",
+  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
+  "inputs_sha256": "b125159db84d4876",
+  "executed_at": "2026-09-22T19:47:57.650Z",
+  "evaluator_sha256": "cd7ae01718bf95d7",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -123,7 +122,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.024
+   "ms": 0.028
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -139,7 +138,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.195
+   "ms": 0.209
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -154,7 +153,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.01
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-003",
@@ -170,7 +169,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.171
+   "ms": 0.184
   },
   {
    "case_id": "observed-2026-09-02-004",
@@ -186,7 +185,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.168
+   "ms": 0.185
   },
   {
    "case_id": "observed-2026-09-02-005",
@@ -199,7 +198,7 @@
    "counterexample": null,
    "observed_refusal_kind": "missing_id",
    "expected_refusal_kinds": [],
-   "ms": 0.009
+   "ms": 0.01
   },
   {
    "case_id": "observed-2026-09-02-006",
@@ -214,7 +213,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.055
+   "ms": 0.061
   },
   {
    "case_id": "observed-2026-09-02-007",
@@ -229,7 +228,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -244,7 +243,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-009",
@@ -260,7 +259,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.133
+   "ms": 0.148
   },
   {
    "case_id": "observed-2026-09-02-010",
@@ -275,7 +274,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.008
+   "ms": 0.009
   },
   {
    "case_id": "observed-2026-09-02-011",
@@ -291,7 +290,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.131
+   "ms": 0.143
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -307,7 +306,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.135
+   "ms": 0.144
   },
   {
    "case_id": "observed-2026-09-02-013",
@@ -338,7 +337,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.175
+   "ms": 0.385
   },
   {
    "case_id": "observed-2026-09-02-015",
@@ -353,7 +352,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.008
+   "ms": 0.011
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -369,7 +368,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.34
+   "ms": 0.181
   },
   {
    "case_id": "observed-2026-09-02-017",
@@ -385,7 +384,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.179
+   "ms": 0.177
   },
   {
    "case_id": "observed-2026-09-02-018",
@@ -416,7 +415,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.157
+   "ms": 0.156
   },
   {
    "case_id": "observed-2026-09-02-020",
@@ -447,7 +446,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.157
+   "ms": 0.154
   },
   {
    "case_id": "observed-2026-09-02-022",
@@ -463,7 +462,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.156
+   "ms": 0.154
   },
   {
    "case_id": "observed-2026-09-02-023",
@@ -478,7 +477,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.014
   },
   {
    "case_id": "observed-2026-09-02-024",
@@ -508,7 +507,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.011
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-026",
@@ -524,7 +523,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.106
+   "ms": 0.109
   },
   {
    "case_id": "observed-2026-09-02-027",
@@ -539,7 +538,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.008
+   "ms": 0.011
   },
   {
    "case_id": "observed-2026-09-02-028",
@@ -570,7 +569,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.104
+   "ms": 0.117
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -586,7 +585,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.104
+   "ms": 0.103
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -675,7 +674,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.14
+   "ms": 0.138
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -691,7 +690,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.146
+   "ms": 0.138
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -707,7 +706,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.14
+   "ms": 0.138
   },
   {
    "case_id": "observed-2026-09-02-039",
@@ -750,7 +749,7 @@
    "counterexample": null,
    "observed_refusal_kind": "missing_id",
    "expected_refusal_kinds": [],
-   "ms": 0.009
+   "ms": 0.01
   },
   {
    "case_id": "syn-keyed-in-order",
@@ -763,7 +762,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.014
+   "ms": 0.015
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -868,7 +867,7 @@
     "score_out_of_range",
     "invalid_type"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-score-string",
@@ -913,7 +912,7 @@
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-malformed-json",
@@ -928,7 +927,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.003
+   "ms": 0.004
   },
   {
    "case_id": "syn-truncated-finish-reason",
@@ -1112,11 +1111,11 @@
  "attempts": [
   {
    "attempt_id": "article-to-verdict-association__control-lenient-keyed__6a3f35522825__008af826#01",
-   "started_at": "2026-09-22T05:16:17.426Z",
-   "ended_at": "2026-09-22T05:16:17.454Z",
+   "started_at": "2026-09-22T19:47:57.667Z",
+   "ended_at": "2026-09-22T19:47:57.697Z",
    "status": "succeeded",
    "runner": "local-known",
-   "note": "completed 64 cases in 28.5ms"
+   "note": "completed 64 cases in 30.3ms"
   }
  ]
 }

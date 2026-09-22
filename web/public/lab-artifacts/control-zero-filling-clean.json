@@ -11,15 +11,14 @@
   "source_sha256": "32afb5fd6da82f9089e27dee284a5220dcc82a56ad4dcd7ca9dc8f03d3e0b8ae",
   "source_bytes": 2449,
   "transcribed_from": "unknown",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/controls/zero_filling.py\nindex d642214..590f944 100644\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/controls/zero_filling.py\n@@ -1,18 +1,12 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"CONTROL — turns every failure into a confident all-zero answer.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Seeded defect: reproduces the blanket `except Exception` on the production\n+path, where `CacheMiss` (a RuntimeError) becomes a full set of 0.0 verdicts and\n+the run reports zero cache misses. An offline replay looks clean while having\n+scored nothing.\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+Expected outcome: REJECTED on the no-recording and truncation cases, because\n+an unavailable answer must surface as incomplete and never as a verdict.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +48,23 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n+VERSION_ID = \"control:zero-filling\"\n PROTOCOL = \"positional-v0\"\n \n \n-def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+def _zeros(articles: list[dict[str, Any]]) -> dict[str, Any]:\n+    return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n \n-    content = response.get(\"content\")\n-    if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n \n+def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     try:\n-        result = json.loads(content)\n+        if response.get(\"error\"):\n+            return _zeros(articles)\n+        result = json.loads(response.get(\"content\") or \"\")\n+        entries = result[\"results\"]\n+        return ok([\n+            verdict(a[\"id\"], bool(e.get(\"relevant\")), float(e.get(\"score\", 0.0)), str(e.get(\"reason\", \"\")))\n+            for a, e in zip(articles, entries)\n+        ])\n     except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+        return _zeros(articles)\n",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/controls/zero_filling.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/controls/zero_filling.py\n@@ -1,18 +1,12 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"CONTROL — turns every failure into a confident all-zero answer.\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Seeded defect: reproduces the blanket `except Exception` on the production\n+path, where `CacheMiss` (a RuntimeError) becomes a full set of 0.0 verdicts and\n+the run reports zero cache misses. An offline replay looks clean while having\n+scored nothing.\n \n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+Expected outcome: REJECTED on the no-recording and truncation cases, because\n+an unavailable answer must surface as incomplete and never as a verdict.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +48,23 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n+VERSION_ID = \"control:zero-filling\"\n PROTOCOL = \"positional-v0\"\n \n \n-def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+def _zeros(articles: list[dict[str, Any]]) -> dict[str, Any]:\n+    return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n \n-    content = response.get(\"content\")\n-    if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n \n+def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     try:\n-        result = json.loads(content)\n+        if response.get(\"error\"):\n+            return _zeros(articles)\n+        result = json.loads(response.get(\"content\") or \"\")\n+        entries = result[\"results\"]\n+        return ok([\n+            verdict(a[\"id\"], bool(e.get(\"relevant\")), float(e.get(\"score\", 0.0)), str(e.get(\"reason\", \"\")))\n+            for a, e in zip(articles, entries)\n+        ])\n     except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+        return _zeros(articles)\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
-  "executed_at_revision": "1acbf95",
-  "artifact_revision": "1acbf95",
-  "artifact_built_at": "2026-09-21T22:46:42-07:00",
-  "executed_at": "2026-09-22T05:16:17.537Z",
-  "evaluator_revision": "1acbf95",
+  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
+  "inputs_sha256": "b125159db84d4876",
+  "executed_at": "2026-09-22T19:47:57.796Z",
+  "evaluator_sha256": "cd7ae01718bf95d7",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -123,7 +122,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.036
+   "ms": 0.041
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -139,7 +138,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.205
+   "ms": 0.216
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -154,7 +153,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.014
+   "ms": 0.015
   },
   {
    "case_id": "observed-2026-09-02-003",
@@ -170,7 +169,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.193
+   "ms": 0.189
   },
   {
    "case_id": "observed-2026-09-02-004",
@@ -186,7 +185,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.183
+   "ms": 0.189
   },
   {
    "case_id": "observed-2026-09-02-005",
@@ -214,7 +213,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.059
+   "ms": 0.063
   },
   {
    "case_id": "observed-2026-09-02-007",
@@ -229,7 +228,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.02
+   "ms": 0.021
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -260,7 +259,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.146
+   "ms": 0.155
   },
   {
    "case_id": "observed-2026-09-02-010",
@@ -291,7 +290,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.146
+   "ms": 0.149
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -307,7 +306,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.145
+   "ms": 0.147
   },
   {
    "case_id": "observed-2026-09-02-013",
@@ -338,7 +337,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.199
+   "ms": 0.406
   },
   {
    "case_id": "observed-2026-09-02-015",
@@ -353,7 +352,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.012
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -369,7 +368,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.364
+   "ms": 0.196
   },
   {
    "case_id": "observed-2026-09-02-017",
@@ -385,7 +384,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.188
+   "ms": 0.192
   },
   {
    "case_id": "observed-2026-09-02-018",
@@ -416,7 +415,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.168
+   "ms": 0.171
   },
   {
    "case_id": "observed-2026-09-02-020",
@@ -463,7 +462,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.168
+   "ms": 0.17
   },
   {
    "case_id": "observed-2026-09-02-023",
@@ -524,7 +523,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.119
+   "ms": 0.122
   },
   {
    "case_id": "observed-2026-09-02-027",
@@ -539,7 +538,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.015
+   "ms": 0.013
   },
   {
    "case_id": "observed-2026-09-02-028",
@@ -570,7 +569,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.125
+   "ms": 0.116
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -586,7 +585,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.114
+   "ms": 0.13
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -601,7 +600,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.019
+   "ms": 0.02
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -646,7 +645,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.023
+   "ms": 0.022
   },
   {
    "case_id": "observed-2026-09-02-035",
@@ -659,7 +658,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-036",
@@ -675,7 +674,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.157
+   "ms": 0.174
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -691,7 +690,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.149
+   "ms": 0.163
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -707,7 +706,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.149
+   "ms": 0.171
   },
   {
    "case_id": "observed-2026-09-02-039",
@@ -737,7 +736,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.07
+   "ms": 0.069
   },
   {
    "case_id": "observed-2026-09-02-041",
@@ -763,7 +762,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -776,7 +775,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-keyed-rotated",
@@ -789,7 +788,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-duplicate-id",
@@ -868,7 +867,7 @@
     "score_out_of_range",
     "invalid_type"
    ],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-score-string",
@@ -913,7 +912,7 @@
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-malformed-json",
@@ -928,7 +927,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.006
+   "ms": 0.005
   },
   {
    "case_id": "syn-truncated-finish-reason",
@@ -960,7 +959,7 @@
    "expected_refusal_kinds": [
     "unexpected_shape"
    ],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-empty-results",
@@ -1021,7 +1020,7 @@
    "expected_refusal_kinds": [
     "cancelled"
    ],
-   "ms": 0.003
+   "ms": 0.016
   },
   {
    "case_id": "syn-exec-budget",
@@ -1069,7 +1068,7 @@
     "count_mismatch",
     "duplicate_id"
    ],
-   "ms": 0.005
+   "ms": 0.006
   },
   {
    "case_id": "syn-positional-reordered",
@@ -1112,11 +1111,11 @@
  "attempts": [
   {
    "attempt_id": "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826#01",
-   "started_at": "2026-09-22T05:16:17.537Z",
-   "ended_at": "2026-09-22T05:16:17.567Z",
+   "started_at": "2026-09-22T19:47:57.813Z",
+   "ended_at": "2026-09-22T19:47:57.845Z",
    "status": "succeeded",
    "runner": "local-known",
-   "note": "completed 64 cases in 29.5ms"
+   "note": "completed 64 cases in 30.9ms"
   }
  ]
 }

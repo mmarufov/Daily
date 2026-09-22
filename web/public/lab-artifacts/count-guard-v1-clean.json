@@ -11,15 +11,14 @@
   "source_sha256": "2c2fb884ebdf38e21bbb3fbb8738473b467a26dcc38baf03e4fccd560a68309f",
   "source_bytes": 4140,
   "transcribed_from": "81b20198:backend/app/services/openai_service.py",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/versions/count_guard_v1.py\nindex d642214..86b5330 100644\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/versions/count_guard_v1.py\n@@ -1,18 +1,23 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"The count-mismatch guard, transcribed from PR #59 (head 81b2019).\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Source: backend/app/services/openai_service.py on\n+`mmarufov/batch-scoring-alignment`:\n \n     if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+        logger.warning(\"... discarding the batch rather than assigning \"\n+                       \"verdicts by position\")\n+        continue                              # retry, then report unscored\n+\n+That commit also stops swallowing the harness's stop signals:\n+\n+    except Exception as exc:\n+        if type(exc).__name__ in {\"CacheMiss\", \"BudgetExceeded\"}:\n+            raise\n+\n+Both are reproduced. The guard is a real improvement over positional-v0 and\n+this experiment is expected to show that — and also to show its ceiling: it\n+compares *lengths*, so an equal-length reordered response still passes through\n+and is still associated by position.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +59,55 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n+VERSION_ID = \"count-guard-v1\"\n PROTOCOL = \"positional-v0\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    error = response.get(\"error\")\n+    if error:\n+        # CacheMiss / BudgetExceeded propagate instead of degrading to zeros.\n+        if error in {\"no_recording\", \"budget_exceeded\"}:\n+            return refuse(\"no_recording\" if error == \"no_recording\" else \"retries_exhausted\", error)\n+        if error in {\"timeout\", \"cancelled\"}:\n+            return refuse(error, error)\n+        return refuse(\"retries_exhausted\", str(error))\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"retries_exhausted\", \"no content returned\")\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n \n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n+    if not isinstance(result, dict):\n+        return refuse(\"unexpected_shape\", f\"top level is {type(result).__name__}\")\n+\n+    results_list = result.get(\"results\", [])\n+    if not results_list and \"scores\" in result:\n         results_list = [\n             {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n             for s in result[\"scores\"]\n         ]\n+    if not isinstance(results_list, list):\n+        return refuse(\"unexpected_shape\", \"results is not a list\")\n+\n+    if len(results_list) != len(articles):\n+        return refuse(\n+            \"count_mismatch\",\n+            f\"{len(results_list)} results for {len(articles)} articles\",\n+        )\n \n     out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n+    for article, entry in zip(articles, results_list):\n+        if not isinstance(entry, dict):\n+            return refuse(\"invalid_type\", f\"entry is {type(entry).__name__}\")\n+        try:\n+            score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n+        except Exception:\n+            return refuse(\"invalid_type\", \"score is not numeric\")\n+        relevant = bool(entry.get(\"relevant\", score >= 0.5))\n+        out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n     return ok(out)\n",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/versions/count_guard_v1.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/versions/count_guard_v1.py\n@@ -1,18 +1,23 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n+\"\"\"The count-mismatch guard, transcribed from PR #59 (head 81b2019).\n \n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n+Source: backend/app/services/openai_service.py on\n+`mmarufov/batch-scoring-alignment`:\n \n     if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+        logger.warning(\"... discarding the batch rather than assigning \"\n+                       \"verdicts by position\")\n+        continue                              # retry, then report unscored\n+\n+That commit also stops swallowing the harness's stop signals:\n+\n+    except Exception as exc:\n+        if type(exc).__name__ in {\"CacheMiss\", \"BudgetExceeded\"}:\n+            raise\n+\n+Both are reproduced. The guard is a real improvement over positional-v0 and\n+this experiment is expected to show that — and also to show its ceiling: it\n+compares *lengths*, so an equal-length reordered response still passes through\n+and is still associated by position.\n \"\"\"\n \n from __future__ import annotations\n@@ -54,45 +59,55 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n+VERSION_ID = \"count-guard-v1\"\n PROTOCOL = \"positional-v0\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    error = response.get(\"error\")\n+    if error:\n+        # CacheMiss / BudgetExceeded propagate instead of degrading to zeros.\n+        if error in {\"no_recording\", \"budget_exceeded\"}:\n+            return refuse(\"no_recording\" if error == \"no_recording\" else \"retries_exhausted\", error)\n+        if error in {\"timeout\", \"cancelled\"}:\n+            return refuse(error, error)\n+        return refuse(\"retries_exhausted\", str(error))\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"retries_exhausted\", \"no content returned\")\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n \n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n+    if not isinstance(result, dict):\n+        return refuse(\"unexpected_shape\", f\"top level is {type(result).__name__}\")\n+\n+    results_list = result.get(\"results\", [])\n+    if not results_list and \"scores\" in result:\n         results_list = [\n             {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n             for s in result[\"scores\"]\n         ]\n+    if not isinstance(results_list, list):\n+        return refuse(\"unexpected_shape\", \"results is not a list\")\n+\n+    if len(results_list) != len(articles):\n+        return refuse(\n+            \"count_mismatch\",\n+            f\"{len(results_list)} results for {len(articles)} articles\",\n+        )\n \n     out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n+    for article, entry in zip(articles, results_list):\n+        if not isinstance(entry, dict):\n+            return refuse(\"invalid_type\", f\"entry is {type(entry).__name__}\")\n+        try:\n+            score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n+        except Exception:\n+            return refuse(\"invalid_type\", \"score is not numeric\")\n+        relevant = bool(entry.get(\"relevant\", score >= 0.5))\n+        out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n     return ok(out)\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
-  "executed_at_revision": "1acbf95",
-  "artifact_revision": "1acbf95",
-  "artifact_built_at": "2026-09-21T22:46:42-07:00",
-  "executed_at": "2026-09-22T05:16:17.315Z",
-  "evaluator_revision": "1acbf95",
+  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
+  "inputs_sha256": "b125159db84d4876",
+  "executed_at": "2026-09-22T19:47:57.506Z",
+  "evaluator_sha256": "cd7ae01718bf95d7",
   "spec_hash": "008af8266204438a",
   "spec_version": 1,
   "execution_mode": "offline-replay",
@@ -118,7 +117,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.02
+   "ms": 0.023
   },
   {
    "case_id": "observed-2026-09-02-001",
@@ -134,7 +133,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.201
+   "ms": 0.213
   },
   {
    "case_id": "observed-2026-09-02-002",
@@ -149,7 +148,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.008
+   "ms": 0.01
   },
   {
    "case_id": "observed-2026-09-02-003",
@@ -165,7 +164,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.177
+   "ms": 0.196
   },
   {
    "case_id": "observed-2026-09-02-004",
@@ -181,7 +180,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.173
+   "ms": 0.177
   },
   {
    "case_id": "observed-2026-09-02-005",
@@ -194,7 +193,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.022
+   "ms": 0.023
   },
   {
    "case_id": "observed-2026-09-02-006",
@@ -224,7 +223,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.009
+   "ms": 0.01
   },
   {
    "case_id": "observed-2026-09-02-008",
@@ -286,7 +285,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.134
+   "ms": 0.13
   },
   {
    "case_id": "observed-2026-09-02-012",
@@ -302,7 +301,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.136
+   "ms": 0.135
   },
   {
    "case_id": "observed-2026-09-02-013",
@@ -333,7 +332,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.187
+   "ms": 0.191
   },
   {
    "case_id": "observed-2026-09-02-015",
@@ -348,7 +347,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-016",
@@ -364,7 +363,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.368
+   "ms": 0.36
   },
   {
    "case_id": "observed-2026-09-02-017",
@@ -380,7 +379,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.182
+   "ms": 0.205
   },
   {
    "case_id": "observed-2026-09-02-018",
@@ -395,7 +394,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.014
+   "ms": 0.02
   },
   {
    "case_id": "observed-2026-09-02-019",
@@ -411,7 +410,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.165
+   "ms": 0.176
   },
   {
    "case_id": "observed-2026-09-02-020",
@@ -426,7 +425,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-021",
@@ -442,7 +441,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.157
+   "ms": 0.168
   },
   {
    "case_id": "observed-2026-09-02-022",
@@ -458,7 +457,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.157
+   "ms": 0.161
   },
   {
    "case_id": "observed-2026-09-02-023",
@@ -519,7 +518,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.106
+   "ms": 0.116
   },
   {
    "case_id": "observed-2026-09-02-027",
@@ -565,7 +564,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.104
+   "ms": 0.106
   },
   {
    "case_id": "observed-2026-09-02-030",
@@ -581,7 +580,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.107
+   "ms": 0.104
   },
   {
    "case_id": "observed-2026-09-02-031",
@@ -596,7 +595,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.015
+   "ms": 0.009
   },
   {
    "case_id": "observed-2026-09-02-032",
@@ -611,7 +610,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.013
+   "ms": 0.012
   },
   {
    "case_id": "observed-2026-09-02-033",
@@ -626,7 +625,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "observed-2026-09-02-034",
@@ -641,7 +640,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.01
+   "ms": 0.011
   },
   {
    "case_id": "observed-2026-09-02-035",
@@ -670,7 +669,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.146
+   "ms": 0.147
   },
   {
    "case_id": "observed-2026-09-02-037",
@@ -686,7 +685,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.148
+   "ms": 0.152
   },
   {
    "case_id": "observed-2026-09-02-038",
@@ -702,7 +701,7 @@
     "truncated_response",
     "malformed_json"
    ],
-   "ms": 0.144
+   "ms": 0.137
   },
   {
    "case_id": "observed-2026-09-02-039",
@@ -732,7 +731,7 @@
    "expected_refusal_kinds": [
     "count_mismatch"
    ],
-   "ms": 0.055
+   "ms": 0.063
   },
   {
    "case_id": "observed-2026-09-02-041",
@@ -745,7 +744,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.017
+   "ms": 0.016
   },
   {
    "case_id": "syn-keyed-in-order",
@@ -758,7 +757,7 @@
    "counterexample": null,
    "observed_refusal_kind": null,
    "expected_refusal_kinds": [],
-   "ms": 0.008
+   "ms": 0.007
   },
   {
    "case_id": "syn-keyed-reversed",
@@ -814,7 +813,7 @@
    "expected_refusal_kinds": [
     "unknown_id"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-missing-id",
@@ -847,7 +846,7 @@
     "invalid_type",
     "malformed_json"
    ],
-   "ms": 0.006
+   "ms": 0.007
   },
   {
    "case_id": "syn-score-out-of-range",
@@ -878,7 +877,7 @@
    "expected_refusal_kinds": [
     "invalid_type"
    ],
-   "ms": 0.004
+   "ms": 0.005
   },
   {
    "case_id": "syn-score-null",
@@ -923,7 +922,7 @@
    "expected_refusal_kinds": [
     "malformed_json"
    ],
-   "ms": 0.004
+   "ms": 0.003
   },
   {
    "case_id": "syn-truncated-finish-reason",
@@ -1001,7 +1000,7 @@
    "expected_refusal_kinds": [
     "timeout"
    ],
-   "ms": 0.001
+   "ms": 0.002
   },
   {
    "case_id": "syn-exec-cancelled",
@@ -1107,11 +1106,11 @@
  "attempts": [
   {
    "attempt_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826#01",
-   "started_at": "2026-09-22T05:16:17.316Z",
-   "ended_at": "2026-09-22T05:16:17.344Z",
+   "started_at": "2026-09-22T19:47:57.523Z",
+   "ended_at": "2026-09-22T19:47:57.552Z",
    "status": "succeeded",
    "runner": "local-known",
-   "note": "completed 64 cases in 28.3ms"
+   "note": "completed 64 cases in 28.9ms"
   }
  ]
 }
