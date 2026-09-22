@@ -106,7 +106,7 @@ export type ToolName = (typeof TOOLS)[number]['name']
 /* --------------------------------------------------------- readiness ---- */
 
 export type Readiness =
-  | { readonly ready: true; readonly gateway: string }
+  | { readonly ready: true; readonly gateway: 'vercel-ai-gateway' }
   | { readonly ready: false; readonly reason: 'missing-credentials' | 'missing-budget'; readonly needs: readonly string[] }
 
 /**
@@ -118,12 +118,29 @@ export type Readiness =
  * did.
  */
 export function readiness(env: Readonly<Record<string, string | undefined>> = process.env): Readiness {
-  const key = env.AI_GATEWAY_API_KEY ?? env.OPENAI_API_KEY
-  const needs: string[] = []
-  if (key === undefined || key.trim() === '') {
-    needs.push('AI_GATEWAY_API_KEY (or OPENAI_API_KEY) for the investigator')
+  // `AI_GATEWAY_API_KEY` and nothing else.
+  //
+  // This used to accept `OPENAI_API_KEY` as a fallback and report the gateway
+  // as `openai-direct`. Nothing could serve that: `agent.ts` passes a bare
+  // `provider/model` string, which only the AI Gateway resolves, and no
+  // provider SDK is installed. So an OpenAI key made `readiness()` return
+  // ready and `generateText` fail at call time -- and the failure was the
+  // lesser problem. `openai-direct` would have been written into the
+  // committed trace as the gateway that served a call that never happened,
+  // which is a false provenance record in a repository whose entire claim is
+  // that its provenance is not false.
+  //
+  // A readiness check has to test what the call path actually needs. This one
+  // now does, and the return type has no room for a second answer.
+  if ((env.AI_GATEWAY_API_KEY ?? '').trim() === '') {
+    return {
+      ready: false,
+      reason: 'missing-credentials',
+      needs: [
+        'AI_GATEWAY_API_KEY — the model is addressed as a `provider/model` string, which only the AI Gateway routes',
+      ],
+    }
   }
-  if (needs.length > 0) return { ready: false, reason: 'missing-credentials', needs }
   if ((env.LAB_MAX_USD ?? '').trim() === '') {
     return {
       ready: false,
@@ -131,7 +148,7 @@ export function readiness(env: Readonly<Record<string, string | undefined>> = pr
       needs: ['LAB_MAX_USD — an explicit per-investigation spending limit'],
     }
   }
-  return { ready: true, gateway: env.AI_GATEWAY_API_KEY !== undefined ? 'vercel-ai-gateway' : 'openai-direct' }
+  return { ready: true, gateway: 'vercel-ai-gateway' }
 }
 
 /* -------------------------------------------------------- proposals ---- */

@@ -18,9 +18,9 @@
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
   "inputs_sha256": "7f0557be5e3bdcbb",
   "executed_at": "2026-09-22T19:47:57.579Z",
-  "evaluator_sha256": "0448a05a16709521",
-  "spec_hash": "008af8266204438a",
-  "spec_version": 1,
+  "evaluator_sha256": "277ec81521ba14d8",
+  "spec_hash": "f027762ab4d08b35",
+  "spec_version": 2,
   "execution_mode": "offline-replay",
   "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
   "python": "3.12.13",
@@ -62,7 +62,7 @@
   ]
  },
  "verdict": "accepted-for-review",
- "verdict_reason": "all 5 criteria satisfied over 60 applicable cases",
+ "verdict_reason": "all 6 criteria satisfied over 60 applicable cases",
  "verdict_scope": "Accepted means eligible for human review under this spec hash, against a public case suite. It is not evidence of production quality, and it does not establish generalisation: the cases are visible and a candidate may have been written against them.",
  "criteria": [
   {
@@ -109,6 +109,132 @@
    "satisfied": 60,
    "rate": 1,
    "passed": true
+  },
+  {
+   "id": "protocol-exclusivity",
+   "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+   "threshold": 1,
+   "applicable": 4,
+   "satisfied": 4,
+   "rate": 1,
+   "passed": true
+  }
+ ],
+ "gradings": [
+  {
+   "spec_version": 1,
+   "spec_hash": "008af8266204438a",
+   "verdict": "accepted-for-review",
+   "verdict_reason": "all 5 criteria satisfied over 60 applicable cases",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 3,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 9,
+     "satisfied": 9,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    }
+   ]
+  },
+  {
+   "spec_version": 2,
+   "spec_hash": "f027762ab4d08b35",
+   "verdict": "accepted-for-review",
+   "verdict_reason": "all 6 criteria satisfied over 60 applicable cases",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 3,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 9,
+     "satisfied": 9,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-exclusivity",
+     "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+     "threshold": 1,
+     "applicable": 4,
+     "satisfied": 4,
+     "rate": 1,
+     "passed": true
+    }
+   ]
   }
  ],
  "outcomes": [

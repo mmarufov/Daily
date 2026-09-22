@@ -92,7 +92,10 @@ export interface InvestigationTrace {
   }
   readonly finish_reason: string
   readonly budget: typeof BUDGET
+  /** The effective limit: the lower of the authorisation and the code ceiling. */
   readonly budget_ceiling_usd: number
+  /** What the operator authorised, recorded so the clamp is visible. */
+  readonly budget_authorised_usd: number
   readonly tool_calls_made: number
   readonly proposal: ProposalRecord | null
 }
@@ -112,6 +115,40 @@ const MAX_PAYLOAD = 4_000
 function truncate(value: unknown): string {
   const text = typeof value === 'string' ? value : JSON.stringify(value)
   return text.length > MAX_PAYLOAD ? `${text.slice(0, MAX_PAYLOAD)}\n… [${text.length} chars total]` : text
+}
+
+/* ---------------------------------------------------------- budget ---- */
+
+export type BudgetResolution =
+  | { readonly ok: true; readonly ceiling: number; readonly authorised: number }
+  | { readonly ok: false; readonly needs: readonly string[] }
+
+/**
+ * Two ceilings, and the tighter one wins.
+ *
+ *   LAB_MAX_USD     what the operator authorised on this deployment
+ *   BUDGET.max_usd  what this experiment was reviewed as needing
+ *
+ * This used to *refuse* an authorisation above the reviewed ceiling, which
+ * had the asymmetry backwards. Being allowed more than the code will spend is
+ * not a hazard; the code spending more than it was allowed is. A refusal also
+ * had the perverse property that it could be satisfied by raising the code
+ * ceiling, which is the opposite of what a ceiling is for.
+ *
+ * Pure, and exported, so the arithmetic can be tested without a dry-run mode
+ * in the production path. A "skip the model call" branch is a mock with a
+ * respectable name, and the one thing this repository must not have is a code
+ * path that produces an investigation nobody paid for.
+ */
+export function resolveBudget(
+  env: Readonly<Record<string, string | undefined>>,
+  reviewed: number = BUDGET.max_usd,
+): BudgetResolution {
+  const authorised = Number(env.LAB_MAX_USD)
+  if (!Number.isFinite(authorised) || authorised <= 0) {
+    return { ok: false, needs: ['LAB_MAX_USD must be a positive number of dollars'] }
+  }
+  return { ok: true, ceiling: Math.min(authorised, reviewed), authorised }
 }
 
 /* --------------------------------------------------------- the loop ---- */
@@ -159,23 +196,9 @@ export async function investigate(
     return { ok: false, reason: ready.reason, needs: ready.needs }
   }
 
-  const ceiling = Number(env.LAB_MAX_USD)
-  if (!Number.isFinite(ceiling) || ceiling <= 0) {
-    return {
-      ok: false,
-      reason: 'missing-budget',
-      needs: ['LAB_MAX_USD must be a positive number of dollars'],
-    }
-  }
-  if (ceiling > BUDGET.max_usd) {
-    return {
-      ok: false,
-      reason: 'missing-budget',
-      needs: [
-        `LAB_MAX_USD is ${ceiling} but the code ceiling is ${BUDGET.max_usd}; raise BUDGET.max_usd in a reviewed commit, not at the call site`,
-      ],
-    }
-  }
+  const budget = resolveBudget(env)
+  if (!budget.ok) return { ok: false, reason: 'missing-budget', needs: budget.needs }
+  const { ceiling, authorised } = budget
 
   const model = env.LAB_MODEL ?? DEFAULT_MODEL
   const onProgress = deps.onProgress ?? (() => {})
@@ -349,6 +372,7 @@ export async function investigate(
       finish_reason: result.finishReason,
       budget: BUDGET,
       budget_ceiling_usd: ceiling,
+      budget_authorised_usd: authorised,
       tool_calls_made: toolCalls,
       proposal,
     },

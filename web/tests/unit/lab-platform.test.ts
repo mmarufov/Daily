@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { investigate } from '@/lib/lab/agent'
+import { investigate, resolveBudget } from '@/lib/lab/agent'
 import { BUDGET, readiness } from '@/lib/lab/investigator'
 import { authoriseOwner } from '@/lib/lab/owner'
 import { recoverAttempts } from '@/lib/lab/orchestration'
@@ -111,18 +111,35 @@ describe('the investigator refuses before it spends', () => {
     expect(result.ok === false && result.reason).toBe('missing-budget')
   })
 
-  it('will not accept a ceiling above the reviewed one', async () => {
-    // Raising the limit has to be a commit somebody reads, not an env var
-    // somebody sets. Otherwise the budget is advisory.
-    const result = await investigate(deps, {
-      AI_GATEWAY_API_KEY: 'k',
-      LAB_MAX_USD: String(BUDGET.max_usd + 1),
-    })
-    expect(result.ok === false && result.reason).toBe('missing-budget')
-    expect(result.ok === false && result.needs.join(' ')).toContain('reviewed commit')
+  it('clamps an authorisation above the reviewed ceiling instead of refusing it', () => {
+    // The deployment authorises $5; the reviewed ceiling is what binds.
+    const r = resolveBudget({ LAB_MAX_USD: '5' }, 0.5)
+    expect(r.ok && r.ceiling).toBe(0.5)
+    expect(r.ok && r.authorised).toBe(5)
   })
 
-  it('reports which gateway a ready environment would use', () => {
+  it('uses the authorisation when it is the tighter of the two', () => {
+    const r = resolveBudget({ LAB_MAX_USD: '0.05' }, 0.5)
+    expect(r.ok && r.ceiling).toBe(0.05)
+  })
+
+  it('refuses an absent, zero, negative or unparseable authorisation', () => {
+    for (const v of [undefined, '', '0', '-1', 'lots']) {
+      expect(resolveBudget({ ...(v === undefined ? {} : { LAB_MAX_USD: v }) }).ok, `LAB_MAX_USD=${v}`).toBe(false)
+    }
+  })
+
+  it('will not accept an OpenAI key for a model only the gateway can route', () => {
+    // The failure this prevents is not the call erroring. It is
+    // `openai-direct` being written into a committed trace as the gateway
+    // that served a call which never happened.
+    const r = readiness({ OPENAI_API_KEY: 'sk-whatever', LAB_MAX_USD: '0.25' })
+    expect(r.ready).toBe(false)
+    expect(r.ready === false && r.reason).toBe('missing-credentials')
+    expect(r.ready === false && r.needs.join(' ')).toContain('provider/model')
+  })
+
+  it('reports the gateway a ready environment uses, and has no second answer', () => {
     const r = readiness({ AI_GATEWAY_API_KEY: 'k', LAB_MAX_USD: '0.25' })
     expect(r.ready && r.gateway).toBe('vercel-ai-gateway')
   })

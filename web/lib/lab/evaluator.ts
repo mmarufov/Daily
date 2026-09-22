@@ -19,7 +19,7 @@
  *     and the artifact says so.
  */
 
-import { ACCEPTANCE, type CaseFamily, type Protocol } from './spec'
+import { EXPERIMENT, specHash, type AcceptanceCriterion, type CaseFamily, type ExperimentSpec, type Protocol } from './spec'
 import type { Case, PredictionRecord, RecordBundle } from './records'
 
 export type Applicability = 'scored' | 'not-applicable'
@@ -110,6 +110,9 @@ export interface Evaluation {
   readonly outcomes: readonly CaseOutcome[]
   readonly counts: Readonly<Record<CaseStatus, number>>
   readonly declared_protocol: string
+  /** Which generation of the criteria produced this verdict. */
+  readonly spec_version: number
+  readonly spec_hash: string
   readonly smallest_counterexample: Counterexample | null
   /** Measured and published; never an input to the verdict. */
   readonly diagnostics: readonly Diagnostic[]
@@ -284,8 +287,9 @@ function criterion(
   id: string,
   outcomes: readonly CaseOutcome[],
   selects: (o: CaseOutcome) => boolean,
+  acceptance: readonly AcceptanceCriterion[],
 ): CriterionResult {
-  const definition = ACCEPTANCE.find((c) => c.id === id)
+  const definition = acceptance.find((c) => c.id === id)
   const applicable = outcomes.filter((o) => o.applicability === 'scored' && selects(o))
   const satisfied = applicable.filter((o) => o.status === 'correct').length
   const rate = applicable.length === 0 ? null : satisfied / applicable.length
@@ -306,8 +310,9 @@ function criterion(
 export function evaluate(
   cases: readonly Case[],
   bundle: RecordBundle | null,
-  options: { cancelled?: boolean; failure?: string } = {},
+  options: { cancelled?: boolean; failure?: string; spec?: ExperimentSpec } = {},
 ): Evaluation {
+  const spec = options.spec ?? EXPERIMENT
   if (options.cancelled === true) {
     return {
       verdict: 'cancelled',
@@ -316,6 +321,8 @@ export function evaluate(
       outcomes: [],
       counts: { ...EMPTY_COUNTS },
       declared_protocol: bundle?.declared_protocol ?? 'unknown',
+      spec_version: spec.spec_version,
+      spec_hash: specHash(spec),
       smallest_counterexample: null,
       // No records, nothing measured. An empty list rather than a zero: zero
       // out-of-protocol associations is a clean result, and this run has none.
@@ -330,6 +337,8 @@ export function evaluate(
       outcomes: [],
       counts: { ...EMPTY_COUNTS },
       declared_protocol: 'unknown',
+      spec_version: spec.spec_version,
+      spec_hash: specHash(spec),
       smallest_counterexample: null,
       diagnostics: [],
     }
@@ -341,20 +350,6 @@ export function evaluate(
 
   const counts = { ...EMPTY_COUNTS }
   for (const o of outcomes) counts[o.status] += 1
-
-  const criteria: CriterionResult[] = [
-    criterion('universal-refusal', outcomes, (o) => o.family === 'universal-refusal'),
-    criterion(
-      'association-exact',
-      outcomes,
-      (o) => o.family === 'protocol-association' && o.expected_refusal_kinds.length === 0,
-    ),
-    criterion(
-      'protocol-violation-refusal',
-      outcomes,
-      (o) => o.family === 'protocol-association' && o.expected_refusal_kinds.length > 0,
-    ),
-  ]
 
   const scored = outcomes.filter((o) => o.applicability === 'scored')
 
@@ -370,6 +365,31 @@ export function evaluate(
     return record !== undefined && record.outcome === 'parsed' && record.association !== null
   })
 
+  const acceptance = spec.acceptance
+  const criteria: CriterionResult[] = [
+    criterion('universal-refusal', outcomes, (o) => o.family === 'universal-refusal', acceptance),
+    criterion(
+      'association-exact',
+      outcomes,
+      (o) => o.family === 'protocol-association' && o.expected_refusal_kinds.length === 0,
+      acceptance,
+    ),
+    criterion(
+      'protocol-violation-refusal',
+      outcomes,
+      (o) => o.family === 'protocol-association' && o.expected_refusal_kinds.length > 0,
+      acceptance,
+    ),
+  ]
+
+  // The diagnostic survives its own promotion to a criterion.
+  //
+  // Under generation 2 this *is* graded, so the wording must stop saying it
+  // is not -- a stale sentence describing a closed gap is the same failure as
+  // a stale honesty note describing an unexercised boundary. What the
+  // diagnostic still carries that the criterion does not is the case ids, so
+  // a reader can check the claim rather than take the count.
+  const graded = acceptance.some((c) => c.id === 'protocol-exclusivity')
   const diagnostics: Diagnostic[] = [
     {
       id: 'out-of-protocol-association',
@@ -380,14 +400,16 @@ export function evaluate(
       detail:
         outOfProtocol.length === 0
           ? 'It produced no association on any case outside its declared protocol.'
-          : `It produced a complete association on ${outOfProtocol.length} case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.`,
+          : graded
+            ? `It produced a complete association on ${outOfProtocol.length} case(s) outside its declared protocol. Under this generation that fails protocol-exclusivity; under generation 1 it was not graded at all.`
+            : `It produced a complete association on ${outOfProtocol.length} case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.`,
       case_ids: outOfProtocol.map((k) => k.case_id),
     },
   ]
   const broken = scored.filter((o) => o.status === 'crashed' || o.status === 'timeout').length
   criteria.push({
     id: 'no-crash',
-    question: ACCEPTANCE.find((c) => c.id === 'no-crash')?.question ?? 'no-crash',
+    question: acceptance.find((c) => c.id === 'no-crash')?.question ?? 'no-crash',
     threshold: 1,
     applicable: scored.length,
     satisfied: scored.length - broken,
@@ -398,13 +420,40 @@ export function evaluate(
   const missing = scored.filter((o) => o.status === 'missing-record').length
   criteria.push({
     id: 'complete-evidence',
-    question: ACCEPTANCE.find((c) => c.id === 'complete-evidence')?.question ?? 'complete-evidence',
+    question: acceptance.find((c) => c.id === 'complete-evidence')?.question ?? 'complete-evidence',
     threshold: 1,
     applicable: scored.length,
     satisfied: scored.length - missing,
     rate: scored.length === 0 ? null : (scored.length - missing) / scored.length,
     passed: scored.length > 0 && missing === 0,
   })
+
+  // The sixth criterion, present only in the generation that defines it.
+  //
+  // Graded over the cases the candidate was *excused* from, which is why it
+  // cannot go through `criterion()` -- that selects `scored` outcomes, and
+  // these are by construction not-applicable. A case with no record at all is
+  // excluded: silence there is `complete-evidence`'s business, and counting it
+  // as a refusal would credit a candidate for not running.
+  if (acceptance.some((c) => c.id === 'protocol-exclusivity')) {
+    const excused = cases.filter(
+      (kase) => applicability(kase, protocol) === 'not-applicable' && byId.has(kase.case_id),
+    )
+    const refused = excused.length - outOfProtocol.length
+    criteria.push({
+      id: 'protocol-exclusivity',
+      question:
+        acceptance.find((c) => c.id === 'protocol-exclusivity')?.question ?? 'protocol-exclusivity',
+      threshold: 1,
+      applicable: excused.length,
+      satisfied: refused,
+      rate: excused.length === 0 ? null : refused / excused.length,
+      // Vacuous truth is not a pass here either. A candidate that declares a
+      // protocol covering every case has nothing to be exclusive about, and
+      // that is an absence of evidence rather than a clean bill.
+      passed: excused.length > 0 && outOfProtocol.length === 0,
+    })
+  }
 
   const smallest =
     outcomes
@@ -424,6 +473,8 @@ export function evaluate(
       outcomes,
       counts,
       declared_protocol: protocol,
+      spec_version: spec.spec_version,
+      spec_hash: specHash(spec),
       smallest_counterexample: smallest,
       diagnostics,
     }
@@ -442,6 +493,8 @@ export function evaluate(
       outcomes,
       counts,
       declared_protocol: protocol,
+      spec_version: spec.spec_version,
+      spec_hash: specHash(spec),
       smallest_counterexample: smallest,
       diagnostics,
     }
@@ -454,6 +507,8 @@ export function evaluate(
     outcomes,
     counts,
     declared_protocol: protocol,
+    spec_version: spec.spec_version,
+    spec_hash: specHash(spec),
     smallest_counterexample: smallest,
     diagnostics,
   }

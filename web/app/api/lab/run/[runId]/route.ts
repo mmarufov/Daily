@@ -24,9 +24,20 @@ export async function GET(
     return Response.json({ error: 'malformed run id' }, { status: 400 })
   }
 
-  const run = await getRun(runId)
+  // `getRun` throws on an unknown id rather than returning null, so the
+  // not-found path was reaching the framework's error handler and serving a
+  // bodiless 500. A visitor mistyping a run id is a 404; a 500 says this
+  // deployment is broken, which is a worse lie than it looks -- the whole
+  // point of the public read route is that a stranger can check a claim, and
+  // a 500 tells them the claim is unavailable rather than absent.
+  let run: Awaited<ReturnType<typeof getRun>> | null = null
+  try {
+    run = await getRun(runId)
+  } catch {
+    run = null
+  }
   if (run === null || run === undefined) {
-    return Response.json({ error: 'no such run' }, { status: 404 })
+    return Response.json({ error: 'no such run' }, { status: 404, headers: { 'Cache-Control': 'no-store' } })
   }
 
   const status = await run.status
