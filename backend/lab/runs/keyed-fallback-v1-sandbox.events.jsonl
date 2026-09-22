@@ -1,0 +1,6 @@
+{"type":"created","run_id":"article-to-verdict-association__keyed-fallback-v1","candidate_id":"keyed-fallback-v1","spec_hash":"008af8266204438a","executed_at_revision":"192e1a54b3556bbd6351b86d705553d633ba2641+dirty","at":"2026-09-22T20:20:21.317Z"}
+{"type":"scope-checked","allowed":true,"detail":"backend/lab/contract/candidate.py — within the allowed patch scope","at":"2026-09-22T20:20:21.318Z"}
+{"type":"attempt-started","attempt_id":"article-to-verdict-association__keyed-fallback-v1#01","runner":"vercel-sandbox","at":"2026-09-22T20:20:21.318Z"}
+{"type":"attempt-ended","attempt_id":"article-to-verdict-association__keyed-fallback-v1#01","status":"succeeded","note":"sandbox cyan-zonal-lark-rRFL5D in iad1, exit 0 in 523ms","at":"2026-09-22T20:20:28.263Z"}
+{"type":"records-received","attempt_id":"article-to-verdict-association__keyed-fallback-v1#01","n_records":64,"at":"2026-09-22T20:20:28.263Z"}
+{"type":"evaluated","verdict":"accepted-for-review","reason":"all 5 criteria satisfied over 60 applicable cases","at":"2026-09-22T20:20:28.265Z"}

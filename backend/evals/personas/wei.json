@@ -1,146 +1,146 @@
 {
- "key": "wei",
- "name": "Wei — Singapore",
- "axis": "professional/technical + geographic; tests niche depth and adjacency rejection",
- "transcript": null,
- "explicit_context": null,
- "profile": {
-  "ai_profile": "Senior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actually being used in production engineering. Also the Singapore and Southeast Asia tech and startup scene, and fintech regulation in the region. No US domestic politics, no sports.",
-  "interests": {
-   "topics": [
-    "distributed systems",
-    "cloud infrastructure",
-    "databases",
-    "developer tools",
-    "AI engineering",
-    "fintech regulation",
-    "Southeast Asia startups",
-    "cybersecurity"
-   ],
-   "people": [],
-   "locations": [
-    "Singapore",
-    "Southeast Asia"
-   ],
-   "industries": [
-    "software engineering",
-    "fintech",
-    "cloud computing"
-   ],
-   "excluded_topics": [
-    "US domestic politics",
-    "sports",
-    "celebrity"
-   ],
-   "notes": "Senior backend engineer, wants depth over headlines."
+  "key": "wei",
+  "name": "Will — Singapore",
+  "axis": "professional/technical + geographic; tests niche depth and adjacency rejection",
+  "transcript": null,
+  "explicit_context": null,
+  "profile": {
+    "ai_profile": "Senior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actually being used in production engineering. Also the Singapore and Southeast Asia tech and startup scene, and fintech regulation in the region. No US domestic politics, no sports.",
+    "interests": {
+      "topics": [
+        "distributed systems",
+        "cloud infrastructure",
+        "databases",
+        "developer tools",
+        "AI engineering",
+        "fintech regulation",
+        "Southeast Asia startups",
+        "cybersecurity"
+      ],
+      "people": [],
+      "locations": [
+        "Singapore",
+        "Southeast Asia"
+      ],
+      "industries": [
+        "software engineering",
+        "fintech",
+        "cloud computing"
+      ],
+      "excluded_topics": [
+        "US domestic politics",
+        "sports",
+        "celebrity"
+      ],
+      "notes": "Senior backend engineer, wants depth over headlines."
+    },
+    "user_profile_v2": {
+      "stable_interests": [
+        "distributed systems",
+        "cloud infrastructure",
+        "databases",
+        "developer tools",
+        "cybersecurity"
+      ],
+      "current_interests": [
+        "AI engineering",
+        "cloud infrastructure",
+        "Southeast Asia startups",
+        "fintech regulation"
+      ],
+      "people": [],
+      "locations": [
+        "Singapore",
+        "Southeast Asia"
+      ],
+      "industries": [
+        "software engineering",
+        "fintech",
+        "cloud computing"
+      ],
+      "excluded_topics": [
+        "US domestic politics",
+        "sports",
+        "celebrity"
+      ],
+      "expanded_exclusions": [
+        "election poll",
+        "campaign trail",
+        "playoff",
+        "box office"
+      ],
+      "utility_priorities": [
+        "work",
+        "money"
+      ],
+      "content_depth": "deep",
+      "tone_preferences": [
+        "skeptical",
+        "technical"
+      ],
+      "life_context": "Senior backend engineer at a Singapore fintech; evaluates tools for production use.",
+      "source_selection_brief": {
+        "priority_topics": [
+          "AI engineering",
+          "cloud infrastructure",
+          "distributed systems",
+          "fintech regulation"
+        ],
+        "must_cover_entities": [
+          "Singapore",
+          "MAS"
+        ],
+        "must_avoid_topics": [
+          "US domestic politics",
+          "sports"
+        ],
+        "preferred_source_types": [
+          "analyst",
+          "publisher",
+          "official"
+        ],
+        "coverage_targets": [
+          "Singapore",
+          "Southeast Asia",
+          "software engineering"
+        ],
+        "specificity_level": "mixed"
+      }
+    },
+    "source_selection_brief": {
+      "priority_topics": [
+        "AI engineering",
+        "cloud infrastructure",
+        "distributed systems",
+        "fintech regulation"
+      ],
+      "must_cover_entities": [
+        "Singapore",
+        "MAS"
+      ],
+      "must_avoid_topics": [
+        "US domestic politics",
+        "sports"
+      ],
+      "preferred_source_types": [
+        "analyst",
+        "publisher",
+        "official"
+      ],
+      "coverage_targets": [
+        "Singapore",
+        "Southeast Asia",
+        "software engineering"
+      ],
+      "specificity_level": "mixed"
+    }
   },
-  "user_profile_v2": {
-   "stable_interests": [
-    "distributed systems",
-    "cloud infrastructure",
-    "databases",
-    "developer tools",
-    "cybersecurity"
-   ],
-   "current_interests": [
-    "AI engineering",
-    "cloud infrastructure",
-    "Southeast Asia startups",
-    "fintech regulation"
-   ],
-   "people": [],
-   "locations": [
-    "Singapore",
-    "Southeast Asia"
-   ],
-   "industries": [
-    "software engineering",
-    "fintech",
-    "cloud computing"
-   ],
-   "excluded_topics": [
-    "US domestic politics",
-    "sports",
-    "celebrity"
-   ],
-   "expanded_exclusions": [
-    "election poll",
-    "campaign trail",
-    "playoff",
-    "box office"
-   ],
-   "utility_priorities": [
-    "work",
-    "money"
-   ],
-   "content_depth": "deep",
-   "tone_preferences": [
-    "skeptical",
-    "technical"
-   ],
-   "life_context": "Senior backend engineer at a Singapore fintech; evaluates tools for production use.",
-   "source_selection_brief": {
-    "priority_topics": [
-     "AI engineering",
-     "cloud infrastructure",
-     "distributed systems",
-     "fintech regulation"
-    ],
-    "must_cover_entities": [
-     "Singapore",
-     "MAS"
-    ],
-    "must_avoid_topics": [
-     "US domestic politics",
-     "sports"
-    ],
-    "preferred_source_types": [
-     "analyst",
-     "publisher",
-     "official"
-    ],
-    "coverage_targets": [
-     "Singapore",
-     "Southeast Asia",
-     "software engineering"
-    ],
-    "specificity_level": "mixed"
-   }
+  "expect": {
+    "has_preferences": true
   },
-  "source_selection_brief": {
-   "priority_topics": [
-    "AI engineering",
-    "cloud infrastructure",
-    "distributed systems",
-    "fintech regulation"
-   ],
-   "must_cover_entities": [
-    "Singapore",
-    "MAS"
-   ],
-   "must_avoid_topics": [
-    "US domestic politics",
-    "sports"
-   ],
-   "preferred_source_types": [
-    "analyst",
-    "publisher",
-    "official"
-   ],
-   "coverage_targets": [
-    "Singapore",
-    "Southeast Asia",
-    "software engineering"
-   ],
-   "specificity_level": "mixed"
+  "built_with": {
+    "model": "hand-written",
+    "cache_key": null,
+    "date": "2026-08-30"
   }
- },
- "expect": {
-  "has_preferences": true
- },
- "built_with": {
-  "model": "hand-written",
-  "cache_key": null,
-  "date": "2026-08-30"
- }
 }

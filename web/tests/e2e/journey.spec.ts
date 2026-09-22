@@ -29,7 +29,9 @@ test.describe('visitor journey', () => {
 
   test('reader switches profile and keeps it in the URL', async ({ page }) => {
     await page.goto('/reader')
-    await page.getByRole('link', { name: 'ray', exact: true }).click()
+    // The chip shows the display name; the URL keeps the fixture key, which is
+    // the identifier the artifacts and labels are stored under.
+    await page.getByRole('link', { name: 'Ray', exact: true }).click()
     await expect(page).toHaveURL(/profile=ray/)
     await expect(page.getByText('RAY EDITION')).toBeVisible()
   })

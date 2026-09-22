@@ -1,0 +1,75 @@
+{
+ "case_id": "observed-2026-09-02-040",
+ "snapshot": "2026-09-02",
+ "articles_sent": 40,
+ "verdicts_returned": 254,
+ "articles": [
+  {
+   "position": 0,
+   "id": "9e981c47-1854-5dcd-bed1-ce4d7ce0044b",
+   "title": "Late-stage deals revive in Southeast Asia, but early-stage founders remain under pressure",
+   "source": "e27"
+  },
+  {
+   "position": 1,
+   "id": "8d6909c1-a510-53f5-af5a-4cb25f1dc016",
+   "title": "NASA-linked, MIT-trained founders’ nSWX raises US$2M for AI chip packaging",
+   "source": "e27"
+  },
+  {
+   "position": 2,
+   "id": "2f309b0c-4f4c-50ab-a033-e2561548b58f",
+   "title": "Cloud Nine: Singapore's newest rooftop bar opens with infrastructure-themed cocktails",
+   "source": "Straits Times"
+  },
+  {
+   "position": 3,
+   "id": "e07bb775-6b11-5988-9824-e382eab23194",
+   "title": "Bringing tech and people together for Singapore’s AI future",
+   "source": "Business Times SG"
+  },
+  {
+   "position": 4,
+   "id": "6ad32341-e393-5cba-afbe-fcae6151744c",
+   "title": "The creator economy is distribution, not marketing. Most Asian businesses are still scaling it like a campaign",
+   "source": "e27"
+  },
+  {
+   "position": 5,
+   "id": "8b867cf9-3c2f-5f84-9d0b-d6b94cfaa847",
+   "title": "Economists raise Singapore’s growth forecast, lower inflation projections in latest MAS survey",
+   "source": "Business Times SG"
+  }
+ ],
+ "verdicts": [
+  {
+   "position": 0,
+   "reason": "This article discusses the current state of Southeast Asia's venture capital market, which is highly relevant for a senior backend engineer interested in the startup scene."
+  },
+  {
+   "position": 1,
+   "reason": "The article covers a Malaysian startup focused on AI chip packaging, which intersects with AI engineering and cloud infrastructure interests."
+  },
+  {
+   "position": 2,
+   "reason": "This article is about a rooftop bar opening in Singapore, which does not align with the user's interests."
+  },
+  {
+   "position": 3,
+   "reason": "The article discusses the creator economy, which is not a primary focus for the user."
+  },
+  {
+   "position": 4,
+   "reason": "This article focuses on economic forecasts and inflation, which do not align with the user's technical interests."
+  },
+  {
+   "position": 5,
+   "reason": "This article discusses new capital rules for payment firms in Singapore, directly related to fintech regulation."
+  }
+ ],
+ "response_bytes": 44411,
+ "response_head": "{\n  \"results\": [\n    {\n      \"relevant\": true,\n      \"score\": 0.8,\n      \"reason\": \"This article discusses the current state of Southeast Asia's venture capital market, which is highly relevant for a senior backend engineer interested in the startup scene.\"\n    },\n    {\n      \"relevant\": true,\n      \"score\": 0.7,\n      \"reason\": \"The article covers a Malaysian startup focused on AI chip packaging, which intersects with AI engineering and cloud infrastructure interests.\"\n    },\n    {\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"This article is about a rooftop bar opening in Sin",
+ "finish_reason": "stop",
+ "note": "Recorded during an offline replay of the production runner. No article identifier appears anywhere in the request or the response: position is the only thing associating a verdict with an article.",
+ "source": "backend/evals/.cache/llm"
+}

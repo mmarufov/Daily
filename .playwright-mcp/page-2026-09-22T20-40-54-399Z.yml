@@ -1,0 +1,251 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Daily, home" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - text: Daily
+      - navigation "Sections" [ref=e6]:
+        - list [ref=e7]:
+          - listitem [ref=e8]:
+            - link "Reader" [ref=e9] [cursor=pointer]:
+              - /url: /reader
+          - listitem [ref=e10]:
+            - link "Evidence" [ref=e11] [cursor=pointer]:
+              - /url: /evidence
+          - listitem [ref=e12]:
+            - link "Lab" [ref=e13] [cursor=pointer]:
+              - /url: /lab
+          - listitem [ref=e14]:
+            - link "Engineering" [ref=e15] [cursor=pointer]:
+              - /url: /engineering
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - paragraph [ref=e19]:
+          - link "Daily Lab" [ref=e20] [cursor=pointer]:
+            - /url: /lab
+          - text: · recorded replay · run keyed-fallback-v1 · sandbox
+        - heading "keyed-fallback-v1" [level=1] [ref=e21]
+        - generic [ref=e22]:
+          - generic [ref=e23]: Accepted for review
+          - paragraph [ref=e24]: all 5 criteria satisfied over 60 applicable cases
+        - paragraph [ref=e25]: "Keyed association with a positional fallback: prefers article ids when the response carries them, and associates by position when it does not. Written for this experiment to be plausible rather than correct."
+        - navigation "On this page" [ref=e26]:
+          - list [ref=e27]:
+            - listitem [ref=e28]:
+              - link "01 Verdict" [ref=e29] [cursor=pointer]:
+                - /url: "#verdict"
+            - listitem [ref=e30]:
+              - link "03 The patch" [ref=e31] [cursor=pointer]:
+                - /url: "#patch"
+            - listitem [ref=e32]:
+              - link "04 Timeline" [ref=e33] [cursor=pointer]:
+                - /url: "#timeline"
+            - listitem [ref=e34]:
+              - link "05 Cases" [ref=e35] [cursor=pointer]:
+                - /url: "#cases"
+            - listitem [ref=e36]:
+              - link "06 Unscored" [ref=e37] [cursor=pointer]:
+                - /url: "#unscored"
+            - listitem [ref=e38]:
+              - link "07 Provenance" [ref=e39] [cursor=pointer]:
+                - /url: "#provenance"
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e42]: "01"
+          - heading "Verdict" [level=2] [ref=e43]
+          - generic [ref=e44]: spec 008af8266204438a
+        - table [ref=e46]:
+          - caption [ref=e47]: Acceptance criteria, how many cases each applied to, and whether it was satisfied
+          - rowgroup [ref=e48]:
+            - row [ref=e49]:
+              - columnheader "Criterion" [ref=e50]
+              - columnheader "Satisfied" [ref=e51]
+              - columnheader "Result" [ref=e52]
+          - rowgroup [ref=e53]:
+            - row [ref=e54]:
+              - rowheader "universal-refusal Does it refuse every response from which no association can be recovered?" [ref=e55]:
+                - text: universal-refusal
+                - generic [ref=e56]: Does it refuse every response from which no association can be recovered?
+              - cell "48/48" [ref=e57]
+              - cell "met" [ref=e58]
+            - row [ref=e59]:
+              - rowheader "association-exact On its own protocol, does every article receive exactly the verdict it was given?" [ref=e60]:
+                - text: association-exact
+                - generic [ref=e61]: On its own protocol, does every article receive exactly the verdict it was given?
+              - cell "3/3" [ref=e62]
+              - cell "met" [ref=e63]
+            - row [ref=e64]:
+              - rowheader "protocol-violation-refusal Does it refuse duplicate, unknown, missing ids and unusable scores?" [ref=e65]:
+                - text: protocol-violation-refusal
+                - generic [ref=e66]: Does it refuse duplicate, unknown, missing ids and unusable scores?
+              - cell "9/9" [ref=e67]
+              - cell "met" [ref=e68]
+            - row [ref=e69]:
+              - rowheader "no-crash Does it terminate on every case without crashing or hanging?" [ref=e70]:
+                - text: no-crash
+                - generic [ref=e71]: Does it terminate on every case without crashing or hanging?
+              - cell "60/60" [ref=e72]
+              - cell "met" [ref=e73]
+            - row [ref=e74]:
+              - rowheader "complete-evidence Is there a prediction record for every applicable case?" [ref=e75]:
+                - text: complete-evidence
+                - generic [ref=e76]: Is there a prediction record for every applicable case?
+              - cell "60/60" [ref=e77]
+              - cell "met" [ref=e78]
+        - paragraph [ref=e79]: "Accepted means eligible for human review under this spec hash, against a public case suite. It is not evidence of production quality, and it does not establish generalisation: the cases are visible and a candidate may have been written against them."
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]: "03"
+          - heading "The patch" [level=2] [ref=e83]
+          - generic [ref=e84]: against positional_v0.py
+        - group [ref=e85]:
+          - generic "+ Unified diff · 178 lines · applies with git apply" [ref=e86] [cursor=pointer]
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - paragraph [ref=e89]: Reproduce this run
+            - generic [ref=e90]: cd backend EVAL_OFFLINE=1 venv/bin/python -m lab.orchestrate \ --candidate keyed-fallback-v1 --tag clean cd ../web && npm run export:lab -- --check
+          - generic [ref=e91]:
+            - paragraph [ref=e92]: Source under test
+            - paragraph [ref=e93]:
+              - text: backend/lab/contract/candidate.py
+              - generic [ref=e94]: sha256 a404e7b1e54f842d… · 5479 bytes
+              - generic [ref=e95]: transcribed from unknown
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]: "04"
+          - heading "Timeline" [level=2] [ref=e99]
+          - generic [ref=e100]: 1 attempt
+        - list [ref=e101]:
+          - listitem [ref=e102]:
+            - generic [ref=e103]: "01"
+            - generic [ref=e104]: succeeded
+            - generic [ref=e105]:
+              - text: sandbox cyan-zonal-lark-rRFL5D in iad1, exit 0 in 523ms
+              - generic [ref=e106]: vercel-sandbox · started 2026-09-22T20:20:21.318Z · ended 2026-09-22T20:20:28.263Z
+        - paragraph [ref=e107]: Durability makes orchestration recoverable; it does not make a sandbox creation or a publish happen exactly once. An attempt the orchestrator never saw finish is recorded as unknown-outcome rather than assumed to have failed.
+      - generic [ref=e108]:
+        - generic [ref=e109]:
+          - generic [ref=e110]: "05"
+          - heading "Cases" [level=2] [ref=e111]
+          - generic [ref=e112]: 60 scored, 4 not applicable
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - term [ref=e115]: Recorded cases
+            - definition [ref=e116]:
+              - text: "39"
+              - generic [ref=e117]: real batches, replayed
+          - generic [ref=e118]:
+            - term [ref=e119]: Fault-injected
+            - definition [ref=e120]:
+              - text: "21"
+              - generic [ref=e121]: labelled synthetic
+          - generic [ref=e122]:
+            - term [ref=e123]: Correct
+            - definition [ref=e124]:
+              - text: "60"
+              - generic [ref=e125]: of the scored cases
+          - generic [ref=e126]:
+            - term [ref=e127]: Wrong
+            - definition [ref=e128]:
+              - text: "0"
+              - generic [ref=e129]: see the table
+        - paragraph [ref=e130]: Every scored case was correct. That is what the verdict above is asserting, and nothing more.
+      - generic [ref=e131]:
+        - generic [ref=e132]:
+          - generic [ref=e133]: "06"
+          - heading "Unscored" [level=2] [ref=e134]
+          - generic [ref=e135]: Measured, and deliberately not graded
+        - paragraph [ref=e136]: A criterion decides; a diagnostic reports. Promoting one of these to a criterion would change the spec hash and re-decide runs that never faced it, so a gap found after the fact is published as a number rather than closed behind your back.
+        - generic [ref=e138]:
+          - term [ref=e139]:
+            - generic [ref=e140]:
+              - text: "4"
+              - generic [ref=e141]: /4
+          - definition [ref=e142]:
+            - paragraph [ref=e143]: On cases outside its declared protocol, did it refuse — or associate anyway?
+            - paragraph [ref=e144]: It produced a complete association on 4 case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.
+            - paragraph [ref=e145]: observed-2026-09-02-005, observed-2026-09-02-035, observed-2026-09-02-041, syn-positional-reordered
+      - generic [ref=e146]:
+        - generic [ref=e147]:
+          - generic [ref=e148]: "07"
+          - heading "Provenance" [level=2] [ref=e149]
+          - generic [ref=e150]: What can and cannot be established
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - term [ref=e154]: Executed at revision
+              - definition [ref=e155]:
+                - text: 192e1a54b3556bbd6351b86d705553d633ba2641+dirty
+                - generic [ref=e156]: recorded when the harness ran, not re-derived at export
+            - generic [ref=e157]:
+              - term [ref=e158]: Inputs sha256
+              - definition [ref=e159]:
+                - text: 0b17b43163c9eaef
+                - generic [ref=e160]: cases, records, candidates and event logs
+            - generic [ref=e161]:
+              - term [ref=e162]: Evaluator sha256
+              - definition [ref=e163]: 0448a05a16709521
+            - generic [ref=e164]:
+              - term [ref=e165]: Spec hash
+              - definition [ref=e166]: 008af8266204438a
+            - generic [ref=e167]:
+              - term [ref=e168]: Execution mode
+              - definition [ref=e169]:
+                - text: offline-replay
+                - generic [ref=e170]: The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.
+            - generic [ref=e171]:
+              - term [ref=e172]: Python
+              - definition [ref=e173]: 3.13.1
+            - generic [ref=e174]:
+              - term [ref=e175]: Model calls
+              - definition [ref=e176]: "0"
+            - generic [ref=e177]:
+              - term [ref=e178]: Spend for this run
+              - definition [ref=e179]:
+                - text: $0
+                - generic [ref=e180]: Offline replay of committed recordings. Actual provider spend for this run is $0. What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated.
+            - generic [ref=e181]:
+              - term [ref=e182]: Recording cost
+              - definition [ref=e183]: unknown
+            - generic [ref=e184]:
+              - term [ref=e185]: Sandbox
+              - definition [ref=e186]:
+                - text: cyan-zonal-lark-rRFL5D
+                - generic [ref=e187]: python3.13 in iad1, booted in 346ms
+            - generic [ref=e188]:
+              - term [ref=e189]: Network policy applied
+              - definition [ref=e190]:
+                - text: deny-all
+                - generic [ref=e191]: read back off the microVM, not the value that was requested
+          - generic [ref=e192]:
+            - paragraph [ref=e193]: Case suites
+            - paragraph [ref=e194]:
+              - text: backend/lab/cases/observed.json
+              - generic [ref=e195]: 42 cases · sha256 3d7f4b4143d85ab3…
+              - generic [ref=e196]: backend/evals/.cache/llm via offline replay
+            - paragraph [ref=e197]:
+              - text: backend/lab/cases/synthetic.json
+              - generic [ref=e198]: 22 cases · sha256 21c92da332a9837e…
+              - generic [ref=e199]: lab/build_synthetic.py — fault injection, ground truth by construction
+        - list [ref=e200]:
+          - listitem [ref=e201]:
+            - strong [ref=e202]: Note.
+            - text: Every case ran offline against responses already committed to this repository. No inference call was made and no provider was charged.
+            - generic [ref=e203]: backend/evals/.cache/llm
+          - listitem [ref=e204]:
+            - strong [ref=e205]: Caution.
+            - text: The case suite is public. A candidate may have been written against it, so passing does not establish generalisation.
+            - generic [ref=e206]: backend/lab/cases/
+        - group [ref=e207]:
+          - generic "+ The full artifact, as published" [ref=e208] [cursor=pointer]
+  - contentinfo [ref=e209]:
+    - generic [ref=e210]:
+      - paragraph [ref=e211]: Daily has never shipped; there are no readers. Everything here replays a dated, content-hashed corpus, and the ten reader profiles are adversarial test fixtures, not users — written to make the ranking fail.
+      - generic [ref=e212]:
+        - link "Source on GitHub" [ref=e213] [cursor=pointer]:
+          - /url: https://github.com/mmarufov/Daily
+        - paragraph [ref=e214]: Read-only tier. Nothing here scores an article.
+  - button "Open Next.js Dev Tools" [ref=e220] [cursor=pointer]

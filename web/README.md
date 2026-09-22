@@ -36,7 +36,8 @@ are committed.
 | `npm run export:artifacts` | Rebuild `public/artifacts/` from the harness's scorecards |
 | `npm run export:artifacts -- --check` | Validate without writing |
 | `npm run export:demo` | Rebuild `public/demo/editions.json` |
-| `npm run export:all` | Both exports |
+| `npm run export:lab` | Rebuild `public/lab-artifacts/` from `backend/lab/` |
+| `npm run export:all` | All three exports |
 | `npm run summarise` | Markdown comparison summary (used for the CI step summary) |
 | `npm run publish:artifacts` | Upload validated artifacts to Vercel Blob |
 
@@ -48,6 +49,11 @@ are committed.
 | `BLOB_READ_WRITE_TOKEN` | publish only | Vercel Blob write token. Absent, `publish:artifacts` exits 0 without uploading, so fork pull requests run the same pipeline with no secrets. |
 | `PUBLISH_AS_LATEST` | publish only | `true` moves the mutable `evidence/latest/` pointer. The trusted workflow sets it only for the default branch. |
 | `DEMO_RUN_ID` | no | Which exported run the reader demo replays. Defaults to `prod-llm__2026-09-02__47edb50`. |
+| `LAB_OWNER_TOKEN` | to start a run | Bearer token for `POST /api/lab/run`, compared in constant time. **Unset means nobody is the owner, not everybody** — the route returns 503 and no run can be started. Reading a run is public and needs nothing. |
+| `VERCEL_TOKEN` + `VERCEL_TEAM_ID` + `VERCEL_PROJECT_ID` | local sandbox only | Credentials for `@vercel/sandbox`. On a Vercel deployment the SDK uses OIDC and needs none of them; `vercel env pull` also writes a `VERCEL_OIDC_TOKEN` that works locally. Partial credentials are treated as a misconfiguration rather than a fallback, because OIDC supplies all three at once. |
+| `AI_GATEWAY_API_KEY` | investigator only | Routes the model call through the AI Gateway, which is what meters the spend the budget is measured against. Absent, `readiness()` refuses and no call is made — there is no mock model and no demo mode. |
+| `LAB_MAX_USD` | investigator only | An explicit per-investigation ceiling. Required even when a key is present, and refused if it exceeds `BUDGET.max_usd`: raising the limit has to be a commit somebody reads, not an env var somebody sets. |
+| `LAB_MODEL` | no | Overrides the default `anthropic/claude-sonnet-4.5`, as a `provider/model` string. |
 
 There is deliberately no backend URL here. See [Live mode](#live-mode-is-not-built).
 
@@ -211,7 +217,7 @@ paper-and-serif register, because there it is showing the product rather than me
 | Figure | Where | What it draws |
 |---|---|---|
 | **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus** — 1,362 marks, not a summary of them. Stepping a stage flashes the candidates that stage removed in vermilion and settles the rest to ghost, so the discarded mass stays part of the picture. |
-| **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `dilshod` is almost solid vermilion; `wei` is mostly loss. The run's 22.1% mean hides both. |
+| **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `Daniel` is almost solid vermilion; `Will` is mostly loss. The run's 22.1% mean hides both. |
 | **The slope** | `/evidence`, `/engineering` | Two runs on one shared 0–100% scale. Fraction metrics only: costs and latencies share no scale with a recall rate, and per-row normalisation would make a 0.4-point move look like a 40-point one. |
 | **The trace ribbon** | `/evidence` story detail | One story's journey across the same ten stages, with its death point marked. Answers "did ranking make a mistake, or did nothing ever look at this?". |
 | **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page — the counts are recorded, the merge point is not. |
@@ -237,6 +243,119 @@ Honesty constraints the figures are held to:
 - Motion is one-shot and cancellable, `prefers-reduced-motion` jumps straight to the answer, and
   only `background-color` animates — 1,362 cells cost no layout work, which is what makes drawing
   the corpus at 1:1 affordable in the first place.
+
+## Daily Lab (`/lab`)
+
+A controlled experiment on the batch relevance scorer, built on the same evidence base. It asks one
+question — *does a candidate parser associate every verdict with the article it was actually about,
+and refuse when it cannot?* — and answers it with verdicts **computed by trusted code**, never
+reported by the thing under test.
+
+| | |
+|---|---|
+| `backend/lab/contract/` | Three preserved versions of the association (`positional-v0` as production ships it, `count-guard-v1` from PR #59, the proposed `keyed-v2`) plus three labelled defective controls. Each is one self-contained stdlib-only file. |
+| `backend/lab/cases/` | 64 cases in two groups that are never mixed: 42 **observed** batches replayed from the committed recordings, and 22 **synthetic** fault injections with ground truth by construction. |
+| `backend/lab/harness.py` | Runs a candidate and emits prediction records. The record schema has **no field for a grade**. |
+| `backend/lab/orchestrate.py` | A resumable orchestrator whose state is an append-only event log. `--kill-after` injects a real process death so the recovery can be demonstrated rather than described. |
+| `web/lib/lab/` | The trusted side: frozen spec + hash, evaluator, patch scope gate, runner selection, durable state, artifact schema. |
+| `web/public/lab-artifacts/` | The committed, validated artifact set the site renders. |
+
+### Why the boundary holds
+
+- **A candidate cannot grade itself.** Prediction records carry no verdict field and the schema
+  strips unknown keys. `control-self-reporting` emits `passed/score/all_tests_green` and is
+  rejected like anything else.
+- **The trust boundary is also a language and process boundary** — candidate Python, evaluator
+  TypeScript, separate processes. There is nothing to monkeypatch.
+- **Missing evidence is never acceptance.** Missing records, crashes and timeouts resolve to
+  `incomplete`; a criterion with nothing applicable is `passed: false`, not vacuously true.
+- **Nothing novel runs locally.** `selectRunner` decides from the source sha256 against an
+  allowlist in trusted code; a one-byte edit goes to the sandbox.
+
+### What it does not measure, and why
+
+Relevance quality under `keyed-v2` is **unmeasured**. Sending article ids changes the request, and
+the cache is keyed on a hash of the request (`backend/evals/llm_cache.py:133`), so every recorded
+response for that runner is invalidated. New budgeted recordings would be required and none exist.
+The Lab measures contract correctness and says so on the page.
+
+It also does not reuse the −3.4pp / +15.6pp figures from
+[`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment-fix/FINDING.md). Those two
+sides executed at different revisions (`47edb50` vs `3b11a3c`, 114 files apart, 89 vs 30 cache
+keys), so they are not an A/B of the patch. The direction of that finding stands; the magnitudes
+are not a controlled comparison.
+
+### Exercised, and what is still not
+
+**Vercel Sandbox — exercised.** `keyed-fallback-v1` executed in a `python3.13` microVM under a
+platform-applied `deny-all` policy. Four negative controls run inside the same microVM, after the
+candidate, and a probe that *succeeds* is a failed probe: DNS resolution and an outbound HTTPS
+request both fail, no file named `evaluator.ts` exists anywhere on the filesystem, and no
+credential is present in the environment. The microVM id, region and the policy read back off the
+platform are recorded in each run's provenance.
+
+`egress_bytes` is an upper bound, not a measurement of candidate traffic — it includes the
+control-plane bytes spent reading the record bundle back, so it is non-zero on a run that reached
+nothing. The probes are the direct evidence.
+
+**Vercel Workflow — exercised, with one half of the durability claim still unobserved.**
+Orchestration runs as a durable workflow: the scope gate, the sandboxed execution and the grading
+are three journaled steps, and suspension uses the SDK's `sleep` rather than `setTimeout` — the
+difference is the whole claim, since `setTimeout` holds a process open for the duration and so
+demonstrates nothing about surviving the loss of one.
+
+What was observed: a run was started, suspended mid-flight, and its process was killed outright.
+The journal survived. `scopeStep` and `executeStep` remained `completed` on disk and the sleep
+remained a `wait` record with a `resumeAt`; a new process read that state and reported the run as
+still running rather than losing it or restarting it from the beginning.
+
+What was **not** observed: the resume itself. The local development world arms an in-memory timer
+when the sleep begins and has no process that scans expired waits at startup, so after the killed
+process the run stays suspended indefinitely. On Vercel the platform schedules the resumption, and
+that has not been exercised here because the preview deployment is behind Vercel Authentication
+and this branch has not been promoted to production. `WorkflowOutcome.resumed` and the per-step
+`process_id` exist so that when it is, the evidence is a pair of differing ids rather than a
+claim.
+
+`unknown-outcome` survives the port and is deliberately not something the workflow writes — an
+attempt with a start and no journaled ending is one nothing observed finishing, and the microVM
+may have completed a millisecond before the orchestrator died.
+
+**The investigator agent — not exercised.** No `AI_GATEWAY_API_KEY` and no `LAB_MAX_USD` on this
+deployment, so `readiness()` refuses and nothing is called. The tools, the scope gate and the
+budget are real code with real tests; the model call is not, no trace is depicted anywhere, and
+`/lab` derives that claim from the manifest rather than asserting it in prose.
+
+### A gap the experiment found in itself
+
+`keyed-fallback-v1` was written to be plausible and wrong, and was **accepted**. It declares
+`keyed-v2` and falls back to positional association when a response carries no article ids.
+Positional association cases are not-applicable to a keyed-v2 declarer — correctly — but nothing
+checked that it *refused* them rather than quietly handling them. On `syn-positional-reordered`,
+the case built to expose the exact defect this experiment measures, it parsed where `keyed-v2`
+refuses, and nothing graded it.
+
+Published as a diagnostic, not promoted to a criterion: a sixth criterion would change the spec
+hash and re-decide seven runs that never faced it, which is the move
+[`spec.ts`](lib/lab/spec.ts) says invalidates a comparison.
+
+| candidate | verdict | out-of-protocol associations |
+|---|---|---|
+| `keyed-v2` | accepted-for-review | 0/4 |
+| `keyed-fallback-v1` | accepted-for-review | 4/4 |
+
+Two identical verdicts; the diagnostic is the only thing separating them.
+
+### Commands
+
+```bash
+cd backend && venv/bin/python -m lab.run_known        # every known implementation
+venv/bin/python -m pytest tests/test_lab_contract.py  # 741, incl. all 720 permutations
+cd ../web && npm run export:lab                       # rebuild web/public/lab-artifacts/
+npm run export:lab -- --check                         # validate without writing
+npm run lab:agent -- --sandbox-only ../backend/lab/contract/candidate.py   # boundary, no model
+npm run lab:agent                                     # full investigation (needs a gateway key)
+```
 
 ## The case study
 
@@ -270,7 +389,7 @@ to make: [`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment
    nine other readers* for the product's central claim, checkable without reading a number.
 3. **`/evidence`** — opens on `prod-llm` against `proto-hybrid-judge-events`, same corpus, same
    k, labelled as an algorithm comparison. The slope chart puts both runs on one scale; then read
-   *Every fixture, no averaging* below it, where `wei` sits at 0.0% capped recall.
+   *Every fixture, no averaging* below it, where `Will` sits at 0.0% capped recall.
 4. **Funnel tab, fixture `ray`** — the sieve again, this time beside the reconstructed
    survivorship table it is drawn from.
 5. **Stories tab, filter "Lost before the scorer"** — stories the reader needed that the pipeline

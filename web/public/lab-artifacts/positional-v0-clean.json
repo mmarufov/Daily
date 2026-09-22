@@ -1,0 +1,1142 @@
+{
+ "lab_artifact_version": 1,
+ "run_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean",
+ "experiment_id": "article-to-verdict-association",
+ "candidate": {
+  "candidate_id": "positional-v0",
+  "kind": "preserved-version",
+  "description": "Historical behaviour: associates results[i] with articles[i] and pads the tail. This is what production does today.",
+  "declared_protocol": "positional-v0",
+  "source_path": "backend/lab/contract/versions/positional_v0.py",
+  "source_sha256": "d6f155ab7bcf0b89a2828abe37ca0b05f1f410441fd46e819cb42cb07ef4d1f3",
+  "source_bytes": 3795,
+  "transcribed_from": "origin/main:backend/app/services/openai_service.py",
+  "patch": "",
+  "patch_base": "backend/lab/contract/versions/positional_v0.py"
+ },
+ "provenance": {
+  "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
+  "inputs_sha256": "a60d5a6ac6d7050d",
+  "executed_at": "2026-09-22T19:47:57.422Z",
+  "evaluator_sha256": "0448a05a16709521",
+  "spec_hash": "008af8266204438a",
+  "spec_version": 1,
+  "execution_mode": "offline-replay",
+  "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
+  "python": "3.12.13",
+  "runner": "local-known",
+  "sandbox": null,
+  "investigation": null,
+  "case_suites": [
+   {
+    "group": "observed",
+    "path": "backend/lab/cases/observed.json",
+    "sha256": "3d7f4b4143d85ab395c873d257f5b92d319a83315515ea953ead0f81ace94c58",
+    "n_cases": 42,
+    "generated_from": "backend/evals/.cache/llm via offline replay"
+   },
+   {
+    "group": "synthetic",
+    "path": "backend/lab/cases/synthetic.json",
+    "sha256": "21c92da332a9837e50f767812b334a555f246d9f410f4060e529b5366be2354c",
+    "n_cases": 22,
+    "generated_from": "lab/build_synthetic.py — fault injection, ground truth by construction"
+   }
+  ],
+  "notes": [
+   {
+    "severity": "info",
+    "message": "Every case ran offline against responses already committed to this repository. No inference call was made and no provider was charged.",
+    "source": "backend/evals/.cache/llm"
+   },
+   {
+    "severity": "caution",
+    "message": "The case suite is public. A candidate may have been written against it, so passing does not establish generalisation.",
+    "source": "backend/lab/cases/"
+   }
+  ]
+ },
+ "verdict": "rejected",
+ "verdict_reason": "universal-refusal: 0/48 cases satisfied, threshold 1",
+ "verdict_scope": "Accepted means eligible for human review under this spec hash, against a public case suite. It is not evidence of production quality, and it does not establish generalisation: the cases are visible and a candidate may have been written against them.",
+ "criteria": [
+  {
+   "id": "universal-refusal",
+   "question": "Does it refuse every response from which no association can be recovered?",
+   "threshold": 1,
+   "applicable": 48,
+   "satisfied": 0,
+   "rate": 0,
+   "passed": false
+  },
+  {
+   "id": "association-exact",
+   "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+   "threshold": 1,
+   "applicable": 3,
+   "satisfied": 0,
+   "rate": 0,
+   "passed": false
+  },
+  {
+   "id": "protocol-violation-refusal",
+   "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+   "threshold": 1,
+   "applicable": 1,
+   "satisfied": 0,
+   "rate": 0,
+   "passed": false
+  },
+  {
+   "id": "no-crash",
+   "question": "Does it terminate on every case without crashing or hanging?",
+   "threshold": 1,
+   "applicable": 52,
+   "satisfied": 52,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "complete-evidence",
+   "question": "Is there a prediction record for every applicable case?",
+   "threshold": 1,
+   "applicable": 52,
+   "satisfied": 52,
+   "rate": 1,
+   "passed": true
+  }
+ ],
+ "outcomes": [
+  {
+   "case_id": "observed-2026-09-02-000",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "27 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.049
+  },
+  {
+   "case_id": "observed-2026-09-02-001",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.214
+  },
+  {
+   "case_id": "observed-2026-09-02-002",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "18 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.018
+  },
+  {
+   "case_id": "observed-2026-09-02-003",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.188
+  },
+  {
+   "case_id": "observed-2026-09-02-004",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.184
+  },
+  {
+   "case_id": "observed-2026-09-02-005",
+   "group": "observed",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "wrong-association",
+   "detail": "no ground truth recorded",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [],
+   "ms": 0.017
+  },
+  {
+   "case_id": "observed-2026-09-02-006",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "201 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.064
+  },
+  {
+   "case_id": "observed-2026-09-02-007",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "33 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.03
+  },
+  {
+   "case_id": "observed-2026-09-02-008",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "37 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.029
+  },
+  {
+   "case_id": "observed-2026-09-02-009",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.145
+  },
+  {
+   "case_id": "observed-2026-09-02-010",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "19 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.015
+  },
+  {
+   "case_id": "observed-2026-09-02-011",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.148
+  },
+  {
+   "case_id": "observed-2026-09-02-012",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.145
+  },
+  {
+   "case_id": "observed-2026-09-02-013",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "25 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.024
+  },
+  {
+   "case_id": "observed-2026-09-02-014",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.408
+  },
+  {
+   "case_id": "observed-2026-09-02-015",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "19 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.015
+  },
+  {
+   "case_id": "observed-2026-09-02-016",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.191
+  },
+  {
+   "case_id": "observed-2026-09-02-017",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.187
+  },
+  {
+   "case_id": "observed-2026-09-02-018",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "59 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.032
+  },
+  {
+   "case_id": "observed-2026-09-02-019",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.169
+  },
+  {
+   "case_id": "observed-2026-09-02-020",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "19 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.015
+  },
+  {
+   "case_id": "observed-2026-09-02-021",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.175
+  },
+  {
+   "case_id": "observed-2026-09-02-022",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.173
+  },
+  {
+   "case_id": "observed-2026-09-02-023",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "36 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.029
+  },
+  {
+   "case_id": "observed-2026-09-02-024",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "21 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.015
+  },
+  {
+   "case_id": "observed-2026-09-02-025",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "31 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.026
+  },
+  {
+   "case_id": "observed-2026-09-02-026",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.121
+  },
+  {
+   "case_id": "observed-2026-09-02-027",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "19 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.015
+  },
+  {
+   "case_id": "observed-2026-09-02-028",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "38 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.027
+  },
+  {
+   "case_id": "observed-2026-09-02-029",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.116
+  },
+  {
+   "case_id": "observed-2026-09-02-030",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.117
+  },
+  {
+   "case_id": "observed-2026-09-02-031",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "31 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.025
+  },
+  {
+   "case_id": "observed-2026-09-02-032",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "53 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.03
+  },
+  {
+   "case_id": "observed-2026-09-02-033",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "19 verdicts recorded for 20 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.014
+  },
+  {
+   "case_id": "observed-2026-09-02-034",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "34 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.028
+  },
+  {
+   "case_id": "observed-2026-09-02-035",
+   "group": "observed",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "wrong-association",
+   "detail": "no ground truth recorded",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [],
+   "ms": 0.014
+  },
+  {
+   "case_id": "observed-2026-09-02-036",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.16
+  },
+  {
+   "case_id": "observed-2026-09-02-037",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.177
+  },
+  {
+   "case_id": "observed-2026-09-02-038",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "completion stopped for 'length'",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.156
+  },
+  {
+   "case_id": "observed-2026-09-02-039",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "25 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.023
+  },
+  {
+   "case_id": "observed-2026-09-02-040",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "254 verdicts recorded for 40 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.08
+  },
+  {
+   "case_id": "observed-2026-09-02-041",
+   "group": "observed",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "wrong-association",
+   "detail": "no ground truth recorded",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [],
+   "ms": 0.016
+  },
+  {
+   "case_id": "syn-keyed-in-order",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [],
+   "ms": 0.008
+  },
+  {
+   "case_id": "syn-keyed-reversed",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-keyed-rotated",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [],
+   "ms": 0.006
+  },
+  {
+   "case_id": "syn-duplicate-id",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "duplicate_id"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-unknown-id",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "unknown_id"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-missing-id",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "missing_id",
+    "count_mismatch"
+   ],
+   "ms": 0.006
+  },
+  {
+   "case_id": "syn-score-nan",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "score_not_finite",
+    "invalid_type",
+    "malformed_json"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-score-out-of-range",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "score_out_of_range",
+    "invalid_type"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-score-string",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "invalid_type"
+   ],
+   "ms": 0.009
+  },
+  {
+   "case_id": "syn-score-null",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "invalid_type"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-relevant-not-bool",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "invalid_type"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-malformed-json",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "the response is cut mid-object",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "malformed_json"
+   ],
+   "ms": 0.006
+  },
+  {
+   "case_id": "syn-truncated-finish-reason",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "the completion stopped at the output ceiling",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "count_mismatch",
+    "missing_id"
+   ],
+   "ms": 0.005
+  },
+  {
+   "case_id": "syn-not-an-object",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "top level is an array, not an object",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "unexpected_shape"
+   ],
+   "ms": 0.007
+  },
+  {
+   "case_id": "syn-empty-results",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares positional-v0",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "missing_id",
+    "count_mismatch"
+   ],
+   "ms": 0.004
+  },
+  {
+   "case_id": "syn-exec-no-recording",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "execution ended as no_recording; an unavailable answer is not an answer",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "no_recording"
+   ],
+   "ms": 0.004
+  },
+  {
+   "case_id": "syn-exec-timeout",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "execution ended as timeout; an unavailable answer is not an answer",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "timeout"
+   ],
+   "ms": 0.004
+  },
+  {
+   "case_id": "syn-exec-cancelled",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "execution ended as cancelled; an unavailable answer is not an answer",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "cancelled"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-exec-budget",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "execution ended as budget_exceeded; an unavailable answer is not an answer",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "retries_exhausted",
+    "no_recording"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-positional-short",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "4 verdicts for 6 articles: which belongs to which is unrecorded",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch",
+    "missing_id"
+   ],
+   "ms": 0.006
+  },
+  {
+   "case_id": "syn-positional-long",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "7 verdicts for 6 articles",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch",
+    "duplicate_id"
+   ],
+   "ms": 0.009
+  },
+  {
+   "case_id": "syn-positional-reordered",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "should-have-refused",
+   "detail": "equal length, internally reordered — a length check cannot detect this",
+   "counterexample": null,
+   "observed_refusal_kind": null,
+   "expected_refusal_kinds": [
+    "count_mismatch",
+    "unexpected_shape",
+    "unsupported_protocol",
+    "invalid_type",
+    "missing_id"
+   ],
+   "ms": 0.007
+  }
+ ],
+ "counts": {
+  "correct": 0,
+  "wrong-association": 3,
+  "should-have-refused": 49,
+  "should-have-parsed": 0,
+  "crashed": 0,
+  "timeout": 0,
+  "missing-record": 0,
+  "not-applicable": 12
+ },
+ "smallest_counterexample": null,
+ "diagnostics": [
+  {
+   "id": "out-of-protocol-association",
+   "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
+   "value": 12,
+   "of": 12,
+   "detail": "It produced a complete association on 12 case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.",
+   "case_ids": [
+    "syn-keyed-in-order",
+    "syn-keyed-reversed",
+    "syn-keyed-rotated",
+    "syn-duplicate-id",
+    "syn-unknown-id",
+    "syn-missing-id",
+    "syn-score-nan",
+    "syn-score-out-of-range",
+    "syn-score-string",
+    "syn-score-null",
+    "syn-relevant-not-bool",
+    "syn-empty-results"
+   ]
+  }
+ ],
+ "usage": {
+  "model_calls": 0,
+  "replay_spend_usd": 0,
+  "recording_cost_usd": "unknown",
+  "provider_reported": "unknown",
+  "basis": "Offline replay of committed recordings: no inference call was made, so provider spend for this run is $0. What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated."
+ },
+ "attempts": [
+  {
+   "attempt_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826#01",
+   "started_at": "2026-09-22T19:47:57.443Z",
+   "ended_at": "2026-09-22T19:47:57.478Z",
+   "status": "succeeded",
+   "runner": "local-known",
+   "note": "completed 64 cases in 33.7ms"
+  }
+ ]
+}

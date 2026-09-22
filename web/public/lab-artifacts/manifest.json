@@ -1,0 +1,118 @@
+{
+ "lab_manifest_version": 1,
+ "experiment_id": "article-to-verdict-association",
+ "spec_hash": "008af8266204438a",
+ "inputs_sha256": "76ec6945d856d4a8",
+ "built_at": "2026-09-22T20:20:21.317Z",
+ "complete": true,
+ "entries": [
+  {
+   "run_id": "article-to-verdict-association__control-lenient-keyed__6a3f35522825__008af826__clean",
+   "file": "control-lenient-keyed-clean.json",
+   "candidate_id": "control-lenient-keyed",
+   "kind": "seeded-control",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "a67f23e83a310171086df253f0152d49c1d6066fff5b78ffdf649ab1c444fe92",
+   "bytes": 35201,
+   "runner": "local-known",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826__clean",
+   "file": "control-self-reporting-clean.json",
+   "candidate_id": "control-self-reporting",
+   "kind": "seeded-control",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "0813f35aacc40eb8c6e751b12f666a308909b24976cd0188738e98f8701cee70",
+   "bytes": 36769,
+   "runner": "local-known",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826__clean",
+   "file": "control-zero-filling-clean.json",
+   "candidate_id": "control-zero-filling",
+   "kind": "seeded-control",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "ae226aad39b88914f61b31a10a657fa2fcfcda220b7ba8c1e819398a1343b968",
+   "bytes": 35997,
+   "runner": "local-known",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826__clean",
+   "file": "count-guard-v1-clean.json",
+   "candidate_id": "count-guard-v1",
+   "kind": "preserved-version",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "80394a0e3e1a9d049366201f7a18e10087fd64f0f60178ea915d45c323f59ef5",
+   "bytes": 36327,
+   "runner": "local-known",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__keyed-fallback-v1__sandbox",
+   "file": "keyed-fallback-v1-sandbox.json",
+   "candidate_id": "keyed-fallback-v1",
+   "kind": "human-authored",
+   "verdict": "accepted-for-review",
+   "spec_hash": "008af8266204438a",
+   "sha256": "4da98a1841b4f765a15a8cdaed34d093600a0ac099ac04bc8886cde9f4933508",
+   "bytes": 41718,
+   "runner": "vercel-sandbox",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean",
+   "file": "keyed-v2-clean.json",
+   "candidate_id": "keyed-v2",
+   "kind": "preserved-version",
+   "verdict": "accepted-for-review",
+   "spec_hash": "008af8266204438a",
+   "sha256": "8503d6baaeca85aeba20c1009f7d78e7276421130dd41d636d67ab35f2af1716",
+   "bytes": 38645,
+   "runner": "local-known",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__interrupted",
+   "file": "keyed-v2-interrupted.json",
+   "candidate_id": "keyed-v2",
+   "kind": "preserved-version",
+   "verdict": "accepted-for-review",
+   "spec_hash": "008af8266204438a",
+   "sha256": "f1003b34fcfec8973ad6f64cfe11f2f009e3f5d96e069418ef45545f785551a3",
+   "bytes": 39239,
+   "runner": "local-known",
+   "investigated": false
+  },
+  {
+   "run_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean",
+   "file": "positional-v0-clean.json",
+   "candidate_id": "positional-v0",
+   "kind": "preserved-version",
+   "verdict": "rejected",
+   "spec_hash": "008af8266204438a",
+   "sha256": "218182a2872f7b80605ed20007fbb5f21a956b43a7443277c0a2c4a00e9dc915",
+   "bytes": 31399,
+   "runner": "local-known",
+   "investigated": false
+  }
+ ],
+ "notes": [
+  {
+   "severity": "info",
+   "message": "Sandbox limits for untrusted candidates: python3.13, network disabled, 120s wall clock, none secrets.",
+   "source": "web/lib/lab/runner.ts"
+  },
+  {
+   "severity": "info",
+   "message": "1 of 8 runs executed in an isolated microVM, because those candidates matched no committed implementation. 4 isolation probes ran inside those microVMs and all held.",
+   "source": "web/lib/lab/sandbox.ts"
+  }
+ ]
+}

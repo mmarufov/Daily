@@ -1,0 +1,7 @@
+{
+ "kind": "human-authored",
+ "source_path": "backend/lab/contract/candidate.py",
+ "declared_protocol": "keyed-v2",
+ "description": "Keyed association with a positional fallback: prefers article ids when the response carries them, and associates by position when it does not. Written for this experiment to be plausible rather than correct.",
+ "transcribed_from": "unknown"
+}

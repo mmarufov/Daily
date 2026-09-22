@@ -2,8 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { Band } from '@/components/Band'
-import type { DemoBundle, DemoEdition, DemoStory } from '@/lib/demo'
+import { mastheadFor, type DemoBundle, type DemoEdition, type DemoStory } from '@/lib/demo'
 import { loadDemo } from '@/lib/demo-data'
+import { personaLabel, personaName } from '@/lib/personas'
 
 export const metadata: Metadata = {
   title: 'The reader',
@@ -64,7 +65,9 @@ export default async function ReaderPage({
         <p className="label m-0 text-ink-40">
           Replay · corpus {bundle.snapshot} · {bundle.runner}
         </p>
-        <h1 className="display m-0 text-[clamp(2rem,6vw,4.25rem)]">{edition.masthead}</h1>
+        <h1 className="display m-0 text-[clamp(2rem,6vw,4.25rem)]">
+          {mastheadFor(personaName(edition.persona), bundle.frozen_at)}
+        </h1>
         <ReplayNotice dateLabel={dateLabel} bundle={bundle} />
       </section>
 
@@ -133,10 +136,10 @@ export default async function ReaderPage({
               <li key={other.persona} className="bg-paper">
                 <Link
                   href={{ pathname: '/reader', query: { profile: other.persona } }}
-                  aria-label={`Read the ${other.persona} edition, leading with ${lead?.headline ?? 'no stories'}`}
+                  aria-label={`Read the ${personaName(other.persona)} edition, leading with ${lead?.headline ?? 'no stories'}`}
                   className="flex h-full flex-col gap-2 p-4 no-underline transition-colors duration-150 hover:bg-paper-secondary"
                 >
-                  <span className="label text-ink-40">{other.persona}</span>
+                  <span className="label text-ink-40">{personaLabel(other.persona)}</span>
                   <span className="headline text-base text-ink">
                     {lead?.headline ?? 'No stories were assembled for this fixture.'}
                   </span>
@@ -237,7 +240,7 @@ function ProfilePicker({
                 aria-current={selected ? 'page' : undefined}
                 className={`chip ${selected ? 'chip-on' : ''}`}
               >
-                {edition.persona}
+                {personaName(edition.persona)}
               </Link>
             </li>
           )

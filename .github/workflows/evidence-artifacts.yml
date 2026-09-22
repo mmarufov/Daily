@@ -56,6 +56,9 @@ jobs:
       - name: Validate the export without writing
         run: npm run export:artifacts -- --check
 
+      - name: Validate the Lab export against its inputs
+        run: npm run export:lab -- --check
+
       - name: Build the export and the reader demo
         run: npm run export:all
 
@@ -64,10 +67,10 @@ jobs:
         # change to the harness moves it, the commit has to move with it --
         # otherwise the deployed site and the repository disagree.
         run: |
-          if ! git diff --quiet -- public/artifacts public/demo; then
+          if ! git diff --quiet -- public/artifacts public/demo public/lab-artifacts; then
             echo "::error::The committed export under web/public/ is out of date."
             echo "Run 'npm run export:all' in web/ and commit the result."
-            git diff --stat -- public/artifacts public/demo
+            git diff --stat -- public/artifacts public/demo public/lab-artifacts
             exit 1
           fi
 

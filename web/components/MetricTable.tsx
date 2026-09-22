@@ -2,6 +2,7 @@ import type { Artifact } from '@/lib/artifact'
 import { HEADLINE_METRICS, SECONDARY_METRICS, summaryValue, weakestPersona } from '@/lib/aggregate'
 import { computeDelta, describeDelta, formatValue } from '@/lib/format'
 import { resolveMetric } from '@/lib/metrics'
+import { personaName } from '@/lib/personas'
 
 interface MetricTableProps {
   readonly primary: Artifact
@@ -28,7 +29,7 @@ export function MetricTable({ primary, comparison, showDeltas, personaKey }: Met
       <caption className="sr-only">
         {personaKey === undefined
           ? 'Evaluation metrics, averaged across the ten reader fixtures'
-          : `Evaluation metrics for reader fixture ${personaKey}`}
+          : `Evaluation metrics for reader fixture ${personaName(personaKey)}`}
         {comparison !== null && showDeltas ? ', with the comparison run’s difference' : ''}
       </caption>
       <thead>

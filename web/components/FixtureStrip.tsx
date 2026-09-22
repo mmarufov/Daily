@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import type { PersonaArtifact, StoryOutcome } from '@/lib/artifact'
+import { personaName } from '@/lib/personas'
 import type { ExplorerUrl } from '@/lib/url-state'
 
 /**
@@ -120,7 +121,7 @@ export function FixtureStrip({
               <span
                 className={`text-xs ${row.selected ? 'text-ink' : 'text-ink-60'}`}
               >
-                {row.key}
+                {personaName(row.key)}
               </span>
 
               <span
@@ -158,7 +159,7 @@ export function FixtureStrip({
               </span>
 
               <span className="sr-only">
-                {row.total} labelled story placements for fixture {row.key}:{' '}
+                {row.total} labelled story placements for fixture {personaName(row.key)}:{' '}
                 {SEGMENTS.filter((s) => row.counts[s.outcome] > 0)
                   .map((s) => `${row.counts[s.outcome]} ${s.label.toLowerCase()}`)
                   .join(', ')}

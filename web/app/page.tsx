@@ -39,9 +39,10 @@ export default async function HomePage() {
           Other feeds show you the survivors. This one shows the whole corpus, and which stage
           threw each candidate away.
         </p>
-        <nav aria-label="Main" className="grid gap-px border border-rule bg-rule sm:grid-cols-3">
+        <nav aria-label="Main" className="grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
           <Entry href="/reader" term="Reader" note="One edition, replayed from a frozen corpus" />
           <Entry href="/evidence" term="Evidence" note="Every metric, fixture and story trace" />
+          <Entry href="/lab" term="Lab" note="A controlled experiment on the scorer" />
           <Entry href="/engineering" term="Defect report" note="One bug, followed end to end" />
         </nav>
       </section>
@@ -165,7 +166,15 @@ export default async function HomePage() {
   )
 }
 
-function Entry({ href, term, note }: { href: '/reader' | '/evidence' | '/engineering'; term: string; note: string }) {
+function Entry({
+  href,
+  term,
+  note,
+}: {
+  href: '/reader' | '/evidence' | '/lab' | '/engineering'
+  term: string
+  note: string
+}) {
   return (
     <Link
       href={href}

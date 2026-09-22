@@ -24,6 +24,7 @@ import { assessCompatibility } from '@/lib/compare'
 import { defaultComparison, defaultEntry, findEntry, loadArtifact, loadIndex } from '@/lib/data'
 import { computeDelta, formatValue } from '@/lib/format'
 import { resolveMetric } from '@/lib/metrics'
+import { personaLabel, personaName } from '@/lib/personas'
 import { explorerHref, readState, type RawSearchParams } from '@/lib/url-state'
 
 export const metadata: Metadata = {
@@ -139,7 +140,7 @@ export default async function EvidencePage({
               note={
                 state.persona === undefined
                   ? `Averaged over ${primary.personas.length} fixtures`
-                  : `Fixture ${state.persona}`
+                  : `Fixture ${personaName(state.persona)}`
               }
               as="h2"
             />
@@ -194,7 +195,7 @@ export default async function EvidencePage({
               note={
                 persona === undefined
                   ? 'Pick a fixture to draw it'
-                  : `Fixture ${persona.key}, 1:1 with the corpus`
+                  : `Fixture ${personaName(persona.key)}, 1:1 with the corpus`
               }
               as="h2"
             />
@@ -211,7 +212,7 @@ export default async function EvidencePage({
                         href={explorerHref(state, { persona: key, view: 'funnel' })}
                         className="chip"
                       >
-                        {key}
+                        {personaName(key)}
                       </Link>
                     </li>
                   ))}
@@ -230,7 +231,7 @@ export default async function EvidencePage({
           <section className="frame flex flex-col gap-6 pb-16">
             <Band
               index="02"
-              title={persona === undefined ? 'Funnel, all fixtures summed' : `Funnel for ${persona.key}`}
+              title={persona === undefined ? 'Funnel, all fixtures summed' : `Funnel for ${personaName(persona.key)}`}
               as="h2"
             />
             <FunnelView artifact={primary} persona={persona} />
@@ -242,7 +243,7 @@ export default async function EvidencePage({
         <section className="frame flex flex-col gap-6 pb-16">
           <Band
             index="01"
-            title={persona === undefined ? 'Stories' : `Stories for ${persona.key}`}
+            title={persona === undefined ? 'Stories' : `Stories for ${personaName(persona.key)}`}
             note={persona === undefined ? undefined : `Outcome filter: ${state.outcome}`}
             as="h2"
           />
@@ -258,7 +259,7 @@ export default async function EvidencePage({
                       href={explorerHref(state, { persona: key, view: 'stories' })}
                       className="chip"
                     >
-                      {key}
+                      {personaName(key)}
                     </Link>
                   </li>
                 ))}

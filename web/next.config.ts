@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withWorkflow } from 'workflow/next'
 
 const config: NextConfig = {
   reactStrictMode: true,
@@ -18,4 +19,13 @@ const config: NextConfig = {
   },
 }
 
-export default config
+/**
+ * Durability is the platform's, not a loop in this repository.
+ *
+ * `withWorkflow` compiles the `"use workflow"` and `"use step"` directives in
+ * `lib/lab/orchestration.ts` into journaled functions. What that buys is the
+ * one property the local Python orchestrator could only approximate: when the
+ * process dies mid-run, the run is resumed from its journal by something that
+ * did not die with it.
+ */
+export default withWorkflow(config)
