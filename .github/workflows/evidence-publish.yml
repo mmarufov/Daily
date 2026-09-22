@@ -1,9 +1,21 @@
 # Publish validated evaluation artifacts to Vercel Blob.
 #
-# Split from the build workflow on purpose. `workflow_run` runs in the context
-# of the base repository with access to secrets, so the untrusted pull-request
-# job never needs publishing credentials. This workflow re-validates everything
-# it downloads before uploading anything.
+# THE TRUST RULE FOR THIS FILE: the step that holds BLOB_READ_WRITE_TOKEN must
+# never execute code that a pull request could have written.
+#
+# It used to. `workflow_run` fires for pull-request builds too, and this job
+# checked out `workflow_run.head_sha` — a fork's commit — then ran `npm ci`
+# (which executes install scripts from the fork's package.json), then
+# `npm run export:artifacts -- --check` (the "re-validation" was itself the
+# fork's code), then `npm run publish:artifacts` with the token in scope. The
+# re-validation step was not a control: it validated untrusted DATA using
+# untrusted CODE. A fork branch merely named `main` also flipped
+# PUBLISH_AS_LATEST to true.
+#
+# The policy now is the narrowest one that still publishes anything:
+# successful pushes to the default branch, and nothing else. Artifacts from a
+# pull request remain available as a downloadable GitHub artifact — they are
+# data, and reviewing them does not require running their code with a secret.
 name: publish evidence
 
 on:
@@ -17,16 +29,38 @@ permissions:
 
 jobs:
   publish:
-    # Never publish a failed run as if it had passed.
-    if: github.event.workflow_run.conclusion == 'success'
+    # All three conditions are load-bearing:
+    #   conclusion  — never publish a failed run as if it had passed;
+    #   event       — a pull_request build never reaches the token, whatever
+    #                 branch name it carries;
+    #   head_branch — and only the default branch, checked here rather than
+    #                 passed to the publisher as a boolean to interpret.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: web
     steps:
+      # Safe only because of the gate above: for a push to the default branch
+      # this sha is a reviewed commit on main, so the code that validates and
+      # publishes is the same code that produced the artifacts.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Refuse to run if the checkout is not an ancestor of main
+        working-directory: .
+        run: |
+          set -euo pipefail
+          git fetch --depth=50 origin main
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::HEAD is not reachable from origin/main; refusing to publish."
+            exit 1
+          fi
+          echo "HEAD $(git rev-parse --short HEAD) is reachable from origin/main"
 
       - uses: actions/setup-node@v4
         with:
@@ -50,7 +84,9 @@ jobs:
       - name: Publish to Blob
         env:
           BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
-          # Only the default branch moves the mutable pointer, so a preview can
-          # never make the deployed explorer read an unrelated run.
-          PUBLISH_AS_LATEST: ${{ github.event.workflow_run.head_branch == 'main' }}
+          # Always true here: the job only runs for default-branch pushes. The
+          # publisher independently verifies the revision it is asked to write
+          # under, so this flag is not the only thing standing between a
+          # preview and the mutable pointer.
+          PUBLISH_AS_LATEST: 'true'
         run: npm run publish:artifacts

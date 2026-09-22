@@ -1,0 +1,5 @@
+{"type": "created", "run_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826", "candidate_id": "count-guard-v1", "at": "2026-09-22T05:16:17.315Z", "spec_hash": "008af8266204438a"}
+{"type": "scope-checked", "at": "2026-09-22T05:16:17.315Z", "allowed": true, "detail": "backend/lab/contract/candidate.py \u2014 within the allowed patch scope"}
+{"type": "attempt-started", "attempt_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826#01", "runner": "local-known", "at": "2026-09-22T05:16:17.316Z"}
+{"type": "attempt-ended", "attempt_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826#01", "at": "2026-09-22T05:16:17.344Z", "status": "succeeded", "note": "completed 64 cases in 28.3ms"}
+{"type": "records-received", "attempt_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826#01", "at": "2026-09-22T05:16:17.344Z", "n_records": 64}

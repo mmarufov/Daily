@@ -16,9 +16,10 @@
     "test:e2e": "playwright test",
     "export:artifacts": "tsx scripts/export-artifacts.ts",
     "export:demo": "tsx scripts/export-demo.ts",
-    "export:all": "npm run export:artifacts && npm run export:demo",
+    "export:all": "npm run export:artifacts && npm run export:demo && npm run export:lab",
     "summarise": "tsx scripts/summarise-artifacts.ts",
-    "publish:artifacts": "tsx scripts/publish-artifacts.ts"
+    "publish:artifacts": "tsx scripts/publish-artifacts.ts",
+    "export:lab": "tsx scripts/export-lab.ts"
   },
   "dependencies": {
     "next": "16.3.5",

@@ -1,0 +1,5 @@
+{"type": "created", "run_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826", "candidate_id": "control-self-reporting", "at": "2026-09-22T05:16:17.481Z", "spec_hash": "008af8266204438a"}
+{"type": "scope-checked", "at": "2026-09-22T05:16:17.482Z", "allowed": true, "detail": "backend/lab/contract/candidate.py \u2014 within the allowed patch scope"}
+{"type": "attempt-started", "attempt_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826#01", "runner": "local-known", "at": "2026-09-22T05:16:17.482Z"}
+{"type": "attempt-ended", "attempt_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826#01", "at": "2026-09-22T05:16:17.509Z", "status": "succeeded", "note": "completed 64 cases in 26.9ms"}
+{"type": "records-received", "attempt_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826#01", "at": "2026-09-22T05:16:17.509Z", "n_records": 64}

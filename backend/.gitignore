@@ -1,0 +1,5 @@
+
+# Lab: the orchestrator writes a working copy of the record bundle next to its
+# event log. The canonical, committed bundle is backend/lab/records/<id>.json,
+# and export-lab.ts falls back to it, so these are duplicates.
+lab/runs/*.records.json

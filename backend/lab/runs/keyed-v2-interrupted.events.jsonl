@@ -1,0 +1,7 @@
+{"type": "created", "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826", "candidate_id": "keyed-v2", "at": "2026-09-22T05:16:17.595Z", "spec_hash": "008af8266204438a"}
+{"type": "scope-checked", "at": "2026-09-22T05:16:17.596Z", "allowed": true, "detail": "backend/lab/contract/candidate.py \u2014 within the allowed patch scope"}
+{"type": "attempt-started", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01", "runner": "local-known", "at": "2026-09-22T05:16:17.596Z"}
+{"type": "attempt-ended", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01", "at": "2026-09-22T05:16:17.618Z", "status": "unknown-outcome", "note": "orchestrator died with this attempt in flight; records file absent on recovery"}
+{"type": "attempt-started", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#02", "runner": "local-known", "at": "2026-09-22T05:16:17.619Z"}
+{"type": "attempt-ended", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#02", "at": "2026-09-22T05:16:17.644Z", "status": "succeeded", "note": "completed 64 cases in 25.5ms"}
+{"type": "records-received", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#02", "at": "2026-09-22T05:16:17.645Z", "n_records": 64}

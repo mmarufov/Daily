@@ -16,6 +16,7 @@
  *    from forks run the same pipeline without needing credentials.
  */
 
+import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -41,6 +42,11 @@ function findWebRoot(): string {
 
 const ARTIFACTS = join(findWebRoot(), 'public', 'artifacts')
 
+/** A git sha, and nothing that could be a path or a pointer name. */
+const REVISION = /^[0-9a-f]{7,40}$/
+/** A plain file name: no directories, no traversal, no leading dot. */
+const FILE_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]*\.json$/
+
 async function main(): Promise<void> {
   const token = process.env.BLOB_READ_WRITE_TOKEN
   if (token === undefined || token.trim() === '') {
@@ -56,13 +62,30 @@ async function main(): Promise<void> {
   if (!manifest.ok) throw new Error(`Refusing to publish an invalid manifest: ${manifest.issues.join('; ')}`)
 
   // Validate everything BEFORE uploading anything.
+  //
+  // Schema conformance is not integrity. The manifest records a sha256 and a
+  // byte count for each artifact; until now neither was ever recompared, so a
+  // file could be swapped after export and still publish. Both are checked
+  // here, against the exact bytes about to be uploaded.
   const payloads: { name: string; body: string }[] = []
   for (const entry of manifest.value.entries) {
+    if (!FILE_NAME.test(entry.file)) {
+      throw new Error(`Refusing to publish: ${entry.file} is not a plain artifact file name.`)
+    }
     const path = join(ARTIFACTS, entry.file)
     if (!existsSync(path)) throw new Error(`Manifest lists ${entry.file} but it is missing on disk.`)
     const body = readFileSync(path, 'utf8')
     const parsed = parseArtifact(JSON.parse(body))
     if (!parsed.ok) throw new Error(`Refusing to publish invalid artifact ${entry.file}: ${parsed.issues.join('; ')}`)
+
+    const bytes = Buffer.byteLength(body)
+    if (bytes !== entry.bytes) {
+      throw new Error(`Integrity check failed for ${entry.file}: manifest says ${entry.bytes} bytes, file is ${bytes}.`)
+    }
+    const digest = createHash('sha256').update(body).digest('hex')
+    if (digest !== entry.sha256) {
+      throw new Error(`Integrity check failed for ${entry.file}: sha256 ${digest} does not match the manifest.`)
+    }
     payloads.push({ name: entry.file, body })
   }
 
@@ -73,7 +96,16 @@ async function main(): Promise<void> {
     throw new Error(`Refusing to publish: files not listed in the manifest: ${orphans.join(', ')}`)
   }
 
+  // The revision becomes part of a blob key, so its shape is checked rather
+  // than assumed. `artifact_revision` is `unknownable(z.string())` in the
+  // schema, which means a manifest declaring "latest" would have written
+  // straight to the mutable pointer that the deployed explorer reads — with no
+  // PUBLISH_AS_LATEST involved at all. A value containing `..` would have been
+  // equally unconstrained.
   const revision = manifest.value.artifact_revision
+  if (!REVISION.test(revision)) {
+    throw new Error(`Refusing to publish under revision "${revision}": expected a git sha.`)
+  }
   const prefixes = [`evidence/${revision}`]
   if (process.env.PUBLISH_AS_LATEST === 'true') prefixes.push('evidence/latest')
 

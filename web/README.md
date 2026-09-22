@@ -36,7 +36,8 @@ are committed.
 | `npm run export:artifacts` | Rebuild `public/artifacts/` from the harness's scorecards |
 | `npm run export:artifacts -- --check` | Validate without writing |
 | `npm run export:demo` | Rebuild `public/demo/editions.json` |
-| `npm run export:all` | Both exports |
+| `npm run export:lab` | Rebuild `public/lab-artifacts/` from `backend/lab/` |
+| `npm run export:all` | All three exports |
 | `npm run summarise` | Markdown comparison summary (used for the CI step summary) |
 | `npm run publish:artifacts` | Upload validated artifacts to Vercel Blob |
 
@@ -237,6 +238,62 @@ Honesty constraints the figures are held to:
 - Motion is one-shot and cancellable, `prefers-reduced-motion` jumps straight to the answer, and
   only `background-color` animates — 1,362 cells cost no layout work, which is what makes drawing
   the corpus at 1:1 affordable in the first place.
+
+## Daily Lab (`/lab`)
+
+A controlled experiment on the batch relevance scorer, built on the same evidence base. It asks one
+question — *does a candidate parser associate every verdict with the article it was actually about,
+and refuse when it cannot?* — and answers it with verdicts **computed by trusted code**, never
+reported by the thing under test.
+
+| | |
+|---|---|
+| `backend/lab/contract/` | Three preserved versions of the association (`positional-v0` as production ships it, `count-guard-v1` from PR #59, the proposed `keyed-v2`) plus three labelled defective controls. Each is one self-contained stdlib-only file. |
+| `backend/lab/cases/` | 64 cases in two groups that are never mixed: 42 **observed** batches replayed from the committed recordings, and 22 **synthetic** fault injections with ground truth by construction. |
+| `backend/lab/harness.py` | Runs a candidate and emits prediction records. The record schema has **no field for a grade**. |
+| `backend/lab/orchestrate.py` | A resumable orchestrator whose state is an append-only event log. `--kill-after` injects a real process death so the recovery can be demonstrated rather than described. |
+| `web/lib/lab/` | The trusted side: frozen spec + hash, evaluator, patch scope gate, runner selection, durable state, artifact schema. |
+| `web/public/lab-artifacts/` | The committed, validated artifact set the site renders. |
+
+### Why the boundary holds
+
+- **A candidate cannot grade itself.** Prediction records carry no verdict field and the schema
+  strips unknown keys. `control-self-reporting` emits `passed/score/all_tests_green` and is
+  rejected like anything else.
+- **The trust boundary is also a language and process boundary** — candidate Python, evaluator
+  TypeScript, separate processes. There is nothing to monkeypatch.
+- **Missing evidence is never acceptance.** Missing records, crashes and timeouts resolve to
+  `incomplete`; a criterion with nothing applicable is `passed: false`, not vacuously true.
+- **Nothing novel runs locally.** `selectRunner` decides from the source sha256 against an
+  allowlist in trusted code; a one-byte edit goes to the sandbox.
+
+### What it does not measure, and why
+
+Relevance quality under `keyed-v2` is **unmeasured**. Sending article ids changes the request, and
+the cache is keyed on a hash of the request (`backend/evals/llm_cache.py:133`), so every recorded
+response for that runner is invalidated. New budgeted recordings would be required and none exist.
+The Lab measures contract correctness and says so on the page.
+
+It also does not reuse the −3.4pp / +15.6pp figures from
+[`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment-fix/FINDING.md). Those two
+sides executed at different revisions (`47edb50` vs `3b11a3c`, 114 files apart, 89 vs 30 cache
+keys), so they are not an A/B of the patch. The direction of that finding stands; the magnitudes
+are not a controlled comparison.
+
+### Implemented and not exercised
+
+Vercel Sandbox (no `VERCEL_TOKEN`/team/project here) and the investigator agent (no
+`AI_GATEWAY_API_KEY`, no spending limit). Both have real code and real tests; neither has run, no
+agent trace is depicted anywhere, and `/lab` states both.
+
+### Commands
+
+```bash
+cd backend && venv/bin/python -m lab.run_known        # every known implementation
+venv/bin/python -m pytest tests/test_lab_contract.py  # 741, incl. all 720 permutations
+cd ../web && npm run export:lab                       # rebuild web/public/lab-artifacts/
+npm run export:lab -- --check                         # validate without writing
+```
 
 ## The case study
 

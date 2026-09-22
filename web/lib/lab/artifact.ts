@@ -1,0 +1,220 @@
+/**
+ * The published experiment artifact.
+ *
+ * A sibling of `lib/artifact.ts`, deliberately built on the same three rules
+ * that file establishes, because they were right there and this is the same
+ * repository making the same kind of claim:
+ *
+ *  1. Revisions that mean different things get different fields. The revision
+ *     that EXECUTED a run, the revision that BUILT the artifact and the
+ *     revision the candidate was written against are three facts, not one.
+ *  2. Importing is not executing — `execution_mode` records which happened.
+ *  3. What cannot be established is written as the literal string `unknown`.
+ *     Never null, never zero, never inferred from a neighbour.
+ *
+ * One rule is added here, because this artifact describes a judgement rather
+ * than a measurement: **the criteria a run was judged against travel with the
+ * run**, as `spec_hash`. Editing a threshold changes the hash, so a verdict can
+ * never be silently re-interpreted under criteria it never faced.
+ */
+
+import { z } from 'zod'
+
+import { PROTOCOLS } from './spec'
+
+export const LAB_ARTIFACT_VERSION = 1 as const
+export const UNKNOWN = 'unknown' as const
+
+const unknownable = <T extends z.ZodTypeAny>(inner: T) => z.union([inner, z.literal(UNKNOWN)])
+
+/** Where a candidate came from. Never inferred after the fact. */
+export const CandidateKindSchema = z.enum([
+  'preserved-version', // transcribed from a real revision of this repository
+  'seeded-control', // deliberately defective, labelled as such everywhere
+  'human-authored', // written by a person for this experiment
+  'agent-authored', // produced by the investigator, with a stored trace
+])
+export type CandidateKind = z.infer<typeof CandidateKindSchema>
+
+export const CandidateSchema = z.object({
+  candidate_id: z.string(),
+  kind: CandidateKindSchema,
+  /** Human-readable note on what it does and, for controls, what is wrong. */
+  description: z.string(),
+  /** Protocol the candidate declares. Checked against the cases, not trusted. */
+  declared_protocol: z.union([z.enum(PROTOCOLS), z.literal(UNKNOWN)]),
+  source_path: z.string(),
+  source_sha256: z.string(),
+  source_bytes: z.number().int(),
+  /** Revision of this repository the source was taken from, where it has one. */
+  transcribed_from: unknownable(z.string()),
+  /**
+   * Unified diff against the historical parser, so "what changed" is reviewable
+   * without leaving the page — and downloadable, so it can be applied.
+   */
+  patch: z.string(),
+  patch_base: z.string(),
+})
+
+export const CaseSuiteRefSchema = z.object({
+  group: z.enum(['observed', 'synthetic']),
+  path: z.string(),
+  sha256: z.string(),
+  n_cases: z.number().int(),
+  generated_from: z.string(),
+})
+
+export const UsageSchema = z.object({
+  /** Inference calls this run made. Zero for every run in the committed set. */
+  model_calls: z.number().int(),
+  /** Actual provider spend for THIS run. */
+  replay_spend_usd: z.number(),
+  /** Cost of the recordings being replayed, when it is known. */
+  recording_cost_usd: unknownable(z.number()),
+  /** Provider-reported usage, distinct from any estimate. */
+  provider_reported: z.union([z.record(z.string(), z.number()), z.literal(UNKNOWN)]),
+  basis: z.string(),
+})
+
+export const AttemptSchema = z.object({
+  attempt_id: z.string(),
+  started_at: z.string(),
+  ended_at: unknownable(z.string()),
+  status: z.enum(['succeeded', 'failed', 'cancelled', 'superseded', 'unknown-outcome']),
+  runner: z.enum(['local-known', 'vercel-sandbox']),
+  note: z.string(),
+})
+
+export const LabProvenanceSchema = z.object({
+  /** Revision whose working tree produced the records. */
+  executed_at_revision: unknownable(z.string()),
+  /** Revision that built this artifact. */
+  artifact_revision: unknownable(z.string()),
+  artifact_built_at: z.string(),
+  executed_at: unknownable(z.string()),
+  /** Which trusted code computed the verdict. */
+  evaluator_revision: unknownable(z.string()),
+  spec_hash: z.string(),
+  spec_version: z.number().int(),
+  execution_mode: z.enum(['offline-replay', 'live', UNKNOWN]),
+  execution_mode_basis: z.string(),
+  python: unknownable(z.string()),
+  case_suites: z.array(CaseSuiteRefSchema),
+  notes: z.array(
+    z.object({
+      severity: z.enum(['info', 'caution', 'warning']),
+      message: z.string(),
+      /** A repository path or command, so a reader can check rather than trust. */
+      source: z.string(),
+    }),
+  ),
+})
+
+export const CounterexampleSchema = z.object({
+  article_id: z.string(),
+  article_title: z.string(),
+  expected: z.object({ relevant: z.boolean(), score: z.number() }),
+  actual: z
+    .object({ relevant: z.boolean(), score: z.number().nullable(), reason: z.string() })
+    .nullable(),
+})
+
+export const CaseOutcomeSchema = z.object({
+  case_id: z.string(),
+  group: z.enum(['observed', 'synthetic']),
+  family: z.enum(['universal-refusal', 'protocol-association']),
+  protocol: z.enum(PROTOCOLS),
+  applicability: z.enum(['scored', 'not-applicable']),
+  status: z.enum([
+    'correct',
+    'wrong-association',
+    'should-have-refused',
+    'should-have-parsed',
+    'crashed',
+    'timeout',
+    'missing-record',
+    'not-applicable',
+  ]),
+  detail: z.string(),
+  counterexample: CounterexampleSchema.nullable(),
+  observed_refusal_kind: z.string().nullable(),
+  expected_refusal_kinds: z.array(z.string()),
+  ms: z.number().nullable(),
+})
+
+export const CriterionResultSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  threshold: z.number(),
+  applicable: z.number().int(),
+  satisfied: z.number().int(),
+  rate: z.number().nullable(),
+  passed: z.boolean(),
+})
+
+export const LabRunSchema = z.object({
+  lab_artifact_version: z.literal(LAB_ARTIFACT_VERSION),
+  run_id: z.string(),
+  experiment_id: z.string(),
+  candidate: CandidateSchema,
+  provenance: LabProvenanceSchema,
+  verdict: z.enum(['accepted-for-review', 'rejected', 'incomplete', 'failed', 'cancelled']),
+  verdict_reason: z.string(),
+  /** What acceptance does and does not mean, carried with the verdict. */
+  verdict_scope: z.string(),
+  criteria: z.array(CriterionResultSchema),
+  outcomes: z.array(CaseOutcomeSchema),
+  counts: z.record(z.string(), z.number().int()),
+  smallest_counterexample: CounterexampleSchema.nullable(),
+  usage: UsageSchema,
+  attempts: z.array(AttemptSchema),
+})
+export type LabRun = z.infer<typeof LabRunSchema>
+
+export const LabManifestEntrySchema = z.object({
+  run_id: z.string(),
+  file: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]*\.json$/),
+  candidate_id: z.string(),
+  kind: CandidateKindSchema,
+  verdict: z.enum(['accepted-for-review', 'rejected', 'incomplete', 'failed', 'cancelled']),
+  spec_hash: z.string(),
+  sha256: z.string(),
+  bytes: z.number().int(),
+})
+
+export const LabManifestSchema = z.object({
+  lab_manifest_version: z.literal(LAB_ARTIFACT_VERSION),
+  experiment_id: z.string(),
+  spec_hash: z.string(),
+  artifact_revision: unknownable(z.string()),
+  built_at: z.string(),
+  /** Only set once every listed run has been written and validated. */
+  complete: z.literal(true),
+  entries: z.array(LabManifestEntrySchema),
+  notes: z.array(z.object({ severity: z.enum(['info', 'caution', 'warning']), message: z.string(), source: z.string() })),
+})
+export type LabManifest = z.infer<typeof LabManifestSchema>
+
+export type ParseResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly issues: readonly string[] }
+
+function toIssues(error: z.ZodError): readonly string[] {
+  return error.issues.map((i) => `${i.path.join('.') || '<root>'}: ${i.message}`)
+}
+
+export function parseLabRun(input: unknown): ParseResult<LabRun> {
+  const r = LabRunSchema.safeParse(input)
+  return r.success ? { ok: true, value: r.data } : { ok: false, issues: toIssues(r.error) }
+}
+
+export function parseLabManifest(input: unknown): ParseResult<LabManifest> {
+  const r = LabManifestSchema.safeParse(input)
+  return r.success ? { ok: true, value: r.data } : { ok: false, issues: toIssues(r.error) }
+}
+
+/** What "accepted" is allowed to mean, stated once and carried everywhere. */
+export const VERDICT_SCOPE =
+  'Accepted means eligible for human review under this spec hash, against a public case suite. ' +
+  'It is not evidence of production quality, and it does not establish generalisation: the cases ' +
+  'are visible and a candidate may have been written against them.'

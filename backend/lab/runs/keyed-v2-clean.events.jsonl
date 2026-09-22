@@ -1,0 +1,5 @@
+{"type": "created", "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826", "candidate_id": "keyed-v2", "at": "2026-09-22T05:16:17.371Z", "spec_hash": "008af8266204438a"}
+{"type": "scope-checked", "at": "2026-09-22T05:16:17.372Z", "allowed": true, "detail": "backend/lab/contract/candidate.py \u2014 within the allowed patch scope"}
+{"type": "attempt-started", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01", "runner": "local-known", "at": "2026-09-22T05:16:17.372Z"}
+{"type": "attempt-ended", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01", "at": "2026-09-22T05:16:17.397Z", "status": "succeeded", "note": "completed 64 cases in 25.6ms"}
+{"type": "records-received", "attempt_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826#01", "at": "2026-09-22T05:16:17.398Z", "n_records": 64}
