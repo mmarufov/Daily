@@ -30,6 +30,25 @@ export interface InvestigationBudget {
   readonly max_tool_calls: number
   readonly max_model_calls: number
   readonly max_output_tokens: number
+  /**
+   * The ceiling that is actually enforced.
+   *
+   * Dollars are not countable at runtime — the rate is the provider's and it
+   * changes — so the enforced limit is tokens, which are. `max_usd` below is
+   * this figure priced at the rates in the comment, and is a *declaration*,
+   * not a mechanism.
+   */
+  readonly max_total_tokens: number
+  /**
+   * Largest tool payload returned to the model.
+   *
+   * Not cosmetic. One `inspect_failure` on the largest observed case returns
+   * 87,000 characters, the conversation is resent on every model call, so
+   * input compounds quadratically: twelve such calls over six model calls is
+   * ~916,000 input tokens, about $3.12. The trace meanwhile recorded a
+   * ceiling of $0.50 that nothing enforced.
+   */
+  readonly max_tool_result_chars: number
   readonly max_usd: number
   readonly wall_clock_seconds: number
 }
@@ -50,7 +69,22 @@ export const BUDGET: InvestigationBudget = {
   max_tool_calls: 12,
   max_model_calls: 6,
   max_output_tokens: 4096,
-  max_usd: 0.5,
+  max_total_tokens: 150_000,
+  max_tool_result_chars: 8_000,
+  // Derived, and checkable. Input and output are bounded separately and
+  // billed at different rates, so pricing the whole token ceiling at the
+  // output rate — which is what an earlier version of this line did — is not
+  // pessimism, it is the wrong arithmetic.
+  //
+  //   input   6 model calls, 2 capped tool results each, conversation resent
+  //           => 85,260 tokens at $3/M   = $0.26
+  //   output  6 x max_output_tokens      = 24,576 tokens at $15/M = $0.37
+  //                                                       total  = $0.63
+  //
+  // Rounded up for rate drift. Rates are claude-sonnet-4.5 as of 2026-09;
+  // `max_total_tokens` is the thing actually enforced, and this is what that
+  // costs. tests/unit/lab-platform.test.ts recomputes the arithmetic.
+  max_usd: 0.75,
   wall_clock_seconds: 180,
 }
 

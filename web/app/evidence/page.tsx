@@ -93,7 +93,7 @@ export default async function EvidencePage({
 
   return (
     <div className="flex flex-col">
-      <section className="frame flex flex-col gap-6 py-12 md:py-14">
+      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-14">
         <p className="label m-0 text-ink-40">
           The ruler · artifacts {index.source === 'blob' ? 'from the published store' : 'committed in this repository'}
         </p>

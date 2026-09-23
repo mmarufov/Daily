@@ -46,13 +46,13 @@ const SEGMENTS: readonly {
   {
     outcome: 'lost-at-or-after-scorer',
     label: 'Lost at the scorer',
-    fill: 'bg-signal/55',
+    fill: 'bg-loss-2',
     legend: 'wanted, survived retrieval, then lost while being ranked',
   },
   {
     outcome: 'lost-before-scorer',
     label: 'Lost before the scorer',
-    fill: 'bg-signal/25',
+    fill: 'bg-loss-3',
     legend: 'wanted, and dropped before anything scored it — ranking could not have saved it',
   },
 ]

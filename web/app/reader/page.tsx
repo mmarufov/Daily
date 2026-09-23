@@ -61,7 +61,7 @@ export default async function ReaderPage({
 
   return (
     <div className="flex flex-col">
-      <section className="frame flex flex-col gap-6 py-12 md:py-16">
+      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-16">
         <p className="label m-0 text-ink-40">
           Replay · corpus {bundle.snapshot} · {bundle.runner}
         </p>

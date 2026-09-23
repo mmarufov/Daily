@@ -24,14 +24,14 @@
  * trusting the flag — see the negative controls in `sandbox-probe.ts`.
  */
 
+import { randomUUID } from 'node:crypto'
+
 import { Sandbox } from '@vercel/sandbox'
 
 import { SANDBOX_LIMITS, sha256 } from './runner'
 
 /** Where the harness lives inside the microVM. */
-const WORKDIR = '/vercel/sandbox'
 const CANDIDATE_PATH = 'lab/candidate.py'
-const RECORDS_PATH = 'records.json'
 
 export interface SandboxCredentials {
   readonly token: string
@@ -215,6 +215,8 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
 
     onProgress('running the harness')
     const ranAt = Date.now()
+    // A frame marker, not a secret. See `unframe` below.
+    const frame = randomUUID()
     const result = await sandbox.runCommand('python3', [
       '-m',
       'lab.harness',
@@ -223,19 +225,23 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
       '--cases',
       'lab/cases/observed.json',
       'lab/cases/synthetic.json',
-      '--out',
-      RECORDS_PATH,
+      '--stdout',
+      '--frame',
+      frame,
     ])
     const wallClockMs = Date.now() - ranAt
 
     const [stdout, stderr] = await Promise.all([result.stdout(), result.stderr()])
 
-    let recordsJson: string | null = null
-    if (result.exitCode === 0) {
-      onProgress('reading the record bundle back')
-      const stream = await sandbox.readFile({ path: `${WORKDIR}/${RECORDS_PATH}` })
-      recordsJson = stream === null ? null : await streamToString(stream)
-    }
+    // The records come off stdout, never off the guest filesystem.
+    //
+    // This used to read `records.json` back out of the microVM. An audit
+    // showed what that allowed: the harness imports the candidate into its
+    // own process, so module-level candidate code could read `--out` from
+    // argv, write a bundle of its own and exit 0 — `parse()` never ran, and
+    // the forged file was what got graded. Nothing the guest writes to disk
+    // is read any more, and `--out` no longer exists on this path.
+    const recordsJson = result.exitCode === 0 ? unframe(stdout, frame) : null
 
     onProgress('probing isolation')
     const isolation: IsolationProbe[] = []
@@ -279,7 +285,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
         sha256: sha256(f.content.toString('utf8')),
         bytes: f.content.byteLength,
       })),
-      stdout: stdout.slice(0, 8_000),
+      stdout: stripFrames(stdout).slice(0, 8_000),
       stderr: stderr.slice(0, 8_000),
       records_json: recordsJson,
       isolation,
@@ -299,10 +305,32 @@ function describePolicy(policy: unknown): string {
   return JSON.stringify(policy).slice(0, 200)
 }
 
-async function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
-  const chunks: Buffer[] = []
-  for await (const chunk of stream) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
-  }
-  return Buffer.concat(chunks).toString('utf8')
+/**
+ * Take the bundle out of a stdout stream a candidate is free to print into.
+ *
+ * The marker is a per-run UUID and is deliberately *not* a security boundary
+ * — the guest can read it from argv, and a candidate that forges a correctly
+ * framed bundle has done exactly what a lying `parse()` does. It is defeated
+ * by the same thing: `upload-set.ts` ships no expectations, so nothing inside
+ * the microVM knows which answers would pass. What framing buys is that an
+ * honest candidate printing diagnostics cannot corrupt an honest run.
+ *
+ * The *last* frame wins. A candidate that prints a decoy frame before the
+ * harness emits the real one should not get the decoy graded.
+ */
+/** Keep the operator-facing stdout readable by dropping the framed bundle. */
+function stripFrames(stdout: string): string {
+  return stdout.replace(/<<<LAB-RECORDS:[^>]*>>>[\s\S]*?<<<END:[^>]*>>>/g, '[record bundle removed]')
+}
+
+export function unframe(stdout: string, frame: string): string | null {
+  const open = `<<<LAB-RECORDS:${frame}>>>\n`
+  const close = `<<<END:${frame}>>>`
+  const start = stdout.lastIndexOf(open)
+  if (start === -1) return null
+  const from = start + open.length
+  const end = stdout.indexOf(close, from)
+  if (end === -1) return null
+  const body = stdout.slice(from, end)
+  return body.trim() === '' ? null : body
 }

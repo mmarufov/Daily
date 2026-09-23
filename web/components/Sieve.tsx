@@ -168,19 +168,21 @@ export function Sieve({
         </div>
       </div>
 
-      <div
-        role="img"
-        aria-label={`${first.survivors.toLocaleString()} candidate articles for reader fixture ${personaName(fixture.key)}; ${current.survivors.toLocaleString()} remain after ${current.label}.`}
-        className="sieve"
-      >
-        {data.deaths.map((death, i) => (
-          <span
-            key={i}
-            className="sieve-cell"
-            data-state={cellState(death, index, last)}
-            data-b={i % BUCKETS}
-          />
-        ))}
+      <div className="sieve-plate">
+        <div
+          role="img"
+          aria-label={`${first.survivors.toLocaleString()} candidate articles for reader fixture ${personaName(fixture.key)}; ${current.survivors.toLocaleString()} remain after ${current.label}.`}
+          className="sieve"
+        >
+          {data.deaths.map((death, i) => (
+            <span
+              key={i}
+              className="sieve-cell"
+              data-state={cellState(death, index, last)}
+              data-b={i % BUCKETS}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">

@@ -60,7 +60,7 @@ const TESTS: readonly (readonly [string, string, boolean])[] = [
 export default function EngineeringPage() {
   return (
     <div className="flex flex-col">
-      <section className="frame flex flex-col gap-6 py-12 md:py-16">
+      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-16">
         <p className="label m-0 text-ink-40">Defect report</p>
         <h1 className="display m-0 max-w-4xl text-[clamp(2rem,5.5vw,4rem)]">
           A story the reader needed, rejected for discussing something else entirely

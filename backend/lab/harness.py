@@ -51,6 +51,35 @@ def _alarm(_signum: int, _frame: Any) -> None:
 
 
 def load_candidate(path: Path) -> Any:
+    """Import the candidate, having first taken away what it could misuse.
+
+    `exec_module` runs the candidate's module-level code in this process, and
+    an audit demonstrated the consequence: that code could read `sys.argv`,
+    find `--out`, write a complete bundle of its own choosing there and
+    `os._exit(0)`. `parse()` never ran and the forged bundle was graded and
+    accepted.
+
+    Two things changed. `argv` is scrubbed here, so the shortcut is gone. And
+    the bundle no longer travels through a file on this filesystem at all --
+    it is framed onto stdout and assembled by a parent in another language on
+    another machine, so there is nothing on this side for a candidate to
+    overwrite.
+
+    What is still true, and worth saying plainly rather than implying
+    otherwise: module-level code in a candidate file *is* the candidate. It
+    can emit whatever records it likes. That is no different from a `parse()`
+    that lies, and it is useless for the same reason -- `upload-set.ts` ships
+    no expectations, so nothing in this microVM knows which answers pass.
+    """
+    real_argv = sys.argv
+    sys.argv = ["lab-candidate"]
+    try:
+        return _import_candidate(path)
+    finally:
+        sys.argv = real_argv
+
+
+def _import_candidate(path: Path) -> Any:
     spec = importlib.util.spec_from_file_location("lab_candidate", path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load candidate at {path}")
@@ -146,9 +175,19 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Run a candidate parser over the case suite.")
     ap.add_argument("--candidate", required=True)
     ap.add_argument("--cases", nargs="+", required=True)
-    ap.add_argument("--out", required=True)
+    # `--out` writes a file and is for `run_known.py`, which runs only
+    # implementations committed to this repository. `--stdout` frames the
+    # bundle onto stdout for a parent outside this machine, and is what the
+    # sandbox uses: an untrusted candidate must not be able to hand the
+    # grader a file it wrote itself.
+    ap.add_argument("--out")
+    ap.add_argument("--stdout", action="store_true")
+    ap.add_argument("--frame", default="")
     ap.add_argument("--timeout", type=int, default=DEFAULT_CASE_TIMEOUT_S)
     args = ap.parse_args()
+    if not args.out and not args.stdout:
+        print("one of --out or --stdout is required", file=sys.stderr)
+        return 2
 
     cases: list[dict[str, Any]] = []
     for path in args.cases:
@@ -166,7 +205,7 @@ def main() -> int:
     records = [run_case(module, case, args.timeout) for case in cases]
     elapsed_ms = round((time.perf_counter() - started) * 1000, 3)
 
-    Path(args.out).write_text(
+    bundle = (
         json.dumps(
             {
                 "records_version": 1,
@@ -186,8 +225,21 @@ def main() -> int:
         )
         + "\n"
     )
+
+    if args.stdout:
+        # Framed, because a candidate is free to print. The markers are not a
+        # secret and do not pretend to be: a candidate that forges a framed
+        # bundle has done exactly what a lying `parse()` does, and is defeated
+        # by the same thing -- it does not know the answers. What the framing
+        # buys is that honest noise on stdout cannot corrupt an honest run.
+        sys.stdout.write(
+            "<<<LAB-RECORDS:" + args.frame + ">>>\n" + bundle + "<<<END:" + args.frame + ">>>\n"
+        )
+        sys.stdout.flush()
+    else:
+        Path(args.out).write_text(bundle)
+        print(f"{len(records)} records in {elapsed_ms}ms -> {args.out}")
     # Exit code carries no verdict. It is 0 whenever the harness itself ran.
-    print(f"{len(records)} records in {elapsed_ms}ms -> {args.out}")
     return 0
 
 
