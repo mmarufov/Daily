@@ -399,23 +399,16 @@ body {
  * most prominent sentence on the page read as an error state.
  */
 .struck {
-  position: relative;
-  white-space: nowrap;
-}
-
-@media (max-width: 40rem) {
-  /* A nowrap clause at 2.5rem will overflow a phone. */
-  .struck { white-space: normal; }
-}
-
-.struck::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0.08em;
-  block-size: 0.055em;
-  background: var(--d-signal);
-  opacity: 0.55;
+  /* `text-decoration` rather than an absolutely-positioned pseudo-element.
+     An abs-positioned ::after on a wrapped inline anchors to the *last* line
+     fragment, so on a phone the mark sat under "never see." alone while the
+     clause ran over three lines. Decoration follows every fragment, which is
+     what it is for. */
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--d-signal) 62%, transparent);
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: none;
 }
 
 /*
