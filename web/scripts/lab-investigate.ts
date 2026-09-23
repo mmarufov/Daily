@@ -72,7 +72,7 @@ interface Outcome {
   candidate_source: string | null
   verdict: string | null
   verdict_reason: string | null
-  processes: { step: string; process_id: string; at: string }[]
+  processes: { step: string; process_id: string; at: string; uptime_s: number }[]
   resumed: boolean
   executed_at_revision: string
   deployment: string
@@ -127,8 +127,10 @@ async function main(): Promise<number> {
 
   console.log(`\n${outcome.kind}: ${outcome.detail}`)
   console.log(`  deployment ${outcome.deployment} at ${outcome.executed_at_revision.slice(0, 12)}`)
-  for (const p of outcome.processes) console.log(`  ${p.step.padEnd(9)} ${p.process_id}  ${p.at}`)
-  console.log(`  resumed in a different process: ${outcome.resumed ? 'yes' : 'no'}`)
+  for (const p of outcome.processes) {
+    console.log(`  ${p.step.padEnd(9)} ${p.process_id}  up ${String(p.uptime_s).padStart(7)}s  ${p.at}`)
+  }
+  console.log(`  a different process finished than started: ${outcome.resumed ? 'yes' : 'no'}`)
 
   const trace = outcome.trace
   if (trace === null) {
