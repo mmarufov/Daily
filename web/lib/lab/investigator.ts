@@ -30,6 +30,25 @@ export interface InvestigationBudget {
   readonly max_tool_calls: number
   readonly max_model_calls: number
   readonly max_output_tokens: number
+  /**
+   * The ceiling that is actually enforced.
+   *
+   * Dollars are not countable at runtime — the rate is the provider's and it
+   * changes — so the enforced limit is tokens, which are. `max_usd` below is
+   * this figure priced at the rates in the comment, and is a *declaration*,
+   * not a mechanism.
+   */
+  readonly max_total_tokens: number
+  /**
+   * Largest tool payload returned to the model.
+   *
+   * Not cosmetic. One `inspect_failure` on the largest observed case returns
+   * 87,000 characters, the conversation is resent on every model call, so
+   * input compounds quadratically: twelve such calls over six model calls is
+   * ~916,000 input tokens, about $3.12. The trace meanwhile recorded a
+   * ceiling of $0.50 that nothing enforced.
+   */
+  readonly max_tool_result_chars: number
   readonly max_usd: number
   readonly wall_clock_seconds: number
 }
@@ -50,7 +69,13 @@ export const BUDGET: InvestigationBudget = {
   max_tool_calls: 12,
   max_model_calls: 6,
   max_output_tokens: 4096,
-  max_usd: 0.5,
+  max_total_tokens: 150_000,
+  max_tool_result_chars: 8_000,
+  // 150,000 tokens priced entirely at the *output* rate — $15/M for
+  // claude-sonnet-4.5 as of 2026-09 — which is the pessimistic reading, since
+  // most of them will be input at $3/M. A realistic investigation is nearer
+  // $0.30. Stated this way so the figure can be checked rather than believed.
+  max_usd: 2.25,
   wall_clock_seconds: 180,
 }
 

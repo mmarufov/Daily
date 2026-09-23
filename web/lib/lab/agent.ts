@@ -107,6 +107,8 @@ export interface InvestigationTrace {
   readonly budget_ceiling_usd: number
   /** What the operator authorised, recorded so the clamp is visible. */
   readonly budget_authorised_usd: number
+  /** Cumulative tokens observed, against `BUDGET.max_total_tokens`. */
+  readonly tokens_used: number
   readonly tool_calls_made: number
   readonly proposal: ProposalRecord | null
 }
@@ -122,6 +124,30 @@ export interface ProposalRecord {
 }
 
 const MAX_PAYLOAD = 4_000
+
+/**
+ * Cap what a tool returns *to the model*.
+ *
+ * The trace was already truncated; the tool's return value was not, and that
+ * is the one that costs money. `inspect_failure` on the largest observed case
+ * hands back 87,000 characters, and the whole conversation is resent on every
+ * model call — so twelve such calls over six model calls is ~916,000 input
+ * tokens, roughly $3.12, while the trace recorded a $0.50 ceiling that
+ * nothing enforced.
+ *
+ * Truncation is announced in the payload rather than silent. A model that
+ * cannot tell it received a fragment will reason about the fragment as though
+ * it were the whole thing.
+ */
+export function capForModel<T>(value: T): T | { truncated: true; of_chars: number; head: string } {
+  const text = JSON.stringify(value)
+  if (text.length <= BUDGET.max_tool_result_chars) return value
+  return {
+    truncated: true,
+    of_chars: text.length,
+    head: text.slice(0, BUDGET.max_tool_result_chars),
+  }
+}
 
 /**
  * Strip terminal control sequences.
@@ -288,7 +314,7 @@ export async function investigate(
           expectation: kase.expectation,
         }
         record('tool-result', 'inspect_failure', result)
-        return result
+        return capForModel(result)
       },
     }),
 
@@ -303,7 +329,7 @@ export async function investigate(
         try {
           const excerpt = deps.readSource(path, start_line, line_count)
           record('tool-result', 'read_source_excerpt', excerpt)
-          return { path, start_line, excerpt }
+          return capForModel({ path, start_line, excerpt })
         } catch (error) {
           const result = { error: error instanceof Error ? error.message : String(error) }
           record('tool-result', 'read_source_excerpt', result)
@@ -374,6 +400,16 @@ export async function investigate(
 
   onProgress(`calling ${model} through the AI Gateway`)
 
+  // The ceiling that actually stops things.
+  //
+  // `stopWhen` bounds the number of calls and `maxOutputTokens` bounds each
+  // one, but neither bounds the *input*, which is where a long conversation
+  // full of tool output ends up costing money. This aborts the loop the
+  // moment cumulative usage crosses the budget, so the worst case is one
+  // step's overshoot rather than unbounded.
+  const overBudget = new AbortController()
+  let tokensUsed = 0
+
   const assemble = (
     usage: { input: number | null; output: number | null; total: number | null },
     finishReason: string,
@@ -391,6 +427,7 @@ export async function investigate(
     budget_ceiling_usd: ceiling,
     budget_authorised_usd: authorised,
     tool_calls_made: toolCalls,
+    tokens_used: tokensUsed,
     proposal,
   })
 
@@ -403,7 +440,17 @@ export async function investigate(
       tools,
       stopWhen: stepCountIs(BUDGET.max_model_calls),
       maxOutputTokens: BUDGET.max_output_tokens,
-      abortSignal: AbortSignal.timeout(BUDGET.wall_clock_seconds * 1000),
+      abortSignal: AbortSignal.any([
+        AbortSignal.timeout(BUDGET.wall_clock_seconds * 1000),
+        overBudget.signal,
+      ]),
+      onStepFinish: ({ usage }) => {
+        tokensUsed += (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0)
+        if (tokensUsed >= BUDGET.max_total_tokens) {
+          onProgress(`token budget reached at ${tokensUsed}; stopping`)
+          overBudget.abort(new Error(`token budget of ${BUDGET.max_total_tokens} reached`))
+        }
+      },
     })
 
     for (const step of result.steps) {

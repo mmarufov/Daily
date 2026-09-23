@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { investigate, resolveBudget } from '@/lib/lab/agent'
+import { capForModel, investigate, resolveBudget } from '@/lib/lab/agent'
 import { BUDGET, readiness } from '@/lib/lab/investigator'
 import { authoriseOwner } from '@/lib/lab/owner'
 import { recoverAttempts } from '@/lib/lab/orchestration'
@@ -291,5 +291,69 @@ describe('a deployed function can reach its evidence', () => {
     const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
     expect(stager).not.toMatch(/recursive:\s*true\s*\}\s*\)\s*\/\/\s*copy/)
     expect(stager).toContain('const STAGE: readonly string[]')
+  })
+})
+
+describe('spend is bounded by something that actually stops', () => {
+  /**
+   * `budget_ceiling_usd` was recorded in every trace and enforced by nothing.
+   * The real worst case was $3.12 against a declared $0.50 — one
+   * `inspect_failure` returns up to 87,000 characters, and the conversation
+   * is resent on every model call, so input compounds quadratically.
+   */
+  const LARGEST_CASE_CHARS = 87_214
+
+  it('caps what a tool hands to the model, and says that it did', () => {
+    const big = { blob: 'x'.repeat(BUDGET.max_tool_result_chars * 2) }
+    const capped = capForModel(big) as { truncated?: boolean; of_chars?: number; head?: string }
+    expect(capped.truncated).toBe(true)
+    // Silent truncation is worse than none: a model that cannot tell it got a
+    // fragment reasons about the fragment as though it were the whole thing.
+    expect(capped.of_chars).toBeGreaterThan(BUDGET.max_tool_result_chars)
+    expect(capped.head?.length).toBe(BUDGET.max_tool_result_chars)
+  })
+
+  it('passes small payloads through untouched', () => {
+    const small = { case_id: 'syn-keyed-in-order', n: 3 }
+    expect(capForModel(small)).toEqual(small)
+  })
+
+  it('keeps the structural worst case under the enforced token ceiling', () => {
+    // The ceiling should be a backstop, not the primary mechanism. If the
+    // structural limits alone can exceed it, the loop relies on an abort
+    // mid-step, and one step's overshoot is unbounded input.
+    const perPayload = Math.ceil(BUDGET.max_tool_result_chars / 4)
+    let cumulative = 0
+    let inputTotal = 0
+    for (let call = 0; call < BUDGET.max_model_calls; call += 1) {
+      // Two tool results per model call, at the capped size.
+      cumulative += 2 * perPayload
+      inputTotal += cumulative
+    }
+    const outputTotal = BUDGET.max_model_calls * BUDGET.max_output_tokens
+    expect(inputTotal + outputTotal).toBeLessThan(BUDGET.max_total_tokens)
+  })
+
+  it('would not have stayed under it before the cap', () => {
+    // Guards the reasoning rather than the constant: if someone raises
+    // max_tool_result_chars back toward the real payload size, the test above
+    // is what starts failing, and this says why it existed.
+    const uncapped = Math.ceil(LARGEST_CASE_CHARS / 4)
+    let cumulative = 0
+    let inputTotal = 0
+    for (let call = 0; call < BUDGET.max_model_calls; call += 1) {
+      cumulative += 2 * uncapped
+      inputTotal += cumulative
+    }
+    expect(inputTotal).toBeGreaterThan(BUDGET.max_total_tokens * 4)
+  })
+
+  it('declares a dollar ceiling consistent with the token ceiling', () => {
+    // max_usd is a declaration priced off max_total_tokens, not a mechanism.
+    // It must not claim to be tighter than what is enforced.
+    const pessimisticUsdPerToken = 15 / 1_000_000
+    expect(BUDGET.max_usd).toBeGreaterThanOrEqual(
+      BUDGET.max_total_tokens * pessimisticUsdPerToken - 0.01,
+    )
   })
 })
