@@ -224,8 +224,25 @@ export async function gradeStep(
   'use step'
   const { loadCasesForRun } = await import('./case-loader')
   const cases = await loadCasesForRun()
+
+  // A reported failure ends the run, whether or not records exist.
+  //
+  // This used to consult `failure` only when `recordsJson` was null, so a
+  // step that failed *and* had records — a gateway call that timed out
+  // mid-loop after the sandbox had already run — was graded on those records
+  // and could come back `accepted-for-review` while the run itself reported
+  // `refused`. A failure that resolves to acceptance is the one outcome this
+  // repository says must never happen, and it happened in the same file that
+  // gets it right for the candidate workflow.
+  //
+  // Order matters as much as the check: failure is consulted first, so there
+  // is no path from "we could not tell" to a verdict on the merits.
+  if (failure !== null) {
+    const result = evaluate(cases, null, { failure })
+    return { verdict: result.verdict, reason: result.reason, mark: mark() }
+  }
   if (recordsJson === null) {
-    const result = evaluate(cases, null, { failure: failure ?? 'no records were produced' })
+    const result = evaluate(cases, null, { failure: 'no records were produced' })
     return { verdict: result.verdict, reason: result.reason, mark: mark() }
   }
   const parsed = parseRecordBundle(JSON.parse(recordsJson))
@@ -414,6 +431,8 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
   let sandbox: unknown | null = null
   let recordsJson: string | null = null
   let candidateSource: string | null = null
+  /** Set when a probe did not hold. Propagated so the run cannot be graded. */
+  let isolationFailure: string | null = null
 
   const result = await investigate({
     cases,
@@ -434,14 +453,25 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
       void stderr
       void candidate_sha256
       sandbox = evidence
-      recordsJson = records
 
-      if (execution.isolation.some((probe) => !probe.held)) {
+      // Isolation is checked BEFORE the records are kept, not after.
+      //
+      // `recordsJson` is a closure variable read by the caller after this
+      // callback returns, so assigning it and *then* returning early left the
+      // records in place: a microVM that failed every probe still had its
+      // output graded and published. The early return exits the tool, not the
+      // step. Evidence from a boundary that did not hold is evidence about
+      // nothing, and it must not survive being collected.
+      const breached = execution.isolation.filter((probe) => !probe.held)
+      if (breached.length > 0) {
+        recordsJson = null
+        isolationFailure = `isolation probes failed: ${breached.map((p) => p.name).join(', ')}`
         return { summary: 'the sandbox did not isolate; this run produces evidence about nothing', evaluation: null }
       }
       if (records === null) {
         return { summary: `the harness exited ${execution.exit_code} and produced no records`, evaluation: null }
       }
+      recordsJson = records
       const parsed = parseRecordBundle(JSON.parse(records))
       if (!parsed.ok) return { summary: `the record bundle did not validate: ${parsed.issues.join('; ')}`, evaluation: null }
 
@@ -470,6 +500,17 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
       trace: result.reason === 'call-failed' ? result.trace : null,
       sandbox,
       records_json: recordsJson,
+      candidate_source: candidateSource,
+      mark: mark(),
+    }
+  }
+  if (isolationFailure !== null) {
+    return {
+      ok: false,
+      detail: isolationFailure,
+      trace: result.trace,
+      sandbox,
+      records_json: null,
       candidate_source: candidateSource,
       mark: mark(),
     }
