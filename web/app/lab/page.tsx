@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { Band } from '@/components/Band'
+import { Claim } from '@/components/Claim'
+import { Reveal } from '@/components/Reveal'
 import { OffendingCase } from '@/components/LabOffendingCase'
 import { VerdictBadge } from '@/components/LabVerdict'
 import { EXPERIMENT } from '@/lib/lab/spec'
@@ -58,9 +60,11 @@ export default async function LabPage() {
           The scorer judged forty articles and never said which verdict belonged to which.
         </h1>
         <p className="lede measure m-0 text-ink-60">
-          So when a response came back short, every later verdict landed on the wrong article. This
-          is the experiment that measures whether a fix actually fixes it — and the independent
-          checks that decide, rather than the candidate&rsquo;s own say-so.
+          So every later verdict landed on the wrong article.
+          <span className="block text-ink-40">
+            This measures whether a fix actually fixes it — decided by independent checks, not by
+            the candidate.
+          </span>
         </p>
         <div className="flex flex-wrap gap-2.5 pt-1">
           {shown[0] !== undefined ? (
@@ -110,13 +114,26 @@ export default async function LabPage() {
       <section className="frame flex flex-col gap-7 pb-20">
         <Band index="03" title="What the experiment asks" note={`spec ${manifest.spec_hash}`} />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-5">
-            <p className="prose m-0">{EXPERIMENT.question}</p>
-            <p className="m-0 border-t border-signal pt-3 text-sm text-ink-60">
-              The criteria were written down and hashed before any candidate ran. The hash travels
-              with every verdict, so moving a threshold to get a green result changes the hash and
-              invalidates the comparison.
-            </p>
+          <div className="flex flex-col gap-6">
+            {/* The question is the entry point, so it is the only thing here
+                set in display type. Everything that was competing with it is
+                now behind a count. */}
+            <p className="prose m-0 text-[1.35rem] leading-snug">{EXPERIMENT.question}</p>
+            <div className="flex flex-col">
+              <Reveal label="What it measures" items={EXPERIMENT.measures} />
+              <Reveal
+                label="What it does not measure"
+                items={EXPERIMENT.does_not_measure}
+                tone="signal"
+              />
+              <Reveal
+                label="Why the criteria are hashed"
+                items={[
+                  'The criteria were written down and hashed before any candidate ran.',
+                  'The hash travels with every verdict, so moving a threshold to get a green result changes the hash and invalidates the comparison.',
+                ]}
+              />
+            </div>
           </div>
           <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
             <Readout term="Cases" value="64" note="42 recorded, 22 fault-injected" />
@@ -124,24 +141,6 @@ export default async function LabPage() {
             <Readout term="Accepted" value={String(accepted)} note="for human review only" />
             <Readout term="Rejected" value={String(rejected)} note="by independent checks" signal />
           </dl>
-        </div>
-        <div className="grid gap-8 md:grid-cols-2">
-          <div>
-            <p className="label m-0 text-ink-40">What it measures</p>
-            <ul className="m-0 mt-2 flex list-none flex-col gap-1.5 p-0 text-sm text-ink-60">
-              {EXPERIMENT.measures.map((m) => (
-                <li key={m} className="border-t border-rule pt-1.5">{m}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="label m-0 text-signal">What it does not measure</p>
-            <ul className="m-0 mt-2 flex list-none flex-col gap-1.5 p-0 text-sm text-ink-60">
-              {EXPERIMENT.does_not_measure.map((m) => (
-                <li key={m} className="claim pt-1.5 text-ink-60">{m}</li>
-              ))}
-            </ul>
-          </div>
         </div>
       </section>
 
@@ -254,11 +253,3 @@ function Readout({
   )
 }
 
-function Claim({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div className="claim">
-      <p className="label m-0 text-ink">{term}</p>
-      <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
-    </div>
-  )
-}

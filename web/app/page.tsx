@@ -1,13 +1,17 @@
 import Link from 'next/link'
 
 import { Band } from '@/components/Band'
+import { Claim } from '@/components/Claim'
 import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
+import { OffendingBatch } from '@/components/OffendingBatch'
 import { Sieve, type SieveFixture } from '@/components/Sieve'
 import { defaultEntry, loadArtifact, loadIndex } from '@/lib/data'
+import { loadOffendingCase } from '@/lib/lab/data'
 import { explorerHref } from '@/lib/url-state'
 
 export default async function HomePage() {
   const index = await loadIndex()
+  const offending = await loadOffendingCase()
   const runs = index.entries.filter((e) => !e.is_baseline).length
   const snapshots = index.manifest?.snapshots ?? []
   const corpusTotal = snapshots.reduce((sum, s) => sum + (s.n_articles ?? 0), 0)
@@ -43,8 +47,8 @@ export default async function HomePage() {
               {pool.toLocaleString()} candidates became {delivered.toLocaleString()}.
             </>
           ) : null}{' '}
-          Other feeds show you the survivors. This one shows the whole corpus, and which stage
-          threw each candidate away.
+          Other feeds show you the survivors.
+          <span className="block text-ink-40">This one shows what was thrown away, and where.</span>
         </p>
         <nav
           aria-label="Main"
@@ -71,12 +75,12 @@ export default async function HomePage() {
       <section className="frame flex flex-col gap-7 pb-20">
         <Band index="02" title="Why a ruler exists" />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
-          <p className="prose m-0">
-            &ldquo;The feed looks better to me&rdquo; is not evidence. So Daily carries an offline
-            harness that replays frozen corpora against ten adversarial fixtures with the network
-            off — same inputs, same numbers, every time. That is what lets a difference between two
-            runs mean something, and what makes it possible to say out loud when a fix made the
-            measured numbers worse.
+          <p className="prose m-0 text-balance">
+            &ldquo;The feed looks better to me&rdquo; is not evidence.
+            <span className="mt-2 block text-ink-60">
+              Same corpus, same fixtures, network off — so two runs are comparable, and a fix that
+              made things worse cannot hide.
+            </span>
           </p>
           <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
             <Readout term="Stored runs" value={String(runs)} note="imported, not re-executed" />
@@ -108,8 +112,10 @@ export default async function HomePage() {
             />
             <div className="flex flex-col gap-4 self-start border-t border-rule pt-4 lg:border-0 lg:pt-0">
               <p className="prose m-0 text-base">
-                An average is a way of not looking at the worst case. These fixtures were written
-                to be hard, and the run&rsquo;s mean of 22.1% hides two of them completely.
+                An average is a way of not looking at the worst case.
+                <span className="mt-2 block text-ink-60">
+                  The mean is 22.1%. Two fixtures are at zero.
+                </span>
               </p>
               <Link href="/evidence" className="link label self-start">
                 Open the explorer
@@ -120,15 +126,28 @@ export default async function HomePage() {
       ) : null}
 
       <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="04" title="Start with a real failure" />
+        <Band
+          index="04"
+          title="One recorded batch"
+          note={
+            offending !== null
+              ? `${offending.articles_sent} sent · ${offending.verdicts_returned} returned`
+              : undefined
+          }
+        />
+        {offending !== null ? (
+          <OffendingBatch
+            sent={offending.articles_sent}
+            returned={offending.verdicts_returned}
+            pairs={offending.articles.slice(0, 6).map((article, i) => ({
+              position: article.position,
+              title: article.title,
+              reason: offending.verdicts[i]?.reason ?? 'No verdict was recorded at this position.',
+            }))}
+          />
+        ) : null}
         <div className="grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
           <div className="flex flex-col gap-5">
-            <p className="prose m-0">
-              The scorer asked a model to judge forty articles and return forty verdicts in order,
-              and sent no article ids. When a response came back short, every later verdict landed
-              on the wrong article — a New Jersey roster story rejected for{' '}
-              <em>&ldquo;discussing a music EP&rdquo;</em>.
-            </p>
             <p className="prose m-0">
               Fixing it made the measured numbers <em>worse</em>. The baseline was not re-recorded.
             </p>
@@ -228,11 +247,3 @@ function Readout({
   )
 }
 
-function Claim({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <div className="claim">
-      <p className="label m-0 text-ink">{term}</p>
-      <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
-    </div>
-  )
-}
