@@ -466,6 +466,142 @@ body {
   .entry:hover .entry-rule { transform: scaleX(1); }
 }
 
+/* --- the recorded batch ---------------------------------------------- */
+
+.tally {
+  display: flex;
+  align-items: baseline;
+  gap: 1.35rem;
+  flex-wrap: wrap;
+}
+
+.tally-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.tally-n {
+  font-family: var(--font-mono);
+  font-size: clamp(2.6rem, 7vw, 4.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.tally-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--d-ink-38);
+}
+
+.tally-arrow {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  color: var(--d-ink-38);
+}
+
+.pairs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-block-start: 1px solid var(--d-rule);
+}
+
+/*
+ * One recorded pair.
+ *
+ * A button rather than a div: the row is the interactive element, so it has
+ * to be reachable by keyboard and announce its expanded state. Hover and
+ * focus drive the same state, so a pointer and a tab key see the same thing.
+ */
+.pair {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) 3.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0 0.75rem;
+  inline-size: 100%;
+  padding: 0.7rem 0;
+  border: 0;
+  border-block-end: 1px solid var(--d-rule);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pair:hover,
+.pair-on {
+  background: var(--d-paper-2);
+}
+
+.pair-pos {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--d-ink-38);
+  font-variant-numeric: tabular-nums;
+}
+
+.pair-title {
+  font-family: var(--font-editorial);
+  font-size: 0.95rem;
+  color: var(--d-ink);
+  line-height: 1.3;
+}
+
+/*
+ * The join.
+ *
+ * Dashed and slate because that is exactly what it is: an association
+ * asserted by array position, which the recorded note says is the only thing
+ * joining these two columns. A solid ink line would claim the pairing is
+ * established; a vermilion one would claim it is wrong. Neither is knowable
+ * from the evidence, and the reader supplies the judgement instead.
+ */
+.pair-link {
+  block-size: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--d-unknown) 0 4px,
+    transparent 4px 8px
+  );
+  opacity: 0.55;
+  transition: opacity 160ms ease;
+}
+
+.pair:hover .pair-link,
+.pair-on .pair-link {
+  opacity: 1;
+}
+
+.pair-reason {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--d-ink-60);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pair-on .pair-reason {
+  -webkit-line-clamp: 6;
+}
+
+@media (max-width: 52rem) {
+  /* The join is a horizontal idea; stacked, it has nothing to span. */
+  .pair {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.35rem 0.75rem;
+  }
+  .pair-link { display: none; }
+  .pair-reason { grid-column: 2; }
+}
+
 /*
  * Grain.
  *
@@ -553,6 +689,44 @@ body {
   border-top: 1px solid var(--d-rule-strong);
   padding-top: 0.85rem;
 }
+
+.claim-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+  padding-block: 0.1rem;
+}
+
+.claim-summary::-webkit-details-marker { display: none; }
+
+/* A plus that becomes a minus. Two rules, no icon font, no JavaScript. */
+.claim-more {
+  position: relative;
+  inline-size: 9px;
+  block-size: 9px;
+  flex: none;
+  opacity: 0.5;
+  transition: opacity 160ms ease;
+}
+
+.claim-summary:hover .claim-more { opacity: 1; }
+
+.claim-more::before,
+.claim-more::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 4px;
+  block-size: 1px;
+  background: var(--d-ink);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.claim-more::after { transform: rotate(90deg); }
+.claim[open] .claim-more::after { transform: rotate(0deg); }
 
 .claim::before {
   content: '';
