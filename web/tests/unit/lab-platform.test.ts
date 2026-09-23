@@ -348,12 +348,27 @@ describe('spend is bounded by something that actually stops', () => {
     expect(inputTotal).toBeGreaterThan(BUDGET.max_total_tokens * 4)
   })
 
-  it('declares a dollar ceiling consistent with the token ceiling', () => {
-    // max_usd is a declaration priced off max_total_tokens, not a mechanism.
-    // It must not claim to be tighter than what is enforced.
-    const pessimisticUsdPerToken = 15 / 1_000_000
-    expect(BUDGET.max_usd).toBeGreaterThanOrEqual(
-      BUDGET.max_total_tokens * pessimisticUsdPerToken - 0.01,
-    )
+  it('declares a dollar ceiling that matches the structural limits', () => {
+    // max_usd is a declaration, not a mechanism — but a declaration that
+    // understates what the limits permit is worse than none. Input and output
+    // are bounded separately and billed differently, so they are priced
+    // separately: pricing the whole token ceiling at the output rate is not
+    // pessimism, it is the wrong arithmetic.
+    const USD_PER_INPUT = 3 / 1_000_000
+    const USD_PER_OUTPUT = 15 / 1_000_000
+    const perPayload = Math.ceil(BUDGET.max_tool_result_chars / 4)
+
+    let cumulative = 0
+    let inputTotal = 0
+    for (let call = 0; call < BUDGET.max_model_calls; call += 1) {
+      cumulative += 2 * perPayload
+      inputTotal += cumulative
+    }
+    const outputTotal = BUDGET.max_model_calls * BUDGET.max_output_tokens
+    const worstUsd = inputTotal * USD_PER_INPUT + outputTotal * USD_PER_OUTPUT
+
+    expect(worstUsd).toBeLessThanOrEqual(BUDGET.max_usd)
+    // And not so slack that the declaration stops meaning anything.
+    expect(BUDGET.max_usd).toBeLessThanOrEqual(worstUsd * 2)
   })
 })
