@@ -50,16 +50,26 @@ export interface SandboxCredentials {
 export function sandboxCredentials(
   env: Readonly<Record<string, string | undefined>> = process.env,
 ): SandboxCredentials | { readonly missing: readonly string[] } {
+  // OIDC first, and unconditionally.
+  //
+  // This used to accept OIDC only when all three explicit variables were
+  // absent, reasoning that a partial set is a misconfiguration. On a Vercel
+  // deployment that condition can never hold: the platform injects
+  // `VERCEL_PROJECT_ID` itself, so exactly one of the three is always
+  // present, the fallback was unreachable, and every sandboxed run on
+  // production refused with `missing VERCEL_TOKEN, VERCEL_TEAM_ID` — on the
+  // one host where OIDC is the intended mechanism.
+  //
+  // The rule it was reaching for is still worth keeping, and now sits where
+  // it applies: with no OIDC token, a partial explicit set is a
+  // misconfiguration rather than something to paper over.
+  if ((env.VERCEL_OIDC_TOKEN ?? '').trim() !== '') {
+    return { token: '', teamId: '', projectId: '' }
+  }
+
   const wanted = ['VERCEL_TOKEN', 'VERCEL_TEAM_ID', 'VERCEL_PROJECT_ID'] as const
   const missing = wanted.filter((k) => (env[k] ?? '').trim() === '')
-  if (missing.length > 0) {
-    // OIDC covers all three at once, so partial local credentials are a
-    // misconfiguration rather than a fallback.
-    if (missing.length === wanted.length && (env.VERCEL_OIDC_TOKEN ?? '').trim() !== '') {
-      return { token: '', teamId: '', projectId: '' }
-    }
-    return { missing }
-  }
+  if (missing.length > 0) return { missing }
   return {
     token: env.VERCEL_TOKEN as string,
     teamId: env.VERCEL_TEAM_ID as string,

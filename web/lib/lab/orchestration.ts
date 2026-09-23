@@ -51,10 +51,28 @@ const PROCESS_ID = `${process.env.VERCEL_DEPLOYMENT_ID ?? 'local'}:${crypto.rand
 export interface StepMark {
   readonly process_id: string
   readonly at: string
+  /**
+   * Seconds this process has been alive.
+   *
+   * `process_id` alone cannot tell "a new instance served the resume" from
+   * "the same instance was still warm" — both leave one id per step, and the
+   * first observed resume on the platform came back with one id across a
+   * 92-second suspension with no way to say which had happened.
+   *
+   * Uptime settles it. Growing by roughly the suspension means the same
+   * instance stayed alive; resetting means a new one took over. Either is a
+   * real answer, and the run is durable in both — what differs is only
+   * whether the platform happened to recycle the instance.
+   */
+  readonly uptime_s: number
 }
 
 function mark(): StepMark {
-  return { process_id: PROCESS_ID, at: new Date().toISOString() }
+  return {
+    process_id: PROCESS_ID,
+    at: new Date().toISOString(),
+    uptime_s: Math.round(process.uptime() * 10) / 10,
+  }
 }
 
 export interface WorkflowInput {
@@ -88,12 +106,19 @@ export interface ProcessTrace {
   readonly step: 'scope' | 'execute' | 'grade'
   readonly process_id: string
   readonly at: string
+  readonly uptime_s: number
 }
 
 interface Base {
   readonly events: readonly RunEvent[]
   readonly processes: readonly ProcessTrace[]
-  /** True when more than one process contributed to this run. */
+  /**
+   * True when more than one process contributed to this run.
+   *
+   * False does **not** mean the run failed to suspend. It means the platform
+   * served the resume from the same instance, which it is free to do — see
+   * `uptime_s` on each step for which of the two happened.
+   */
   readonly resumed: boolean
 }
 

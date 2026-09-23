@@ -33,16 +33,25 @@ describe('the sandbox credential check', () => {
     ])
   })
 
-  it('treats a partial local credential set as a misconfiguration, not a fallback', () => {
-    // OIDC supplies all three at once. Having exactly one means somebody
-    // half-configured this, and silently falling back would hide that.
-    const result = sandboxCredentials({ VERCEL_TOKEN: 'tok', VERCEL_OIDC_TOKEN: 'oidc' })
-    expect('missing' in result).toBe(true)
+  it('treats a partial set with no OIDC as a misconfiguration', () => {
+    const result = sandboxCredentials({ VERCEL_TOKEN: 'tok' })
+    expect('missing' in result && result.missing).toEqual(['VERCEL_TEAM_ID', 'VERCEL_PROJECT_ID'])
   })
 
   it('accepts OIDC alone, which is how a deployment authenticates', () => {
-    const result = sandboxCredentials({ VERCEL_OIDC_TOKEN: 'oidc' })
-    expect('missing' in result).toBe(false)
+    expect('missing' in sandboxCredentials({ VERCEL_OIDC_TOKEN: 'oidc' })).toBe(false)
+  })
+
+  it('accepts OIDC even though Vercel injects VERCEL_PROJECT_ID beside it', () => {
+    // The real shape on a deployment, and the one that used to be refused:
+    // the platform sets VERCEL_PROJECT_ID itself, so "all three absent" never
+    // held and the OIDC path was unreachable where it is the intended one.
+    const deployment = {
+      VERCEL_OIDC_TOKEN: 'oidc',
+      VERCEL_PROJECT_ID: 'prj_real',
+      VERCEL_ENV: 'production',
+    }
+    expect('missing' in sandboxCredentials(deployment)).toBe(false)
   })
 })
 
