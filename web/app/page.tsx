@@ -25,10 +25,17 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="frame rise flex flex-col gap-7 py-14 md:py-20">
-        <p className="label m-0 text-ink-40">News that knows you · never shipped</p>
+      <section className="hero frame rise relative flex flex-col gap-7 py-16 md:py-24">
+        <p className="label m-0 flex items-center gap-2.5 text-ink-40">
+          <span className="pip" aria-hidden="true" />
+          News that knows you · never shipped
+        </p>
         <h1 className="display m-0 max-w-5xl text-[clamp(2.5rem,7.5vw,5.5rem)]">
-          A daily edition is mostly the stories you never see.
+          A daily edition is mostly{' '}
+          {/* The subject of the sentence and of the site. Marked rather than
+              coloured: an underline that sits in the descender space reads as
+              emphasis without spending the one colour that means loss. */}
+          <span className="struck">the stories you never see.</span>
         </h1>
         <p className="lede measure m-0 text-ink-60">
           {pool !== null && delivered !== null ? (
@@ -39,11 +46,14 @@ export default async function HomePage() {
           Other feeds show you the survivors. This one shows the whole corpus, and which stage
           threw each candidate away.
         </p>
-        <nav aria-label="Main" className="grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
-          <Entry href="/reader" term="Reader" note="One edition, replayed from a frozen corpus" />
-          <Entry href="/evidence" term="Evidence" note="Every metric, fixture and story trace" />
-          <Entry href="/lab" term="Lab" note="A controlled experiment on the scorer" />
-          <Entry href="/engineering" term="Defect report" note="One bug, followed end to end" />
+        <nav
+          aria-label="Main"
+          className="mt-2 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <Entry n="01" href="/reader" term="Reader" note="One edition, replayed from a frozen corpus" />
+          <Entry n="02" href="/evidence" term="Evidence" note="Every metric, fixture and story trace" />
+          <Entry n="03" href="/lab" term="Lab" note="A controlled experiment on the scorer" />
+          <Entry n="04" href="/engineering" term="Defect report" note="One bug, followed end to end" />
         </nav>
       </section>
 
@@ -167,21 +177,27 @@ export default async function HomePage() {
 }
 
 function Entry({
+  n,
   href,
   term,
   note,
 }: {
+  n: string
   href: '/reader' | '/evidence' | '/lab' | '/engineering'
   term: string
   note: string
 }) {
   return (
-    <Link
-      href={href}
-      className="flex flex-col gap-1 bg-paper p-4 no-underline transition-colors duration-150 hover:bg-paper-secondary"
-    >
-      <span className="label text-ink">{term}</span>
-      <span className="text-xs text-ink-60">{note}</span>
+    <Link href={href} className="entry group">
+      <span className="flex items-baseline justify-between gap-3">
+        <span className="label text-ink">{term}</span>
+        <span className="band-index transition-colors duration-200 group-hover:text-ink">{n}</span>
+      </span>
+      <span className="mt-1.5 block text-xs text-ink-60">{note}</span>
+      {/* The rule fills left-to-right on hover. A colour change says "this is
+          a link"; a rule that draws itself says "this one, now" — and it is
+          the same gesture the sieve makes, which is the page's own idiom. */}
+      <span className="entry-rule" aria-hidden="true" />
     </Link>
   )
 }
@@ -214,7 +230,7 @@ function Readout({
 
 function Claim({ term, children }: { term: string; children: React.ReactNode }) {
   return (
-    <div className="border-t border-signal pt-3">
+    <div className="claim">
       <p className="label m-0 text-ink">{term}</p>
       <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
     </div>

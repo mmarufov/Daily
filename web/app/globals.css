@@ -5,7 +5,18 @@
  *
  * One rule governs the whole visual system: COLOUR MEANS LOSS. In any chart,
  * table or diagram, ink is what survived, vermilion is what the pipeline threw
- * away, and slate is what cannot be verified. Nothing that worked is ever
+ * away, and slate is what cannot be verified.
+ *
+ * The vermilion is deliberately *quiet*. It began at #bd3418 -- 77% saturation
+ * -- and on a page where loss is the most common outcome, the most common
+ * outcome was also the loudest thing on screen. Every readout, every bar, every
+ * discarded cell and six section rules in a row all shouting at once is not
+ * emphasis, it is noise, and a rule that says "colour means loss" stops meaning
+ * anything when most of the page is coloured. It is now 52%, which is still
+ * unmistakably the alarm colour against this paper and no longer the first
+ * thing the eye lands on. Contrast was re-measured rather than assumed: 5.10:1
+ * on paper, and the dark scheme's 3.19:1 against ink, which is the pair the
+ * sieve depends on. Nothing that worked is ever
  * coloured, so a glance at a figure tells you where the system failed before
  * you have read a label. The one exception is chrome — links, focus, selection
  * — which borrows the same vermilion because there it carries the same meaning
@@ -39,6 +50,13 @@
   /* Loss. Never used for anything that worked. */
   --color-signal: var(--d-signal);
   --color-signal-wash: var(--d-signal-wash);
+  /* Two further steps down the same hue, for charts that distinguish *where*
+     something was lost. These were `bg-signal/55` and `bg-signal/25`, and
+     alpha over paper produced washed pinks that read as a rendering artefact
+     rather than a category -- the strip looked like confectionery. Mixed
+     against paper as real colours instead, so each step is a decision. */
+  --color-loss-2: var(--d-loss-2);
+  --color-loss-3: var(--d-loss-3);
   /* Unverifiable: absent protocol, unknown execution mode, missing metric. */
   --color-unknown: var(--d-unknown);
 
@@ -78,33 +96,39 @@
 
   /* Paper: uncoated newsprint, low chroma, so vermilion stays the only
      saturated thing on the page. */
-  --d-paper: #f4f2ec;
-  --d-paper-2: #eae7de;
-  --d-paper-3: #dedacd;
+  --d-paper: #f9f7f3;
+  --d-paper-2: #f3f1ea;
+  --d-paper-3: #e9e6dd;
   --d-ink: #161513;
   /* Two muted levels, both computed to clear 4.5:1 against paper, the recessed
      panel AND the reader's sheet -- the site sets a lot of 11px monospace, and
      none of it qualifies as large text. 0.62/0.40 measured 4.7:1 and 2.5:1. */
   --d-ink-58: rgb(22 21 19 / 0.8);
   --d-ink-38: rgb(22 21 19 / 0.64);
-  --d-rule: #cdc7b8;
-  --d-rule-strong: #a8a08c;
+  --d-rule: #ddd8cc;
+  --d-rule-strong: #b5ae9c;
   /* Control boundaries, which carry which-thing-is-a-button on their own and
      so answer to 1.4.11's 3:1 rather than to the hairline rules' job. */
   --d-control: #858480;
-  --d-signal: #bd3418;
-  --d-signal-wash: rgb(189 52 24 / 0.1);
-  --d-unknown: #5f6f79;
+  --d-signal: #ab4d36;
+  --d-signal-wash: rgb(171 77 54 / 0.09);
+  --d-loss-2: #b8806f;
+  --d-loss-3: #cbb4aa;
+  --d-unknown: #5a6b74;
 
   /* The sieve's discarded candidates: present, legible as a mass, never
      competing with the survivors. The ceiling is set by the pair that has to
      stay readable -- removed-here (signal) against removed-earlier (ghost) --
      which needs 3:1, so this is as heavy as the ghost can get. */
   --d-ghost: rgb(22 21 19 / 0.2);
-  --d-sheet: #fbfaf6;
+  --d-sheet: #fdfcf9;
 
   --frame: 80rem;
   --measure: 36rem;
+  /* Wider than the old flat 1.25rem, and it breathes with the viewport --
+     the page was pinned to its gutter at every width. */
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --grain-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -123,8 +147,10 @@
        near-white ink the old #ff5b39 only reached 2.59:1 -- and alive-vs-dying
        is the entire message of the sieve. This clears 3:1 there and still
        clears 4.5:1 as text on both grounds. */
-    --d-signal: #e8482a;
-    --d-signal-wash: rgb(232 72 42 / 0.16);
+    --d-signal: #d2604c;
+    --d-signal-wash: rgb(210 96 76 / 0.15);
+    --d-loss-2: #96503f;
+    --d-loss-3: #5f3a32;
     --d-unknown: #8593a0;
     --d-ghost: rgb(238 235 227 / 0.18);
     --d-sheet: #16161a;
@@ -305,7 +331,174 @@ body {
   width: 100%;
   max-width: var(--frame);
   margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: var(--gutter);
+}
+
+/*
+ * The measuring column.
+ *
+ * Two hairlines at the edges of the content column, drawn once behind
+ * everything and running the full height of the page. They cost nothing and
+ * do two things: they make the page feel *set* rather than stacked, and they
+ * are the right metaphor for a site whose subject is a ruler. Everything that
+ * matters is inside the measure; the margins are margins.
+ *
+ * `position: fixed` rather than an absolutely-positioned sibling, so the
+ * lines do not stretch a 12,000px document into a paint-bound layer. They are
+ * `pointer-events: none` and `aria-hidden` by construction -- this is a mark
+ * on the paper, not content.
+ */
+.column-rules {
+  position: fixed;
+  inset-block: 0;
+  left: 50%;
+  translate: -50% 0;
+  width: 100%;
+  max-width: var(--frame);
+  border-inline: 1px solid var(--d-rule);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (max-width: 52rem) {
+  /* Below the frame width the rules would sit on the viewport edge, where
+     they read as a browser artefact rather than a margin. */
+  .column-rules { display: none; }
+}
+
+/*
+ * The hero's ground.
+ *
+ * A single very wide, very faint warm ellipse behind the headline. Flat
+ * near-white across a whole viewport is the condition under which a page
+ * looks unlit; this gives the top of the document somewhere for the eye to
+ * start. It is a *ground*, not a gradient effect -- if you can point at it and
+ * call it a gradient, it is too strong.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -18%;
+  inset-inline: -10%;
+  block-size: 130%;
+  background: radial-gradient(
+    60% 50% at 30% 38%,
+    color-mix(in oklab, var(--d-signal) 7%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/*
+ * The emphasised clause in a display line.
+ *
+ * A rule in the descender space rather than a colour change. The one colour
+ * this site has means loss, and the headline's subject is not a loss -- it is
+ * the thing the site is *about*. Spending vermilion here would have made the
+ * most prominent sentence on the page read as an error state.
+ */
+.struck {
+  position: relative;
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  /* A nowrap clause at 2.5rem will overflow a phone. */
+  .struck { white-space: normal; }
+}
+
+.struck::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0.08em;
+  block-size: 0.055em;
+  background: var(--d-signal);
+  opacity: 0.55;
+}
+
+/*
+ * A small mark that says "this page is instrumented".
+ *
+ * Borrowed from the sieve, which is the page's strongest idea: a single cell,
+ * alive.
+ */
+.pip {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  background: var(--d-signal);
+  flex: none;
+}
+
+/* --- the entry cards ------------------------------------------------- */
+
+.entry {
+  position: relative;
+  display: block;
+  background: var(--d-paper);
+  padding: 1.15rem 1.15rem 1.35rem;
+  text-decoration: none;
+  transition:
+    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.entry:hover {
+  background: var(--d-paper-2);
+}
+
+.entry-rule {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  block-size: 2px;
+  inline-size: 100%;
+  background: var(--d-signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.entry:hover .entry-rule,
+.entry:focus-visible .entry-rule {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry,
+  .entry-rule {
+    transition: none;
+  }
+  .entry:hover .entry-rule { transform: scaleX(1); }
+}
+
+/*
+ * Grain.
+ *
+ * A single tiled SVG turbulence at very low opacity. The page is large flat
+ * fields of near-white, which is exactly the condition under which a screen
+ * looks like a screen; a little noise gives it a surface. Kept under 4% or it
+ * stops being paper and starts being a texture overlay, and dropped entirely
+ * for anyone who asked for less motion-adjacent decoration.
+ */
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: var(--grain-src);
+  background-size: 180px 180px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .grain::after { opacity: 0.05; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain::after { opacity: 0.02; }
 }
 @media (width >= 48rem) {
   .frame {
@@ -324,8 +517,20 @@ body {
  * rail, which leaves half the traffic with no organising idea at all.
  */
 @utility band {
-  border-top: 1px solid var(--d-rule);
-  padding-top: 0.625rem;
+  /* The rule is drawn twice: a heavier ink segment over the index and title,
+     fading into the hairline that crosses the rest of the measure. A section
+     opener should say where it *starts*, and a uniform hairline says only
+     that something changed. */
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(
+      to right,
+      var(--d-ink) 0,
+      var(--d-ink) 2.25rem,
+      var(--d-rule) 2.25rem,
+      var(--d-rule) 100%
+    )
+    1;
+  padding-top: 0.7rem;
   scroll-margin-top: 1.5rem;
   display: flex;
   align-items: baseline;
@@ -339,6 +544,31 @@ body {
   letter-spacing: 0.1em;
   color: var(--d-ink-38);
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The claims grid.
+ *
+ * Each of these used to open with `border-t border-signal`. Six vermilion
+ * rules stacked in one viewport made the section that exists to be *sober*
+ * the loudest on the page, and turned the colour that means loss into
+ * decoration. The rule is now ink, and the vermilion is spent once, on a
+ * short mark at the start of it -- which is where the eye enters anyway.
+ */
+.claim {
+  position: relative;
+  border-top: 1px solid var(--d-rule-strong);
+  padding-top: 0.85rem;
+}
+
+.claim::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: 0;
+  inline-size: 1.75rem;
+  block-size: 1px;
+  background: var(--d-signal);
 }
 
 /* --------------------------------------------------------- controls ----- */
@@ -397,6 +627,62 @@ body {
  * colour and opacity — no layout property animates, so stepping a stage costs
  * no reflow even with 1,362 of them on screen.
  */
+/*
+ * The sieve's plate.
+ *
+ * The grid used to sit directly on the page, which made 1,362 cells read as a
+ * texture that happened to be there. It is the strongest thing on this site,
+ * so it gets treated as an instrument: recessed a step below the paper,
+ * ruled, and with register marks at the corners.
+ *
+ * The marks are the point of the whole device — they say "this is a reading,
+ * taken from something" rather than "this is a decoration". They cost four
+ * pseudo-elements and no JavaScript.
+ */
+.sieve-plate {
+  position: relative;
+  /* Deeper than `paper-2`, which sat too close to the ghost cells for the
+     frame to read at all -- the plate has to be visibly *under* the grid or
+     it is just a margin. */
+  background: var(--d-paper-3);
+  border: 1px solid var(--d-rule-strong);
+  padding: 0.9rem;
+  box-shadow: inset 0 1px 2px rgb(22 21 19 / 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  .sieve-plate {
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.35);
+  }
+}
+
+.sieve-plate::before,
+.sieve-plate::after {
+  content: '';
+  position: absolute;
+  inline-size: 10px;
+  block-size: 10px;
+  border: 1px solid var(--d-ink);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Top-left and bottom-right; the other two corners are drawn by the inset
+   rule alone, which keeps the frame from reading as a sticker. */
+.sieve-plate::before {
+  inset-block-start: -1px;
+  inset-inline-start: -1px;
+  border-inline-end: 0;
+  border-block-end: 0;
+}
+
+.sieve-plate::after {
+  inset-block-end: -1px;
+  inset-inline-end: -1px;
+  border-inline-start: 0;
+  border-block-start: 0;
+}
+
 .sieve {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));

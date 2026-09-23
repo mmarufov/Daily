@@ -52,7 +52,7 @@ export default async function LabPage() {
 
   return (
     <div className="flex flex-col">
-      <section className="frame flex flex-col gap-7 py-14 md:py-20">
+      <section className="hero frame relative flex flex-col gap-7 py-14 md:py-20">
         <p className="label m-0 text-ink-40">Daily Lab · recorded replay, not a live run</p>
         <h1 className="display m-0 max-w-5xl text-[clamp(2.25rem,6.5vw,4.75rem)]">
           The scorer judged forty articles and never said which verdict belonged to which.
@@ -138,7 +138,7 @@ export default async function LabPage() {
             <p className="label m-0 text-signal">What it does not measure</p>
             <ul className="m-0 mt-2 flex list-none flex-col gap-1.5 p-0 text-sm text-ink-60">
               {EXPERIMENT.does_not_measure.map((m) => (
-                <li key={m} className="border-t border-signal pt-1.5">{m}</li>
+                <li key={m} className="claim pt-1.5 text-ink-60">{m}</li>
               ))}
             </ul>
           </div>
@@ -256,7 +256,7 @@ function Readout({
 
 function Claim({ term, children }: { term: string; children: React.ReactNode }) {
   return (
-    <div className="border-t border-signal pt-3">
+    <div className="claim">
       <p className="label m-0 text-ink">{term}</p>
       <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
     </div>

@@ -25,12 +25,15 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-paper text-ink antialiased">
+      <body className="grain min-h-screen bg-paper text-ink antialiased">
+        {/* A mark on the paper, not content: the measuring column and the
+            grain are both drawn behind everything and read by nothing. */}
+        <div className="column-rules" aria-hidden="true" />
         <a href="#main" className="skip-link">
           Skip to content
         </a>
 
-        <header className="border-b border-rule">
+        <header className="relative z-1 border-b border-rule bg-paper/85 backdrop-blur-[2px]">
           <div className="frame flex items-center justify-between gap-6 py-3.5">
             <Link
               href="/"
@@ -43,9 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
 
-        <main id="main">{children}</main>
+        <main id="main" className="relative z-1">{children}</main>
 
-        <footer className="mt-24 border-t border-rule">
+        <footer className="relative z-1 mt-24 border-t border-rule">
           <div className="frame flex flex-col gap-6 py-10 md:flex-row md:justify-between">
             <p className="m-0 max-w-xl text-xs text-ink-60">
               Daily has never shipped; there are no readers. Everything here replays a dated,
