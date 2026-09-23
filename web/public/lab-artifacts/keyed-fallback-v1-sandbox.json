@@ -7,20 +7,20 @@
   "kind": "human-authored",
   "description": "Keyed association with a positional fallback: prefers article ids when the response carries them, and associates by position when it does not. Written for this experiment to be plausible rather than correct.",
   "declared_protocol": "keyed-v2",
-  "source_path": "backend/lab/contract/candidate.py",
+  "source_path": "backend/lab/contract/candidates/keyed_fallback_v1.py",
   "source_sha256": "a404e7b1e54f842d27a8ddb9d71beafbf1a62e697936951fd7da77c217ffcfec",
   "source_bytes": 5479,
   "transcribed_from": "unknown",
-  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/candidate.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/candidate.py\n@@ -1,29 +1,33 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n-\n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n-\n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+\"\"\"A candidate parser: keyed association with a positional fallback.\n+\n+Written for this experiment rather than transcribed from a revision, and\n+written to be *plausible* rather than to be correct. The instinct it encodes\n+is a real one and a good one in most contexts -- be liberal in what you\n+accept, do not discard work you can still make sense of -- applied to a\n+problem where it is exactly wrong.\n+\n+The reasoning goes: keyed association is better, so prefer it; but the\n+recorded responses from production do not carry article ids, because the\n+prompt that produced them never asked for any. Refusing all of them would\n+mean refusing every real response we have. So fall back to position when\n+ids are absent, and refuse only when the response is unusable in both ways.\n+\n+What that gives up is the property the experiment exists to measure. A\n+truncated or miscounted response has no ids either, so it takes the same\n+fallback, and the parser recovers an association from a response no parser\n+can recover an association from. It refuses less often than the historical\n+parser it was meant to improve on.\n+\n+Kept as evidence. `web/lib/lab/runner.ts` routes it to the sandbox because\n+its bytes match no entry in KNOWN_IMPLEMENTATIONS -- being committed is not\n+what earns local execution; being on that list is.\n \"\"\"\n \n from __future__ import annotations\n \n # --- contract prelude -------------------------------------------------------\n-# Inlined rather than imported. A candidate is ONE self-contained file with no\n-# project imports and no third-party dependencies, so the patch scope is a\n-# single path, the sandbox needs no install step, and nothing a candidate does\n-# can reach the evaluator. The canonical definitions live in\n-# lab/contract/types.py, and tests/test_contract_prelude.py asserts that every\n-# copy still agrees with it.\n+# Inlined, per the one-self-contained-file rule. Canonical definitions live in\n+# lab/contract/types.py.\n \n import math as _math\n \n@@ -54,45 +58,87 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"keyed-with-positional-fallback\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"no_recording\", str(response.get(\"error\"))[:200])\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"no_recording\", \"the response carried no content\")\n+\n+    if response.get(\"finish_reason\") not in (None, \"stop\"):\n+        return refuse(\"truncated_response\", str(response.get(\"finish_reason\")))\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+\n+    if not isinstance(result, dict):\n+        return refuse(\"unexpected_shape\", f\"top level is {type(result).__name__}\")\n+\n+    results_list = result.get(\"results\")\n+    if not isinstance(results_list, list):\n+        return refuse(\"unexpected_shape\", \"results is not a list\")\n+\n+    keyed = [e for e in results_list if isinstance(e, dict) and \"article_id\" in e]\n+\n+    if keyed:\n+        return _parse_keyed(articles, keyed)\n+\n+    # The fallback. Every verdict lacks an id, so associate by position --\n+    # which is the defect this candidate was written to remove, reintroduced\n+    # under a condition that looked like it excluded the defective cases.\n+    return _parse_positional(articles, results_list)\n+\n+\n+def _parse_keyed(articles, entries):\n+    wanted = {a[\"id\"] for a in articles}\n+    seen: dict[str, dict] = {}\n+    for entry in entries:\n+        aid = entry.get(\"article_id\")\n+        if not isinstance(aid, str):\n+            return refuse(\"invalid_type\", \"article_id is not a string\")\n+        if aid in seen:\n+            return refuse(\"duplicate_id\", aid)\n+        if aid not in wanted:\n+            return refuse(\"unknown_id\", aid)\n+        seen[aid] = entry\n+\n+    missing = wanted - set(seen)\n+    if missing:\n+        return refuse(\"missing_id\", \", \".join(sorted(missing))[:200])\n+\n+    out = []\n+    for article in articles:\n+        entry = seen[article[\"id\"]]\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            return refuse(\"score_out_of_range\", f\"{article['id']}: {entry.get('score')!r}\")\n+        relevant = entry.get(\"relevant\")\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"{article['id']}: relevant is not a bool\")\n+        out.append(verdict(article[\"id\"], relevant, score, entry.get(\"reason\", \"\")))\n+    return ok(out)\n+\n+\n+def _parse_positional(articles, entries):\n+    if len(entries) != len(articles):\n+        return refuse(\"count_mismatch\", f\"{len(entries)} verdicts for {len(articles)} articles\")\n+\n+    out = []\n+    for article, entry in zip(articles, entries):\n+        if not isinstance(entry, dict):\n+            return refuse(\"unexpected_shape\", \"a verdict is not an object\")\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            return refuse(\"score_out_of_range\", f\"{article['id']}: {entry.get('score')!r}\")\n+        relevant = entry.get(\"relevant\")\n+        if not isinstance(relevant, bool):\n+            relevant = score >= 0.5\n+        out.append(verdict(article[\"id\"], relevant, score, entry.get(\"reason\", \"\")))\n     return ok(out)\n",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/candidates/keyed_fallback_v1.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/candidates/keyed_fallback_v1.py\n@@ -1,29 +1,33 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n-\n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n-\n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+\"\"\"A candidate parser: keyed association with a positional fallback.\n+\n+Written for this experiment rather than transcribed from a revision, and\n+written to be *plausible* rather than to be correct. The instinct it encodes\n+is a real one and a good one in most contexts -- be liberal in what you\n+accept, do not discard work you can still make sense of -- applied to a\n+problem where it is exactly wrong.\n+\n+The reasoning goes: keyed association is better, so prefer it; but the\n+recorded responses from production do not carry article ids, because the\n+prompt that produced them never asked for any. Refusing all of them would\n+mean refusing every real response we have. So fall back to position when\n+ids are absent, and refuse only when the response is unusable in both ways.\n+\n+What that gives up is the property the experiment exists to measure. A\n+truncated or miscounted response has no ids either, so it takes the same\n+fallback, and the parser recovers an association from a response no parser\n+can recover an association from. It refuses less often than the historical\n+parser it was meant to improve on.\n+\n+Kept as evidence. `web/lib/lab/runner.ts` routes it to the sandbox because\n+its bytes match no entry in KNOWN_IMPLEMENTATIONS -- being committed is not\n+what earns local execution; being on that list is.\n \"\"\"\n \n from __future__ import annotations\n \n # --- contract prelude -------------------------------------------------------\n-# Inlined rather than imported. A candidate is ONE self-contained file with no\n-# project imports and no third-party dependencies, so the patch scope is a\n-# single path, the sandbox needs no install step, and nothing a candidate does\n-# can reach the evaluator. The canonical definitions live in\n-# lab/contract/types.py, and tests/test_contract_prelude.py asserts that every\n-# copy still agrees with it.\n+# Inlined, per the one-self-contained-file rule. Canonical definitions live in\n+# lab/contract/types.py.\n \n import math as _math\n \n@@ -54,45 +58,87 @@ import json\n from typing import Any\n \n \n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n+VERSION_ID = \"keyed-with-positional-fallback\"\n+PROTOCOL = \"keyed-v2\"\n \n \n def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n     if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"no_recording\", str(response.get(\"error\"))[:200])\n \n     content = response.get(\"content\")\n     if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n+        return refuse(\"no_recording\", \"the response carried no content\")\n+\n+    if response.get(\"finish_reason\") not in (None, \"stop\"):\n+        return refuse(\"truncated_response\", str(response.get(\"finish_reason\")))\n \n     try:\n         result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n-\n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n+    except Exception as exc:\n+        return refuse(\"malformed_json\", str(exc))\n+\n+    if not isinstance(result, dict):\n+        return refuse(\"unexpected_shape\", f\"top level is {type(result).__name__}\")\n+\n+    results_list = result.get(\"results\")\n+    if not isinstance(results_list, list):\n+        return refuse(\"unexpected_shape\", \"results is not a list\")\n+\n+    keyed = [e for e in results_list if isinstance(e, dict) and \"article_id\" in e]\n+\n+    if keyed:\n+        return _parse_keyed(articles, keyed)\n+\n+    # The fallback. Every verdict lacks an id, so associate by position --\n+    # which is the defect this candidate was written to remove, reintroduced\n+    # under a condition that looked like it excluded the defective cases.\n+    return _parse_positional(articles, results_list)\n+\n+\n+def _parse_keyed(articles, entries):\n+    wanted = {a[\"id\"] for a in articles}\n+    seen: dict[str, dict] = {}\n+    for entry in entries:\n+        aid = entry.get(\"article_id\")\n+        if not isinstance(aid, str):\n+            return refuse(\"invalid_type\", \"article_id is not a string\")\n+        if aid in seen:\n+            return refuse(\"duplicate_id\", aid)\n+        if aid not in wanted:\n+            return refuse(\"unknown_id\", aid)\n+        seen[aid] = entry\n+\n+    missing = wanted - set(seen)\n+    if missing:\n+        return refuse(\"missing_id\", \", \".join(sorted(missing))[:200])\n+\n+    out = []\n+    for article in articles:\n+        entry = seen[article[\"id\"]]\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            return refuse(\"score_out_of_range\", f\"{article['id']}: {entry.get('score')!r}\")\n+        relevant = entry.get(\"relevant\")\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"{article['id']}: relevant is not a bool\")\n+        out.append(verdict(article[\"id\"], relevant, score, entry.get(\"reason\", \"\")))\n+    return ok(out)\n+\n+\n+def _parse_positional(articles, entries):\n+    if len(entries) != len(articles):\n+        return refuse(\"count_mismatch\", f\"{len(entries)} verdicts for {len(articles)} articles\")\n+\n+    out = []\n+    for article, entry in zip(articles, entries):\n+        if not isinstance(entry, dict):\n+            return refuse(\"unexpected_shape\", \"a verdict is not an object\")\n+        score = finite_unit_score(entry.get(\"score\"))\n+        if score is None:\n+            return refuse(\"score_out_of_range\", f\"{article['id']}: {entry.get('score')!r}\")\n+        relevant = entry.get(\"relevant\")\n+        if not isinstance(relevant, bool):\n+            relevant = score >= 0.5\n+        out.append(verdict(article[\"id\"], relevant, score, entry.get(\"reason\", \"\")))\n     return ok(out)\n",
   "patch_base": "backend/lab/contract/versions/positional_v0.py"
  },
  "provenance": {
   "executed_at_revision": "192e1a54b3556bbd6351b86d705553d633ba2641+dirty",
-  "inputs_sha256": "0b17b43163c9eaef",
+  "inputs_sha256": "70b83e3c09031c8f",
   "executed_at": "2026-09-22T20:20:21.317Z",
-  "evaluator_sha256": "0448a05a16709521",
-  "spec_hash": "008af8266204438a",
-  "spec_version": 1,
+  "evaluator_sha256": "277ec81521ba14d8",
+  "spec_hash": "f027762ab4d08b35",
+  "spec_version": 2,
   "execution_mode": "offline-replay",
   "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
   "python": "3.13.1",
@@ -123,8 +123,8 @@
    }
   ]
  },
- "verdict": "accepted-for-review",
- "verdict_reason": "all 5 criteria satisfied over 60 applicable cases",
+ "verdict": "rejected",
+ "verdict_reason": "protocol-exclusivity: 0/4 cases satisfied, threshold 1",
  "verdict_scope": "Accepted means eligible for human review under this spec hash, against a public case suite. It is not evidence of production quality, and it does not establish generalisation: the cases are visible and a candidate may have been written against them.",
  "criteria": [
   {
@@ -171,6 +171,132 @@
    "satisfied": 60,
    "rate": 1,
    "passed": true
+  },
+  {
+   "id": "protocol-exclusivity",
+   "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+   "threshold": 1,
+   "applicable": 4,
+   "satisfied": 0,
+   "rate": 0,
+   "passed": false
+  }
+ ],
+ "gradings": [
+  {
+   "spec_version": 1,
+   "spec_hash": "008af8266204438a",
+   "verdict": "accepted-for-review",
+   "verdict_reason": "all 5 criteria satisfied over 60 applicable cases",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 3,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 9,
+     "satisfied": 9,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    }
+   ]
+  },
+  {
+   "spec_version": 2,
+   "spec_hash": "f027762ab4d08b35",
+   "verdict": "rejected",
+   "verdict_reason": "protocol-exclusivity: 0/4 cases satisfied, threshold 1",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 3,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 9,
+     "satisfied": 9,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-exclusivity",
+     "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+     "threshold": 1,
+     "applicable": 4,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    }
+   ]
   }
  ],
  "outcomes": [
@@ -1172,7 +1298,7 @@
    "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
    "value": 4,
    "of": 4,
-   "detail": "It produced a complete association on 4 case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.",
+   "detail": "It produced a complete association on 4 case(s) outside its declared protocol. Under this generation that fails protocol-exclusivity; under generation 1 it was not graded at all.",
    "case_ids": [
     "observed-2026-09-02-005",
     "observed-2026-09-02-035",

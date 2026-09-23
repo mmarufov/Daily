@@ -27,7 +27,7 @@ import {
   type Case,
   type RecordBundle,
 } from '../lib/lab/records'
-import { EXPERIMENT, specHash } from '../lib/lab/spec'
+import { EXPERIMENT, SPECS, specHash } from '../lib/lab/spec'
 import { KNOWN_IMPLEMENTATIONS, SANDBOX_LIMITS, selectRunner } from '../lib/lab/runner'
 import {
   LAB_ARTIFACT_VERSION,
@@ -449,8 +449,17 @@ function buildRunInScope(
     failure = 'no record bundle was produced'
   }
 
-  const evaluation =
-    failure === undefined ? evaluate(cases, bundle) : evaluate(cases, null, { failure })
+  // Graded once per generation. Execution happened once; grading is a pure
+  // function of the records and a spec, so a new generation costs nothing and
+  // re-runs nothing -- which is exactly why re-grading has to be published
+  // rather than applied silently.
+  const gradings = SPECS.map((spec) =>
+    failure === undefined
+      ? evaluate(cases, bundle, { spec })
+      : evaluate(cases, null, { failure, spec }),
+  )
+  const evaluation = gradings[gradings.length - 1]
+  if (evaluation === undefined) throw new Error('no spec generations are defined')
 
   const attempts: LabRun['attempts'] = events
     .filter((e) => e.type === 'attempt-started')
@@ -572,6 +581,13 @@ function buildRunInScope(
     verdict_reason: evaluation.reason,
     verdict_scope: VERDICT_SCOPE,
     criteria: evaluation.criteria.map((c) => ({ ...c })),
+    gradings: gradings.map((g) => ({
+      spec_version: g.spec_version,
+      spec_hash: g.spec_hash,
+      verdict: g.verdict,
+      verdict_reason: g.reason,
+      criteria: g.criteria.map((c) => ({ ...c })),
+    })),
     outcomes: evaluation.outcomes.map((o) => ({
       ...o,
       expected_refusal_kinds: [...o.expected_refusal_kinds],
@@ -716,6 +732,9 @@ function main(): void {
       spec_hash: w.run.provenance.spec_hash,
       sha256: sha256(w.json),
       bytes: Buffer.byteLength(w.json),
+      verdict_by_spec: Object.fromEntries(
+        w.run.gradings.map((g) => [String(g.spec_version), g.verdict]),
+      ),
       runner: w.run.provenance.runner,
       investigated: w.run.provenance.investigation !== null,
     })),

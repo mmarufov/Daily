@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { Band, PageIndex, type Section } from '@/components/Band'
-import { Counterexample, CriteriaTable, Timeline, VerdictBadge } from '@/components/LabVerdict'
+import { Gradings } from '@/components/LabGradings'
+import { Counterexample, Timeline, VerdictBadge } from '@/components/LabVerdict'
 import { UNKNOWN } from '@/lib/lab/artifact'
 import { loadLabIndex, loadLabRun, walkthroughs } from '@/lib/lab/data'
 import { SANDBOX_LIMITS } from '@/lib/lab/runner'
@@ -80,7 +81,18 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
         </h1>
         <div className="flex flex-wrap items-center gap-3">
           <VerdictBadge verdict={run.verdict} />
-          <p className="m-0 max-w-2xl text-sm text-ink-60">{run.verdict_reason}</p>
+          <p className="m-0 max-w-2xl text-sm text-ink-60">
+            {run.verdict_reason}
+            {/* Without this, a reader who switches the criteria below to v1
+                sees ACCEPTED there and REJECTED up here with nothing saying
+                the two answers are about different criteria. */}
+            {run.gradings.length > 1 ? (
+              <span className="block pt-1 text-ink-40">
+                Under the current criteria, generation {run.gradings[run.gradings.length - 1]?.spec_version}.
+                This run faced generation {run.gradings[0]?.spec_version} when it executed — both verdicts are below.
+              </span>
+            ) : null}
+          </p>
         </div>
         {control ? (
           <p className="m-0 max-w-3xl border-l-2 border-signal pl-3 text-sm text-ink-60">
@@ -103,8 +115,13 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
       </section>
 
       <section className="frame flex flex-col gap-6 pb-16">
-        <Band {...band('verdict', `spec ${run.provenance.spec_hash}`)} />
-        <CriteriaTable run={run} />
+        <Band
+          {...band(
+            'verdict',
+            run.gradings.length > 1 ? `${run.gradings.length} criteria generations` : `spec ${run.provenance.spec_hash}`,
+          )}
+        />
+        <Gradings run={run} />
         <p className="m-0 max-w-3xl border-t border-signal pt-3 text-sm text-ink-60">
           {run.verdict_scope}
         </p>

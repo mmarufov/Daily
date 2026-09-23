@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "app/.well-known/workflow/v1/step/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/lab/investigate/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/lab/run/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

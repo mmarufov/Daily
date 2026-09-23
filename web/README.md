@@ -55,6 +55,25 @@ are committed.
 | `LAB_MAX_USD` | investigator only | An explicit per-investigation ceiling. Required even when a key is present, and refused if it exceeds `BUDGET.max_usd`: raising the limit has to be a commit somebody reads, not an env var somebody sets. |
 | `LAB_MODEL` | no | Overrides the default `anthropic/claude-sonnet-4.5`, as a `provider/model` string. |
 
+`LAB_MAX_USD` is an *authorisation*; `BUDGET.max_usd` in `lib/lab/investigator.ts` is the
+*reviewed ceiling*. The tighter of the two binds. Refusing an authorisation above the reviewed
+ceiling — which this used to do — had the asymmetry backwards: being allowed more than the code
+will spend is not a hazard, and the refusal could be satisfied by raising the code ceiling, which
+is the opposite of what a ceiling is for.
+
+### Why `web/lab-evidence/` exists
+
+A deployed function cannot read `backend/`. It is outside the Vercel Root Directory, Next's file
+tracing refuses a glob that navigates out of the project root, and setting `outputFileTracingRoot`
+to the repository breaks Turbopack's own module resolution. `POST /api/lab/run` answered `ENOENT`
+in production while every local check passed.
+
+`npm run stage:lab` copies the eight files a function opens into the project, before `dev` and
+before `build`. The directory is gitignored and rebuilt each time: a second *committed* copy of
+the case suite would be a second thing that can disagree with the first. The export still reads
+`backend/` directly, and should — it runs on a developer's machine and its job is to be a function
+of committed bytes rather than of a build artifact.
+
 There is deliberately no backend URL here. See [Live mode](#live-mode-is-not-built).
 
 ## The boundary between this tier and the backend
@@ -321,12 +340,27 @@ claim.
 attempt with a start and no journaled ending is one nothing observed finishing, and the microVM
 may have completed a millisecond before the orchestrator died.
 
-**The investigator agent — not exercised.** No `AI_GATEWAY_API_KEY` and no `LAB_MAX_USD` on this
-deployment, so `readiness()` refuses and nothing is called. The tools, the scope gate and the
-budget are real code with real tests; the model call is not, no trace is depicted anywhere, and
-`/lab` derives that claim from the manifest rather than asserting it in prose.
+**The investigator agent — runs on the deployment, not on a laptop.** `AI_GATEWAY_API_KEY` is a
+Vercel *sensitive* variable: set once and never readable again, including by `vercel env pull`.
+That is the access model rather than an obstacle to route around — "only the authenticated owner
+starts paid work, enforced server-side" is not satisfied by copying the key onto a developer's
+machine, and a repository that audits its own sandbox for leaked credentials should not be
+exfiltrating one to run an errand.
 
-### A gap the experiment found in itself
+So `POST /api/lab/investigate` is owner-only and starts a workflow that runs the agent loop where
+the credential already is. `npm run lab:investigate -- --at <deployment>` starts one and writes
+the returned evidence into `backend/lab/` in the shape `export-lab.ts` already reads.
+
+`readiness()` requires `AI_GATEWAY_API_KEY` specifically. It used to accept `OPENAI_API_KEY` as a
+fallback and report the gateway as `openai-direct`, which nothing could serve — the model is
+addressed as a bare `provider/model` string, which only the Gateway routes. The call failing was
+the lesser problem: `openai-direct` would have been written into a committed trace as the gateway
+that served a call that never happened.
+
+Where this stands is recorded on `/lab`, derived from the manifest rather than asserted in prose,
+so the claim weakens itself when a run proves otherwise.
+
+### A gap the experiment found in itself, and the criterion that closed it
 
 `keyed-fallback-v1` was written to be plausible and wrong, and was **accepted**. It declares
 `keyed-v2` and falls back to positional association when a response carries no article ids.
@@ -335,16 +369,29 @@ checked that it *refused* them rather than quietly handling them. On `syn-positi
 the case built to expose the exact defect this experiment measures, it parsed where `keyed-v2`
 refuses, and nothing graded it.
 
-Published as a diagnostic, not promoted to a criterion: a sixth criterion would change the spec
-hash and re-decide seven runs that never faced it, which is the move
-[`spec.ts`](lib/lab/spec.ts) says invalidates a comparison.
+It was published first as a diagnostic, deliberately — promoting it to a criterion re-decides
+runs that never faced it, and doing that silently is how a result gets rewritten after the fact.
 
-| candidate | verdict | out-of-protocol associations |
+It is now **generation 2 of the spec**, as `protocol-exclusivity`, at threshold 1 like every
+other criterion. A declared protocol was being treated as a shield; that is right for association
+— scoring a keyed parser on a positional recording compares two protocols on one protocol's
+inputs — and wrong for refusal. A parser that quietly handles inputs it did not declare is not
+narrower than the contract, it is wider than the contract and unmeasured in the excess.
+
+**Both generations are kept, and every run is graded under both.** Grading is a pure function of
+the records and a spec, so a second generation re-runs nothing and costs nothing. Every run page
+carries a generation switcher, and the overview flags the one run whose verdict moved.
+
+| candidate | v1 (5 criteria) | v2 (6 criteria) |
 |---|---|---|
-| `keyed-v2` | accepted-for-review | 0/4 |
-| `keyed-fallback-v1` | accepted-for-review | 4/4 |
+| `keyed-fallback-v1` | accepted-for-review | **rejected** |
+| `keyed-v2` | accepted-for-review | accepted-for-review |
+| everything else | unchanged | unchanged |
 
-Two identical verdicts; the diagnostic is the only thing separating them.
+Exactly one verdict moves. A criterion that moved half the field would be measuring something
+other than what it was written for, and `lab-spec-generations.test.ts` asserts that. `SPEC_V1` is
+frozen and its hash pinned at `008af8266204438a`: `specHash` digests `JSON.stringify`, so
+reordering a key would rewrite what eight committed artifacts claim they were judged against.
 
 ### Commands
 
@@ -353,8 +400,13 @@ cd backend && venv/bin/python -m lab.run_known        # every known implementati
 venv/bin/python -m pytest tests/test_lab_contract.py  # 741, incl. all 720 permutations
 cd ../web && npm run export:lab                       # rebuild web/public/lab-artifacts/
 npm run export:lab -- --check                         # validate without writing
-npm run lab:agent -- --sandbox-only ../backend/lab/contract/candidate.py   # boundary, no model
-npm run lab:agent                                     # full investigation (needs a gateway key)
+npm run stage:lab                                     # copy runtime evidence into the project
+
+# The sandbox boundary, no model in the loop — deterministic given a committed candidate.
+npm run lab:agent -- --sandbox-only ../backend/lab/contract/candidates/keyed_fallback_v1.py
+
+# One real investigation, run on the deployment holding the gateway key.
+LAB_OWNER_TOKEN=… npm run lab:investigate -- --at https://daily-web-rose.vercel.app
 ```
 
 ## The case study

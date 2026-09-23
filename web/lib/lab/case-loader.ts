@@ -9,10 +9,11 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { LAB_DIR } from './evidence-path'
 import { parseCaseSuite, type Case } from './records'
 
 export async function loadCasesForRun(
-  labDir: string = join(process.cwd(), '..', 'backend', 'lab'),
+  labDir: string = LAB_DIR,
 ): Promise<Case[]> {
   const cases: Case[] = []
   for (const group of ['observed', 'synthetic'] as const) {

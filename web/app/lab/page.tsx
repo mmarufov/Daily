@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     'A controlled experiment on Daily’s batch relevance scorer: does a candidate parser associate every verdict with the article it was actually about, and refuse when it cannot? Verdicts computed by trusted code from prediction records.',
 }
 
+/** True when this run is graded differently by different generations. */
+function movedGeneration(entry: { verdict_by_spec: Readonly<Record<string, string>> }): boolean {
+  return new Set(Object.values(entry.verdict_by_spec)).size > 1
+}
+
 export default async function LabPage() {
   const { manifest, issues } = await loadLabIndex()
   const offending = await loadOffendingCase()
@@ -153,6 +158,16 @@ export default async function LabPage() {
                   <span className="text-xs text-ink">{entry.candidate_id}</span>
                   <span className="hidden text-xs text-ink-40 sm:block">
                     {entry.kind === 'seeded-control' ? 'seeded control' : 'preserved version'}
+                    {/* The manifest carries the verdict under every generation
+                        so this list can flag a run whose verdict *moved*
+                        without loading each run — which is the one thing a
+                        reader most wants pointed out and would otherwise have
+                        to find by opening eight pages. */}
+                    {movedGeneration(entry) ? (
+                      <span className="block pt-0.5 text-signal">
+                        verdict moved between criteria generations
+                      </span>
+                    ) : null}
                   </span>
                   <span className="text-right">
                     <VerdictBadge verdict={entry.verdict} small />

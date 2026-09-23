@@ -1,0 +1,26 @@
+/* [project]/web/app/fraunces_82293a4a.module.css [app-client] (css) */
+@font-face {
+  font-family: fraunces;
+  src: url("../media/Fraunces_latin-s.p.20jfceqj9zyw9.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 300 900;
+}
+
+@font-face {
+  font-family: fraunces Fallback;
+  src: local(Times New Roman);
+  ascent-override: 76.84%;
+  descent-override: 20.04%;
+  line-gap-override: 0.0%;
+  size-adjust: 127.27%;
+}
+
+.fraunces_82293a4a-module__SM4cka__className {
+  font-family: fraunces, fraunces Fallback, Charter, Georgia, Times New Roman, serif;
+}
+
+.fraunces_82293a4a-module__SM4cka__variable {
+  --font-editorial-var: "fraunces", "fraunces Fallback", Charter, Georgia, Times New Roman, serif;
+}
+
+/*# sourceMappingURL=web_app_fraunces_82293a4a_module_css_1igg3k2._.single.css.map*/

@@ -252,6 +252,25 @@ export const DiagnosticSchema = z.object({
   case_ids: z.array(z.string()),
 })
 
+/**
+ * One verdict, and the generation of criteria that produced it.
+ *
+ * A run is *executed* once and *graded* many times: grading is a pure function
+ * of the records and a spec, so a new generation needs no re-execution and no
+ * new microVM. Keeping every grading is what lets the page show the same
+ * candidate accepted under v1 and rejected under v2 — the alternative,
+ * silently re-grading and publishing only the newest answer, is how a result
+ * gets rewritten after the fact.
+ */
+export const GradingSchema = z.object({
+  spec_version: z.number().int(),
+  spec_hash: z.string(),
+  verdict: z.enum(['accepted-for-review', 'rejected', 'incomplete', 'failed', 'cancelled']),
+  verdict_reason: z.string(),
+  criteria: z.array(CriterionResultSchema),
+})
+export type Grading = z.infer<typeof GradingSchema>
+
 export const LabRunSchema = z.object({
   lab_artifact_version: z.literal(LAB_ARTIFACT_VERSION),
   run_id: z.string(),
@@ -263,6 +282,8 @@ export const LabRunSchema = z.object({
   /** What acceptance does and does not mean, carried with the verdict. */
   verdict_scope: z.string(),
   criteria: z.array(CriterionResultSchema),
+  /** Every generation, oldest first. The last one is the top-level verdict. */
+  gradings: z.array(GradingSchema).min(1),
   outcomes: z.array(CaseOutcomeSchema),
   counts: z.record(z.string(), z.number().int()),
   smallest_counterexample: CounterexampleSchema.nullable(),
@@ -279,6 +300,12 @@ export const LabManifestEntrySchema = z.object({
   kind: CandidateKindSchema,
   verdict: z.enum(['accepted-for-review', 'rejected', 'incomplete', 'failed', 'cancelled']),
   spec_hash: z.string(),
+  /**
+   * Verdict under each generation, keyed by spec version. Carried in the index
+   * so the overview can mark the runs whose verdict *moved* without loading
+   * every run — which is the one thing a reader most wants pointed out.
+   */
+  verdict_by_spec: z.record(z.string(), z.enum(['accepted-for-review', 'rejected', 'incomplete', 'failed', 'cancelled'])),
   sha256: z.string(),
   bytes: z.number().int(),
   /**

@@ -34,6 +34,17 @@ export interface InvestigationBudget {
   readonly wall_clock_seconds: number
 }
 
+/**
+ * `wall_clock_seconds` has to fit under the function limit hosting the step
+ * that runs the loop, and 300s is the platform's ceiling rather than a knob —
+ * asking for 400 fails the deployment outright. So `vercel.json` claims the
+ * full 300 and this 180 plus a sandbox run sits inside it.
+ *
+ * The margin matters because an investigation killed mid-flight is an
+ * `unknown-outcome`: the model was called and charged, and whether it
+ * finished is not knowable from the log. An honest status, and an expensive
+ * way to reach it.
+ */
 export const BUDGET: InvestigationBudget = {
   max_proposals: 1,
   max_tool_calls: 12,
@@ -52,6 +63,11 @@ export const InspectFailureInput = z.object({
 
 export const ReadSourceInput = z.object({
   path: z.enum([
+    // The contract itself, including the closed REFUSAL_KINDS vocabulary. A
+    // candidate is required to refuse using those exact strings, so withholding
+    // the file would not be a harder task, it would be a guessing game about
+    // enum spelling — and a human implementing this would have it open.
+    'backend/lab/contract/types.py',
     'backend/lab/contract/versions/positional_v0.py',
     'backend/lab/contract/versions/count_guard_v1.py',
     'backend/app/services/openai_service.py',
@@ -106,7 +122,7 @@ export type ToolName = (typeof TOOLS)[number]['name']
 /* --------------------------------------------------------- readiness ---- */
 
 export type Readiness =
-  | { readonly ready: true; readonly gateway: string }
+  | { readonly ready: true; readonly gateway: 'vercel-ai-gateway' }
   | { readonly ready: false; readonly reason: 'missing-credentials' | 'missing-budget'; readonly needs: readonly string[] }
 
 /**
@@ -118,12 +134,29 @@ export type Readiness =
  * did.
  */
 export function readiness(env: Readonly<Record<string, string | undefined>> = process.env): Readiness {
-  const key = env.AI_GATEWAY_API_KEY ?? env.OPENAI_API_KEY
-  const needs: string[] = []
-  if (key === undefined || key.trim() === '') {
-    needs.push('AI_GATEWAY_API_KEY (or OPENAI_API_KEY) for the investigator')
+  // `AI_GATEWAY_API_KEY` and nothing else.
+  //
+  // This used to accept `OPENAI_API_KEY` as a fallback and report the gateway
+  // as `openai-direct`. Nothing could serve that: `agent.ts` passes a bare
+  // `provider/model` string, which only the AI Gateway resolves, and no
+  // provider SDK is installed. So an OpenAI key made `readiness()` return
+  // ready and `generateText` fail at call time -- and the failure was the
+  // lesser problem. `openai-direct` would have been written into the
+  // committed trace as the gateway that served a call that never happened,
+  // which is a false provenance record in a repository whose entire claim is
+  // that its provenance is not false.
+  //
+  // A readiness check has to test what the call path actually needs. This one
+  // now does, and the return type has no room for a second answer.
+  if ((env.AI_GATEWAY_API_KEY ?? '').trim() === '') {
+    return {
+      ready: false,
+      reason: 'missing-credentials',
+      needs: [
+        'AI_GATEWAY_API_KEY — the model is addressed as a `provider/model` string, which only the AI Gateway routes',
+      ],
+    }
   }
-  if (needs.length > 0) return { ready: false, reason: 'missing-credentials', needs }
   if ((env.LAB_MAX_USD ?? '').trim() === '') {
     return {
       ready: false,
@@ -131,7 +164,7 @@ export function readiness(env: Readonly<Record<string, string | undefined>> = pr
       needs: ['LAB_MAX_USD — an explicit per-investigation spending limit'],
     }
   }
-  return { ready: true, gateway: env.AI_GATEWAY_API_KEY !== undefined ? 'vercel-ai-gateway' : 'openai-direct' }
+  return { ready: true, gateway: 'vercel-ai-gateway' }
 }
 
 /* -------------------------------------------------------- proposals ---- */

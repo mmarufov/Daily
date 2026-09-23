@@ -60,7 +60,9 @@ Hard constraints on the file you submit:
   Copy them exactly as they appear in the files you can read.
 - It sets VERSION_ID and PROTOCOL module constants.
 - Return ok(verdicts) for a complete unambiguous association, or
-  refuse(kind, detail) with a kind from the closed vocabulary.
+  refuse(kind, detail). REFUSAL_KINDS is a closed vocabulary and a kind
+  outside it counts as a failed case rather than a new way to pass — read
+  backend/lab/contract/types.py for the exact strings before you use any.
 
 Investigate before you propose. You have one proposal and it is graded by code
 you cannot see, read, or influence. A refusal is a correct answer when the
@@ -91,8 +93,20 @@ export interface InvestigationTrace {
     readonly total_tokens: number | null
   }
   readonly finish_reason: string
+  /**
+   * Set when the call itself failed rather than finishing.
+   *
+   * A trace is still returned in that case, and that is the point: tool calls
+   * made before the failure were paid for, and spend that produced no record
+   * of itself is the worst outcome available here. `finish_reason` reads
+   * `error` so nothing downstream mistakes it for a completed loop.
+   */
+  readonly error: string | null
   readonly budget: typeof BUDGET
+  /** The effective limit: the lower of the authorisation and the code ceiling. */
   readonly budget_ceiling_usd: number
+  /** What the operator authorised, recorded so the clamp is visible. */
+  readonly budget_authorised_usd: number
   readonly tool_calls_made: number
   readonly proposal: ProposalRecord | null
 }
@@ -109,9 +123,56 @@ export interface ProposalRecord {
 
 const MAX_PAYLOAD = 4_000
 
+/**
+ * Strip terminal control sequences.
+ *
+ * The AI Gateway's errors are written for a terminal and arrive wrapped in
+ * ANSI colour codes. Left alone they end up in a committed artifact as
+ * `\u001b[1m\u001b[31m…`, which is noise in a file whose purpose is to be
+ * read by a person and diffed by a reviewer.
+ */
+function plain(text: string): string {
+  // eslint-disable-next-line no-control-regex
+  return text.replace(/\u001b\[[0-9;]*m/g, '')
+}
+
 function truncate(value: unknown): string {
   const text = typeof value === 'string' ? value : JSON.stringify(value)
   return text.length > MAX_PAYLOAD ? `${text.slice(0, MAX_PAYLOAD)}\n… [${text.length} chars total]` : text
+}
+
+/* ---------------------------------------------------------- budget ---- */
+
+export type BudgetResolution =
+  | { readonly ok: true; readonly ceiling: number; readonly authorised: number }
+  | { readonly ok: false; readonly needs: readonly string[] }
+
+/**
+ * Two ceilings, and the tighter one wins.
+ *
+ *   LAB_MAX_USD     what the operator authorised on this deployment
+ *   BUDGET.max_usd  what this experiment was reviewed as needing
+ *
+ * This used to *refuse* an authorisation above the reviewed ceiling, which
+ * had the asymmetry backwards. Being allowed more than the code will spend is
+ * not a hazard; the code spending more than it was allowed is. A refusal also
+ * had the perverse property that it could be satisfied by raising the code
+ * ceiling, which is the opposite of what a ceiling is for.
+ *
+ * Pure, and exported, so the arithmetic can be tested without a dry-run mode
+ * in the production path. A "skip the model call" branch is a mock with a
+ * respectable name, and the one thing this repository must not have is a code
+ * path that produces an investigation nobody paid for.
+ */
+export function resolveBudget(
+  env: Readonly<Record<string, string | undefined>>,
+  reviewed: number = BUDGET.max_usd,
+): BudgetResolution {
+  const authorised = Number(env.LAB_MAX_USD)
+  if (!Number.isFinite(authorised) || authorised <= 0) {
+    return { ok: false, needs: ['LAB_MAX_USD must be a positive number of dollars'] }
+  }
+  return { ok: true, ceiling: Math.min(authorised, reviewed), authorised }
 }
 
 /* --------------------------------------------------------- the loop ---- */
@@ -141,7 +202,15 @@ export interface InvestigationDeps {
 
 export type InvestigationResult =
   | { readonly ok: true; readonly trace: InvestigationTrace }
-  | { readonly ok: false; readonly reason: string; readonly needs: readonly string[] }
+  /** Refused before anything was spent. There is no trace because nothing ran. */
+  | { readonly ok: false; readonly reason: 'missing-credentials' | 'missing-budget'; readonly needs: readonly string[] }
+  /** The call failed partway. A trace is returned, because spend happened. */
+  | {
+      readonly ok: false
+      readonly reason: 'call-failed'
+      readonly needs: readonly string[]
+      readonly trace: InvestigationTrace
+    }
 
 /**
  * Run one investigation.
@@ -159,23 +228,9 @@ export async function investigate(
     return { ok: false, reason: ready.reason, needs: ready.needs }
   }
 
-  const ceiling = Number(env.LAB_MAX_USD)
-  if (!Number.isFinite(ceiling) || ceiling <= 0) {
-    return {
-      ok: false,
-      reason: 'missing-budget',
-      needs: ['LAB_MAX_USD must be a positive number of dollars'],
-    }
-  }
-  if (ceiling > BUDGET.max_usd) {
-    return {
-      ok: false,
-      reason: 'missing-budget',
-      needs: [
-        `LAB_MAX_USD is ${ceiling} but the code ceiling is ${BUDGET.max_usd}; raise BUDGET.max_usd in a reviewed commit, not at the call site`,
-      ],
-    }
-  }
+  const budget = resolveBudget(env)
+  if (!budget.ok) return { ok: false, reason: 'missing-budget', needs: budget.needs }
+  const { ceiling, authorised } = budget
 
   const model = env.LAB_MODEL ?? DEFAULT_MODEL
   const onProgress = deps.onProgress ?? (() => {})
@@ -318,40 +373,68 @@ export async function investigate(
   }
 
   onProgress(`calling ${model} through the AI Gateway`)
-  const result = await generateText({
+
+  const assemble = (
+    usage: { input: number | null; output: number | null; total: number | null },
+    finishReason: string,
+    error: string | null,
+  ): InvestigationTrace => ({
     model,
-    system: SYSTEM,
-    prompt:
-      'Investigate the association defect and submit one candidate parser. Start by reading the current implementation and at least two recorded cases.',
-    tools,
-    stopWhen: stepCountIs(BUDGET.max_model_calls),
-    maxOutputTokens: BUDGET.max_output_tokens,
-    abortSignal: AbortSignal.timeout(BUDGET.wall_clock_seconds * 1000),
+    gateway: ready.gateway,
+    started_at: new Date(startedAt).toISOString(),
+    wall_clock_ms: Date.now() - startedAt,
+    steps,
+    usage: { input_tokens: usage.input, output_tokens: usage.output, total_tokens: usage.total },
+    finish_reason: finishReason,
+    error,
+    budget: BUDGET,
+    budget_ceiling_usd: ceiling,
+    budget_authorised_usd: authorised,
+    tool_calls_made: toolCalls,
+    proposal,
   })
 
-  for (const step of result.steps) {
-    if (step.text.trim() !== '') record('model-text', null, step.text)
-  }
-
-  return {
-    ok: true,
-    trace: {
+  try {
+    const result = await generateText({
       model,
-      gateway: ready.gateway,
-      started_at: new Date(startedAt).toISOString(),
-      wall_clock_ms: Date.now() - startedAt,
-      steps,
-      usage: {
-        input_tokens: result.totalUsage.inputTokens ?? null,
-        output_tokens: result.totalUsage.outputTokens ?? null,
-        total_tokens: result.totalUsage.totalTokens ?? null,
-      },
-      finish_reason: result.finishReason,
-      budget: BUDGET,
-      budget_ceiling_usd: ceiling,
-      tool_calls_made: toolCalls,
-      proposal,
-    },
+      system: SYSTEM,
+      prompt:
+        'Investigate the association defect and submit one candidate parser. Start by reading the current implementation and at least two recorded cases.',
+      tools,
+      stopWhen: stepCountIs(BUDGET.max_model_calls),
+      maxOutputTokens: BUDGET.max_output_tokens,
+      abortSignal: AbortSignal.timeout(BUDGET.wall_clock_seconds * 1000),
+    })
+
+    for (const step of result.steps) {
+      if (step.text.trim() !== '') record('model-text', null, step.text)
+    }
+
+    return {
+      ok: true,
+      trace: assemble(
+        {
+          input: result.totalUsage.inputTokens ?? null,
+          output: result.totalUsage.outputTokens ?? null,
+          total: result.totalUsage.totalTokens ?? null,
+        },
+        result.finishReason,
+        null,
+      ),
+    }
+  } catch (cause) {
+    // Still a trace. Whatever tool calls happened before this were paid for,
+    // and the usage totals are unavailable because the call that would have
+    // reported them is the one that failed -- so they are null rather than
+    // zero, which would read as "this cost nothing".
+    const message = plain(cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause))
+    onProgress(`the call failed after ${toolCalls} tool calls: ${message.slice(0, 120)}`)
+    return {
+      ok: false,
+      reason: 'call-failed',
+      needs: [message.slice(0, 600)],
+      trace: assemble({ input: null, output: null, total: null }, 'error', message.slice(0, 2000)),
+    }
   }
 }
 

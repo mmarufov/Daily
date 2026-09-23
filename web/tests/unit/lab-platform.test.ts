@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { investigate } from '@/lib/lab/agent'
+import { investigate, resolveBudget } from '@/lib/lab/agent'
 import { BUDGET, readiness } from '@/lib/lab/investigator'
 import { authoriseOwner } from '@/lib/lab/owner'
 import { recoverAttempts } from '@/lib/lab/orchestration'
@@ -111,18 +111,35 @@ describe('the investigator refuses before it spends', () => {
     expect(result.ok === false && result.reason).toBe('missing-budget')
   })
 
-  it('will not accept a ceiling above the reviewed one', async () => {
-    // Raising the limit has to be a commit somebody reads, not an env var
-    // somebody sets. Otherwise the budget is advisory.
-    const result = await investigate(deps, {
-      AI_GATEWAY_API_KEY: 'k',
-      LAB_MAX_USD: String(BUDGET.max_usd + 1),
-    })
-    expect(result.ok === false && result.reason).toBe('missing-budget')
-    expect(result.ok === false && result.needs.join(' ')).toContain('reviewed commit')
+  it('clamps an authorisation above the reviewed ceiling instead of refusing it', () => {
+    // The deployment authorises $5; the reviewed ceiling is what binds.
+    const r = resolveBudget({ LAB_MAX_USD: '5' }, 0.5)
+    expect(r.ok && r.ceiling).toBe(0.5)
+    expect(r.ok && r.authorised).toBe(5)
   })
 
-  it('reports which gateway a ready environment would use', () => {
+  it('uses the authorisation when it is the tighter of the two', () => {
+    const r = resolveBudget({ LAB_MAX_USD: '0.05' }, 0.5)
+    expect(r.ok && r.ceiling).toBe(0.05)
+  })
+
+  it('refuses an absent, zero, negative or unparseable authorisation', () => {
+    for (const v of [undefined, '', '0', '-1', 'lots']) {
+      expect(resolveBudget({ ...(v === undefined ? {} : { LAB_MAX_USD: v }) }).ok, `LAB_MAX_USD=${v}`).toBe(false)
+    }
+  })
+
+  it('will not accept an OpenAI key for a model only the gateway can route', () => {
+    // The failure this prevents is not the call erroring. It is
+    // `openai-direct` being written into a committed trace as the gateway
+    // that served a call which never happened.
+    const r = readiness({ OPENAI_API_KEY: 'sk-whatever', LAB_MAX_USD: '0.25' })
+    expect(r.ready).toBe(false)
+    expect(r.ready === false && r.reason).toBe('missing-credentials')
+    expect(r.ready === false && r.needs.join(' ')).toContain('provider/model')
+  })
+
+  it('reports the gateway a ready environment uses, and has no second answer', () => {
     const r = readiness({ AI_GATEWAY_API_KEY: 'k', LAB_MAX_USD: '0.25' })
     expect(r.ready && r.gateway).toBe('vercel-ai-gateway')
   })
@@ -185,5 +202,85 @@ describe('the workflow is the platform’s, not a loop in this repository', () =
 
   it('gates scope before it creates anything', () => {
     expect(code.indexOf('scopeStep')).toBeLessThan(code.indexOf('executeStep'))
+  })
+})
+
+describe('a deployed function can reach its evidence', () => {
+  /**
+   * The bug this guards was invisible locally and fatal in production: the
+   * case suite lives in `backend/`, outside the Vercel Root Directory, and a
+   * deployed function simply cannot read it. `POST /api/lab/run` answered
+   * `ENOENT` while every test, typecheck and local run passed.
+   */
+  const runtimeModules = [
+    'lib/lab/case-loader.ts',
+    'lib/lab/upload-set.ts',
+    'lib/lab/source-excerpt.ts',
+    'lib/lab/evidence-path.ts',
+  ]
+
+  it('no runtime reader resolves a path outside the project root', () => {
+    for (const mod of runtimeModules) {
+      const code = readFileSync(join(process.cwd(), mod), 'utf8')
+        .split('\n')
+        .filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l))
+        .join('\n')
+      // `join(process.cwd(), '..')` works on a laptop and reaches nothing on a
+      // deployment. Staged evidence lives inside the project instead.
+      expect(code, `${mod} reaches out of the project root`).not.toMatch(/process\.cwd\(\),\s*'\.\.'/)
+    }
+  })
+
+  it('stages every file those readers ask for', () => {
+    const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
+    for (const needed of [
+      'backend/lab/harness.py',
+      'backend/lab/__init__.py',
+      'backend/lab/cases/observed.json',
+      'backend/lab/cases/synthetic.json',
+    ]) {
+      expect(stager, `${needed} is read at runtime but never staged`).toContain(needed)
+    }
+    // Every path the investigator may read must be staged, or the tool throws
+    // where the schema said it would succeed.
+    const excerpt = readFileSync(join(process.cwd(), 'lib', 'lab', 'source-excerpt.ts'), 'utf8')
+    for (const m of excerpt.matchAll(/case '(backend\/[^']+)':/g)) {
+      expect(stager, `${m[1]} is readable by the agent but never staged`).toContain(m[1] as string)
+    }
+  })
+
+  it('ships every staged file to the deployment', () => {
+    // `.vercelignore` excludes backend/ wholesale except for named
+    // exceptions, and the staging script names what it needs. Two
+    // hand-maintained lists that must agree are two lists that will not, and
+    // the way the disagreement announces itself is a preview build failing on
+    // `cannot stage …: it does not exist`.
+    const ignore = readFileSync(join(process.cwd(), '..', '.vercelignore'), 'utf8')
+    const negated = new Set(
+      ignore
+        .split('\n')
+        .filter((l) => l.startsWith('!'))
+        .map((l) => l.slice(1).replace(/^\//, '')),
+    )
+    const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
+    const staged = [...stager.matchAll(/'(backend\/[^']+)'/g)].map((m) => m[1] as string)
+    expect(staged.length).toBeGreaterThan(0)
+
+    for (const file of staged) {
+      // Either the file itself is re-included, or a directory above it is.
+      const covered = [...negated].some(
+        (n) => file === n || file.startsWith(`${n}/`),
+      )
+      expect(covered, `${file} is staged but .vercelignore keeps it out of the deployment`).toBe(true)
+    }
+  })
+
+  it('stages the files rather than the directories holding them', () => {
+    // A directory copy sweeps in __pycache__, the seeded controls, and
+    // whatever lands in contract/ next. This repository has been bitten once
+    // already by a walk that quietly widened.
+    const stager = readFileSync(join(process.cwd(), 'scripts', 'stage-lab-evidence.ts'), 'utf8')
+    expect(stager).not.toMatch(/recursive:\s*true\s*\}\s*\)\s*\/\/\s*copy/)
+    expect(stager).toContain('const STAGE: readonly string[]')
   })
 })

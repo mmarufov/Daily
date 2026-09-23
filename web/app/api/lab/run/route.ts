@@ -15,7 +15,6 @@ import { start } from 'workflow/api'
 
 import { runCandidateWorkflow } from '@/lib/lab/orchestration'
 import { authoriseOwner } from '@/lib/lab/owner'
-import { loadCasesForRun } from '@/lib/lab/case-loader'
 import { checkPatchScope } from '@/lib/lab/scope'
 import { ALLOWED_PATCH_PATHS, specHash } from '@/lib/lab/spec'
 
@@ -64,7 +63,6 @@ export async function POST(request: Request): Promise<Response> {
       ? Math.max(0, Math.min(300, Math.trunc(suspendSeconds)))
       : 0
 
-  const cases = await loadCasesForRun()
   const run = await start(runCandidateWorkflow, [
     {
       run_id: `${candidateId}__${Date.now().toString(36)}`,
@@ -73,7 +71,6 @@ export async function POST(request: Request): Promise<Response> {
       spec_hash: specHash(),
       suspend_seconds: suspend,
     },
-    cases,
   ])
 
   return Response.json({ run_id: run.runId, suspend_seconds: suspend }, { status: 202 })

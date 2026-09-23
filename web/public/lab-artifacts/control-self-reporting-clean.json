@@ -18,9 +18,9 @@
   "executed_at_revision": "4e8bee7625820107e84184f8e24c6bd7125f2e86+dirty",
   "inputs_sha256": "00c331fcbc256ce7",
   "executed_at": "2026-09-22T19:47:57.724Z",
-  "evaluator_sha256": "0448a05a16709521",
-  "spec_hash": "008af8266204438a",
-  "spec_version": 1,
+  "evaluator_sha256": "277ec81521ba14d8",
+  "spec_hash": "f027762ab4d08b35",
+  "spec_version": 2,
   "execution_mode": "offline-replay",
   "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
   "python": "3.12.13",
@@ -109,6 +109,132 @@
    "satisfied": 60,
    "rate": 1,
    "passed": true
+  },
+  {
+   "id": "protocol-exclusivity",
+   "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+   "threshold": 1,
+   "applicable": 4,
+   "satisfied": 0,
+   "rate": 0,
+   "passed": false
+  }
+ ],
+ "gradings": [
+  {
+   "spec_version": 1,
+   "spec_hash": "008af8266204438a",
+   "verdict": "rejected",
+   "verdict_reason": "universal-refusal: 0/48 cases satisfied, threshold 1",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 9,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    }
+   ]
+  },
+  {
+   "spec_version": 2,
+   "spec_hash": "f027762ab4d08b35",
+   "verdict": "rejected",
+   "verdict_reason": "universal-refusal: 0/48 cases satisfied, threshold 1",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 9,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 60,
+     "satisfied": 60,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-exclusivity",
+     "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+     "threshold": 1,
+     "applicable": 4,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    }
+   ]
   }
  ],
  "outcomes": [
@@ -1158,7 +1284,7 @@
    "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
    "value": 4,
    "of": 4,
-   "detail": "It produced a complete association on 4 case(s) it was marked not-applicable for, so that behaviour was never graded. A parser can therefore reproduce the association defect outside its declared protocol and still satisfy every criterion.",
+   "detail": "It produced a complete association on 4 case(s) outside its declared protocol. Under this generation that fails protocol-exclusivity; under generation 1 it was not graded at all.",
    "case_ids": [
     "observed-2026-09-02-005",
     "observed-2026-09-02-035",
