@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { Band } from '@/components/Band'
+import { Claim } from '@/components/Claim'
 import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
 import { OffendingBatch } from '@/components/OffendingBatch'
 import { Sieve, type SieveFixture } from '@/components/Sieve'
@@ -246,25 +247,3 @@ function Readout({
   )
 }
 
-/**
- * A claim the site declines to make.
- *
- * The heading is the claim; the sentence under it is the footnote. Six of
- * these printed in full was a hundred and twenty words of small type in the
- * section that exists to be skimmed, so the footnote now opens on demand and
- * the six headings read as a list — which is what they are.
- *
- * `<details>` rather than state: it is disclosure, the platform has an
- * element for it, and it works before hydration.
- */
-function Claim({ term, children }: { term: string; children: React.ReactNode }) {
-  return (
-    <details className="claim group">
-      <summary className="claim-summary">
-        <span className="label text-ink">{term}</span>
-        <span className="claim-more" aria-hidden="true" />
-      </summary>
-      <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
-    </details>
-  )
-}

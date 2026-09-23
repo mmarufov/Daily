@@ -466,6 +466,85 @@ body {
   .entry:hover .entry-rule { transform: scaleX(1); }
 }
 
+/* --- collapsed reference lists --------------------------------------- */
+
+.reveal {
+  border-block-start: 1px solid var(--d-rule-strong);
+}
+
+.reveal-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-block: 0.7rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.reveal-summary::-webkit-details-marker { display: none; }
+
+/* The count is the summary. It says how much is behind the click, which is
+   the one thing a reader needs in order to skip it. */
+.reveal-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--d-ink-38);
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: auto;
+}
+
+.reveal-mark {
+  position: relative;
+  inline-size: 9px;
+  block-size: 9px;
+  flex: none;
+  opacity: 0.5;
+  transition: opacity 160ms ease;
+}
+
+.reveal-summary:hover .reveal-mark { opacity: 1; }
+
+.reveal-mark::before,
+.reveal-mark::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 4px;
+  block-size: 1px;
+  background: var(--d-ink);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-mark::after { transform: rotate(90deg); }
+.reveal[open] .reveal-mark::after { transform: rotate(0deg); }
+
+.reveal-list {
+  margin: 0 0 0.9rem;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--d-ink-60);
+}
+
+.reveal-list > li {
+  padding-inline-start: 0.9rem;
+  position: relative;
+}
+
+.reveal-list > li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.55em;
+  inline-size: 4px;
+  block-size: 1px;
+  background: var(--d-ink-38);
+}
+
 /* --- the recorded batch ---------------------------------------------- */
 
 .tally {
