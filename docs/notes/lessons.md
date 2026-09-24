@@ -461,3 +461,38 @@ Related: the same session's other failure was a verified-green branch that was n
 the deployed site showed none of the work and looked like the redesign had failed. Verification
 and delivery are separate steps and reporting the first as if it implied the second wastes
 somebody's afternoon.
+
+## Contrast is blind to hue (2026-09-24)
+
+The dark palette shipped with the page at `#232229` — hue 249, violet — while every other token
+in the system sat between 12 and 44 degrees. It cleared every ratio: ink 13.77:1, signal 4.52:1.
+It also looked wrong enough that the user's whole message was "I dont like coloring on dark
+mode." Fixing that one found the same bug again in the light scheme's band, `#17161a`, hue 255,
+in the one block anyone has singled out as good. Its comment already read *"warm near-black
+rather than neutral"* — the comment was written, the value never matched it, and nothing
+checked.
+
+1. **A contrast sweep cannot see a colour-family mismatch.** WCAG ratios are a function of
+   relative luminance alone. Two tokens 200 degrees apart can both pass every gate and still
+   make a page look muddy, because warm type on a cool ground reads as dirt, not as contrast.
+   Measure hue explicitly, in a test, alongside the ratios — `tests/unit/palette.test.ts` parses
+   the real stylesheet and fails on either original value.
+2. **A dark ground eats chroma, so saturation rises with lightness.** The first fix took the
+   light scheme's `#ab4d36` (S52 L44) and *dimmed* it to S48 L56, which is how a brick red
+   becomes dusty salmon. The correct move is S61: same weight, restruck for the new ground, not
+   reused from the old one.
+3. **In dark mode a band cannot earn separation with luminance.** Light paper against near-black
+   is 18.5:1; the most a page that is still a dark page can give the same black is about 1.3:1,
+   and there is no tuning of those two values that changes it. Give it edges instead — a lit
+   hairline, an inner shadow at the seam, true black rather than near-black. Recognising a
+   dimension has no room left is faster than another round of nudging hex values.
+4. **Check both schemes when fixing one.** The user reported dark. The identical defect was
+   sitting in light, and it would have survived indefinitely because nobody was going to report
+   a band that merely looked slightly off.
+
+Corollary found the same day: `evaluation artifacts` had been red on `main` across several
+commits because one test reads `web/lab-evidence/`, which `stage:lab` builds — and `stage:lab`
+ran from `prebuild`, a step *after* the unit tests. It passed on every developer machine because
+the directory was already there from the last build. That is the exact failure the staging
+script was written to fix, named in its own docstring. **A check that has been red long enough
+stops being read.** Fix it while you are in there, or the next red one is invisible too.
