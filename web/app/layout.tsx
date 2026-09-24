@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <header className="relative z-1 border-b border-rule bg-paper/85 backdrop-blur-[2px]">
-          <div className="frame flex items-center justify-between gap-6 py-3.5">
+          <div className="frame flex items-center justify-between gap-4 py-3.5 sm:gap-6">
             <Link
               href="/"
               className="brand-wordmark text-ink no-underline"
