@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { Band } from '@/components/Band'
+import { CellTicker } from '@/components/CellTicker'
 import { Claim } from '@/components/Claim'
 import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
 import { OffendingBatch } from '@/components/OffendingBatch'
@@ -29,7 +30,8 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="hero frame rise relative py-16 md:py-20">
+      <section className="landing hero rise relative">
+        <div className="frame flex w-full flex-col justify-center">
         {/* Asymmetric on purpose. The old hero put the headline, the lede and
             four boxes all at the same left edge and left the right 40% empty,
             which is not generous whitespace, it is an unbalanced column. The
@@ -82,10 +84,22 @@ export default async function HomePage() {
           <Entry n="03" href="/lab" term="Lab" note="A controlled experiment on the scorer" />
           <Entry n="04" href="/engineering" term="Defect report" note="One bug, followed end to end" />
         </nav>
+        </div>
+
+        {/* The seam. One candidate removed per beat, in the same grammar as
+            the band below — so the idiom is already familiar by the time the
+            reader gets there. */}
+        <div className="landing-foot">
+          <a href="#sieve" className="scroll-cue">
+            <span className="label">The sieve</span>
+            <span className="scroll-cue-arrow" aria-hidden="true" />
+          </a>
+          <CellTicker />
+        </div>
       </section>
 
       {fixtures.length > 0 && lead !== undefined ? (
-        <section className="zone-dark">
+        <section className="zone-dark" id="sieve">
           <div className="frame flex flex-col gap-7">
           <Band index="01" title="The sieve" note="One cell per candidate article" />
           <Sieve

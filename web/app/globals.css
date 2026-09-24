@@ -492,6 +492,88 @@ body {
   .entry:hover .entry-rule { transform: scaleX(1); }
 }
 
+/* --- the landing ------------------------------------------------------
+ *
+ * A first screen with a job of its own. Previously the hero was a block of
+ * padding that the next section began under, so nothing on the page was ever
+ * *arrived at* -- you scrolled through a document. Giving the landing the
+ * viewport makes the dark band below it a destination rather than the next
+ * paragraph.
+ *
+ * `100svh` rather than `100vh`: on mobile Safari `vh` is the *largest*
+ * viewport, so a full-height hero is cropped by the address bar until you
+ * scroll. `svh` is the smallest, which is the one that is always visible.
+ */
+.landing {
+  min-block-size: calc(100svh - var(--nav-h, 4rem));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(3rem, 8vh, 7rem) 0;
+}
+
+.landing-foot {
+  margin-block-start: auto;
+  padding-block-start: clamp(2rem, 6vh, 4.5rem);
+}
+
+/* The cue is a link, not an icon. It says where it goes, which a chevron
+   never does, and it works as a skip for anyone on a keyboard. */
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  margin-inline: var(--gutter);
+  color: var(--d-ink-38);
+  text-decoration: none;
+  transition: color var(--t-fast) var(--ease);
+}
+
+.scroll-cue:hover { color: var(--d-ink); }
+
+.scroll-cue-arrow {
+  inline-size: 1px;
+  block-size: 1.5rem;
+  background: currentColor;
+  transform-origin: top;
+  animation: cue 2.4s var(--ease) infinite;
+}
+
+@keyframes cue {
+  0%, 100% { transform: scaleY(0.45); opacity: 0.4; }
+  50%      { transform: scaleY(1);    opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-arrow { animation: none; transform: scaleY(1); opacity: 0.7; }
+}
+
+/* --- the seam --------------------------------------------------------- */
+
+.ticker {
+  display: flex;
+  gap: 2px;
+  inline-size: 100%;
+  margin-block-start: 1rem;
+  block-size: 18px;
+  /* The seam sits directly above the dark band, so it fades into it -- the
+     strip should look like the page darkening rather than a bar stuck on. */
+  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.55), rgb(0 0 0 / 1));
+}
+
+.ticker-cell {
+  flex: 1;
+  transition: background-color 520ms var(--ease);
+}
+
+/* At 3.5% the strip was effectively invisible and the motion was wasted.
+   These are the sieve's own values: ink survives, vermilion is the one being
+   removed now, and the discarded keep a trace. */
+.ticker-cell[data-state='alive'] { background: color-mix(in oklab, var(--d-ink) 38%, transparent); }
+.ticker-cell[data-state='dying'] { background: var(--d-signal); }
+.ticker-cell[data-state='gone']  { background: color-mix(in oklab, var(--d-ink) 9%, transparent); }
+
 /* --- the recorded batch ---------------------------------------------- */
 
 .tally {
