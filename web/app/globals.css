@@ -401,13 +401,18 @@ body {
 .hero::before {
   content: '';
   position: absolute;
-  inset-block-start: -18%;
-  inset-inline: -10%;
-  block-size: 130%;
+  /* Was `-18%` / `-10%`, which put the glow 122px above the hero and 120px
+     past each edge. Two visible bugs from one declaration: the page scrolled
+     sideways by exactly that 120px, and pulling down at the top revealed a
+     band of warm colour sitting above the header. An ellipse does not need
+     to leave the box to look soft -- the gradient stops do that. */
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 115%;
   background: radial-gradient(
-    60% 50% at 30% 38%,
-    color-mix(in oklab, var(--d-signal) 7%, transparent),
-    transparent 72%
+    75% 60% at 28% 34%,
+    color-mix(in oklab, var(--d-signal) 8%, transparent),
+    transparent 70%
   );
   pointer-events: none;
   z-index: -1;
@@ -505,6 +510,7 @@ body {
  * scroll. `svh` is the smallest, which is the one that is always visible.
  */
 .landing {
+  overflow-x: clip;
   min-block-size: calc(100svh - var(--nav-h, 4rem));
   display: flex;
   flex-direction: column;
@@ -1315,8 +1321,9 @@ details[open] > .disclosure::before {
 
 .skip-link {
   position: absolute;
-  left: -9999px;
-  top: 0;
+  left: 0.5rem;
+  top: 0.5rem;
+  clip-path: inset(50%);
   z-index: 100;
   background: var(--d-paper);
   color: var(--d-ink);
@@ -1325,8 +1332,7 @@ details[open] > .disclosure::before {
 }
 
 .skip-link:focus {
-  left: 0.5rem;
-  top: 0.5rem;
+  clip-path: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
