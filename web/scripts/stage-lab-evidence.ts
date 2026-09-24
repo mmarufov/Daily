@@ -1,7 +1,7 @@
 /**
  * Copy the evidence a deployed Lab function reads into the project root.
  *
- *   npm run stage:lab       # run automatically before dev and build
+ *   npm run stage:lab       # run automatically before dev, test and build
  *
  * The functions need the case suite, the harness and a few allowlisted
  * sources at *runtime*. All of them live in `backend/`, outside `web/`, which

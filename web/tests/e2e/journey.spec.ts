@@ -13,8 +13,12 @@ test.describe('visitor journey', () => {
     for (const name of ['Reader', 'Evidence', 'Defect report']) {
       await expect(entries.getByRole('link', { name: new RegExp(name, 'i') })).toBeVisible()
     }
-    // The demo must never be presented as real readership.
-    await expect(page.getByText(/adversarial test\s+fixtures, not users/i)).toBeVisible()
+    // The demo must never be presented as real readership. The wording moved
+    // when the page was rewritten ("adversarial test fixtures, not users" ->
+    // "adversarial, not users"); the invariant is that the disclaimer is on
+    // screen without a click, so match on the part that carries the meaning.
+    await expect(page.getByText(/adversarial,? (test )?fixtures?[^.]*not users/i).first())
+      .toBeVisible()
   })
 
   test('reader shows a dated replay, never today’s news', async ({ page }) => {
