@@ -335,36 +335,14 @@ body {
 }
 
 /*
- * The measuring column.
+ * The measuring column, removed.
  *
- * Two hairlines at the edges of the content column, drawn once behind
- * everything and running the full height of the page. They cost nothing and
- * do two things: they make the page feel *set* rather than stacked, and they
- * are the right metaphor for a site whose subject is a ruler. Everything that
- * matters is inside the measure; the margins are margins.
- *
- * `position: fixed` rather than an absolutely-positioned sibling, so the
- * lines do not stretch a 12,000px document into a paint-bound layer. They are
- * `pointer-events: none` and `aria-hidden` by construction -- this is a mark
- * on the paper, not content.
+ * Two hairlines at the edges of the content column. The idea was sound and
+ * the execution was not: at 1440px and above the frame leaves ~80px of margin
+ * outside them, so the rules sat in dead space and read as a browser artefact
+ * rather than a margin. A device that needs the viewport to be exactly the
+ * right width is not a device, it is a coincidence.
  */
-.column-rules {
-  position: fixed;
-  inset-block: 0;
-  left: 50%;
-  translate: -50% 0;
-  width: 100%;
-  max-width: var(--frame);
-  border-inline: 1px solid var(--d-rule);
-  pointer-events: none;
-  z-index: 0;
-}
-
-@media (max-width: 52rem) {
-  /* Below the frame width the rules would sit on the viewport edge, where
-     they read as a browser artefact rather than a margin. */
-  .column-rules { display: none; }
-}
 
 /*
  * The hero's ground.
@@ -397,13 +375,12 @@ body {
  * this site has means loss, and the headline's subject is not a loss -- it is
  * the thing the site is *about*. Spending vermilion here would have made the
  * most prominent sentence on the page read as an error state.
+ *
+ * `text-decoration` and not a pseudo-element: an abs-positioned ::after on a
+ * wrapped inline anchors to the last line fragment, so on a phone the mark
+ * sat under the final three words while the clause ran over three lines.
  */
 .struck {
-  /* `text-decoration` rather than an absolutely-positioned pseudo-element.
-     An abs-positioned ::after on a wrapped inline anchors to the *last* line
-     fragment, so on a phone the mark sat under "never see." alone while the
-     clause ran over three lines. Decoration follows every fragment, which is
-     what it is for. */
   text-decoration: underline;
   text-decoration-color: color-mix(in oklab, var(--d-signal) 62%, transparent);
   text-decoration-thickness: 0.05em;
@@ -460,225 +437,90 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .entry,
-  .entry-rule {
-    transition: none;
-  }
+  .entry-rule { transition: none; }
   .entry:hover .entry-rule { transform: scaleX(1); }
 }
 
-/* --- collapsed reference lists --------------------------------------- */
+/* --- the funnel figures ---------------------------------------------- */
 
-.reveal {
-  border-block-start: 1px solid var(--d-rule-strong);
-}
-
-.reveal-summary {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding-block: 0.7rem;
-  cursor: pointer;
-  list-style: none;
-}
-
-.reveal-summary::-webkit-details-marker { display: none; }
-
-/* The count is the summary. It says how much is behind the click, which is
-   the one thing a reader needs in order to skip it. */
-.reveal-count {
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  color: var(--d-ink-38);
-  font-variant-numeric: tabular-nums;
-  margin-inline-start: auto;
-}
-
-.reveal-mark {
-  position: relative;
-  inline-size: 9px;
-  block-size: 9px;
-  flex: none;
-  opacity: 0.5;
-  transition: opacity 160ms ease;
-}
-
-.reveal-summary:hover .reveal-mark { opacity: 1; }
-
-.reveal-mark::before,
-.reveal-mark::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  inset-block-start: 4px;
-  block-size: 1px;
-  background: var(--d-ink);
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal-mark::after { transform: rotate(90deg); }
-.reveal[open] .reveal-mark::after { transform: rotate(0deg); }
-
-.reveal-list {
-  margin: 0 0 0.9rem;
-  padding: 0;
-  list-style: none;
+/*
+ * 1,362 in, 50 out.
+ *
+ * The site's whole argument, and it was a clause in a sentence. It is the
+ * only fact a first-time visitor needs and it belongs at the largest size on
+ * the page, in the space the old hero left empty.
+ *
+ * Tabular figures and a fixed character width so the two numbers share a
+ * right edge without a table: 1,362 and 50 are different lengths, and a
+ * ragged right on two stacked numerals reads as an accident.
+ */
+.funnel {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--d-ink-60);
+  align-items: flex-start;
+  gap: 0;
 }
 
-.reveal-list > li {
-  padding-inline-start: 0.9rem;
-  position: relative;
-}
-
-.reveal-list > li::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-start: 0.55em;
-  inline-size: 4px;
-  block-size: 1px;
-  background: var(--d-ink-38);
-}
-
-/* --- the recorded batch ---------------------------------------------- */
-
-.tally {
+.funnel-row {
   display: flex;
   align-items: baseline;
-  gap: 1.35rem;
-  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.tally-item {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-}
-
-.tally-n {
-  font-family: var(--font-mono);
-  font-size: clamp(2.6rem, 7vw, 4.25rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
-  font-variant-numeric: tabular-nums;
-}
-
-.tally-label {
+.funnel-label {
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--d-ink-38);
+  inline-size: 6.5rem;
 }
 
-.tally-arrow {
+.funnel-n {
   font-family: var(--font-mono);
-  font-size: 1.5rem;
-  color: var(--d-ink-38);
-}
-
-.pairs {
+  font-size: clamp(3rem, 7vw, 4.75rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--d-ink);
   margin: 0;
-  padding: 0;
-  list-style: none;
-  border-block-start: 1px solid var(--d-rule);
+  min-inline-size: 5.5ch;
+  text-align: right;
 }
 
-/*
- * One recorded pair.
- *
- * A button rather than a div: the row is the interactive element, so it has
- * to be reachable by keyboard and announce its expanded state. Hover and
- * focus drive the same state, so a pointer and a tab key see the same thing.
- */
-.pair {
-  display: grid;
-  grid-template-columns: 2.4rem minmax(0, 1fr) 3.5rem minmax(0, 1fr);
+/* The survivor is the only figure that is not ink. Everything this site
+   colours is loss -- so the one that made it through stays ink, and the
+   *drop* between them carries the vermilion. */
+.funnel-n-out {
+  color: var(--d-ink);
+}
+
+.funnel-drop {
+  display: flex;
   align-items: center;
-  gap: 0 0.75rem;
-  inline-size: 100%;
-  padding: 0.7rem 0;
-  border: 0;
-  border-block-end: 1px solid var(--d-rule);
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  gap: 0.75rem;
+  padding-block: 0.55rem;
+  padding-inline-start: 7.5rem;
 }
 
-.pair:hover,
-.pair-on {
-  background: var(--d-paper-2);
+.funnel-line {
+  inline-size: 1px;
+  block-size: 2.1rem;
+  background: linear-gradient(to bottom, var(--d-rule-strong), var(--d-signal));
 }
 
-.pair-pos {
+.funnel-loss {
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  color: var(--d-ink-38);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--d-signal);
   font-variant-numeric: tabular-nums;
 }
 
-.pair-title {
-  font-family: var(--font-editorial);
-  font-size: 0.95rem;
-  color: var(--d-ink);
-  line-height: 1.3;
-}
-
-/*
- * The join.
- *
- * Dashed and slate because that is exactly what it is: an association
- * asserted by array position, which the recorded note says is the only thing
- * joining these two columns. A solid ink line would claim the pairing is
- * established; a vermilion one would claim it is wrong. Neither is knowable
- * from the evidence, and the reader supplies the judgement instead.
- */
-.pair-link {
-  block-size: 1px;
-  background: repeating-linear-gradient(
-    to right,
-    var(--d-unknown) 0 4px,
-    transparent 4px 8px
-  );
-  opacity: 0.55;
-  transition: opacity 160ms ease;
-}
-
-.pair:hover .pair-link,
-.pair-on .pair-link {
-  opacity: 1;
-}
-
-.pair-reason {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.45;
-  color: var(--d-ink-60);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.pair-on .pair-reason {
-  -webkit-line-clamp: 6;
-}
-
 @media (max-width: 52rem) {
-  /* The join is a horizontal idea; stacked, it has nothing to span. */
-  .pair {
-    grid-template-columns: 2.4rem minmax(0, 1fr);
-    gap: 0.35rem 0.75rem;
-  }
-  .pair-link { display: none; }
-  .pair-reason { grid-column: 2; }
+  .funnel-label { inline-size: 5rem; }
+  .funnel-drop { padding-inline-start: 6rem; }
 }
 
 /*

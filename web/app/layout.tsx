@@ -26,9 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${fraunces.variable} ${geistMono.variable}`}>
       <body className="grain min-h-screen bg-paper text-ink antialiased">
-        {/* A mark on the paper, not content: the measuring column and the
-            grain are both drawn behind everything and read by nothing. */}
-        <div className="column-rules" aria-hidden="true" />
         <a href="#main" className="skip-link">
           Skip to content
         </a>
