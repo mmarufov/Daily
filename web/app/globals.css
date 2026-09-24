@@ -126,13 +126,27 @@
   --d-sheet: #fdfcf9;
 
   /* The inverted band. Warm near-black rather than neutral -- a cool black
-     against cream paper reads as two unrelated designs. */
-  --d-zone: #17161a;
-  --d-zone-plate: #211f26;
+     against cream paper reads as two unrelated designs.
+
+     That comment was here before the values were. #17161a is hue 255 and
+     #211f26 is 257: violet, in the one block on the site anyone has singled
+     out as good, while every other token in the light scheme sits at 12-40.
+     Same bug as the dark page had, found while fixing that one. Hue 40 now,
+     and every ratio came out equal or better (zone-ink 15.96 -> 16.60). */
+  --d-zone: #131210;
+  --d-zone-plate: #1f1d19;
   --d-zone-ink: #f4f1ea;
   --d-zone-mid: rgb(244 241 234 / 0.72);
   --d-zone-dim: rgb(244 241 234 / 0.48);
   --d-zone-rule: rgb(244 241 234 / 0.16);
+  /* The band is a dark surface in both schemes, so the signal on it is the
+     dark scheme's in both. The page signal was being used here and lands at
+     3.43:1 on the band -- fine for a cell fill, not for the "-1,062 removed"
+     line, which is text. 5.29:1 light, 5.78:1 dark. Same for the slate: the
+     page value is 3.38:1 on the band, and it carries the reconstructed-count
+     caveat. 6.18:1 light, 6.77:1 dark. */
+  --d-zone-signal: #d36a4a;
+  --d-zone-unknown: #8a969e;
 
   /* --- elevation -----------------------------------------------------
      Every element sat on one plane, which is what made the page read flat
@@ -173,44 +187,73 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Photographic plate: the same information, exposed. */
-    /* Lifted from #0f0f10. The inverted band is the page's only contrast
-       device, and against a near-black page there is nowhere darker to go --
-       `--d-zone` was #17161a, which is *lighter* than the old page, so in
-       dark mode the "dark band" was a light band and the rhythm inverted.
-       The page now sits at a proper elevated dark grey and the band takes the
-       near-black, which is also how dark modes are supposed to work: pure
-       black is a floor, not a surface. */
-    --d-paper: #232229;
-    --d-paper-2: #2a2931;
-    --d-paper-3: #323139;
-    --d-ink: #eeebe3;
-    --d-ink-58: rgb(238 235 227 / 0.78);
-    --d-ink-38: rgb(238 235 227 / 0.6);
-    --d-rule: #2d2d33;
-    --d-rule-strong: #4a4a53;
-    --d-control: #646360;
-    /* Darker than the light scheme's vermilion is bright, because against a
-       near-white ink the old #ff5b39 only reached 2.59:1 -- and alive-vs-dying
-       is the entire message of the sieve. This clears 3:1 there and still
-       clears 4.5:1 as text on both grounds. */
-    /* S 60 -> 38. On a near-black ground a saturated vermilion is the only
-       chromatic thing on screen and it reads as hot -- and this page shows
-       loss often, so the loudest colour was also the most frequent. The floor
-       is the sieve: a dying cell must stay 3:1 from a surviving one, which
-       is what stops the saturation going lower. This measures 3.07:1. */
-    --d-signal: #bd7261;
-    --d-signal-wash: rgb(189 114 97 / 0.15);
-    --d-loss-2: #8e5d4f;
-    --d-loss-3: #5b4139;
-    --d-unknown: #8593a0;
-    --d-ghost: rgb(238 235 227 / 0.18);
+    /*
+     * Dark mode is the same paper under less light, so every ground, rule and
+     * loss value sits on the warm hue the light scheme already uses (33-44).
+     *
+     * Two earlier attempts got this wrong in the same way, from opposite
+     * directions. The first lifted the page to #232229 -- hue 249, violet --
+     * while every other token in the system was 40-44, and warm cream type on
+     * a cool ground is what read as muddy. The second fixed the hue but left
+     * the signal at S48 L56, which on a dark ground is not brick, it is
+     * dusty salmon: a light scheme's red, dimmed rather than restruck.
+     *
+     * A dark ground eats chroma. The light scheme's #ab4d36 is S52 at L44;
+     * to carry the same weight up at L56 the saturation has to go up with it,
+     * not down. Hence S61.
+     */
+    --d-paper: #24211e;
+    --d-paper-2: #35312c;
+    --d-paper-3: #3d3933;
+    --d-ink: #f0ece2;
+    --d-ink-58: rgb(240 236 226 / 0.76);
+    --d-ink-38: rgb(240 236 226 / 0.55);
+    --d-rule: #3f3b36;
+    --d-rule-strong: #5b554d;
+    --d-control: #746c63;
 
-    /* The band goes deeper than the page rather than lighter. */
-    --d-zone: #0d0c10;
-    --d-zone-plate: #151419;
-    --d-zone-rule: rgb(244 241 234 / 0.14);
-    --d-sheet: #16161a;
+    /* Hue 14, S 61, L 56. Bound on three sides: 4.52:1 on the page, 5.78:1 on
+       the band, and exactly 3.00:1 from ink -- which is the sieve's
+       alive-vs-dying pair. Below that a removed cell stops being
+       distinguishable from a survivor, so this is the floor, not a target. */
+    --d-signal: #d36a4a;
+    --d-signal-wash: rgb(211 106 74 / 0.15);
+    /* The loss ramp separates from the signal by chroma, not luminance:
+       S61 -> S30 -> S22 at falling lightness. There is not enough luminance
+       room on a dark page to do it any other way, and chroma is the right
+       axis anyway -- saturation here means "how recently this was lost". */
+    --d-loss-2: #9c6754;
+    --d-loss-3: #5d473c;
+    /* The only non-warm value in the system, and deliberately so: its meaning
+       is "we could not establish this", and the absence of warmth is the
+       point. But it has to read as grey with a cool lean, not as blue. At
+       S15 on a warm near-black page it was the loudest thing on screen --
+       an unlabelled story shouting over a measured loss. S9. */
+    --d-unknown: #8a969e;
+
+    --d-ghost: rgb(240 236 226 / 0.17);
+    --d-sheet: #35312c;
+
+    /*
+     * The band goes deeper than the page, never lighter -- but in dark mode
+     * that buys almost nothing. Light paper against the band is 18.5:1; the
+     * most a dark page can give the same black is about 1.3:1, and pushing
+     * the page high enough to beat that would stop it being a dark page.
+     *
+     * So the band earns its edges instead of its depth: true black rather
+     * than near-black, a lit hairline top and bottom, and an inner shadow at
+     * the seam. See the `.zone-dark` dark-mode block. Luminance is the wrong
+     * tool here and no amount of tuning these two values fixes it.
+     */
+    --d-zone: #050403;
+    --d-zone-plate: #141210;
+    --d-zone-ink: #f0ece2;
+    --d-zone-mid: rgb(240 236 226 / 0.72);
+    --d-zone-dim: rgb(240 236 226 / 0.46);
+    --d-zone-rule: rgb(240 236 226 / 0.13);
+    --d-zone-signal: #d36a4a;
+    --d-zone-unknown: #8a969e;
+
   }
 }
 
@@ -783,6 +826,8 @@ body {
 .zone-dark .bg-rule { background: var(--d-zone-rule); }
 .zone-dark .border-rule { border-color: var(--d-zone-rule); }
 .zone-dark .text-ink { color: var(--d-zone-ink); }
+.zone-dark .text-signal { color: var(--d-zone-signal); }
+.zone-dark .text-unknown { color: var(--d-zone-unknown); }
 .zone-dark .bg-ink { background: var(--d-zone-ink); }
 .zone-dark .bg-ink .text-paper,
 .zone-dark .bg-ink.text-paper { color: var(--d-zone); }
@@ -791,6 +836,26 @@ body {
   background: var(--d-zone-plate);
   border-color: var(--d-zone-rule);
   box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.4);
+}
+
+/*
+ * In light mode the band needs no help: it is black against 18.5:1 of paper
+ * and it reads as a hole cut in the page. In dark mode that gap collapses to
+ * 1.3:1 and the band quietly stops being an object -- which is a shame,
+ * because it is the one part of this site anyone has ever called good.
+ *
+ * Luminance cannot carry it, so the edges do. A lit hairline above and below
+ * (brighter than any other rule on the page, because nothing else is a room
+ * boundary) and an inner shadow raking down from the top seam, so the page
+ * appears to sit slightly proud of the band rather than flush with it.
+ */
+@media (prefers-color-scheme: dark) {
+  .zone-dark {
+    border-block: 1px solid var(--d-rule-strong);
+    box-shadow:
+      inset 0 1px 0 rgb(240 236 226 / 0.07),
+      inset 0 26px 42px -26px rgb(0 0 0 / 0.95);
+  }
 }
 
 /* --- the funnel figures ---------------------------------------------- */
@@ -895,8 +960,11 @@ body {
   background-size: 180px 180px;
 }
 
+/* Down in dark mode, not up. Grain on near-white is paper; the same white
+   noise over a near-black band is a grey veil laid across the one region that
+   depends on being black, and it was flattening the sieve. */
 @media (prefers-color-scheme: dark) {
-  .grain::after { opacity: 0.05; }
+  .grain::after { opacity: 0.022; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1228,7 +1296,7 @@ body {
 }
 
 .zone-dark .sieve-cell[data-state="dying"] {
-  background: var(--d-signal);
+  background: var(--d-zone-signal);
 }
 
 .zone-dark .sieve-cell[data-state="gone"] {

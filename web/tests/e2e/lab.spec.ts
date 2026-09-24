@@ -60,7 +60,12 @@ test.describe('Daily Lab', () => {
 
   test('never claims an agent has run', async ({ page }) => {
     await page.goto('/lab')
-    await expect(page.getByText(/no model has been called/i).first()).toBeVisible()
+    // The never-claims list became `<details>` when the page was rewritten, so
+    // the heading is what is on screen and the sentence is one click down.
+    // Both matter: a reader who never clicks must still see the claim, and the
+    // reason must be there for the one who does.
+    await expect(page.getByText('No agent has run').first()).toBeVisible()
+    await expect(page.getByText(/no model has been called/i).first()).toBeAttached()
   })
 
   test('reports zero spend and zero model calls for every published run', async ({ page }) => {
