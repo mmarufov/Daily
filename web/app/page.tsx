@@ -113,15 +113,18 @@ export default async function HomePage() {
 
       <section className="frame flex flex-col gap-7 pb-20">
         <Band index="02" title="Why a ruler exists" />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
-          <p className="prose m-0 text-balance">
-            &ldquo;The feed looks better to me&rdquo; is not evidence.
-            <span className="mt-2 block text-ink-60">
-              Same corpus, same fixtures, network off — so two runs are comparable, and a fix that
-              made things worse cannot hide.
-            </span>
-          </p>
-          <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
+        <p className="prose measure m-0 text-balance">
+          &ldquo;The feed looks better to me&rdquo; is not evidence.
+          <span className="mt-2 block text-ink-60">
+            Same corpus, same fixtures, network off — so two runs are comparable, and a fix that
+            made things worse cannot hide.
+          </span>
+        </p>
+        {/* A full-width row rather than a 2x2 floating beside the prose. Four
+            figures in a block of their own read as one measurement; the same
+            four wedged into the right-hand column read as leftovers, and the
+            2x2 left a hole where the prose ran out. */}
+        <dl className="statbar m-0">
             <Readout term="Stored runs" value={String(runs)} note="imported, not re-executed" />
             <Readout
               term="Frozen corpora"
@@ -129,9 +132,8 @@ export default async function HomePage() {
               note={corpusTotal > 0 ? `${corpusTotal.toLocaleString()} articles` : 'content-hashed'}
             />
             <Readout term="Reader fixtures" value="10" note="adversarial, not users" />
-            <Readout term="Replay spend" value="$0" note="cached, network off" />
-          </dl>
-        </div>
+          <Readout term="Replay spend" value="$0" note="cached, network off" />
+        </dl>
       </section>
 
       {artifact !== null ? (
@@ -185,22 +187,20 @@ export default async function HomePage() {
             }))}
           />
         ) : null}
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-5">
-            <p className="prose m-0">
-              Fixing it made the measured numbers <em>worse</em>. The baseline was not re-recorded.
-            </p>
-            <Link href="/engineering" className="link label self-start">
-              Read the defect report
-            </Link>
-          </div>
-          <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-10 gap-y-3">
+          <p className="prose measure m-0">
+            Fixing it made the measured numbers <em>worse</em>. The baseline was not re-recorded.
+          </p>
+          <Link href="/engineering" className="link label shrink-0">
+            Read the defect report
+          </Link>
+        </div>
+        <dl className="statbar m-0">
             <Readout term="Guard fires" value="63" note="one run, ten fixtures" signal />
             <Readout term="Worst response" value="201" note="verdicts for 40 articles" signal />
             <Readout term="Unwanted rate" value="+15.6" note="points, after the fix" signal />
-            <Readout term="Re-baselined" value="No" note="the gate still reports red" />
-          </dl>
-        </div>
+          <Readout term="Re-baselined" value="No" note="the gate still reports red" />
+        </dl>
       </section>
 
       <section className="frame pb-8">

@@ -128,7 +128,7 @@
   /* The inverted band. Warm near-black rather than neutral -- a cool black
      against cream paper reads as two unrelated designs. */
   --d-zone: #17161a;
-  --d-zone-plate: #1e1d22;
+  --d-zone-plate: #211f26;
   --d-zone-ink: #f4f1ea;
   --d-zone-mid: rgb(244 241 234 / 0.72);
   --d-zone-dim: rgb(244 241 234 / 0.48);
@@ -174,9 +174,16 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Photographic plate: the same information, exposed. */
-    --d-paper: #0f0f10;
-    --d-paper-2: #16161a;
-    --d-paper-3: #1e1e23;
+    /* Lifted from #0f0f10. The inverted band is the page's only contrast
+       device, and against a near-black page there is nowhere darker to go --
+       `--d-zone` was #17161a, which is *lighter* than the old page, so in
+       dark mode the "dark band" was a light band and the rhythm inverted.
+       The page now sits at a proper elevated dark grey and the band takes the
+       near-black, which is also how dark modes are supposed to work: pure
+       black is a floor, not a surface. */
+    --d-paper: #232229;
+    --d-paper-2: #2a2931;
+    --d-paper-3: #323139;
     --d-ink: #eeebe3;
     --d-ink-58: rgb(238 235 227 / 0.78);
     --d-ink-38: rgb(238 235 227 / 0.6);
@@ -187,12 +194,22 @@
        near-white ink the old #ff5b39 only reached 2.59:1 -- and alive-vs-dying
        is the entire message of the sieve. This clears 3:1 there and still
        clears 4.5:1 as text on both grounds. */
-    --d-signal: #d2604c;
-    --d-signal-wash: rgb(210 96 76 / 0.15);
-    --d-loss-2: #96503f;
-    --d-loss-3: #5f3a32;
+    /* S 60 -> 38. On a near-black ground a saturated vermilion is the only
+       chromatic thing on screen and it reads as hot -- and this page shows
+       loss often, so the loudest colour was also the most frequent. The floor
+       is the sieve: a dying cell must stay 3:1 from a surviving one, which
+       is what stops the saturation going lower. This measures 3.07:1. */
+    --d-signal: #bd7261;
+    --d-signal-wash: rgb(189 114 97 / 0.15);
+    --d-loss-2: #8e5d4f;
+    --d-loss-3: #5b4139;
     --d-unknown: #8593a0;
     --d-ghost: rgb(238 235 227 / 0.18);
+
+    /* The band goes deeper than the page rather than lighter. */
+    --d-zone: #0d0c10;
+    --d-zone-plate: #151419;
+    --d-zone-rule: rgb(244 241 234 / 0.14);
     --d-sheet: #16161a;
   }
 }
@@ -495,6 +512,39 @@ body {
   .entry,
   .entry-rule { transition: none; }
   .entry:hover .entry-rule { transform: scaleX(1); }
+}
+
+/*
+ * A row of measurements.
+ *
+ * Replaces a 2x2 grid that sat in the right-hand column beside a paragraph.
+ * Four figures in a block of their own read as one reading taken together;
+ * the same four wedged beside prose read as leftovers, and the 2x2 always
+ * left a hole wherever the paragraph stopped short.
+ *
+ * Divided by rules rather than spacing, because these are readings off one
+ * instrument and the rules say so.
+ */
+.statbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  border-block-start: 1px solid var(--d-rule);
+}
+
+.statbar > * {
+  padding: 1.1rem 1.25rem 1.2rem;
+  border-inline-start: 1px solid var(--d-rule);
+  border-block-end: 1px solid var(--d-rule);
+}
+
+/* The leading edge of each row would otherwise carry a rule into the margin. */
+.statbar > *:first-child { border-inline-start: 0; padding-inline-start: 0; }
+
+@media (max-width: 40rem) {
+  .statbar > * {
+    border-inline-start: 0;
+    padding-inline: 0;
+  }
 }
 
 /* --- the landing ------------------------------------------------------
