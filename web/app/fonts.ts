@@ -6,11 +6,24 @@ import localFont from 'next/font/local'
  * file does not, so the bytes that ship are the bytes in this tree and an
  * offline build still succeeds.
  *
- * The pairing is the site's argument in miniature. Daily is a newspaper
- * assembled by a measuring instrument, so prose is set in a high-contrast
- * editorial serif and every number, identifier, stage name and label is set in
- * a monospace. There is deliberately no sans in between: the two registers are
- * supposed to look like different kinds of object.
+ * Three faces, and the third one is a correction.
+ *
+ * The original pairing was serif for prose and monospace for *everything*
+ * else, on the theory that a measuring instrument should look like one. In
+ * practice monospace carried every label, note, caption and supporting
+ * sentence on the site, and the result read as a terminal dump rather than a
+ * product -- thin, uniform, and without any of the weight that makes an
+ * interface feel built.
+ *
+ * The registers now have real jobs:
+ *
+ *   Fraunces    display and editorial prose -- the newspaper
+ *   Geist       interface text, labels, navigation -- the product
+ *   Geist Mono  data only: figures, ids, hashes, stage names -- the instrument
+ *
+ * Monospace kept for data is the part that was right: tabular figures in a
+ * column of numbers are worth the register change. Monospace for a caption
+ * never was.
  */
 
 export const fraunces = localFont({
@@ -22,6 +35,23 @@ export const fraunces = localFont({
   // reflow noticeably, which matters more than matching the skeleton.
   fallback: ['Charter', 'Georgia', 'Times New Roman', 'serif'],
   adjustFontFallback: 'Times New Roman',
+})
+
+export const geistSans = localFont({
+  src: './fonts/GeistSans-variable.woff2',
+  variable: '--font-sans-var',
+  display: 'swap',
+  weight: '100 900',
+  fallback: [
+    'ui-sans-serif',
+    'system-ui',
+    '-apple-system',
+    'Segoe UI',
+    'Helvetica Neue',
+    'Arial',
+    'sans-serif',
+  ],
+  adjustFontFallback: 'Arial',
 })
 
 export const geistMono = localFont({

@@ -85,13 +85,15 @@ export default async function HomePage() {
       </section>
 
       {fixtures.length > 0 && lead !== undefined ? (
-        <section className="frame flex flex-col gap-7 pb-20">
+        <section className="zone-dark">
+          <div className="frame flex flex-col gap-7">
           <Band index="01" title="The sieve" note="One cell per candidate article" />
           <Sieve
             fixtures={fixtures}
             initialFixture={lead.key}
             snapshot={artifact?.provenance.snapshot.name ?? 'unknown'}
           />
+          </div>
         </section>
       ) : null}
 
