@@ -72,7 +72,9 @@
   --font-editorial: var(--font-editorial-var), Charter, Georgia, serif;
   --font-mono: var(--font-mono-var), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-serif: var(--font-editorial);
-  --font-sans: var(--font-mono);
+  /* Was an alias for the monospace, which is why every caption, note and
+     label on the site read as terminal output. */
+  --font-sans: var(--font-sans-var), ui-sans-serif, system-ui, sans-serif;
 
   /* Added to Tailwind's scale rather than replacing it, so the sizes that
      already work keep working and these read as deliberate choices. */
@@ -123,6 +125,44 @@
   --d-ghost: rgb(22 21 19 / 0.2);
   --d-sheet: #fdfcf9;
 
+  /* The inverted band. Warm near-black rather than neutral -- a cool black
+     against cream paper reads as two unrelated designs. */
+  --d-zone: #17161a;
+  --d-zone-plate: #1e1d22;
+  --d-zone-ink: #f4f1ea;
+  --d-zone-mid: rgb(244 241 234 / 0.72);
+  --d-zone-dim: rgb(244 241 234 / 0.48);
+  --d-zone-rule: rgb(244 241 234 / 0.16);
+
+  /* --- elevation -----------------------------------------------------
+     Every element sat on one plane, which is what made the page read flat
+     regardless of how the type was set. Three steps is enough: a resting
+     surface, a raised one, and a lifted one under the pointer. The shadows
+     are warm rather than neutral grey -- a cool shadow on cream paper looks
+     like a rendering mistake. */
+  --shadow-1: 0 1px 2px rgb(38 30 22 / 0.05), 0 1px 1px rgb(38 30 22 / 0.03);
+  --shadow-2:
+    0 1px 2px rgb(38 30 22 / 0.05),
+    0 4px 12px -2px rgb(38 30 22 / 0.07);
+  --shadow-3:
+    0 1px 2px rgb(38 30 22 / 0.06),
+    0 12px 28px -6px rgb(38 30 22 / 0.12);
+
+  /* Every corner was 0, which reads as austere rather than crafted. Small
+     and consistent: a radius you notice is a radius that is too big. */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+
+  /* --- motion, consolidated ------------------------------------------
+     There were six durations and four near-identical easing curves, written
+     at different times. Nobody can perceive the difference between
+     cubic-bezier(.16,1,.3,1) and (.22,1,.36,1); the cumulative effect is a
+     page that reads as assembled rather than designed. */
+  --t-fast: 150ms;
+  --t-slow: 260ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
   --frame: 80rem;
   --measure: 36rem;
   /* Wider than the old flat 1.25rem, and it breathes with the viewport --
@@ -163,9 +203,14 @@ html {
 }
 
 body {
-  font-family: var(--font-mono);
+  /* The site's default was the *monospace*, so every caption, note, list item
+     and stray sentence inherited it. That single declaration is most of why
+     the page read as a terminal dump rather than a product: monospace at
+     small sizes is uniform, thin and tiring, and it was carrying the majority
+     of the words on screen. Data keeps it; prose never should have had it. */
+  font-family: var(--font-sans);
   font-size: 0.9375rem;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-variant-numeric: tabular-nums;
@@ -233,7 +278,7 @@ body {
 /* Every micro-label on the site. Monospace caps, widely tracked, so labels
    read as instrument nomenclature rather than as small headings. */
 @utility label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: var(--text-micro);
   line-height: 1.2;
@@ -242,7 +287,7 @@ body {
 }
 
 @utility label-lg {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: 0.8125rem;
   line-height: 1.2;
@@ -279,7 +324,7 @@ body {
   letter-spacing: -0.03em;
 }
 @utility signature-caps {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: var(--text-micro);
   line-height: 1.2;
@@ -287,7 +332,7 @@ body {
   text-transform: uppercase;
 }
 @utility meta-caps {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: var(--text-micro);
   line-height: 1.2;
@@ -335,36 +380,14 @@ body {
 }
 
 /*
- * The measuring column.
+ * The measuring column, removed.
  *
- * Two hairlines at the edges of the content column, drawn once behind
- * everything and running the full height of the page. They cost nothing and
- * do two things: they make the page feel *set* rather than stacked, and they
- * are the right metaphor for a site whose subject is a ruler. Everything that
- * matters is inside the measure; the margins are margins.
- *
- * `position: fixed` rather than an absolutely-positioned sibling, so the
- * lines do not stretch a 12,000px document into a paint-bound layer. They are
- * `pointer-events: none` and `aria-hidden` by construction -- this is a mark
- * on the paper, not content.
+ * Two hairlines at the edges of the content column. The idea was sound and
+ * the execution was not: at 1440px and above the frame leaves ~80px of margin
+ * outside them, so the rules sat in dead space and read as a browser artefact
+ * rather than a margin. A device that needs the viewport to be exactly the
+ * right width is not a device, it is a coincidence.
  */
-.column-rules {
-  position: fixed;
-  inset-block: 0;
-  left: 50%;
-  translate: -50% 0;
-  width: 100%;
-  max-width: var(--frame);
-  border-inline: 1px solid var(--d-rule);
-  pointer-events: none;
-  z-index: 0;
-}
-
-@media (max-width: 52rem) {
-  /* Below the frame width the rules would sit on the viewport edge, where
-     they read as a browser artefact rather than a margin. */
-  .column-rules { display: none; }
-}
 
 /*
  * The hero's ground.
@@ -397,13 +420,12 @@ body {
  * this site has means loss, and the headline's subject is not a loss -- it is
  * the thing the site is *about*. Spending vermilion here would have made the
  * most prominent sentence on the page read as an error state.
+ *
+ * `text-decoration` and not a pseudo-element: an abs-positioned ::after on a
+ * wrapped inline anchors to the last line fragment, so on a phone the mark
+ * sat under the final three words while the clause ran over three lines.
  */
 .struck {
-  /* `text-decoration` rather than an absolutely-positioned pseudo-element.
-     An abs-positioned ::after on a wrapped inline anchors to the *last* line
-     fragment, so on a phone the mark sat under "never see." alone while the
-     clause ran over three lines. Decoration follows every fragment, which is
-     what it is for. */
   text-decoration: underline;
   text-decoration-color: color-mix(in oklab, var(--d-signal) 62%, transparent);
   text-decoration-thickness: 0.05em;
@@ -430,15 +452,21 @@ body {
   position: relative;
   display: block;
   background: var(--d-paper);
-  padding: 1.15rem 1.15rem 1.35rem;
+  padding: 1.3rem 1.3rem 1.5rem;
   text-decoration: none;
   transition:
-    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    background-color var(--t-fast) var(--ease),
+    box-shadow var(--t-slow) var(--ease),
+    transform var(--t-slow) var(--ease);
 }
 
+/* Lifts rather than merely tinting. A card that only changes colour on hover
+   is a table row; one that rises is an object you can pick up. */
 .entry:hover {
-  background: var(--d-paper-2);
+  background: var(--d-sheet);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-2px);
+  z-index: 1;
 }
 
 .entry-rule {
@@ -460,89 +488,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .entry,
-  .entry-rule {
-    transition: none;
-  }
+  .entry-rule { transition: none; }
   .entry:hover .entry-rule { transform: scaleX(1); }
-}
-
-/* --- collapsed reference lists --------------------------------------- */
-
-.reveal {
-  border-block-start: 1px solid var(--d-rule-strong);
-}
-
-.reveal-summary {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding-block: 0.7rem;
-  cursor: pointer;
-  list-style: none;
-}
-
-.reveal-summary::-webkit-details-marker { display: none; }
-
-/* The count is the summary. It says how much is behind the click, which is
-   the one thing a reader needs in order to skip it. */
-.reveal-count {
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  color: var(--d-ink-38);
-  font-variant-numeric: tabular-nums;
-  margin-inline-start: auto;
-}
-
-.reveal-mark {
-  position: relative;
-  inline-size: 9px;
-  block-size: 9px;
-  flex: none;
-  opacity: 0.5;
-  transition: opacity 160ms ease;
-}
-
-.reveal-summary:hover .reveal-mark { opacity: 1; }
-
-.reveal-mark::before,
-.reveal-mark::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  inset-block-start: 4px;
-  block-size: 1px;
-  background: var(--d-ink);
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal-mark::after { transform: rotate(90deg); }
-.reveal[open] .reveal-mark::after { transform: rotate(0deg); }
-
-.reveal-list {
-  margin: 0 0 0.9rem;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--d-ink-60);
-}
-
-.reveal-list > li {
-  padding-inline-start: 0.9rem;
-  position: relative;
-}
-
-.reveal-list > li::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-start: 0.55em;
-  inline-size: 4px;
-  block-size: 1px;
-  background: var(--d-ink-38);
 }
 
 /* --- the recorded batch ---------------------------------------------- */
@@ -554,11 +501,7 @@ body {
   flex-wrap: wrap;
 }
 
-.tally-item {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-}
+.tally-item { display: flex; align-items: baseline; gap: 0.6rem; }
 
 .tally-n {
   font-family: var(--font-mono);
@@ -570,18 +513,14 @@ body {
 }
 
 .tally-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--d-ink-38);
 }
 
-.tally-arrow {
-  font-family: var(--font-mono);
-  font-size: 1.5rem;
-  color: var(--d-ink-38);
-}
+.tally-arrow { font-family: var(--font-mono); font-size: 1.5rem; color: var(--d-ink-38); }
 
 .pairs {
   margin: 0;
@@ -591,11 +530,8 @@ body {
 }
 
 /*
- * One recorded pair.
- *
- * A button rather than a div: the row is the interactive element, so it has
- * to be reachable by keyboard and announce its expanded state. Hover and
- * focus drive the same state, so a pointer and a tab key see the same thing.
+ * One recorded pair. A button rather than a div: the row is the interactive
+ * element, so it must be keyboard-reachable and announce its expanded state.
  */
 .pair {
   display: grid;
@@ -603,18 +539,22 @@ body {
   align-items: center;
   gap: 0 0.75rem;
   inline-size: 100%;
-  padding: 0.7rem 0;
+  padding: 0.85rem 0.6rem;
   border: 0;
   border-block-end: 1px solid var(--d-rule);
   background: transparent;
   text-align: left;
   cursor: pointer;
-  transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: var(--r-sm);
+  transition:
+    background-color var(--t-fast) var(--ease),
+    box-shadow var(--t-fast) var(--ease);
 }
 
 .pair:hover,
 .pair-on {
-  background: var(--d-paper-2);
+  background: var(--d-sheet);
+  box-shadow: var(--shadow-1);
 }
 
 .pair-pos {
@@ -632,29 +572,20 @@ body {
 }
 
 /*
- * The join.
- *
- * Dashed and slate because that is exactly what it is: an association
+ * The join: dashed and slate because that is what it is -- an association
  * asserted by array position, which the recorded note says is the only thing
- * joining these two columns. A solid ink line would claim the pairing is
- * established; a vermilion one would claim it is wrong. Neither is knowable
- * from the evidence, and the reader supplies the judgement instead.
+ * joining these two columns. Solid ink would claim the pairing is
+ * established; vermilion would claim it is wrong. Neither is knowable.
  */
 .pair-link {
   block-size: 1px;
-  background: repeating-linear-gradient(
-    to right,
-    var(--d-unknown) 0 4px,
-    transparent 4px 8px
-  );
+  background: repeating-linear-gradient(to right, var(--d-unknown) 0 4px, transparent 4px 8px);
   opacity: 0.55;
-  transition: opacity 160ms ease;
+  transition: opacity var(--t-fast) var(--ease);
 }
 
 .pair:hover .pair-link,
-.pair-on .pair-link {
-  opacity: 1;
-}
+.pair-on .pair-link { opacity: 1; }
 
 .pair-reason {
   font-family: var(--font-mono);
@@ -667,18 +598,143 @@ body {
   overflow: hidden;
 }
 
-.pair-on .pair-reason {
-  -webkit-line-clamp: 6;
+.pair-on .pair-reason { -webkit-line-clamp: 6; }
+
+@media (max-width: 52rem) {
+  .pair { grid-template-columns: 2.4rem minmax(0, 1fr); gap: 0.35rem 0.75rem; }
+  .pair-link { display: none; }
+  .pair-reason { grid-column: 2; }
+}
+
+/* --- a dark zone ------------------------------------------------------
+ *
+ * One cream value ran the whole page, so the scroll had no rhythm and
+ * nothing to land on. This inverts a single band -- the sieve -- which is
+ * also the one element that gains from it: 1,362 pale cells on cream is a
+ * texture, and the same cells on near-black is a readout. The survivors stop
+ * being dark marks on a light field and start being lit.
+ *
+ * Exactly one inverted section, deliberately. Two would be a stripe pattern.
+ */
+.zone-dark {
+  position: relative;
+  background: var(--d-zone);
+  color: var(--d-zone-ink);
+  padding-block: 4.5rem;
+  margin-block: 1rem;
+}
+
+.zone-dark :is(.label, .band-index) { color: var(--d-zone-dim); }
+.zone-dark .label-lg { color: var(--d-zone-ink); }
+.zone-dark .band { border-image: linear-gradient(to right, var(--d-zone-ink) 0, var(--d-zone-ink) 2.25rem, var(--d-zone-rule) 2.25rem, var(--d-zone-rule) 100%) 1; }
+.zone-dark .chip {
+  border-color: var(--d-zone-rule);
+  color: var(--d-zone-ink);
+  background: transparent;
+}
+.zone-dark .chip:hover { border-color: var(--d-zone-ink); }
+.zone-dark .chip-on { background: var(--d-zone-ink); color: var(--d-zone); border-color: var(--d-zone-ink); }
+.zone-dark .readout-sm,
+.zone-dark .readout { color: var(--d-zone-ink); }
+.zone-dark .text-ink-40 { color: var(--d-zone-dim); }
+.zone-dark .text-ink-60 { color: var(--d-zone-mid); }
+/* The stage list is built from `bg-paper` cells on a `bg-rule` grid, both of
+   which are cream. Inside the band they have to invert or the figure ends in
+   a slab of daylight. */
+.zone-dark :is(.bg-paper, .bg-paper-secondary) { background: var(--d-zone-plate); }
+.zone-dark .bg-rule { background: var(--d-zone-rule); }
+.zone-dark .border-rule { border-color: var(--d-zone-rule); }
+.zone-dark .text-ink { color: var(--d-zone-ink); }
+.zone-dark .bg-ink { background: var(--d-zone-ink); }
+.zone-dark .bg-ink .text-paper,
+.zone-dark .bg-ink.text-paper { color: var(--d-zone); }
+
+.zone-dark .sieve-plate {
+  background: var(--d-zone-plate);
+  border-color: var(--d-zone-rule);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.4);
+}
+
+/* --- the funnel figures ---------------------------------------------- */
+
+/*
+ * 1,362 in, 50 out.
+ *
+ * The site's whole argument, and it was a clause in a sentence. It is the
+ * only fact a first-time visitor needs and it belongs at the largest size on
+ * the page, in the space the old hero left empty.
+ *
+ * Tabular figures and a fixed character width so the two numbers share a
+ * right edge without a table: 1,362 and 50 are different lengths, and a
+ * ragged right on two stacked numerals reads as an accident.
+ */
+.funnel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.funnel-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.funnel-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--d-ink-38);
+  inline-size: 6.5rem;
+}
+
+.funnel-n {
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 7vw, 4.75rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--d-ink);
+  margin: 0;
+  min-inline-size: 5.5ch;
+  text-align: right;
+}
+
+/* The survivor is the only figure that is not ink. Everything this site
+   colours is loss -- so the one that made it through stays ink, and the
+   *drop* between them carries the vermilion. */
+.funnel-n-out {
+  color: var(--d-ink);
+}
+
+.funnel-drop {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 0.55rem;
+  padding-inline-start: 7.5rem;
+}
+
+.funnel-line {
+  inline-size: 1px;
+  block-size: 2.1rem;
+  background: linear-gradient(to bottom, var(--d-rule-strong), var(--d-signal));
+}
+
+.funnel-loss {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--d-signal);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 52rem) {
-  /* The join is a horizontal idea; stacked, it has nothing to span. */
-  .pair {
-    grid-template-columns: 2.4rem minmax(0, 1fr);
-    gap: 0.35rem 0.75rem;
-  }
-  .pair-link { display: none; }
-  .pair-reason { grid-column: 2; }
+  .funnel-label { inline-size: 5rem; }
+  .funnel-drop { padding-inline-start: 6rem; }
 }
 
 /*
@@ -820,7 +876,7 @@ body {
 /* --------------------------------------------------------- controls ----- */
 
 @utility chip {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   letter-spacing: 0.02em;
   border: 1px solid var(--d-control);
@@ -886,6 +942,7 @@ body {
  * pseudo-elements and no JavaScript.
  */
 .sieve-plate {
+  border-radius: var(--r-md);
   position: relative;
   /* Deeper than `paper-2`, which sat too close to the ghost cells for the
      frame to read at all -- the plate has to be visibly *under* the grid or
@@ -1012,6 +1069,32 @@ body {
 /* Delivered to the reader. */
 .sieve-cell[data-state="delivered"] {
   background: var(--d-ink);
+}
+
+/*
+ * The same four states, inverted for the dark band.
+ *
+ * These have to sit *after* the base rules rather than beside `.zone-dark`:
+ * the selectors are equal specificity, so source order decides, and an
+ * earlier override silently loses. The first attempt did exactly that and
+ * also invented a state name -- `ghost` -- that `cellState` never returns,
+ * so the survivors rendered as near-black squares on a near-black plate.
+ *
+ * Survivors are the light here. On cream they are ink marks on paper; on
+ * near-black they are the only thing lit, which is the whole reason the band
+ * is worth having.
+ */
+.zone-dark .sieve-cell[data-state="alive"],
+.zone-dark .sieve-cell[data-state="delivered"] {
+  background: var(--d-zone-ink);
+}
+
+.zone-dark .sieve-cell[data-state="dying"] {
+  background: var(--d-signal);
+}
+
+.zone-dark .sieve-cell[data-state="gone"] {
+  background: rgb(244 241 234 / 0.1);
 }
 
 /*

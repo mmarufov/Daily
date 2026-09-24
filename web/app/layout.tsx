@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { SiteNav } from '@/components/SiteNav'
 
-import { fraunces, geistMono } from './fonts'
+import { fraunces, geistMono, geistSans } from './fonts'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -24,11 +24,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${geistSans.variable} ${geistMono.variable}`}>
       <body className="grain min-h-screen bg-paper text-ink antialiased">
-        {/* A mark on the paper, not content: the measuring column and the
-            grain are both drawn behind everything and read by nothing. */}
-        <div className="column-rules" aria-hidden="true" />
         <a href="#main" className="skip-link">
           Skip to content
         </a>

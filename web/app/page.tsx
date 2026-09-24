@@ -29,30 +29,53 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="hero frame rise relative flex flex-col gap-7 py-16 md:py-24">
-        <p className="label m-0 flex items-center gap-2.5 text-ink-40">
-          <span className="pip" aria-hidden="true" />
-          News that knows you · never shipped
-        </p>
-        <h1 className="display m-0 max-w-5xl text-[clamp(2.5rem,7.5vw,5.5rem)]">
-          A daily edition is mostly{' '}
-          {/* The subject of the sentence and of the site. Marked rather than
-              coloured: an underline that sits in the descender space reads as
-              emphasis without spending the one colour that means loss. */}
-          <span className="struck">the stories you never see.</span>
-        </h1>
-        <p className="lede measure m-0 text-ink-60">
+      <section className="hero frame rise relative py-16 md:py-20">
+        {/* Asymmetric on purpose. The old hero put the headline, the lede and
+            four boxes all at the same left edge and left the right 40% empty,
+            which is not generous whitespace, it is an unbalanced column. The
+            figures now occupy that space and they are the argument: 1,362
+            went in, 50 came out. */}
+        <div className="grid items-end gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="flex flex-col gap-6">
+            <p className="label m-0 flex items-center gap-2.5 text-ink-40">
+              <span className="pip" aria-hidden="true" />
+              News that knows you · never shipped
+            </p>
+            <h1 className="display m-0 text-[clamp(2.5rem,6.2vw,4.75rem)]">
+              A daily edition is mostly{' '}
+              <span className="struck">the stories you never see.</span>
+            </h1>
+            <p className="lede measure m-0 text-ink-60">
+              Other feeds show you the survivors.
+              <span className="block text-ink-40">
+                This one shows what was thrown away, and where.
+              </span>
+            </p>
+          </div>
+
           {pool !== null && delivered !== null ? (
-            <>
-              {pool.toLocaleString()} candidates became {delivered.toLocaleString()}.
-            </>
-          ) : null}{' '}
-          Other feeds show you the survivors.
-          <span className="block text-ink-40">This one shows what was thrown away, and where.</span>
-        </p>
+            <dl className="funnel m-0" aria-label="Candidates entering and leaving the pipeline">
+              <div className="funnel-row">
+                <dt className="funnel-label">Candidates</dt>
+                <dd className="funnel-n">{pool.toLocaleString()}</dd>
+              </div>
+              <div className="funnel-drop" aria-hidden="true">
+                <span className="funnel-line" />
+                <span className="funnel-loss">
+                  &minus;{(pool - delivered).toLocaleString()}
+                </span>
+              </div>
+              <div className="funnel-row">
+                <dt className="funnel-label">Delivered</dt>
+                <dd className="funnel-n funnel-n-out">{delivered.toLocaleString()}</dd>
+              </div>
+            </dl>
+          ) : null}
+        </div>
+
         <nav
           aria-label="Main"
-          className="mt-2 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-14 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4"
         >
           <Entry n="01" href="/reader" term="Reader" note="One edition, replayed from a frozen corpus" />
           <Entry n="02" href="/evidence" term="Evidence" note="Every metric, fixture and story trace" />
@@ -62,13 +85,15 @@ export default async function HomePage() {
       </section>
 
       {fixtures.length > 0 && lead !== undefined ? (
-        <section className="frame flex flex-col gap-7 pb-20">
+        <section className="zone-dark">
+          <div className="frame flex flex-col gap-7">
           <Band index="01" title="The sieve" note="One cell per candidate article" />
           <Sieve
             fixtures={fixtures}
             initialFixture={lead.key}
             snapshot={artifact?.provenance.snapshot.name ?? 'unknown'}
           />
+          </div>
         </section>
       ) : null}
 
