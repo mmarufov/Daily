@@ -25,7 +25,8 @@
     "lab:investigate": "tsx --env-file-if-exists=.env.local scripts/lab-investigate.ts",
     "stage:lab": "tsx scripts/stage-lab-evidence.ts",
     "prebuild": "npm run stage:lab",
-    "predev": "npm run stage:lab"
+    "predev": "npm run stage:lab",
+    "build:icons": "tsx scripts/build-icons.ts"
   },
   "dependencies": {
     "@vercel/sandbox": "^3.3.0",
