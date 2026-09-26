@@ -57,7 +57,7 @@ export function TraceRibbon({
             <li
               key={stage.stage}
               className="group relative flex-1"
-              title={`${stage.label} — ${survived ? 'passed' : died ? 'left here' : 'never reached'}`}
+              title={`${stage.label}: ${survived ? 'passed' : died ? 'left here' : 'never reached'}`}
             >
               <span
                 className={[

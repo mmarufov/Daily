@@ -32,7 +32,9 @@ export function Counterexample({ run }: { run: LabRun }) {
   return (
     <div className="border border-signal bg-paper-secondary p-4">
       <p className="label m-0 text-signal">Smallest counterexample</p>
-      <p className="headline m-0 mt-2 text-base">{x.article_title}</p>
+      <p className="headline m-0 mt-2 text-base" data-verbatim>
+        {x.article_title}
+      </p>
       <dl className="m-0 mt-3 grid gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
         <div>
           <dt className="label m-0 text-ink-40">Article</dt>

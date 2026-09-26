@@ -66,7 +66,7 @@ export default function EngineeringPage() {
           A story the reader needed, rejected for discussing something else entirely
         </h1>
         <p className="lede measure m-0 text-ink-60">
-          One bug, from the symptom in a stored scorecard to the lines that caused it — and what
+          One bug, from the symptom in a stored scorecard to the lines that caused it, and what
           fixing it cost.
         </p>
         <PageIndex sections={SECTIONS} />
@@ -101,7 +101,7 @@ export default function EngineeringPage() {
         <p className="m-0 measure text-sm text-ink-60">
           A clean offset, not a model reasoning badly. The middle one is sharpest:{' '}
           <span className="text-ink">n-dil-02</span> is a <em>planted needle</em>, injected so its
-          right answer is known by construction — and it was rejected on another
+          right answer is known by construction. It was rejected on another
           article&rsquo;s reasoning.
         </p>
       </section>
@@ -128,7 +128,7 @@ export default function EngineeringPage() {
               </summary>
               <p className="m-0 mt-2">
                 The prototype pipeline requires every verdict to echo its{' '}
-                <span className="text-ink">id</span> and drops unmatched ones — and every rejection
+                <span className="text-ink">id</span> and drops unmatched ones, and every rejection
                 reason in its scorecards matches its own headline. A correct implementation exists
                 on the product side too, in{' '}
                 <Code href={`${GH}/backend/app/services/ranking_provider.py`}>ranking_provider.py</Code>
@@ -154,14 +154,14 @@ export default function EngineeringPage() {
               </Item>
               <Item term="CacheMiss and BudgetExceeded propagate">
                 Both were swallowed by a blanket handler, so an offline replay that should have
-                failed closed instead scored every article 0.0 — while reporting zero cache misses.
+                failed closed instead scored every article 0.0 while reporting zero cache misses.
               </Item>
             </ul>
           </div>
           <div className="flex flex-col gap-4">
             <p className="label m-0 text-signal">What was deliberately left broken</p>
             <p className="prose m-0 text-base">
-              The complete fix is id-keyed output, which changes the scoring prompt — and the
+              The complete fix is id-keyed output, which changes the scoring prompt, and the
               regression gate replays responses keyed by a hash of the request. Changing the prompt
               invalidates the entire evidence base the gate runs against.
             </p>
@@ -186,14 +186,14 @@ export default function EngineeringPage() {
           <Slope rows={COST} aLabel="Committed scorecard" bLabel="With the guard" />
           <div className="flex flex-col gap-4 self-start">
             <p className="prose m-0 text-base">
-              Not &ldquo;the fix made it worse&rdquo; — two facts at once. The committed 22.1% was
+              Not &ldquo;the fix made it worse&rdquo;. Two facts at once. The committed 22.1% was
               never a measurement of the pipeline judging correctly, because it counted verdicts
               that landed on the right article by accident.
             </p>
             <p className="prose m-0 text-base">
               And refusing to guess is expensive: on a mismatch the guard discards all forty
               verdicts, so those candidates carry no relevance signal at all. That is why the
-              unwanted rate climbs. Neither number describes a healthy pipeline — the first is
+              unwanted rate climbs. Neither number describes a healthy pipeline: the first is
               meaningless, the second is the price of having no way to salvage a partial response.
             </p>
           </div>
@@ -211,7 +211,7 @@ export default function EngineeringPage() {
               >
                 <span className="text-xs text-ink">{name}</span>
                 <span className={`text-xs ${fails ? 'text-signal' : 'text-ink-40'}`}>
-                  {fails ? 'failed' : 'passed'} before — {before}
+                  {fails ? 'failed' : 'passed'} before: {before}
                 </span>
               </li>
             ))}
@@ -261,8 +261,8 @@ export default function EngineeringPage() {
           <div className="mt-3 grid gap-x-10 gap-y-5 sm:grid-cols-2">
             <p className="m-0">
               Daily is an iPhone app against a FastAPI backend and Postgres. The backend is a
-              stateful daemon — seven background loops, schema application, a Postgres advisory
-              lock for leader election — and it stays where it runs today.
+              stateful daemon: seven background loops, schema application, and a Postgres advisory
+              lock for leader election. It stays where it runs today.
             </p>
             <p className="m-0">
               This site is a separate read tier: the reader replays a frozen corpus, the explorer

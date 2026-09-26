@@ -49,10 +49,10 @@ export function personaName(key: string): string {
   return BY_KEY.get(key)?.name ?? key
 }
 
-/** `Daniel — Tashkent`, for places with room for it. */
+/** `Daniel, Tashkent`, for places with room for it. */
 export function personaLabel(key: string): string {
   const p = BY_KEY.get(key)
-  return p === undefined ? key : `${p.name} — ${p.place}`
+  return p === undefined ? key : `${p.name}, ${p.place}`
 }
 
 export function personaAxis(key: string): string | undefined {

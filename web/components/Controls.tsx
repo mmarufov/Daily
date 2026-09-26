@@ -14,9 +14,9 @@ interface ControlsProps {
 
 const OUTCOME_LABELS: Record<OutcomeFilter, string> = {
   all: 'Every story',
-  'delivered-wanted': 'Delivered — wanted',
-  'delivered-unwanted': 'Delivered — unwanted',
-  'delivered-unlabelled': 'Delivered — unlabelled',
+  'delivered-wanted': 'Delivered, wanted',
+  'delivered-unwanted': 'Delivered, unwanted',
+  'delivered-unlabelled': 'Delivered, unlabelled',
   'lost-before-scorer': 'Lost before the scorer',
   'lost-at-or-after-scorer': 'Lost at or after the scorer',
 }

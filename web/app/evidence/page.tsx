@@ -114,7 +114,7 @@ export default async function EvidencePage({
         {requestedButMissing ? (
           <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
             The run <span className="text-ink">{requested.run}</span> is not in the current
-            manifest, so the default is shown instead — rather than silently showing different
+            manifest, so the default is shown instead, rather than silently showing different
             numbers.
           </p>
         ) : null}
@@ -165,8 +165,8 @@ export default async function EvidencePage({
             {state.persona === undefined ? (
               <p className="m-0 max-w-3xl text-xs text-ink-40">
                 The weakest-fixture column exists so an average cannot hide a reader the pipeline
-                fails. A filled dot marks a difference past the fixed &plusmn;0.02 cutoff — the
-                harness author&rsquo;s threshold, not a significance test.
+                fails. A filled dot marks a difference past the fixed &plusmn;0.02 cutoff, which is the
+                harness author&rsquo;s threshold and not a significance test.
               </p>
             ) : null}
             <Glossary />
@@ -202,8 +202,8 @@ export default async function EvidencePage({
             {persona === undefined ? (
               <div className="flex flex-col gap-3">
                 <p className="m-0 max-w-2xl text-xs text-ink-60">
-                  One cell per candidate article, so it only means anything for a single fixture —
-                  summing ten would draw the same article ten times and call it a corpus.
+                  One cell per candidate article, so it only means anything for a single fixture. Summing
+                  ten would draw the same article ten times and call it a corpus.
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
                   {personaKeys.map((key) => (
@@ -277,7 +277,7 @@ export default async function EvidencePage({
       ) : null}
 
       <section className="frame flex flex-col gap-4 pb-8">
-        <Band index="—" title="Provenance" note="What can and cannot be established" as="h2" />
+        <Band index="" title="Provenance" note="What can and cannot be established" as="h2" />
         <ProvenancePanel artifact={primary} />
         {comparison !== null ? <ProvenancePanel artifact={comparison} /> : null}
       </section>

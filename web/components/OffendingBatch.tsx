@@ -73,7 +73,9 @@ export function OffendingBatch({
                 aria-expanded={on}
               >
                 <span className="pair-pos">{String(pair.position).padStart(2, '0')}</span>
-                <span className="pair-title">{pair.title}</span>
+                <span className="pair-title" data-verbatim>
+                  {pair.title}
+                </span>
                 <span className="pair-link" aria-hidden="true" />
                 <span className="pair-reason">{pair.reason}</span>
               </button>
@@ -83,7 +85,7 @@ export function OffendingBatch({
       </ol>
 
       <p className="m-0 max-w-2xl text-xs text-ink-40">
-        Nothing in the response names an article —{' '}
+        Nothing in the response names an article.{' '}
         <span className="text-unknown">position is the only join</span>.
       </p>
     </div>

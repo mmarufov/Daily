@@ -53,7 +53,7 @@ export async function generateMetadata({
   const resolved = await resolve(run)
   if (resolved === null) return { title: 'Run not found' }
   return {
-    title: `${resolved.run.candidate.candidate_id} — ${resolved.run.verdict}`,
+    title: `${resolved.run.candidate.candidate_id}: ${resolved.run.verdict}`,
     description: resolved.run.verdict_reason,
   }
 }
@@ -89,7 +89,7 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
             {run.gradings.length > 1 ? (
               <span className="block pt-1 text-ink-40">
                 Under the current criteria, generation {run.gradings[run.gradings.length - 1]?.spec_version}.
-                This run faced generation {run.gradings[0]?.spec_version} when it executed — both verdicts are below.
+                This run faced generation {run.gradings[0]?.spec_version} when it executed. Both verdicts are below.
               </span>
             ) : null}
           </p>

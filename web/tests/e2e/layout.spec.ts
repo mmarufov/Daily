@@ -120,3 +120,56 @@ test.describe('identity', () => {
     expect((await page.request.get(`${pathname}${search}`)).status()).toBe(200)
   })
 })
+
+/**
+ * Two house rules, both asked for after they had already shipped.
+ *
+ * The title template was '%s — Daily', which made the Lab's tab read "Daily
+ * Lab — Daily" and every other one longer than a tab can show. And the em
+ * dash had spread to 45 places: it is the punctuation you reach for when you
+ * have not decided whether two clauses are one sentence or two, which is why
+ * it reads as filler.
+ */
+const ROUTES = ['/', '/reader', '/evidence', '/lab', '/engineering'] as const
+
+test.describe('house style', () => {
+  for (const route of ROUTES) {
+    test(`${route} has a short title and no em dash anywhere`, async ({ page }) => {
+      await page.goto(route)
+
+      const title = await page.title()
+      // A tab truncates around here, and a window with several open truncates
+      // sooner. The site name belongs in og:site_name, not after every title.
+      expect(title.length, `"${title}" is too long for a tab`).toBeLessThanOrEqual(24)
+      expect(title, `"${title}" still carries the site-name suffix`).not.toMatch(/ [—-] Daily$/)
+
+      // Article headlines come out of the frozen corpus and are reproduced
+      // exactly. Editing a real headline to satisfy a house style would be
+      // falsifying the evidence, on a site whose whole argument is that its
+      // evidence is one set of bytes. They carry `data-verbatim`, and the rule
+      // stops at that boundary.
+      const found = await page.evaluate(() => {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+        const hits: string[] = []
+        let node = walker.nextNode()
+        while (node !== null) {
+          const text = node.textContent ?? ''
+          const parent = node.parentElement
+          const inScript =
+            parent !== null && parent.closest('script, style, noscript') !== null
+          if (
+            text.includes('\u2014') &&
+            parent !== null &&
+            !inScript &&
+            parent.closest('[data-verbatim]') === null
+          ) {
+            hits.push(text.trim().slice(0, 110))
+          }
+          node = walker.nextNode()
+        }
+        return hits
+      })
+      expect(found, `em dash in the site's own copy:\n${found.join('\n')}`).toEqual([])
+    })
+  }
+})

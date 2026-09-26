@@ -21,11 +21,20 @@ export function Reveal({
   label,
   items,
   tone = 'ink',
+  verbatim = false,
 }: {
   readonly label: string
   readonly items: readonly string[]
   /** `signal` for the things the experiment declines to claim. */
   readonly tone?: 'ink' | 'signal'
+  /**
+   * The items are reproduced from frozen data rather than written here.
+   * `specHash` digests the spec, so its wording cannot be edited without
+   * rewriting the hash eight committed artifacts already carry. Marking it
+   * says so in the DOM, and keeps the house style from being applied to text
+   * that is not the house's to change.
+   */
+  readonly verbatim?: boolean
 }) {
   if (items.length === 0) return null
   return (
@@ -35,7 +44,7 @@ export function Reveal({
         <span className="reveal-count">{items.length}</span>
         <span className="reveal-mark" aria-hidden="true" />
       </summary>
-      <ul className="reveal-list">
+      <ul className="reveal-list" {...(verbatim ? { 'data-verbatim': true } : {})}>
         {items.map((item) => (
           <li key={item}>{item}</li>
         ))}

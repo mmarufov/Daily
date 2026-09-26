@@ -78,7 +78,7 @@ function Moved({ gradings }: { gradings: readonly Grading[] }) {
       <p className="m-0 max-w-3xl text-sm text-ink-60">
         <strong className="text-ink">This verdict moved between generations.</strong> The candidate
         satisfied every criterion it faced; the criteria were the thing that was incomplete. Nothing
-        was re-executed to produce the second verdict — grading is a function of the records and a
+        was re-executed to produce the second verdict. Grading is a function of the records and a
         spec, so both were computed from the same run.
       </p>
       <ul className="m-0 mt-2 flex list-none flex-wrap gap-x-5 gap-y-1 p-0">

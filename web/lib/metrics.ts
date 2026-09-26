@@ -40,7 +40,7 @@ const DEFS: readonly MetricDefinition[] = [
     direction: 'higher-better',
     kind: 'fraction',
     short: 'Needed stories that made the feed, capped at the slots available.',
-    plain: 'Of the stories this reader had to see, the share that made the feed — with the target capped at the number of slots available.',
+    plain: 'Of the stories this reader had to see, the share that made the feed, with the target capped at the number of slots available.',
     formula: 'must_see_in_top_k / min(n_must_see, k)',
   },
   {
@@ -153,7 +153,7 @@ const DEFS: readonly MetricDefinition[] = [
     direction: 'lower-better',
     kind: 'fraction',
     short: 'Decoys that got through: right keyword, wrong thing.',
-    plain: 'How often a deliberate decoy got through — the right keyword attached to the wrong thing.',
+    plain: 'How often a deliberate decoy got through: the right keyword attached to the wrong thing.',
   },
   {
     key: 'feed_size_k',
@@ -250,7 +250,7 @@ export interface ResolvedMetric extends MetricDefinition {
 }
 
 /**
- * Resolve any scorecard key — per-persona or `_mean`/`_min` summary — to its
+ * Resolve any scorecard key, per-persona or `_mean`/`_min` summary, to its
  * definition. An unrecognised key resolves to a neutral, unknown metric so the
  * UI renders it without claiming a direction.
  */

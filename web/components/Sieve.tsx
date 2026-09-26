@@ -260,7 +260,7 @@ export function Sieve({
           against corpus <span className="text-ink-60">{snapshot}</span>, reconstructed from the
           scorecard&rsquo;s stage tallies and asserted against three independently recorded facts
           in <span className="text-ink-60">funnel.test.ts</span>. Which particular cell a stage
-          took is not recorded anywhere, so cells are scattered by a fixed hash — the quantities
+          took is not recorded anywhere, so cells are scattered by a fixed hash. The quantities
           are evidence, the positions are not.
         </p>
       </details>

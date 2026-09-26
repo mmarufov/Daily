@@ -53,7 +53,7 @@ const SEGMENTS: readonly {
     outcome: 'lost-before-scorer',
     label: 'Lost before the scorer',
     fill: 'bg-loss-3',
-    legend: 'wanted, and dropped before anything scored it — ranking could not have saved it',
+    legend: 'wanted, and dropped before anything scored it, so ranking could not have saved it',
   },
 ]
 
@@ -153,9 +153,11 @@ export function FixtureStrip({
                       : 'text-ink-60',
                 ].join(' ')}
               >
-                {row.cappedRecall === null
-                  ? '—'
-                  : `${(row.cappedRecall * 100).toFixed(1)}%`}
+                {row.cappedRecall === null ? (
+                  <span className="text-unknown">unknown</span>
+                ) : (
+                  `${(row.cappedRecall * 100).toFixed(1)}%`
+                )}
               </span>
 
               <span className="sr-only">
