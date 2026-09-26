@@ -126,7 +126,7 @@ export default async function ReaderPage({
           note={`${bundle.n_articles_in_corpus?.toLocaleString() ?? 'An unrecorded number of'} articles, one date`}
         />
         <p className="prose measure m-0 text-ink-60">
-          Same corpus, same date, different newspaper — the product&rsquo;s whole claim, and the
+          Same corpus, same date, different newspaper. That is the product&rsquo;s whole claim, and the
           only place on the site you can check it without reading a number.
         </p>
         <ul className="m-0 grid list-none gap-px border border-rule bg-rule p-0 sm:grid-cols-2 lg:grid-cols-3">
@@ -140,7 +140,7 @@ export default async function ReaderPage({
                   className="flex h-full flex-col gap-2 p-4 no-underline transition-colors duration-150 hover:bg-paper-secondary"
                 >
                   <span className="label text-ink-40">{personaLabel(other.persona)}</span>
-                  <span className="headline text-base text-ink">
+                  <span className="headline text-base text-ink" data-verbatim>
                     {lead?.headline ?? 'No stories were assembled for this fixture.'}
                   </span>
                   <span className="mt-auto pt-1 text-xs text-ink-40">
@@ -160,7 +160,7 @@ export default async function ReaderPage({
           <p className="prose m-0">
             Signing in and receiving a feed built from your own words is{' '}
             <strong>not implemented here</strong>. Three things block it, all access rather than
-            design — the honest version of &ldquo;coming soon&rdquo;.
+            design. This is the honest version of &ldquo;coming soon&rdquo;.
           </p>
           <ol className="m-0 flex list-none flex-col gap-4 p-0">
             <Blocker n="01" term="No browser may call the API">
@@ -192,7 +192,7 @@ export default async function ReaderPage({
 function Headline({ story, className }: { story: DemoStory; className: string }) {
   if (story.url === null) {
     return (
-      <span className={`${className} text-ink`}>
+      <span className={`${className} text-ink`} data-verbatim>
         {story.headline}
         <span className="sr-only"> (no link recorded for this story)</span>
       </span>
@@ -203,6 +203,7 @@ function Headline({ story, className }: { story: DemoStory; className: string })
       href={story.url}
       className={`${className} text-ink no-underline hover:text-signal`}
       rel="noreferrer"
+      data-verbatim
     >
       {story.headline}
     </a>

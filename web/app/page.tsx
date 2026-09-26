@@ -87,7 +87,7 @@ export default async function HomePage() {
         </div>
 
         {/* The seam. One candidate removed per beat, in the same grammar as
-            the band below — so the idiom is already familiar by the time the
+            the band below, so the idiom is already familiar by the time the
             reader gets there. */}
         <div className="landing-foot">
           <a href="#sieve" className="scroll-cue">
@@ -116,7 +116,7 @@ export default async function HomePage() {
         <p className="prose measure m-0 text-balance">
           &ldquo;The feed looks better to me&rdquo; is not evidence.
           <span className="mt-2 block text-ink-60">
-            Same corpus, same fixtures, network off — so two runs are comparable, and a fix that
+            Same corpus, same fixtures, network off, so two runs are comparable and a fix that
             made things worse cannot hide.
           </span>
         </p>
@@ -223,7 +223,7 @@ export default async function HomePage() {
           </Claim>
           <Claim term="Unknown stays unknown">
             What the evidence cannot establish is recorded as{' '}
-            <span className="text-unknown">unknown</span> — never null, never zero.
+            <span className="text-unknown">unknown</span>, never null and never zero.
           </Claim>
           <Claim term="$0 of model spend">
             Costs shown are reconstructed token-equivalents. Actual provider spend is zero.
@@ -253,7 +253,7 @@ function Entry({
       </span>
       <span className="mt-1.5 block text-xs text-ink-60">{note}</span>
       {/* The rule fills left-to-right on hover. A colour change says "this is
-          a link"; a rule that draws itself says "this one, now" — and it is
+          a link"; a rule that draws itself says "this one, now", and it is
           the same gesture the sieve makes, which is the page's own idiom. */}
       <span className="entry-rule" aria-hidden="true" />
     </Link>

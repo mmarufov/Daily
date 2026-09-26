@@ -62,7 +62,7 @@ export default async function LabPage() {
         <p className="lede measure m-0 text-ink-60">
           So every later verdict landed on the wrong article.
           <span className="block text-ink-40">
-            This measures whether a fix actually fixes it — decided by independent checks, not by
+            This measures whether a fix actually fixes it, decided by independent checks, not by
             the candidate.
           </span>
         </p>
@@ -97,7 +97,9 @@ export default async function LabPage() {
                   className="flex h-full flex-col gap-3 p-4 no-underline transition-colors duration-150 hover:bg-paper-secondary"
                 >
                   {entry !== undefined ? <VerdictBadge verdict={entry.verdict} small /> : null}
-                  <span className="headline text-base text-ink">{w.title}</span>
+                  <span className="headline text-base text-ink" data-verbatim>
+                    {w.title}
+                  </span>
                   <span className="text-xs text-ink-60">{w.blurb}</span>
                   {entry?.kind === 'seeded-control' ? (
                     <span className="label mt-auto pt-1 text-signal">Seeded control</span>
@@ -120,11 +122,13 @@ export default async function LabPage() {
                 now behind a count. */}
             <p className="prose m-0 text-[1.35rem] leading-snug">{EXPERIMENT.question}</p>
             <div className="flex flex-col">
-              <Reveal label="What it measures" items={EXPERIMENT.measures} />
+              {/* Both lists come straight out of the hashed spec. */}
+              <Reveal label="What it measures" items={EXPERIMENT.measures} verbatim />
               <Reveal
                 label="What it does not measure"
                 items={EXPERIMENT.does_not_measure}
                 tone="signal"
+                verbatim
               />
               <Reveal
                 label="Why the criteria are hashed"
@@ -159,7 +163,7 @@ export default async function LabPage() {
                     {entry.kind === 'seeded-control' ? 'seeded control' : 'preserved version'}
                     {/* The manifest carries the verdict under every generation
                         so this list can flag a run whose verdict *moved*
-                        without loading each run — which is the one thing a
+                        without loading each run, which is the one thing a
                         reader most wants pointed out and would otherwise have
                         to find by opening eight pages. */}
                     {movedGeneration(entry) ? (
@@ -200,7 +204,7 @@ export default async function LabPage() {
           {investigated.length === 0 ? (
             <Claim term="No agent has run">
               The investigator&rsquo;s tools, budget and scope gate are implemented and tested, and
-              no model has been called — there is no gateway key on this deployment. No agent
+              no model has been called. There is no gateway key on this deployment. No agent
               behaviour is depicted anywhere on this site.
             </Claim>
           ) : (

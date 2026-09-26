@@ -23,7 +23,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
         Provenance · {p.runner} · {p.snapshot.name}
         {warnings.length > 0 ? (
           <span className="ml-2 text-signal">
-            — {warnings.length} caveat{warnings.length === 1 ? '' : 's'} on this run
+            {warnings.length} caveat{warnings.length === 1 ? '' : 's'} on this run
           </span>
         ) : null}
       </summary>
@@ -191,7 +191,7 @@ export function CompatibilityNotice({ compatibility }: { compatibility: Compatib
         <ul className="m-0 mt-1.5 flex list-none flex-col gap-1 p-0">
           {compatibility.issues.map((issue, index) => (
             <li key={`${issue.field}-${index}`} className="max-w-3xl text-xs text-ink-60">
-              <span className="text-ink">{issue.field}</span> — {issue.message}
+              <span className="text-ink">{issue.field}</span>: {issue.message}
             </li>
           ))}
         </ul>

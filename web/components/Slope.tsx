@@ -118,7 +118,7 @@ export function Slope({
       </ul>
 
       <p className="m-0 max-w-2xl text-xs text-ink-40">
-        One 0–100% scale for every row, ticked at 0, 50 and 100. Fraction metrics only — counts,
+        One 0–100% scale for every row, ticked at 0, 50 and 100. Fraction metrics only: counts,
         costs and latencies share no scale with a recall rate. A filled dot marks a difference past
         the fixed &plusmn;0.02 cutoff, which is a chosen threshold, not a significance test.
         {note !== undefined ? ` ${note}` : ''}

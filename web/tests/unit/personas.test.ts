@@ -48,7 +48,7 @@ describe('the persona display table', () => {
     // A key that equals its own display name is fine (ray -> Ray); a key
     // leaking into the interface where a name was expected is not.
     expect(personaName('dilshod')).toBe('Daniel')
-    expect(personaLabel('dilshod')).toBe('Daniel — Tashkent')
+    expect(personaLabel('dilshod')).toBe('Daniel, Tashkent')
   })
 
   it('falls back to the key rather than inventing a name', () => {

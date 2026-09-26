@@ -92,7 +92,7 @@ export function assessCompatibility(a: Artifact, b: Artifact): Compatibility {
     issues.push({
       field: 'protocol',
       severity: 'caveat',
-      message: `${which} recorded a protocol identifier — the harness only began emitting one after these scorecards were written. Protocol equality therefore cannot be verified from the artifacts, only assumed from the runner name.`,
+      message: `${which} recorded a protocol identifier. The harness only began emitting one after these scorecards were written. Protocol equality therefore cannot be verified from the artifacts, only assumed from the runner name.`,
     })
   } else if (pa.protocol !== pb.protocol) {
     issues.push({

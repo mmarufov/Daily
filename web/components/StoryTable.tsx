@@ -99,7 +99,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
               aria-current={selected ? 'true' : undefined}
             >
               <td className="py-2.5 pr-3 tabular-nums text-ink-60">
-                {story.rank === null ? '—' : story.rank}
+                {story.rank === null ? <span className="text-unknown">unknown</span> : story.rank}
               </td>
               <th scope="row" className="py-2.5 pr-3 text-left font-normal">
                 <span className="flex items-baseline gap-2">
@@ -110,6 +110,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
                   <Link
                     href={explorerHref(state, { story: story.id })}
                     className="headline text-sm text-ink no-underline hover:text-signal"
+                    data-verbatim
                   >
                     {story.title ?? story.id}
                   </Link>
@@ -125,7 +126,11 @@ export function StoryTable({ persona, state }: StoryTableProps) {
                 ) : null}
               </td>
               <td className="py-2.5 text-right tabular-nums text-ink-60">
-                {story.score === null ? '—' : story.score.toFixed(3)}
+                {story.score === null ? (
+                  <span className="text-unknown">unknown</span>
+                ) : (
+                  story.score.toFixed(3)
+                )}
               </td>
             </tr>
           )
@@ -147,7 +152,9 @@ export function StoryDetail({
       aria-label={`Recorded trace for ${story.title ?? story.id}`}
       className="flex flex-col gap-4 border border-ink bg-paper-secondary p-4"
     >
-      <h3 className="headline m-0 text-lg">{story.title ?? story.id}</h3>
+      <h3 className="headline m-0 text-lg" data-verbatim>
+        {story.title ?? story.id}
+      </h3>
 
       <TraceRibbon story={story} persona={persona} />
 
@@ -172,7 +179,7 @@ export function StoryDetail({
             ) : null}
           </p>
           <p className="m-0 text-xs text-ink-60">
-            Evidence of what the pipeline logged, not proof the explanation is correct — on the
+            Evidence of what the pipeline logged, not proof the explanation is correct. On the
             production scorer it is known to be misattributed.{' '}
             <Link href="/engineering" className="link">
               Why

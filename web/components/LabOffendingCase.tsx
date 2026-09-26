@@ -48,7 +48,7 @@ export function OffendingCase({ data }: { data: OffendingCase }) {
               <li key={a.id} className="grid grid-cols-[2rem_1fr] gap-2 border-t border-rule pt-2">
                 <span className="band-index">{String(a.position).padStart(2, '0')}</span>
                 <span className="text-xs text-ink">
-                  {a.title}
+                  <span data-verbatim>{a.title}</span>
                   <span className="block pt-0.5 text-ink-40">{a.source}</span>
                 </span>
               </li>

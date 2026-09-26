@@ -38,7 +38,7 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
         <h3 className="label m-0 text-ink-40">Candidates surviving each stage</h3>
         <p className="m-0 max-w-2xl text-xs text-ink-60">
           The harness records each article once, at the furthest stage it reached, so survivors at
-          a stage are that tally plus every later one — reading the raw tallies as a funnel would
+          a stage are that tally plus every later one. Reading the raw tallies as a funnel would
           show it growing.
           {persona === undefined ? (
             <> Totals are persona/article pairs over {artifact.personas.length} fixtures, not distinct articles.</>
@@ -96,10 +96,14 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
                     {step.survivors.toLocaleString()}
                   </td>
                   <td className="py-2.5 pr-3 text-right tabular-nums text-ink-60">
-                    {step.lostEnteringStage === 0 ? '—' : step.lostEnteringStage.toLocaleString()}
+                    {step.lostEnteringStage.toLocaleString()}
                   </td>
                   <td className="py-2.5 pr-3 text-right tabular-nums text-ink-60">
-                    {step.passRate === null ? '—' : `${(step.passRate * 100).toFixed(1)}%`}
+                    {step.passRate === null ? (
+                      <span className="text-unknown">unknown</span>
+                    ) : (
+                      `${(step.passRate * 100).toFixed(1)}%`
+                    )}
                   </td>
                   <td className="py-2.5">
                     <span

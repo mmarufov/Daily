@@ -101,7 +101,11 @@ export function MetricTable({ primary, comparison, showDeltas, personaKey }: Met
               ) : null}
               {personaKey === undefined ? (
                 <td className="py-2.5 text-right text-xs tabular-nums text-ink-60">
-                  {weakest === null ? '—' : `${weakest.key} ${formatValue(weakest.value, def.kind)}`}
+                  {weakest === null ? (
+                    <span className="text-unknown">unknown</span>
+                  ) : (
+                    `${weakest.key} ${formatValue(weakest.value, def.kind)}`
+                  )}
                 </td>
               ) : null}
             </tr>
