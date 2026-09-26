@@ -72,3 +72,51 @@ test('the hero ground stays inside the hero', async ({ page }) => {
   expect(inset!.left).toBeGreaterThanOrEqual(0)
   expect(inset!.right).toBeGreaterThanOrEqual(0)
 })
+
+/**
+ * The tab was blank and every link to the site previewed as a grey box --
+ * including on a job application. None of it is visible from inside the app,
+ * so nothing would have reported it broken a second time either.
+ */
+test.describe('identity', () => {
+  test('the tab has an icon and links preview with an image', async ({ page }) => {
+    await page.goto('/')
+
+    // A vector icon, plus the raster fallback for browsers that ignore it.
+    await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveCount(1)
+    await expect(page.locator('link[rel="icon"][type="image/png"]')).toHaveCount(1)
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1)
+
+    // An og:image with no dimensions is rendered small or dropped outright.
+    await expect(page.locator('meta[property="og:image"]')).toHaveCount(1)
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute(
+      'content',
+      '1200',
+    )
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary_large_image',
+    )
+
+    // Every referenced asset must actually resolve -- a 404 here is invisible
+    // in the browser and fatal to the preview.
+    for (const sel of [
+      'link[rel="icon"][type="image/svg+xml"]',
+      'link[rel="icon"][type="image/png"]',
+      'link[rel="apple-touch-icon"]',
+    ]) {
+      const href = await page.locator(sel).getAttribute('href')
+      expect(href, sel).not.toBeNull()
+      const res = await page.request.get(href as string)
+      expect(res.status(), `${sel} -> ${href}`).toBe(200)
+    }
+    // og:image is absolute, pinned to the production origin by metadataBase --
+    // which is what a scraper needs and what makes it useless to fetch here.
+    // Check the path against the site under test, so the assertion is about
+    // this build rather than about whatever is currently deployed.
+    const og = await page.locator('meta[property="og:image"]').getAttribute('content')
+    expect(og, 'og:image must be absolute or scrapers drop it').toMatch(/^https:\/\/marufov\.com\//)
+    const { pathname, search } = new URL(og as string)
+    expect((await page.request.get(`${pathname}${search}`)).status()).toBe(200)
+  })
+})

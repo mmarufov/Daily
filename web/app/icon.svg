@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Daily">
+  <!--
+    A D with a band cut out of it.
+
+    The mark had to survive 16px, which is the only size most people ever see
+    it at. The sieve -- 1,362 cells, most of them dark -- is the distinctive
+    figure and it was the first thing tried, but a grid of cells at 16px is
+    grey mush at every density down to 3x3; the gaps alias away. It lives on
+    the link preview instead, where it has 1200x630 and renders properly.
+
+    So: the letter, with the product's one idea done to it. The cut sits below
+    centre on purpose -- centred, it reads as a prohibition sign.
+  -->
+  <rect width="32" height="32" fill="#161513"/>
+  <path d="M6 4 H15 A12 12 0 0 1 15 28 H6 Z" fill="#f4f1ea"/>
+  <path d="M11 9 H15 A7 7 0 0 1 15 23 H11 Z" fill="#161513"/>
+  <rect x="0" y="18" width="32" height="3" fill="#161513"/>
+</svg>
