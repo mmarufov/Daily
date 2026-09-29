@@ -128,6 +128,23 @@ jobs:
               assert selected, f"No S8 tests executed for {module}"
               assert not any(case.find("skipped") is not None for case in selected), f"Skipped tests in {module}"
           PY
+      # The judge-vs-human statistics (kappa, bootstrap CI, per-class P/R) and the
+      # blind-review ordering are pinned by a synthetic fixture with known answers.
+      - name: Run judge calibration contracts without skips
+        env:
+          EVAL_OFFLINE: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          import xml.etree.ElementTree as ET
+          subprocess.run([sys.executable, "-m", "pytest", "tests/test_eval_calibration.py", "-q",
+                          "--junitxml=calibration-contract-results.xml"], check=True)
+          cases = ET.parse("calibration-contract-results.xml").getroot().findall(".//testcase")
+          assert cases, "No calibration tests executed"
+          assert not any(case.find("skipped") is not None for case in cases), "Skipped calibration tests"
+          PY
       # Deterministic invariants do not certify model quality. Independent
       # heldout labels and immutable recipe-bound reports are separate release
       # gates; CI must never fabricate/freeze labels or use EVAL_GATE_STRICT skips.
