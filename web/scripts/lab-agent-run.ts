@@ -4,6 +4,15 @@
  *   npm run lab:agent            # investigate, propose, sandbox, evaluate
  *   npm run lab:agent -- --sandbox-only <file.py>   # boundary only, no model
  *
+ * Configuration, all optional:
+ *
+ *   LAB_MODEL          a gateway `provider/model` (default: DEFAULT_MODEL)
+ *   LAB_BUDGET         JSON overrides of the investigation budget (see
+ *                      investigator.ts); max_proposals is not overridable
+ *   LAB_BUDGET_LABEL   the name recorded for an overridden budget
+ *   LAB_CANDIDATE_ID   `agent-<id>`, so a series of runs does not overwrite
+ *                      one another's evidence (default: agent-001)
+ *
  * This is the script that turns three schemas into three exercised systems.
  * It writes the same evidence shape the Python orchestrator writes -- an
  * append-only event log, a record bundle -- so `export-lab.ts` picks the run
@@ -17,7 +26,7 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 import { investigate, type InvestigationTrace } from '../lib/lab/agent'
@@ -139,10 +148,17 @@ async function main(): Promise<number> {
     return runSandboxOnly(file, cases)
   }
 
-  const candidateId = 'agent-001'
+  const candidateId = process.env.LAB_CANDIDATE_ID ?? 'agent-001'
+  if (!/^agent-[a-z0-9-]{1,40}$/.test(candidateId)) {
+    throw new Error(`LAB_CANDIDATE_ID must match ^agent-[a-z0-9-]{1,40}$, got ${candidateId}`)
+  }
   const tag = 'sandbox'
   mkdirSync(RUNS, { recursive: true })
   const events = join(RUNS, `${candidateId}-${tag}.events.jsonl`)
+  if (existsSync(events)) {
+    // Evidence of a run already made is not overwritten by the next one.
+    throw new Error(`${candidateId} already has an event log; choose another LAB_CANDIDATE_ID`)
+  }
   writeFileSync(events, '')
   log(events, {
     type: 'created',
@@ -156,68 +172,104 @@ async function main(): Promise<number> {
   let bundleJson: string | null = null
   let failure: string | null = null
   let attempt = 0
+  let evaluationRequestedBy: 'agent' | 'harness' | null = null
+
+  /**
+   * One sandbox execution and the tally the agent is allowed to see.
+   *
+   * Shared by the agent's `request_evaluation` and by the harness, which runs
+   * an accepted proposal the agent never asked to have evaluated -- a
+   * human-authored candidate is always executed, and the same path means the
+   * same path. That is not a retry: it happens at most once per candidate,
+   * after the loop has ended, and nothing it produces reaches the model.
+   */
+  const runEvaluation = async (source: string, by: 'agent' | 'harness'): Promise<string> => {
+    attempt += 1
+    evaluationRequestedBy ??= by
+    const attemptId = `${EXPERIMENT.experiment_id}__${candidateId}#${String(attempt).padStart(2, '0')}`
+    log(events, { type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox' })
+    try {
+      const outcome = await executeInSandbox(source, (s) => console.log(`    sandbox: ${s}`))
+      execution = outcome.execution
+      bundleJson = outcome.bundleJson
+      failure = outcome.failure
+      // Isolation first, as orchestration.ts does: records from a microVM
+      // that did not isolate are evidence about nothing and are not kept.
+      const breached = outcome.execution.isolation.filter((p) => !p.held)
+      if (breached.length > 0) {
+        bundleJson = null
+        failure = `isolation probes failed: ${breached.map((p) => p.name).join(', ')}`
+      }
+      log(events, {
+        type: 'attempt-ended',
+        attempt_id: attemptId,
+        status: failure === null ? 'succeeded' : 'failed',
+        note:
+          (failure ??
+            `sandbox ${outcome.execution.sandbox_id} in ${outcome.execution.region}, exit 0 in ${outcome.execution.wall_clock_ms}ms`) +
+          (by === 'harness' ? '; run by the harness after the loop ended, because the agent did not request evaluation' : ''),
+      })
+      if (bundleJson !== null) {
+        log(events, { type: 'records-received', attempt_id: attemptId, n_records: cases.length })
+      }
+    } catch (error) {
+      failure = error instanceof Error ? error.message : String(error)
+      log(events, { type: 'attempt-ended', attempt_id: attemptId, status: 'failed', note: failure })
+    }
+
+    // What the agent is told: what the records showed. Not the verdict, not
+    // the criteria, not whether it passed. Returning the verdict would let a
+    // second proposal be tuned against the grader, and there is no second
+    // proposal precisely so that this stays true.
+    if (bundleJson === null) return `the run did not produce records: ${failure}`
+    const parsed = parseRecordBundle(JSON.parse(bundleJson))
+    if (!parsed.ok) return `the record bundle did not validate: ${parsed.issues.join('; ')}`
+    const tally = parsed.value.records.reduce<Record<string, number>>((acc, r) => {
+      acc[r.outcome] = (acc[r.outcome] ?? 0) + 1
+      return acc
+    }, {})
+    return `${parsed.value.records.length} records: ${Object.entries(tally)
+      .map(([k, v]) => `${v} ${k}`)
+      .join(', ')}.`
+  }
 
   const result = await investigate({
+    candidateId,
     cases,
     readSource,
     onProgress: (s) => console.log(`  ${s}`),
     onScopeDecision: ({ accepted, path, reason }) =>
       log(events, { type: 'scope-checked', allowed: accepted, detail: `${path} — ${reason}` }),
-    evaluateCandidate: async (id, source) => {
-      attempt += 1
-      const attemptId = `${EXPERIMENT.experiment_id}__${candidateId}#${String(attempt).padStart(2, '0')}`
-      log(events, { type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox' })
-      try {
-        const outcome = await executeInSandbox(source, (s) => console.log(`    sandbox: ${s}`))
-        execution = outcome.execution
-        bundleJson = outcome.bundleJson
-        failure = outcome.failure
-        log(events, {
-          type: 'attempt-ended',
-          attempt_id: attemptId,
-          status: outcome.failure === null ? 'succeeded' : 'failed',
-          note:
-            outcome.failure ??
-            `sandbox ${outcome.execution.sandbox_id} in ${outcome.execution.region}, exit 0 in ${outcome.execution.wall_clock_ms}ms`,
-        })
-      } catch (error) {
-        failure = error instanceof Error ? error.message : String(error)
-        log(events, { type: 'attempt-ended', attempt_id: attemptId, status: 'failed', note: failure })
-      }
-
-      // What the agent is told: what the records showed. Not the verdict, not
-      // the criteria, not whether it passed. Returning the verdict would let a
-      // second proposal be tuned against the grader, and there is no second
-      // proposal precisely so that this stays true.
-      if (bundleJson === null) return { summary: `the run did not produce records: ${failure}`, evaluation: null }
-      const parsed = parseRecordBundle(JSON.parse(bundleJson))
-      if (!parsed.ok) return { summary: `the record bundle did not validate: ${parsed.issues.join('; ')}`, evaluation: null }
-      const tally = parsed.value.records.reduce<Record<string, number>>((acc, r) => {
-        acc[r.outcome] = (acc[r.outcome] ?? 0) + 1
-        return acc
-      }, {})
-      return {
-        summary: `${parsed.value.records.length} records: ${Object.entries(tally)
-          .map(([k, v]) => `${v} ${k}`)
-          .join(', ')}.`,
-        evaluation: null,
-      }
-    },
+    evaluateCandidate: async (_id, source) => ({ summary: await runEvaluation(source, 'agent'), evaluation: null }),
   })
 
-  if (!result.ok) {
+  if (!result.ok && result.reason !== 'call-failed') {
+    // Refused before anything ran, so there is nothing to record and the
+    // empty log would otherwise be exported as a run that never happened.
+    rmSync(events, { force: true })
     console.error(`the investigation did not start: ${result.reason}`)
     for (const need of result.needs) console.error(`  needs ${need}`)
     return 2
   }
 
+  // A failed call still produced a trace, and spend: it is recorded like any
+  // other run rather than dropped, which would bias every rate computed from
+  // the committed set towards the runs that finished.
   const trace = result.trace
+  if (!result.ok) console.error(`the investigation stopped early: ${result.needs.join('; ')}`)
+
+  if (trace.proposal?.scope_accepted === true && attempt === 0) {
+    console.log('  the agent did not request evaluation; the harness runs the accepted proposal once')
+    await runEvaluation(trace.proposal.content, 'harness')
+  }
+
   console.log(
-    `\nmodel ${trace.model} · ${trace.tool_calls_made} tool calls · ` +
-      `${trace.usage.total_tokens ?? '?'} tokens · finish ${trace.finish_reason}`,
+    `\nmodel ${trace.model} · budget ${trace.budget_label} · ${trace.model_calls_made} model calls · ` +
+      `${trace.tool_calls_made} tool calls · ${trace.tokens_used} tokens · ` +
+      `$${trace.cost_usd ?? '?'} · stop ${trace.stop_cause}`,
   )
 
-  writeArtifacts({ candidateId, tag, events, trace, execution, bundleJson, failure })
+  writeArtifacts({ candidateId, tag, events, trace, execution, bundleJson, failure, evaluationRequestedBy })
   return 0
 }
 
@@ -327,10 +379,11 @@ interface WriteArgs {
   execution: SandboxExecution | null
   bundleJson: string | null
   failure: string | null
+  evaluationRequestedBy: 'agent' | 'harness' | null
 }
 
 function writeArtifacts(args: WriteArgs): void {
-  const { candidateId, tag, trace, execution, bundleJson } = args
+  const { candidateId, tag, trace, execution, bundleJson, evaluationRequestedBy } = args
   const base = join(RUNS, `${candidateId}-${tag}`)
 
   writeFileSync(`${base}.trace.json`, `${JSON.stringify(trace, null, 1)}\n`)
@@ -345,40 +398,76 @@ function writeArtifacts(args: WriteArgs): void {
   }
 
   const proposal = trace.proposal
-  if (proposal !== null) {
-    writeFileSync(
-      `${base}.investigation.json`,
-      `${JSON.stringify(
-        {
-          model: trace.model,
-          gateway: trace.gateway,
-          started_at: trace.started_at,
-          wall_clock_ms: trace.wall_clock_ms,
-          finish_reason: trace.finish_reason,
-          tool_calls_made: trace.tool_calls_made,
-          max_tool_calls: trace.budget.max_tool_calls,
-          budget_ceiling_usd: trace.budget_ceiling_usd,
-          usage: {
-            input_tokens: trace.usage.input_tokens ?? 'unknown',
-            output_tokens: trace.usage.output_tokens ?? 'unknown',
-            total_tokens: trace.usage.total_tokens ?? 'unknown',
-          },
-          hypothesis: proposal.hypothesis,
-          evidence: proposal.evidence,
-          scope_accepted: proposal.scope_accepted,
-          scope_reason: proposal.scope_reason,
-          trace_path: `backend/lab/runs/${candidateId}-${tag}.trace.json`,
-          n_trace_steps: trace.steps.length,
+  const sourcePath = `backend/lab/contract/candidates/${candidateId.replace(/-/g, '_')}.py`
+  // Written for every run, proposal or not: a run that ended without one is a
+  // result, and leaving it out of the committed set would count only the runs
+  // that got far enough to be graded.
+  writeFileSync(
+    `${base}.investigation.json`,
+    `${JSON.stringify(
+      {
+        model: trace.model,
+        gateway: trace.gateway,
+        gateway_auth: trace.gateway_auth,
+        started_at: trace.started_at,
+        wall_clock_ms: trace.wall_clock_ms,
+        finish_reason: trace.finish_reason,
+        stop_cause: trace.stop_cause,
+        tool_calls_made: trace.tool_calls_made,
+        max_tool_calls: trace.budget.max_tool_calls,
+        model_calls_made: trace.model_calls_made,
+        budget_label: trace.budget_label,
+        budget: trace.budget,
+        budget_ceiling_usd: trace.budget_ceiling_usd,
+        usage: {
+          input_tokens: trace.usage.input_tokens ?? 'unknown',
+          output_tokens: trace.usage.output_tokens ?? 'unknown',
+          total_tokens: trace.usage.total_tokens ?? 'unknown',
         },
-        null,
-        1,
-      )}\n`,
-    )
+        tokens_used: trace.tokens_used,
+        cost_usd: trace.cost_usd ?? 'unknown',
+        proposed: proposal !== null,
+        evaluation_requested_by: evaluationRequestedBy ?? 'unknown',
+        hypothesis: proposal?.hypothesis ?? 'unknown',
+        evidence: proposal?.evidence ?? [],
+        scope_accepted: proposal?.scope_accepted ?? false,
+        scope_reason: proposal?.scope_reason ?? 'no proposal was made',
+        trace_path: `backend/lab/runs/${candidateId}-${tag}.trace.json`,
+        n_trace_steps: trace.steps.length,
+      },
+      null,
+      1,
+    )}\n`,
+  )
+
+  // The descriptor the export requires of any candidate that is not a known
+  // implementation. The protocol is the one the records declare, read off the
+  // bundle rather than asked of the model.
+  let declared: string = 'unknown'
+  if (bundleJson !== null) {
+    const parsed = parseRecordBundle(JSON.parse(bundleJson))
+    if (parsed.ok) declared = parsed.value.declared_protocol
+  }
+  writeFileSync(
+    `${base}.candidate.json`,
+    `${JSON.stringify(
+      {
+        kind: 'agent-authored',
+        source_path: proposal !== null ? sourcePath : 'unknown',
+        declared_protocol: declared,
+        description: proposal?.hypothesis ?? 'The investigation ended without a proposal.',
+        transcribed_from: 'unknown',
+      },
+      null,
+      1,
+    )}\n`,
+  )
+
+  if (proposal !== null) {
     // The candidate itself is committed so the patch on the page is the bytes
     // that ran, not a re-rendering of them.
-    mkdirSync(join(LAB, 'contract'), { recursive: true })
     mkdirSync(join(LAB, 'contract', 'candidates'), { recursive: true })
-    writeFileSync(join(LAB, 'contract', 'candidates', `${candidateId.replace(/-/g, '_')}.py`), proposal.content)
+    writeFileSync(join(ROOT, sourcePath), proposal.content)
   }
 
   if (bundleJson !== null) {
@@ -394,7 +483,7 @@ function writeArtifacts(args: WriteArgs): void {
     }
   }
   console.log(`\nwrote evidence under backend/lab/runs/${candidateId}-${tag}.*`)
-  console.log(`spec ${specHash()} · run `)
+  console.log(`spec ${specHash()}`)
 }
 
 main()

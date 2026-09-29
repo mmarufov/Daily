@@ -20,7 +20,8 @@
    "sha256": "a8612a947c14df2cdc11c1d12c337ec54ff692610b57b8ff368252e915eef29e",
    "bytes": 38485,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826__clean",
@@ -36,7 +37,8 @@
    "sha256": "c2c4409c84eb87f7272802e129800920c6f6a2e91f9aa68507a2c4b4e8ae123a",
    "bytes": 39947,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826__clean",
@@ -52,7 +54,8 @@
    "sha256": "6b7cf4c9c244b30b443440d957dfafe6217126fc92fbc03062ef1449bc51f6a3",
    "bytes": 39177,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826__clean",
@@ -68,7 +71,8 @@
    "sha256": "88e420ca8e3cdffaf1b722b4d5431476e29d52c3b9aeb62da0b713b6cf0b0efb",
    "bytes": 39539,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__keyed-fallback-v1__sandbox",
@@ -84,7 +88,8 @@
    "sha256": "f0c756b47aeba93b4a4d964cc5155755d3086188ee716e38f0a4bf7c03c4c531",
    "bytes": 44953,
    "runner": "vercel-sandbox",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean",
@@ -100,7 +105,8 @@
    "sha256": "ed34d781e4102c89b238ce3a78a6a6b8bb00e1f8e47459285729f6dfc76b3596",
    "bytes": 41893,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__interrupted",
@@ -116,7 +122,8 @@
    "sha256": "38c58a9153d5234ed9270147116a93dab1d6c9957f6fa5bd5fbe679d88688be6",
    "bytes": 42487,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   },
   {
    "run_id": "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean",
@@ -132,7 +139,8 @@
    "sha256": "6f35605c02a85be10a379bad3615341a25f1173d00a5b569db83f9f994327ac1",
    "bytes": 34579,
    "runner": "local-known",
-   "investigated": false
+   "investigated": false,
+   "investigation": null
   }
  ],
  "notes": [

@@ -43,9 +43,10 @@ export const CandidateSchema = z.object({
   description: z.string(),
   /** Protocol the candidate declares. Checked against the cases, not trusted. */
   declared_protocol: z.union([z.enum(PROTOCOLS), z.literal(UNKNOWN)]),
+  /** `unknown` for an investigation that ended without proposing anything. */
   source_path: z.string(),
   source_sha256: z.string(),
-  source_bytes: z.number().int(),
+  source_bytes: unknownable(z.number().int()),
   /** Revision of this repository the source was taken from, where it has one. */
   transcribed_from: unknownable(z.string()),
   /**
@@ -65,7 +66,7 @@ export const CaseSuiteRefSchema = z.object({
 })
 
 export const UsageSchema = z.object({
-  /** Inference calls this run made. Zero for every run in the committed set. */
+  /** Inference calls this run made: the investigation's, when there was one. Grading makes none. */
   model_calls: z.number().int(),
   /** Actual provider spend for THIS run. */
   replay_spend_usd: z.number(),
@@ -131,14 +132,32 @@ export type SandboxExecutionRecord = z.infer<typeof SandboxExecutionSchema>
  * a human reader; letting it influence the verdict would be exactly the
  * self-assessment the whole boundary exists to prevent.
  */
+/** The budget a run was given, whether the default or a configured override. */
+export const InvestigationBudgetSchema = z.object({
+  max_proposals: z.number().int(),
+  max_tool_calls: z.number().int(),
+  max_model_calls: z.number().int(),
+  max_output_tokens: z.number().int(),
+  max_total_tokens: z.number().int(),
+  max_tool_result_chars: z.number().int(),
+  max_usd: z.number(),
+  wall_clock_seconds: z.number(),
+})
+
 export const InvestigationSchema = z.object({
   model: z.string(),
   gateway: z.string(),
+  gateway_auth: z.enum(['api-key', 'oidc']),
   started_at: z.string(),
   wall_clock_ms: z.number(),
   finish_reason: z.string(),
+  stop_cause: z.enum(['completed', 'step-limit', 'token-budget', 'wall-clock', 'call-error']),
   tool_calls_made: z.number().int(),
   max_tool_calls: z.number().int(),
+  model_calls_made: z.number().int(),
+  /** `default`, or the name given to a configured override. */
+  budget_label: z.string(),
+  budget: InvestigationBudgetSchema,
   budget_ceiling_usd: z.number(),
   /** As metered by the gateway, not estimated here. */
   usage: z.object({
@@ -146,6 +165,17 @@ export const InvestigationSchema = z.object({
     output_tokens: unknownable(z.number().int()),
     total_tokens: unknownable(z.number().int()),
   }),
+  /** Summed per model call from the usage each call reported. */
+  tokens_used: z.number().int(),
+  /** Summed from the gateway's per-call cost; `unknown` if any call lacked one. */
+  cost_usd: unknownable(z.number()),
+  proposed: z.boolean(),
+  /**
+   * Who asked for the sandbox run: the agent through `request_evaluation`, or
+   * the harness after the loop ended, for an accepted proposal the agent
+   * never submitted for evaluation.
+   */
+  evaluation_requested_by: z.union([z.enum(['agent', 'harness']), z.literal(UNKNOWN)]),
   hypothesis: z.string(),
   evidence: z.array(z.string()),
   scope_accepted: z.boolean(),
@@ -178,8 +208,11 @@ export const LabProvenanceSchema = z.object({
   execution_mode: z.enum(['offline-replay', 'live', UNKNOWN]),
   execution_mode_basis: z.string(),
   python: unknownable(z.string()),
-  /** Where the candidate executed, and the evidence for it. */
-  runner: z.enum(['local-known', 'vercel-sandbox']),
+  /**
+   * Where the candidate executed, and the evidence for it. `none` when there
+   * was no candidate to execute: an investigation that ended without one.
+   */
+  runner: z.enum(['local-known', 'vercel-sandbox', 'none']),
   sandbox: SandboxExecutionSchema.nullable(),
   investigation: InvestigationSchema.nullable(),
   case_suites: z.array(CaseSuiteRefSchema),
@@ -317,8 +350,15 @@ export const LabManifestEntrySchema = z.object({
    * hand-written honesty note goes stale exactly when it matters most --
    * silently, and in the direction of overclaiming.
    */
-  runner: z.enum(['local-known', 'vercel-sandbox']),
+  runner: z.enum(['local-known', 'vercel-sandbox', 'none']),
   investigated: z.boolean(),
+  /**
+   * For an investigated run: the model and the budget it ran under, so the
+   * index alone is enough to group runs into the cells of an experiment.
+   */
+  investigation: z
+    .object({ model: z.string(), budget_label: z.string(), budget: InvestigationBudgetSchema })
+    .nullable(),
 })
 
 export const LabManifestSchema = z.object({
