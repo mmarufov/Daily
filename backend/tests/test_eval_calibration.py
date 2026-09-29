@@ -254,6 +254,74 @@ class TestPipeline(unittest.TestCase):
         notes = cal._read_jsonl(self.out / "notes.jsonl")
         self.assertTrue(all(n["post_reveal"] for n in notes))
 
+    def test_protocol_order_is_a_seeded_shuffle_not_persona_blocks(self):
+        proto = json.loads((self.out / "protocol.json").read_text())
+        sample = cal._read_jsonl(self.out / "sample.jsonl")
+        ids = [s["sample_id"] for s in sample]
+        self.assertEqual(sorted(proto["order"]), sorted(ids))
+        self.assertNotEqual(proto["order"], ids)
+        again = cal.make_protocol(ids, proto["sample_sha256"], seed=5)
+        self.assertEqual(again, proto)
+        self.assertNotEqual(cal.make_protocol(ids, proto["sample_sha256"], seed=6)["order"], proto["order"])
+        rp = proto["repass"]
+        self.assertEqual(rp["n"], cal.REPASS_N)
+        self.assertEqual(sorted(rp["order"]), rp["sample_ids"])
+        self.assertLessEqual(set(rp["sample_ids"]), set(ids))
+        # The review walks the protocol order.
+        log = []
+        cal.review(self.out, "synthetic-fixture", input_fn=lambda _: "q", emit=log.append)
+        shown = "\n".join(log)
+        self.assertIn(f"[1/100]  {proto['order'][0]}", shown)
+
+    def test_protocol_cannot_be_rewritten_after_answers(self):
+        self.run_review(limit=1)
+        with self.assertRaisesRegex(FileExistsError, "must precede"):
+            cal.write_protocol(self.out, seed=5)
+        proto = self.out / "protocol.json"
+        proto.write_text(proto.read_text().replace('"sample_sha256": "', '"sample_sha256": "x'))
+        with self.assertRaisesRegex(ValueError, "different sample"):
+            cal.score(self.out, min_reviewed=0, write=False)
+
+    def test_repass_is_gated_blind_and_scored(self):
+        from datetime import datetime, timedelta, timezone
+        with self.assertRaisesRegex(RuntimeError, "no first answer"):
+            cal.review(self.out, "synthetic-fixture", input_fn=lambda _: "q", emit=lambda _: None, repass=True)
+        self.run_review()
+        soon = datetime.now(timezone.utc) + timedelta(hours=1)
+        with self.assertRaisesRegex(RuntimeError, "opens 12h after"):
+            cal.review(self.out, "synthetic-fixture", input_fn=lambda _: "q", emit=lambda _: None,
+                       repass=True, now=lambda: soon)
+        proto = json.loads((self.out / "protocol.json").read_text())
+        flip = set(proto["repass"]["order"][:4])     # answered differently the second time
+        other = {"must_see": "f", "fine": "n", "never": "m"}
+        log: list[str] = []
+
+        def answer(prompt):
+            aid = "\n".join(log).rsplit("ARTICLE id=", 1)[1].split("\n", 1)[0]
+            sid = next(s["sample_id"] for s in cal._read_jsonl(self.out / "sample.jsonl") if s["article_id"] == aid)
+            return other[self.truth[aid]] if sid in flip else KEY[self.truth[aid]]
+
+        later = datetime.now(timezone.utc) + timedelta(hours=13)
+        cal.review(self.out, "synthetic-fixture", input_fn=answer, emit=log.append, repass=True, now=lambda: later)
+        shown = "\n".join(log)
+        for leak in ("judge said", "judge why", "JUDGE-RATIONALE", "AGREE", "recorded "):
+            self.assertNotIn(leak, shown)
+        second = cal._read_jsonl(self.out / "repass.jsonl")
+        self.assertEqual([a["sample_id"] for a in second], proto["repass"]["order"])
+        self.assertTrue(all(a["first_answer_hidden"] and a["hours_since_first"] >= 12 for a in second))
+        rep = cal.score(self.out, min_reviewed=100, n_boot=200)
+        ir = rep["intra_rater"]
+        self.assertEqual((ir["n_pairs"], ir["n_subset"]), (40, 40))
+        self.assertAlmostEqual(ir["agreement"], 36 / 40)
+        self.assertLess(ir["kappa_ci95"][0], ir["kappa"])
+        self.assertIn("## Intra-rater", (self.out / "report.md").read_text())
+        # Nothing outside the subset can be scored as a re-pass.
+        with (self.out / "repass.jsonl").open("a") as f:
+            outside = next(s for s in proto["order"] if s not in proto["repass"]["sample_ids"])
+            f.write(json.dumps({"sample_id": outside, "human_label": "fine"}) + "\n")
+        with self.assertRaisesRegex(ValueError, "not in the pre-registered subset"):
+            cal.score(self.out, min_reviewed=100, n_boot=0, write=False)
+
     def test_tampered_sample_is_refused(self):
         path = self.out / "sample.jsonl"
         path.write_text(path.read_text().replace("title a001", "title edited"))

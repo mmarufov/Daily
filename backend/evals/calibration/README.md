@@ -4,14 +4,20 @@ Human adjudication of the two-pass label judge (`evals/label.py` bootstrap), sco
 by `evals/calibration.py`. Each dated directory is one fixed sample.
 
 `2026-09-29/` was drawn and committed before any human answer existed, so the
-sample cannot have been chosen after seeing results. `adjudications.jsonl` is
-the only file a human writes. Everything in `report.*` is recomputed from it.
+sample cannot have been chosen after seeing results. `protocol.json` was
+committed after the draw and before the first answer: it fixes the order rows
+are shown in (a seeded full shuffle, so reviewer fatigue is not confounded with
+persona) and a seeded random 40-row subset for an intra-rater re-pass.
+`adjudications.jsonl` and `repass.jsonl` are the only files a human writes.
+Everything in `report.*` is recomputed from them.
 
 ```sh
 cd backend
-python -m evals.calibration sample --out evals/calibration/2026-09-29 --seed 20260929   # reproduces the draw byte for byte
-python -m evals.calibration review --out evals/calibration/2026-09-29 --reviewer <name> # interactive terminal only
-python -m evals.calibration score  --out evals/calibration/2026-09-29                   # refuses below --min-reviewed (100)
+python -m evals.calibration sample   --out evals/calibration/2026-09-29 --seed 20260929   # reproduces the draw byte for byte
+python -m evals.calibration protocol --out evals/calibration/2026-09-29 --seed 20260929   # reproduces protocol.json; refuses once answers exist
+python -m evals.calibration review   --out evals/calibration/2026-09-29 --reviewer <name> # interactive terminal only
+python -m evals.calibration review   --out evals/calibration/2026-09-29 --reviewer <name> --repass  # 12h+ later, nothing revealed
+python -m evals.calibration score    --out evals/calibration/2026-09-29                   # refuses below --min-reviewed (100)
 ```
 
 Only rows whose exact judge prompt can be rebuilt and matched to a cached

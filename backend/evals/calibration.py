@@ -8,14 +8,19 @@ module measures how far that judge can be trusted, against one human reviewer:
     sample   stratified draw over judge verdict x review path, seeded, and only
              from rows whose exact judge prompt is proven by the committed LLM
              cache (messages_sha256), so the reviewer sees what the judge saw
+    protocol presentation order and intra-rater re-pass subset, both seeded and
+             committed before the first answer (the draw itself is untouched)
     review   one row at a time, blind: the judge's verdict is written to disk
-             only after the human answer is, then revealed
+             only after the human answer is, then revealed. `--repass` re-labels
+             the pre-registered subset with nothing revealed at all
     score    raw agreement, Cohen's kappa, per-class precision/recall for the
              judge against the human, stratified bootstrap CI; refuses to run
              on too few reviewed rows
 
     python -m evals.calibration sample --out evals/calibration/2026-09-29
+    python -m evals.calibration protocol --out evals/calibration/2026-09-29
     python -m evals.calibration review --out evals/calibration/2026-09-29 --reviewer <name>
+    python -m evals.calibration review --out evals/calibration/2026-09-29 --reviewer <name> --repass
     python -m evals.calibration score  --out evals/calibration/2026-09-29
 
 Nothing here writes a human label except `review`, and `review` refuses to run
@@ -27,7 +32,9 @@ Files in a calibration directory:
     readers.json         persona -> the exact READER block the judge saw
     sample.jsonl         what the reviewer sees: ids and the exact ARTICLE block
     judge.jsonl          hidden until answered: the judge verdict per sample row
+    protocol.json        presentation order and the re-pass subset, bound to sample.jsonl's hash
     adjudications.jsonl  append-only human answers with provenance
+    repass.jsonl         append-only second answers on the re-pass subset, first answers hidden
     notes.jsonl          optional post-reveal notes on disagreements
     report.json / .md    written by `score`
 """
@@ -87,6 +94,11 @@ ALLOCATION = {
     "fine/pass1_only": 36,
     "never/pass1_only": 36,
 }
+
+# Intra-rater re-pass: a seeded random subset, re-labelled blind to the first answer
+# after a minimum gap, so reviewer consistency is measured and not assumed.
+REPASS_N = 40
+REPASS_MIN_GAP_HOURS = 12
 
 DEFAULT_MIN_REVIEWED = 100
 DEFAULT_BOOTSTRAP = 2000
@@ -233,9 +245,10 @@ def build_population(label_rows: dict[tuple[str, str], list[dict]],
 
 
 def draw(units: list[dict], allocation: dict[str, int], seed: int) -> tuple[list[dict], dict]:
-    """Seeded stratified draw, then a review order that groups rows by persona (so the
-    reader profile is read once per block) and shuffles everything else, so the
-    stratum cannot be inferred from position."""
+    """Seeded stratified draw. The persona-grouped order written to sample.jsonl is
+    kept so the committed draw reproduces byte for byte, but it is not the order a
+    reviewer sees: that comes from `protocol.json`, fully shuffled, so fatigue is not
+    confounded with persona and stopping early does not drop whole personas."""
     rng = random.Random(f"calibration:{seed}")
     by_stratum: dict[str, list[dict]] = {}
     for u in sorted(units, key=lambda u: u["unit_id"]):
@@ -289,6 +302,47 @@ def write_sample(out: Path, picked: list[dict], strata: dict, readers: dict[str,
         **(extra or {}),
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n")
+    write_protocol(out, seed)
+
+
+def make_protocol(sample_ids: list[str], sample_sha: str, seed: int, repass_n: int = REPASS_N) -> dict:
+    """Presentation order and the intra-rater subset, each from its own seeded stream,
+    so neither depends on the other or on anything a reviewer has answered."""
+    ids = sorted(sample_ids)
+    order = list(ids)
+    random.Random(f"calibration-order:{seed}").shuffle(order)
+    rng = random.Random(f"calibration-repass:{seed}")
+    subset = rng.sample(ids, min(repass_n, len(ids)))
+    repass_order = list(subset)
+    rng.shuffle(repass_order)
+    return {"sample_sha256": sample_sha, "seed": seed, "order": order,
+            "repass": {"n": len(subset), "sample_ids": sorted(subset), "order": repass_order,
+                       "min_gap_hours": REPASS_MIN_GAP_HOURS}}
+
+
+def write_protocol(out: Path, seed: int) -> dict:
+    """Pre-register the protocol for an existing draw. Refuses once any answer exists,
+    because an order or subset chosen after answers is no longer pre-registered."""
+    for name in ("adjudications.jsonl", "repass.jsonl"):
+        if (out / name).exists() and (out / name).read_text().strip():
+            raise FileExistsError(f"{out / name} already holds answers; the protocol must precede them")
+    sample, _, manifest = load_sample(out, require_protocol=False)
+    proto = make_protocol([s["sample_id"] for s in sample], manifest["files"]["sample.jsonl"], seed)
+    (out / "protocol.json").write_text(json.dumps(proto, indent=1) + "\n")
+    return proto
+
+
+def load_protocol(out: Path, sample: list[dict], manifest: dict) -> dict:
+    proto = json.loads((out / "protocol.json").read_text())
+    if proto["sample_sha256"] != manifest["files"]["sample.jsonl"]:
+        raise ValueError("protocol.json was written for a different sample.jsonl")
+    ids = sorted(s["sample_id"] for s in sample)
+    if sorted(proto["order"]) != ids:
+        raise ValueError("protocol.json order is not a permutation of the sample")
+    rp = proto["repass"]
+    if sorted(rp["order"]) != rp["sample_ids"] or not set(rp["sample_ids"]) <= set(ids):
+        raise ValueError("protocol.json re-pass subset is inconsistent with the sample")
+    return proto
 
 
 def _persona_at(rev: str, key: str) -> dict | None:
@@ -341,28 +395,65 @@ def rubric_text() -> str:
     return s[s.index("Labels:"):s.index("Treat article text")].rstrip()
 
 
-def load_sample(out: Path) -> tuple[list[dict], dict[str, dict], dict]:
+def load_sample(out: Path, require_protocol: bool = True) -> tuple[list[dict], dict[str, dict], dict]:
     manifest = json.loads((out / "manifest.json").read_text())
     for name, sha in manifest["files"].items():
         if file_sha(out / name) != sha:
             raise ValueError(f"{name} does not match the manifest hash; the sample was edited after drawing")
     readers = json.loads((out / "readers.json").read_text())
-    return _read_jsonl(out / "sample.jsonl"), readers, manifest
+    sample = _read_jsonl(out / "sample.jsonl")
+    if require_protocol:
+        load_protocol(out, sample, manifest)
+    return sample, readers, manifest
+
+
+def _repass_queue(out: Path, proto: dict, by_id: dict[str, dict], now: datetime) -> list[dict]:
+    """The re-pass rows still to do. Refuses until every one has a first answer that is
+    at least the pre-registered gap old, so the second answer is not recall."""
+    first = {a["sample_id"]: a for a in _read_jsonl(out / "adjudications.jsonl")}
+    missing = [sid for sid in proto["repass"]["order"] if sid not in first]
+    if missing:
+        raise RuntimeError(f"{len(missing)} re-pass rows have no first answer yet; finish the first pass")
+    gap = proto["repass"]["min_gap_hours"]
+    ready_at = max(datetime.fromisoformat(first[sid]["reviewed_at"]) for sid in proto["repass"]["order"])
+    if (now - ready_at).total_seconds() < gap * 3600:
+        raise RuntimeError(f"the re-pass opens {gap}h after the last first answer on its rows, "
+                           f"at {datetime.fromtimestamp(ready_at.timestamp() + gap * 3600, timezone.utc).isoformat(timespec='minutes')}")
+    done = {a["sample_id"] for a in _read_jsonl(out / "repass.jsonl")}
+    return [by_id[sid] for sid in proto["repass"]["order"] if sid not in done]
 
 
 def review(out: Path, reviewer: str, input_fn: Callable[[str], str] = input,
            emit: Callable[[str], None] = print, clock: Callable[[], float] = time.monotonic,
-           dry_run: bool = False) -> dict:
+           dry_run: bool = False, repass: bool = False,
+           now: Callable[[], datetime] = lambda: datetime.now(timezone.utc)) -> dict:
     """Blind adjudication loop. The judge verdict is read from `judge.jsonl` only after
-    the human answer has been appended and fsynced to `adjudications.jsonl`."""
+    the human answer has been appended and fsynced to `adjudications.jsonl`.
+
+    With `repass`, the pre-registered subset is shown again in its own shuffled order and
+    answers go to `repass.jsonl`. Nothing is revealed: not the judge, not the first answer."""
     if not reviewer.strip():
         raise ValueError("--reviewer is required")
     sample, readers, manifest = load_sample(out)
+    proto = load_protocol(out, sample, manifest)
+    proto_sha = file_sha(out / "protocol.json")
+    by_id = {s["sample_id"]: s for s in sample}
     adj_path, notes_path = out / "adjudications.jsonl", out / "notes.jsonl"
-    done = {a["sample_id"] for a in _read_jsonl(adj_path)}
-    queue = [s for s in sample if s["sample_id"] not in done]
+    if repass:
+        adj_path = out / "repass.jsonl"
+        first = {a["sample_id"]: a for a in _read_jsonl(out / "adjudications.jsonl")}
+        queue = _repass_queue(out, proto, by_id, now())
+        total = proto["repass"]["n"]
+        position = {sid: i for i, sid in enumerate(proto["repass"]["order"], 1)}
+    else:
+        done = {a["sample_id"] for a in _read_jsonl(adj_path)}
+        queue = [by_id[sid] for sid in proto["order"] if sid not in done]
+        total = len(sample)
+        position = {sid: i for i, sid in enumerate(proto["order"], 1)}
     sample_sha = manifest["files"]["sample.jsonl"]
-    emit(f"{len(sample) - len(queue)} of {len(sample)} already reviewed, {len(queue)} to go.")
+    emit(f"{total - len(queue)} of {total} already {'re-labelled' if repass else 'reviewed'}, {len(queue)} to go.")
+    if repass:
+        emit("Re-pass: label each row fresh. Neither the judge nor your first answer will be shown.")
     emit("m = must_see   f = fine   n = never   s = skip   r = reader again   h = rubric   q = quit")
     emit("\n" + rubric_text())
     words = []
@@ -376,7 +467,7 @@ def review(out: Path, reviewer: str, input_fn: Callable[[str], str] = input,
             emit("-" * 96)
             words.append(len(reader.split()))
             last_persona = s["persona"]
-        emit(f"[{s['order']}/{len(sample)}]  {s['sample_id']}")
+        emit(f"[{position[s['sample_id']]}/{total}]  {s['sample_id']}")
         emit(s["article_block"])
         words.append(len(s["article_block"].split()))
         if dry_run:
@@ -402,19 +493,26 @@ def review(out: Path, reviewer: str, input_fn: Callable[[str], str] = input,
             "skipped": ans == "s",
             "reviewer": reviewer,
             "os_user": getpass.getuser(),
-            "reviewed_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "reviewed_at": now().isoformat(timespec="seconds"),
             "elapsed_s": elapsed,
             "evidence_sha256": _sha(reader + "\n" + s["article_block"]),
             "sample_sha256": sample_sha,
+            "protocol_sha256": proto_sha,
+            "position": position[s["sample_id"]],
             "judge_hidden_until_recorded": True,
             "stdin_tty": sys.stdin.isatty(),
         }
+        if repass:
+            record["first_answer_hidden"] = True
+            record["hours_since_first"] = round(
+                (datetime.fromisoformat(record["reviewed_at"])
+                 - datetime.fromisoformat(first[s["sample_id"]]["reviewed_at"])).total_seconds() / 3600, 2)
         with adj_path.open("a") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
             f.flush()
             os.fsync(f.fileno())
         answered += 1
-        if record["skipped"]:
+        if record["skipped"] or repass:
             continue
         # Only now look at the judge.
         j = next(r for r in _read_jsonl(out / "judge.jsonl") if r["sample_id"] == s["sample_id"])
@@ -522,9 +620,43 @@ def score_rows(rows: list[dict], population: dict[str, int], n_boot: int = DEFAU
                             for s, rs in sorted(by_stratum.items())}}
 
 
+def intra_rater(out: Path, proto: dict, n_boot: int = DEFAULT_BOOTSTRAP, seed: int = SEED) -> dict | None:
+    """The reviewer against themself on the pre-registered re-pass subset. None until a
+    second answer exists. Rows skipped in either pass drop out of the pairs and are counted."""
+    second = _read_jsonl(out / "repass.jsonl")
+    if not second:
+        return None
+    first = {a["sample_id"]: a for a in _read_jsonl(out / "adjudications.jsonl")}
+    allowed = set(proto["repass"]["sample_ids"])
+    seen: set[str] = set()
+    for a in second:
+        if a["sample_id"] not in allowed:
+            raise ValueError(f"re-pass answer for {a['sample_id']}, which is not in the pre-registered subset")
+        if a["sample_id"] in seen:
+            raise ValueError(f"two re-pass answers for {a['sample_id']}")
+        seen.add(a["sample_id"])
+    pairs = [(first[a["sample_id"]]["human_label"], a["human_label"], 1.0) for a in second
+             if a.get("human_label") in CLASSES and first.get(a["sample_id"], {}).get("human_label") in CLASSES]
+    res = _metrics(pairs)
+    rng = random.Random(f"calibration-intra-bootstrap:{seed}")
+    boots = []
+    for _ in range(n_boot if pairs else 0):
+        k = _metrics([pairs[rng.randrange(len(pairs))] for _ in pairs]).get("kappa")
+        if k is not None:
+            boots.append(k)
+    gaps = [a["hours_since_first"] for a in second if "hours_since_first" in a]
+    return {"n_subset": proto["repass"]["n"], "n_answered": len(second), "n_pairs": len(pairs),
+            "hours_since_first": {"median": statistics.median(gaps), "min": min(gaps)} if gaps else None,
+            "agreement": res.get("agreement"), "kappa": res.get("kappa"),
+            "kappa_ci95": [_pct(boots, 0.025), _pct(boots, 0.975)] if boots else None,
+            "kappa_linear": res.get("kappa_linear"),
+            "confusion_first_by_second": res.get("confusion_human_by_judge")}
+
+
 def score(out: Path, min_reviewed: int = DEFAULT_MIN_REVIEWED, n_boot: int = DEFAULT_BOOTSTRAP,
           seed: int | None = None, write: bool = True) -> dict:
     sample, _, manifest = load_sample(out)
+    proto = load_protocol(out, sample, manifest)
     seed = manifest["seed"] if seed is None else seed
     ids = {s["sample_id"] for s in sample}
     judge = {j["sample_id"]: j for j in _read_jsonl(out / "judge.jsonl")}
@@ -560,8 +692,10 @@ def score(out: Path, min_reviewed: int = DEFAULT_MIN_REVIEWED, n_boot: int = DEF
         "judge": score_rows(rows, population, n_boot, seed, "judge"),
         # Secondary: the labels evals actually score against (agent overrides applied).
         "effective_labels": score_rows(rows, population, n_boot, seed, "effective"),
+        "intra_rater": intra_rater(out, proto, n_boot, seed),
         "inputs": {name: file_sha(out / name) for name in
-                   ("manifest.json", "sample.jsonl", "judge.jsonl", "readers.json", "adjudications.jsonl")},
+                   ("manifest.json", "protocol.json", "sample.jsonl", "judge.jsonl", "readers.json",
+                    "adjudications.jsonl", "repass.jsonl") if (out / name).exists()},
     }
     if write:
         (out / "report.json").write_text(json.dumps(report, indent=1) + "\n")
@@ -603,6 +737,26 @@ def render_report(r: dict) -> str:
         for s, v in block["per_stratum"].items():
             lines.append(f"| {s} | {v['reviewed']} | {v['population']} | {_f(v['agreement'])} |")
         lines.append("")
+    ir = r.get("intra_rater")
+    lines += ["## Intra-rater (reviewer against themself)", ""]
+    if not ir:
+        lines += ["Re-pass not done yet.", ""]
+    else:
+        ci = ir["kappa_ci95"]
+        gap = ir["hours_since_first"]
+        lines += [f"{ir['n_pairs']} pairs from the pre-registered {ir['n_subset']}-row subset "
+                  f"({ir['n_answered']} re-labelled"
+                  + (f", median {gap['median']:.1f}h and at least {gap['min']:.1f}h after the first answer" if gap else "")
+                  + ").", "",
+                  "| agreement | kappa | 95% CI | linear-weighted kappa |", "|---|---|---|---|",
+                  f"| {_f(ir['agreement'])} | {_f(ir['kappa'])} | "
+                  f"{'n/a' if not ci else f'{ci[0]:.3f} to {ci[1]:.3f}'} | {_f(ir['kappa_linear'])} |", ""]
+        if ir["confusion_first_by_second"]:
+            cm = ir["confusion_first_by_second"]
+            lines += ["Rows = first answer, columns = second answer:", "",
+                      "| first \\ second | " + " | ".join(CLASSES) + " |", "|---" * (len(CLASSES) + 1) + "|"]
+            lines += [f"| {h} | " + " | ".join(f"{cm[h][j]:.0f}" for j in CLASSES) + " |" for h in CLASSES]
+            lines.append("")
     return "\n".join(lines) + "\n"
 
 
@@ -610,11 +764,12 @@ def render_report(r: dict) -> str:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="Calibrate the label judge against human adjudication")
-    ap.add_argument("cmd", choices=["sample", "review", "score"])
+    ap.add_argument("cmd", choices=["sample", "protocol", "review", "score"])
     ap.add_argument("--out", type=Path, required=True, help="calibration directory")
     ap.add_argument("--seed", type=int, default=SEED)
     ap.add_argument("--reviewer", default="")
     ap.add_argument("--dry-run", action="store_true", help="review: print every row, record nothing")
+    ap.add_argument("--repass", action="store_true", help="review: re-label the pre-registered subset, nothing revealed")
     ap.add_argument("--min-reviewed", type=int, default=DEFAULT_MIN_REVIEWED)
     ap.add_argument("--bootstrap", type=int, default=DEFAULT_BOOTSTRAP)
     args = ap.parse_args(argv)
@@ -623,6 +778,10 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "sample":
         res = sample_command(out, args.seed)
         print(json.dumps(res, indent=1))
+    elif args.cmd == "protocol":
+        proto = write_protocol(out, args.seed)
+        print(f"order: {len(proto['order'])} rows; re-pass subset: {proto['repass']['n']} rows, "
+              f"opens {proto['repass']['min_gap_hours']}h after the first pass")
     elif args.cmd == "review":
         if args.dry_run:
             res = review(out, args.reviewer or "dry-run", dry_run=True, emit=lambda _: None)
@@ -631,7 +790,10 @@ def main(argv: list[str] | None = None) -> None:
             return
         if not sys.stdin.isatty():
             sys.exit("review reads answers from an interactive terminal only; piped input is refused")
-        review(out, args.reviewer)
+        try:
+            review(out, args.reviewer, repass=args.repass)
+        except RuntimeError as e:
+            sys.exit(str(e))
     else:
         try:
             report = score(out, args.min_reviewed, args.bootstrap)
