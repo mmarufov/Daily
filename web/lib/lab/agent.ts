@@ -111,7 +111,13 @@ export interface ModelStepRecord {
 }
 
 /** Why the loop stopped, in one word, so a reader does not parse error text. */
-export type StopCause = 'completed' | 'step-limit' | 'token-budget' | 'wall-clock' | 'call-error'
+export type StopCause =
+  | 'completed'
+  | 'step-limit'
+  | 'output-limit'
+  | 'token-budget'
+  | 'wall-clock'
+  | 'call-error'
 
 export interface InvestigationTrace {
   readonly model: string
@@ -501,6 +507,9 @@ export async function investigate(
       if (wallClock.aborted) return 'wall-clock'
       return 'call-error'
     }
+    // The last call was cut off by `max_output_tokens`: whatever it was
+    // writing -- often the proposal itself -- never arrived.
+    if (finishReason === 'length') return 'output-limit'
     // The loop ended on a tool call: the model wanted another turn and the
     // step limit refused it.
     return finishReason === 'tool-calls' && modelSteps.length >= budget.max_model_calls ? 'step-limit' : 'completed'

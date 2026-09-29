@@ -151,7 +151,7 @@ export const InvestigationSchema = z.object({
   started_at: z.string(),
   wall_clock_ms: z.number(),
   finish_reason: z.string(),
-  stop_cause: z.enum(['completed', 'step-limit', 'token-budget', 'wall-clock', 'call-error']),
+  stop_cause: z.enum(['completed', 'step-limit', 'output-limit', 'token-budget', 'wall-clock', 'call-error']),
   tool_calls_made: z.number().int(),
   max_tool_calls: z.number().int(),
   model_calls_made: z.number().int(),
@@ -173,7 +173,8 @@ export const InvestigationSchema = z.object({
   /**
    * Who asked for the sandbox run: the agent through `request_evaluation`, or
    * the harness after the loop ended, for an accepted proposal the agent
-   * never submitted for evaluation.
+   * never submitted for evaluation. `unknown` when neither happened, which is
+   * every run without an accepted proposal.
    */
   evaluation_requested_by: z.union([z.enum(['agent', 'harness']), z.literal(UNKNOWN)]),
   hypothesis: z.string(),
