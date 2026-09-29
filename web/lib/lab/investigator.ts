@@ -5,12 +5,16 @@
  * only interesting if something trustworthy grades them, and the order the
  * pieces were built in is the order they have to be trusted in.
  *
- * **Nothing here has been executed.** There is no `AI_GATEWAY_API_KEY` in this
- * environment and no spending limit configured, so `readiness()` reports
- * `missing-credentials` and `/lab` says no agent has run. The tool schemas,
- * the scope enforcement and the budget are real code with real tests; the
- * model call is not, and no trace is depicted anywhere. Fabricating one would
- * make every other number on this site worth less.
+ * **This has now been executed, and every run is committed.** For a long time
+ * it had not been: there was no credential, `readiness()` reported
+ * `missing-credentials`, and `/lab` said no agent had run. The first runs were
+ * made on 2026-09-29 from `scripts/lab-agent-run.ts`, and each one left a
+ * trace, an investigation record and, where a proposal was accepted, a
+ * sandbox execution under `backend/lab/runs/`. Runs that proposed nothing are
+ * committed too; dropping them would make every rate computed from the set a
+ * rate over the runs that got far enough to be graded. No trace is depicted
+ * that was not produced by a real call, and fabricating one would make every
+ * other number on this site worth less.
  *
  * The important property is that an agent-authored candidate takes exactly the
  * same path as a human-authored one: `propose_patch` returns a patch, the scope

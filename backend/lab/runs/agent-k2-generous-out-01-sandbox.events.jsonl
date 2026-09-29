@@ -1,0 +1,5 @@
+{"type":"created","run_id":"article-to-verdict-association__agent-k2-generous-out-01","candidate_id":"agent-k2-generous-out-01","spec_hash":"f027762ab4d08b35","executed_at_revision":"b4562908be4b5a488eca64f985005db7fcff6686+dirty","at":"2026-09-29T23:22:40.670Z"}
+{"type":"scope-checked","allowed":true,"detail":"backend/lab/contract/candidate.py — within scope; queued for sandboxed evaluation","at":"2026-09-29T23:25:27.461Z"}
+{"type":"attempt-started","attempt_id":"article-to-verdict-association__agent-k2-generous-out-01#01","runner":"vercel-sandbox","at":"2026-09-29T23:25:29.540Z"}
+{"type":"attempt-ended","attempt_id":"article-to-verdict-association__agent-k2-generous-out-01#01","status":"succeeded","note":"sandbox cyan-marine-cockroach-oJ4QKY in iad1, exit 0 in 549ms","at":"2026-09-29T23:25:36.252Z"}
+{"type":"records-received","attempt_id":"article-to-verdict-association__agent-k2-generous-out-01#01","n_records":64,"at":"2026-09-29T23:25:36.253Z"}

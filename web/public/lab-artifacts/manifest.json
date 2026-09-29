@@ -2,10 +2,40 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "f027762ab4d08b35",
- "inputs_sha256": "ad403d4eac563339",
- "built_at": "2026-09-22T20:20:21.317Z",
+ "inputs_sha256": "b2c5c47e443094be",
+ "built_at": "2026-09-29T23:22:40.670Z",
  "complete": true,
  "entries": [
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-out-01__sandbox",
+   "file": "agent-k2-generous-out-01-sandbox.json",
+   "candidate_id": "agent-k2-generous-out-01",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected"
+   },
+   "sha256": "46350a619226ff7115c082e2c86999306673c0035ac8543471911d0a9f9a3485",
+   "bytes": 46598,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
   {
    "run_id": "article-to-verdict-association__control-lenient-keyed__6a3f35522825__008af826__clean",
    "file": "control-lenient-keyed-clean.json",
@@ -151,7 +181,7 @@
   },
   {
    "severity": "info",
-   "message": "1 of 8 runs executed in an isolated microVM, because those candidates matched no committed implementation. 4 isolation probes ran inside those microVMs and all held.",
+   "message": "2 of 9 runs executed in an isolated microVM, because those candidates matched no committed implementation. 8 isolation probes ran inside those microVMs and all held.",
    "source": "web/lib/lab/sandbox.ts"
   }
  ]
