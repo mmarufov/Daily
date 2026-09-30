@@ -96,7 +96,8 @@ How it works:
 
 ### What it currently says
 
-2026-08-31 snapshot · 10 personas · k = 12 · means across personas:
+2026-08-31 snapshot · 10 personas · k = 12 · means across personas · the committed
+scorecards, recorded at `47edb50`:
 
 | Metric | Production (keyword fallback) | **Production (LLM scorer)** | Prototype pipeline |
 |---|---|---|---|
@@ -108,6 +109,14 @@ How it works:
 | planted needles found | 0.35 | **0.55** | 0.70 |
 | judge precision / recall | – | **0.59 / 0.56** | 0.84 / 0.69 |
 | cost, all ten readers | $0 | **$0.14** | $0.035 |
+
+Today's `main` does not reproduce the production column exactly. Replaying it offline
+(`cd backend && EVAL_OFFLINE=1 python -m evals.run --runner prod --snapshot 2026-08-31`)
+gives recall@12 of 0.2397, so about 0.24, not 0.23; every other production cell moves by
+0.063 or less (judge precision / recall 0.62 / 0.62). Replaying `47edb50`'s own code against
+the same committed cache reproduces the table exactly, so the drift is code that landed
+after the recording, not the cache. The recall change is inside the gate's 0.05
+tolerance, and the baseline was not re-recorded.
 
 Read two things from that table:
 
@@ -412,7 +421,7 @@ Full policy, including how to report a vulnerability:
 
 Listed because a README that only lists wins isn't information.
 
-- **Feed quality is not where it needs to be.** recall@12 of 0.23 in production, against a
+- **Feed quality is not where it needs to be.** recall@12 of about 0.24 in production, against a
   target of 0.8. Retrieval loses most must-see stories before ranking ever sees them;
   closing that is what S6 and S7 exist for.
 - **The global-pool join gate.** The feed query inner-joins `article_source_links`, and
