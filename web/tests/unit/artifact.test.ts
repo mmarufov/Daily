@@ -70,15 +70,17 @@ describe('exported artifacts', () => {
     }
   })
 
-  it('flags the baseline whose stored thresholds disagree with its run', () => {
+  it('finds no baseline whose stored thresholds disagree with its run', () => {
+    // Detected from the data, not hardcoded. Until 2026-09-30 exactly one did:
+    // prod-llm's 2026-09-02 entry, re-recorded after the timestamps embedded
+    // in it. The prod-llm baseline was then re-recorded whole from the
+    // id-keyed scorer's runs at 934fa6e, so every snapshot now matches a run.
+    // A doctored snapshot value makes the export flag it again.
     const suspect = artifacts.filter((a) => a.baseline.disagrees_with_run.length > 0)
-    // Detected from the data, not hardcoded: exactly one baseline in the
-    // committed set was re-recorded after the timestamps embedded in it.
-    expect(suspect.length).toBe(1)
-    const [only] = suspect
-    expect(only?.provenance.runner).toBe('prod-llm')
-    expect(only?.baseline.disagrees_with_run).toEqual(['2026-09-02'])
-    expect(only?.provenance.timestamps_trustworthy).toBe(false)
+    expect(suspect.map((a) => a.provenance.eval_revision)).toEqual([])
+    const prodLlm = artifacts.find((a) => a.baseline.is_baseline && a.provenance.runner === 'prod-llm')
+    expect(prodLlm?.provenance.eval_revision).toBe('934fa6e')
+    expect(prodLlm?.provenance.timestamps_trustworthy).toBe(true)
   })
 
   it('trusts the timestamps of baselines that agree with their runs', () => {

@@ -33,18 +33,32 @@
    "bytes": 117334
   },
   {
-   "run_id": "prod-llm__2026-08-31__47edb50__baseline",
-   "file": "prod-llm__2026-08-31__47edb50__baseline.json",
+   "run_id": "prod-llm__2026-08-31__934fa6e",
+   "file": "prod-llm__2026-08-31__934fa6e.json",
    "runner": "prod-llm",
    "snapshot": "2026-08-31",
-   "protocol": "unknown",
+   "protocol": "production-feed-v1",
    "k": 12,
    "origin": "imported-historical",
-   "eval_revision": "47edb50",
+   "eval_revision": "934fa6e",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "050d498d6a99b0ae1b8d1151b2e78ec21adbef035146769a6434c4bedfcae9e5",
+   "bytes": 117535
+  },
+  {
+   "run_id": "prod-llm__2026-08-31__934fa6e__baseline",
+   "file": "prod-llm__2026-08-31__934fa6e__baseline.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31",
+   "protocol": "production-feed-v1",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "934fa6e",
    "is_baseline": true,
    "personas": 10,
-   "sha256": "69ef9da5ac90e7d73c0ddcc3ea81bbae7654a1e6a6179e3fb02df657ae3e1296",
-   "bytes": 117798
+   "sha256": "6a4d0f74d92449ad615af2dbea00bd46a21df8a2882c90f9357885eda969e00a",
+   "bytes": 117590
   },
   {
    "run_id": "prod-llm__2026-08-31-quiet__47edb50",
@@ -61,6 +75,20 @@
    "bytes": 111931
   },
   {
+   "run_id": "prod-llm__2026-08-31-quiet__934fa6e",
+   "file": "prod-llm__2026-08-31-quiet__934fa6e.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31-quiet",
+   "protocol": "production-feed-v1",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "934fa6e",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "cbcfac55b40cb38570fa8b1470f1fbc77eedbc52346056b1da8ad232030de0a8",
+   "bytes": 113608
+  },
+  {
    "run_id": "prod-llm__2026-09-02__47edb50",
    "file": "prod-llm__2026-09-02__47edb50.json",
    "runner": "prod-llm",
@@ -73,6 +101,20 @@
    "personas": 10,
    "sha256": "4115e1943ad53a299f46d86a70b9f1c9a170fd3865f54978e5c1d38bbd3bf4f2",
    "bytes": 122419
+  },
+  {
+   "run_id": "prod-llm__2026-09-02__934fa6e",
+   "file": "prod-llm__2026-09-02__934fa6e.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-09-02",
+   "protocol": "production-feed-v1",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "934fa6e",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "3fbb491f1c4821a7759430df78545050d8c5de04042db39cd4a9e9d21dc30080",
+   "bytes": 121176
   },
   {
    "run_id": "proto-hybrid-judge-events__2026-08-31__47edb50",
@@ -175,7 +217,7 @@
  "notes": [
   {
    "severity": "info",
-   "message": "Exported 9 artifacts from backend/evals/results/ at revision 3b11a3c. Every entry is an import of a historical scorecard, not a run executed by this export.",
+   "message": "Exported 12 artifacts from backend/evals/results/ at revision 3b11a3c. Every entry is an import of a historical scorecard, not a run executed by this export.",
    "source": "web/scripts/export-artifacts.ts"
   }
  ]
