@@ -89,7 +89,8 @@ signals because the answer is known by construction.
 | `false_major_rate` | forced/major-story items not in a ≥major cluster (quiet snapshots only) |
 | `judge_precision/recall` | the model verdict alone, over labelled candidates it saw |
 | `needle_recall` / `lookalike_rate` | planted must-sees found / planted lookalikes shown |
-| `calls`, `cost_usd`, `latency_s`, `cache_misses` | efficiency |
+| `calls`, `cost_usd`, `latency_s`, `cache_misses` | efficiency (`cache_misses` counts network fetches only) |
+| `offline_misses` | raised `CacheMiss`, counted before the raise, so a miss the caller swallowed still shows; the gate requires 0 |
 
 ## The gate (`tests/test_eval_gate.py`)
 
@@ -171,3 +172,19 @@ agent-reviewed major-or-higher clusters removed, plus a second 1,358-article liv
 - **The 300-row recency window is the gatekeeper.** For Ray, 1,028 of 1,328 pool articles never
   reach the prefilter; of the 300 that do, 193 are cut by the 100-candidate cap. The S6 finding,
   now a number.
+
+## Proving the metrics can fail
+
+```bash
+EVAL_OFFLINE=1 python -m evals.degrade --write   # replay every fault, write results/degradation-matrix.json
+EVAL_OFFLINE=1 python -m evals.degrade --check   # fail if the committed matrix differs from a fresh replay
+```
+
+`degrade.py` registers nine faults, each with the metrics it must move, the direction, and a
+0.05 threshold (the gate's own tolerance), committed before any measured run and pinned by
+`PREREGISTERED_SHA256`. Every fault acts after the model call, so each replay must touch
+exactly the clean run's cache keys with zero raised misses; that is asserted, not assumed.
+Three faults predict blindness (the diversity stage, order inside the top 12, and the
+prototype's id-keyed join). One upstream control, `drop_plants_prefilter`, changes the
+scorer's requests on purpose and must fail the offline check. `tests/test_eval_degradation.py`
+enforces all of it, with negative controls showing each checker can fail.

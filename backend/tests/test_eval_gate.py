@@ -92,9 +92,14 @@ class TestEvalGate(unittest.TestCase):
                 yield runner_key, entry["name"], _run(runner_key, entry["name"])
 
     def test_runs_fully_offline(self):
+        # cache_misses_total alone counts network fetches, which offline mode
+        # never makes, so it was 0 by construction. Production's scorer swallows
+        # the raised CacheMiss and falls back to keyword scoring; only the
+        # raised-miss count sees that.
+        from evals.metrics import offline_violations
         for runner_key, snap, doc in self._for_each():
             with self.subTest(runner=runner_key, snapshot=snap):
-                self.assertEqual(doc["summary"]["cache_misses_total"], 0)
+                self.assertEqual(offline_violations(doc["summary"]), [])
 
     @unittest.skipUnless(os.getenv("EVAL_GATE_STRICT"), "absolute never-rate target is strict-only")
     def test_never_rate_floor(self):
@@ -141,21 +146,13 @@ class TestEvalGate(unittest.TestCase):
                 b = base["summary"]
             else:
                 continue
+            from evals.metrics import GATED_METRICS, regression
             s = doc["summary"]
-            for key, higher_is_better in (("recall_at_k_mean", True), ("recall_at_retrieval_mean", True),
-                                          ("need_to_know_recall_mean", True), ("followup_recall_mean", True),
-                                          ("needle_recall_mean", True),
-                                          ("never_rate_mean", False), ("lookalike_rate_mean", False),
-                                          ("false_major_rate_mean", False),
-                                          ("event_delivery_mean", True)):
-                bv, sv = b.get(key), s.get(key)
-                if bv is None or sv is None:
+            for key, higher_is_better in GATED_METRICS:
+                if b.get(key) is None:
                     continue
                 with self.subTest(runner=runner_key, snapshot=snap, metric=key):
-                    if higher_is_better:
-                        self.assertGreaterEqual(sv, bv - TOLERANCE, f"{key} regressed: {bv} -> {sv}")
-                    else:
-                        self.assertLessEqual(sv, bv + TOLERANCE, f"{key} regressed: {bv} -> {sv}")
+                    self.assertIsNone(regression(key, higher_is_better, b.get(key), s.get(key), TOLERANCE))
 
     @unittest.skipUnless(os.getenv("EVAL_GATE_STRICT"), "strict targets only under EVAL_GATE_STRICT=1")
     def test_strict_targets(self):

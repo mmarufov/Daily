@@ -63,6 +63,7 @@ def evaluate(runner_name: str, snapshot: str, persona_keys: list[str] | None = N
         summary["calls_total"] += global_preparation["calls"]
         summary["cost_usd_total"] = round(summary["cost_usd_total"] + global_preparation["cost_usd"], 8)
         summary["cache_misses_total"] += global_preparation["cache_misses"]
+        summary["offline_misses_total"] += global_preparation["offline_misses"]
         summary["global_preparation"] = global_preparation
     if verbose:
         _print_summary(runner.name, snapshot, summary)
@@ -108,7 +109,7 @@ def _print_summary(runner: str, snapshot: str, s: dict) -> None:
     print("=" * 108)
     print(f"{runner} @ {snapshot}   personas={s['personas']}   calls={s['calls_total']} "
           f"(max/persona {s['calls_max_per_persona']})   cost=${s['cost_usd_total']:.4f}   "
-          f"cache misses={s['cache_misses_total']}")
+          f"cache misses={s['cache_misses_total']} (raised offline: {s['offline_misses_total']})")
     for key in ("recall_at_k", "recall_at_retrieval", "need_to_know_recall", "followup_recall", "never_rate", "event_delivery",
                 "needle_recall", "lookalike_rate", "judge_precision", "judge_recall"):
         print(f"  {key:<22} mean={_fmt(s[key + '_mean'])}  min={_fmt(s[key + '_min'])}")

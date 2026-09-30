@@ -43,6 +43,7 @@ class BuildResult:
     latency_s: float = 0.0
     cache_hits: int = 0
     cache_misses: int = 0
+    offline_misses: int = 0              # raised CacheMiss, including swallowed ones
     meta: dict = field(default_factory=dict)
 
     def stage_counts(self) -> dict[str, int]:
@@ -121,15 +122,16 @@ def _frozen_datetime(frozen_now: datetime) -> type:
 
 
 def _meter_delta(fn):
-    """Run `fn()` and return (value, calls, cost, hits, misses, seconds)."""
+    """Run `fn()` and return (value, calls, cost, hits, misses, offline_misses, seconds)."""
     from evals.openai_backend import METER, client
     c = client()
     c0, u0 = METER.snapshot()
-    h0, m0 = c.hits, c.misses
+    h0, m0, o0 = c.hits, c.misses, c.offline_misses
     t0 = time.perf_counter()
     value = fn()
     c1, u1 = METER.snapshot()
-    return value, c1 - c0, u1 - u0, c.hits - h0, c.misses - m0, time.perf_counter() - t0
+    return (value, c1 - c0, u1 - u0, c.hits - h0, c.misses - m0, c.offline_misses - o0,
+            time.perf_counter() - t0)
 
 
 # ---------------------------------------------------------------------------
@@ -258,7 +260,7 @@ class ProductionRunner:
                 return asyncio.run(feed_service.get_personalized_feed(
                     user_id, conn, limit=self.limit, force_refresh=True))
 
-        feed_rows, calls, cost, hits, misses, secs = _meter_delta(run)
+        feed_rows, calls, cost, hits, misses, offline, secs = _meter_delta(run)
         if conn.store["unhandled"]:
             raise AssertionError(f"unhandled SQL in production runner: {conn.store['unhandled']}")
 
@@ -266,7 +268,7 @@ class ProductionRunner:
         tr.finish(feed, self.k)
         return BuildResult(
             feed=feed, trace=tr.t, calls=calls, cost_usd=cost, latency_s=secs,
-            cache_hits=hits, cache_misses=misses,
+            cache_hits=hits, cache_misses=misses, offline_misses=offline,
             meta={"runner": self.name, "mode": self.mode, "model": getattr(svc, "scoring_model", None),
                   "limit": self.limit, "k": self.k, "served": len(conn.store["served_ids"]),
                   "cache_inserts": len(conn.store["cache_inserts"])},
@@ -335,7 +337,7 @@ class PrototypeRunner:
         """
         if len({d["id"] for d in docs}) != len(docs):
             raise ValueError("Duplicate canonical global article IDs")
-        st, calls, cost, hits, misses, secs = _meter_delta(lambda: self._prepare(docs, frozen_now))
+        st, calls, cost, hits, misses, offline, secs = _meter_delta(lambda: self._prepare(docs, frozen_now))
         self._global_prepared = st
         self._global_docs_digest = self._digest(docs)
         self._global_state = {
@@ -345,6 +347,7 @@ class PrototypeRunner:
                         "rep_id": docs[event["rep"]]["id"]} for event in st["events"] or []],
         }
         return {"calls": calls, "cost_usd": cost, "cache_hits": hits, "cache_misses": misses,
+                "offline_misses": offline,
                 "latency_s": secs, "canonical_pool_sha256": self._digest(self._global_state)}
 
     def _events_for_pool(self, pool: list[dict], frozen_now: datetime) -> list[dict]:
@@ -364,7 +367,7 @@ class PrototypeRunner:
         from evals.global_events import home_regions
         from evals.pipeline import final_score
 
-        st, prep_calls, prep_cost, prep_hits, prep_misses, prep_secs = _meter_delta(
+        st, prep_calls, prep_cost, prep_hits, prep_misses, prep_offline, prep_secs = _meter_delta(
             lambda: self._global_prepared if self._global_state is not None
             and self._global_state["cutoff"] == frozen_now.isoformat()
             and self._global_docs_digest == self._digest(pool)
@@ -378,7 +381,7 @@ class PrototypeRunner:
             return self._run_pipeline(persona, docs, st["backend"], llm_call=st["judge"],
                                 feed_size=self.feed_size, events=events, home=home, emb=st["emb"])
 
-        r, calls, cost, hits, misses, secs = _meter_delta(run)
+        r, calls, cost, hits, misses, offline, secs = _meter_delta(run)
 
         for c in r.get("recalled_cands", []):
             tr.reach(c.article["id"], "recall", score=None)
@@ -418,6 +421,7 @@ class PrototypeRunner:
         return BuildResult(
             feed=feed, trace=tr.t, calls=calls + prep_calls, cost_usd=cost + prep_cost, latency_s=secs + prep_secs,
             cache_hits=hits + prep_hits, cache_misses=misses + prep_misses,
+            offline_misses=offline + prep_offline,
             meta={"runner": self.name, "backend": self.backend_kind, "judge": self.judge,
                   "protocol": self.protocol, "reader_pipeline_calls": calls,
                   "events": self.events, "world_critical_events": n_events,

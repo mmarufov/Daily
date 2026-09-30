@@ -135,6 +135,7 @@ def score_build(result: BuildResult, labels: dict[str, dict], events: dict, pool
         "lookalike_rate": _div(len(lookalikes & in_feed), len(lookalikes)) if lookalikes else None,
         "calls": result.calls, "cost_usd": round(result.cost_usd, 5), "latency_s": round(result.latency_s, 2),
         "cache_hits": result.cache_hits, "cache_misses": result.cache_misses,
+        "offline_misses": result.offline_misses,
         "stage_counts": result.stage_counts(), "drop_counts": result.drop_counts(),
         "feed": [{"id": i, "rank": n + 1, "title": (by_id.get(i) or {}).get("title", "")[:80],
                   "source": (by_id.get(i) or {}).get("source"), "label": (labels.get(i) or {}).get("label"),
@@ -158,12 +159,60 @@ def aggregate(per_persona: dict[str, dict]) -> dict:
     out["calls_max_per_persona"] = max((m["calls"] for m in per_persona.values()), default=0)
     out["cost_usd_total"] = round(sum(m["cost_usd"] for m in per_persona.values()), 5)
     out["cache_misses_total"] = sum(m["cache_misses"] for m in per_persona.values())
+    out["offline_misses_total"] = sum(m.get("offline_misses", 0) for m in per_persona.values())
     loss: Counter = Counter()
     for m in per_persona.values():
         loss.update(m["loss_by_stage"])
     out["loss_by_stage"] = dict(loss)
     out["personas"] = len(per_persona)
     return out
+
+
+def offline_violations(summary: dict) -> list[str]:
+    """Why a replay was not fully offline, or [] if it was.
+
+    `cache_misses_total` counts network fetches only. In offline mode every miss
+    raises instead, and production's batch scorer catches that exception and
+    falls back to keyword scoring, so a run can read 0 there while the scorer
+    never ran. `offline_misses_total` counts every raise before any caller sees
+    it. A summary without that field predates the counter and cannot prove it
+    was offline.
+    """
+    out = []
+    if summary.get("cache_misses_total", 0):
+        out.append(f"{summary['cache_misses_total']} requests fetched over the network")
+    if "offline_misses_total" not in summary:
+        out.append("no offline_misses_total: raised cache misses were not counted")
+    elif summary["offline_misses_total"]:
+        out.append(f"{summary['offline_misses_total']} raised cache misses "
+                   "(a changed request fell back instead of replaying)")
+    return out
+
+
+# What the regression gate compares against its baseline, and which way is better.
+GATED_METRICS = (("recall_at_k_mean", True), ("recall_at_retrieval_mean", True),
+                 ("need_to_know_recall_mean", True), ("followup_recall_mean", True),
+                 ("needle_recall_mean", True),
+                 ("never_rate_mean", False), ("lookalike_rate_mean", False),
+                 ("false_major_rate_mean", False),
+                 ("event_delivery_mean", True))
+
+
+def regression(key: str, higher_is_better: bool, baseline, value, tolerance: float) -> str | None:
+    """The gate's verdict on one metric: a failure message, or None if it held.
+
+    A metric the baseline had but this run could not compute is a failure. The
+    gate used to skip it, which passed exactly the runs that broke a metric.
+    """
+    if baseline is None:
+        return None
+    if value is None:
+        return f"{key} became None (baseline {baseline})"
+    if higher_is_better and value < baseline - tolerance:
+        return f"{key} regressed: {baseline} -> {value}"
+    if not higher_is_better and value > baseline + tolerance:
+        return f"{key} regressed: {baseline} -> {value}"
+    return None
 
 
 def git_sha() -> str:
