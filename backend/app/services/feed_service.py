@@ -231,7 +231,19 @@ async def get_personalized_feed(
             )
 
     batch_results_list = await asyncio.gather(*(_scored(b) for b in batches))
-    analysis_results = [r for results in batch_results_list for r in results]
+    # Join verdicts to candidates by article id, never by position. A verdict
+    # with no candidate is dropped and a candidate with no verdict is marked
+    # unscored, so it falls back to the deterministic score.
+    verdicts_by_id = {
+        str(r.get("article_id")): r for results in batch_results_list for r in results
+    }
+    analysis_results = [
+        verdicts_by_id.get(
+            str(candidate.get("id")),
+            {"relevant": False, "score": 0.0, "reason": "scoring incomplete"},
+        )
+        for candidate in candidates
+    ]
 
     # Annotate BEFORE scoring: _apply_individual_analysis_results' feedback_adjustment
     # call reads candidate["_matched_profile_signals"] to apply the learned `topic`
