@@ -83,6 +83,18 @@ const EVIDENCE_PATHS = [
   'backend/evals/labels',
 ] as const
 
+/**
+ * Files in the results directory that are not scorecards. The degradation
+ * matrix (`python -m evals.degrade`) replays injected faults against the same
+ * cache; it is not a run of any feed system, so it is neither exported nor
+ * allowed to move `artifact_revision`.
+ */
+const NOT_SCORECARDS = ['degradation-matrix.json'] as const
+const EVIDENCE_PATHSPECS = [
+  ...EVIDENCE_PATHS,
+  ...NOT_SCORECARDS.map((f) => `:(exclude)backend/evals/results/${f}`),
+]
+
 /* ------------------------------------------------------------------ git ---- */
 
 function git(...args: readonly string[]): string | null {
@@ -556,13 +568,15 @@ function main(): void {
   // matches the commit -- CI's staleness check would fail forever. Anchoring to
   // the evidence is stable under every commit that does not add new scorecards,
   // and says the more useful thing anyway: which evidence this was built from.
-  const artifactRevision = git('log', '-1', '--format=%h', '--', ...EVIDENCE_PATHS) ?? UNKNOWN
+  const artifactRevision = git('log', '-1', '--format=%h', '--', ...EVIDENCE_PATHSPECS) ?? UNKNOWN
   const builtAt =
-    git('log', '-1', '--format=%cI', '--', ...EVIDENCE_PATHS) ?? new Date().toISOString()
+    git('log', '-1', '--format=%cI', '--', ...EVIDENCE_PATHSPECS) ?? new Date().toISOString()
   const snapshotManifest = loadSnapshotManifest()
   const labelCache = new Map<string, ReturnType<typeof labelProvenance>>()
 
-  const files = readdirSync(RESULTS).filter((f) => f.endsWith('.json')).sort()
+  const files = readdirSync(RESULTS)
+    .filter((f) => f.endsWith('.json') && !(NOT_SCORECARDS as readonly string[]).includes(f))
+    .sort()
   if (files.length === 0) throw new Error(`No .json scorecards in ${RESULTS}`)
 
   // First pass: parse everything, so baseline integrity can compare against runs.

@@ -88,7 +88,14 @@ How it works:
 - **A committed response cache.** Every model call ever made is stored keyed by request
   hash, so `EVAL_OFFLINE=1` replays the entire evaluation with **no API key and no cost**.
   CI runs the regression gate this way on every pull request. A cache miss fails the build
-  rather than quietly spending money.
+  rather than quietly spending money. Until 2026-09-30 that was only half true: production's
+  scorer catches the raised miss and falls back to keyword scoring, and the gate counted only
+  network fetches, so it read 0. It now counts every raised miss (`offline_misses_total`).
+- **Every metric is shown to fail.** `python -m evals.degrade` replays nine injected faults
+  offline at $0, each registered with its target metrics, direction and a 0.05 threshold
+  before it was run, and CI holds each one to that declaration. Pooled over 30
+  persona-snapshot pairs, replaying the list-position bug cuts judge precision from 0.64 to
+  0.33. Results: [`backend/evals/results/degradation-matrix.json`](backend/evals/results/degradation-matrix.json).
 - **The runner measures the real product.** `ProductionRunner` calls the actual
   `feed_service.get_personalized_feed`. It fakes only the database and freezes `now()`.
   The real recency window, prefilter, batch scorer, dedupe, and diversity pass all run
@@ -440,6 +447,14 @@ Listed because a README that only lists wins isn't information.
   editorial pass and honest `source=agent` provenance. That makes run-to-run deltas
   trustworthy and absolute values provisional. It also means judge precision is partly
   circular: a `gpt-4o-mini` scorer measured against ground truth written by `gpt-4.1`.
+- **Some of the harness is blind, and the fault matrix names where.** Reversing the order
+  inside the top 12 moves no metric, because every metric is a set over the top 12; nothing
+  here is rank-sensitive. Skipping the diversity stage moves no metric by 0.05 or more (the
+  largest pooled move is +0.017), so that stage has no coverage. `recall_at_retrieval`
+  cannot be faulted offline at all: anything that changes what reaches the scorer changes
+  the scorer's requests, and the cache misses. Judge precision is measured but not gated
+  against the baseline. Faults already seen by a scratch prototype before registration are
+  listed per fault in `evals/degrade.py`.
 - **The absolute quality targets are not enforced in CI.** The gate checks no-regression
   against a committed baseline. The absolute floors (`recall@12 ≥ 0.8`,
   `never_rate ≤ 0.05`) only run under `EVAL_GATE_STRICT=1`, which CI does not set, because

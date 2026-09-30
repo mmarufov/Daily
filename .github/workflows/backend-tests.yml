@@ -148,7 +148,27 @@ jobs:
       # Deterministic invariants do not certify model quality. Independent
       # heldout labels and immutable recipe-bound reports are separate release
       # gates; CI must never fabricate/freeze labels or use EVAL_GATE_STRICT skips.
-      - run: EVAL_OFFLINE=1 python -m pytest tests/ -q
+      # Every registered fault must move its declared metrics by the gate's own
+      # 0.05 tolerance (or, for a blind fault, move nothing that far), replay
+      # only the clean run's cached requests, and reproduce the committed
+      # degradation-matrix.json. The upstream control must fail the offline check.
+      - name: Run the degradation matrix without skips
+        env:
+          EVAL_OFFLINE: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          import xml.etree.ElementTree as ET
+          subprocess.run([sys.executable, "-m", "pytest", "tests/test_eval_degradation.py", "-q",
+                          "--junitxml=degradation-contract-results.xml"], check=True)
+          cases = ET.parse("degradation-contract-results.xml").getroot().findall(".//testcase")
+          assert len(cases) >= 20, f"only {len(cases)} degradation tests executed"
+          assert not any(case.find("skipped") is not None for case in cases), "Skipped degradation tests"
+          PY
+      # The matrix ran in full just above; do not replay it twice.
+      - run: EVAL_OFFLINE=1 python -m pytest tests/ -q --ignore=tests/test_eval_degradation.py
         env:
           PYTHONDONTWRITEBYTECODE: "1"
 

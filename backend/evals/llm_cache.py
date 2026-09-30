@@ -185,7 +185,11 @@ class CachingOpenAI:
         self.meter = meter or Meter()
         self.offline = bool(os.getenv("EVAL_OFFLINE")) if offline is None else offline
         self.hits = 0
-        self.misses = 0
+        self.misses = 0            # fetched over the network (costs money)
+        # Raised CacheMiss, counted before the raise. A caller may swallow the
+        # exception (production's batch scorer does, and falls back to keyword
+        # scoring), so `misses` alone reads 0 on a run that silently degraded.
+        self.offline_misses = 0
         self.touched: set[str] = set()
         self.chat = _Chat(self)
         self.embeddings = SimpleNamespace(create=self._embed_create)
@@ -252,6 +256,7 @@ class CachingOpenAI:
             return _to_ns({"choices": stored["choices"], "usage": u, "model": stored.get("model")})
 
         if self.offline:
+            self.offline_misses += 1
             raise CacheMiss(key, _preview(kw.get("messages")))
 
         reservation = self._reserve_request("chat", kw)
@@ -295,6 +300,7 @@ class CachingOpenAI:
         if self.offline:
             inp = kw.get("input")
             first = inp[0] if isinstance(inp, list) and inp else inp
+            self.offline_misses += 1
             raise CacheMiss(key, str(first)[:200])
 
         reservation = self._reserve_request("embed", kw)
@@ -318,6 +324,7 @@ class CachingOpenAI:
 
     def stats(self) -> dict:
         return {"cache_hits": self.hits, "cache_misses": self.misses,
+                "offline_misses": self.offline_misses,
                 "calls": self.meter.calls, "cost_usd": round(self.meter.usd, 6),
                 "reserved_usd": round(self.meter.reserved_usd, 6)}
 
@@ -344,6 +351,7 @@ class CachingUnderstandingProvider:
         self.offline = offline
         self.hits = 0
         self.misses = 0
+        self.offline_misses = 0    # raised CacheMiss, counted before the raise
         self.touched: set[str] = set()
 
     def estimate_usd(self, bundle: dict, recipe: dict, stage: str) -> float:
@@ -433,6 +441,7 @@ class CachingUnderstandingProvider:
                 raise ValueError("Invalid cached S3 usage")
             return ProviderOutcome(**outcome)
         if self.offline:
+            self.offline_misses += 1
             raise CacheMiss(key, "S3 frozen request (article text omitted)")
         token = self._reserve(key, estimate)
         self.misses += 1
