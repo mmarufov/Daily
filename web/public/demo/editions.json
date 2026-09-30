@@ -6,8 +6,8 @@
  "snapshot_sha256": "73f93e5b8cc02c189823f0fc6bbf6b97c27e5bd5e44bcef9d79fa5a0045921b4",
  "frozen_at": "2026-09-02T05:06:49.958134+00:00",
  "n_articles_in_corpus": 1358,
- "built_at": "2026-09-14T21:21:05-07:00",
- "artifact_revision": "3b11a3c",
+ "built_at": "2026-09-30T15:40:25-07:00",
+ "artifact_revision": "a69bb8b",
  "editions": [
   {
    "persona": "aisha",

@@ -5,9 +5,9 @@
  "provenance": {
   "eval_revision": "934fa6e",
   "eval_revision_reachable": true,
-  "artifact_revision": "3b11a3c",
-  "artifact_built_at": "2026-09-14T21:21:05-07:00",
-  "storage_revision": "3b11a3c",
+  "artifact_revision": "a69bb8b",
+  "artifact_built_at": "2026-09-30T15:40:25-07:00",
+  "storage_revision": "a69bb8b",
   "run_created_at": "2026-09-30T20:24:58+00:00",
   "timestamps_trustworthy": true,
   "runner": "prod-llm",
