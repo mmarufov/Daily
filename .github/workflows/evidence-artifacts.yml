@@ -15,12 +15,14 @@ on:
     paths:
       - 'backend/evals/**'
       - 'backend/app/**'
+      - 'backend/lab/**'
       - 'web/**'
       - '.github/workflows/evidence-artifacts.yml'
   pull_request:
     paths:
       - 'backend/evals/**'
       - 'backend/app/**'
+      - 'backend/lab/**'
       - 'web/**'
       - '.github/workflows/evidence-artifacts.yml'
   workflow_dispatch:
