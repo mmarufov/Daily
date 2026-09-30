@@ -1,0 +1,5 @@
+{"type":"created","run_id":"article-to-verdict-association__agent-k2-generous-out-02","candidate_id":"agent-k2-generous-out-02","spec_hash":"f027762ab4d08b35","executed_at_revision":"1c97bc0483f43673fc9f31820d8187d53659a0ff+dirty","at":"2026-09-30T03:57:19.779Z"}
+{"type":"scope-checked","allowed":true,"detail":"backend/lab/contract/candidate.py — within scope; queued for sandboxed evaluation","at":"2026-09-30T04:00:38.345Z"}
+{"type":"attempt-started","attempt_id":"article-to-verdict-association__agent-k2-generous-out-02#01","runner":"vercel-sandbox","at":"2026-09-30T04:00:41.799Z"}
+{"type":"attempt-ended","attempt_id":"article-to-verdict-association__agent-k2-generous-out-02#01","status":"succeeded","note":"sandbox blush-ethical-krill-415iwX in iad1, exit 0 in 395ms","at":"2026-09-30T04:00:47.188Z"}
+{"type":"records-received","attempt_id":"article-to-verdict-association__agent-k2-generous-out-02#01","n_records":64,"at":"2026-09-30T04:00:47.188Z"}

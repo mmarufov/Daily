@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_g41_default_06.py",
+ "declared_protocol": "keyed-strict-v1",
+ "description": "The association defect arises when the response count or order diverges from the articles. This candidate parser refuses with 'count_mismatch' when the 'results' count does not exactly match the article count, preventing incorrect associations and ensuring a complete, unambiguous mapping. All contract prelude, refusal kinds, and structure are inlined exactly as required.",
+ "transcribed_from": "unknown"
+}

@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_k2_generous_out_06.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is that positional association assumes results[i] corresponds to articles[i], which fails when the model returns results in a different order or omits some results. The fix is to use keyed association where each verdict explicitly contains the article_id it applies to. This allows us to verify that every article has exactly one verdict, detect duplicates, unknown IDs, and missing IDs. The parser expects each result entry to have an 'article_id' field and uses PROTOCOL_KEYED to signal this requirement.",
+ "transcribed_from": "unknown"
+}

@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_k2_generous_05.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is positional association: results[i] maps to articles[i], which fails on reordering or count mismatch. The keyed-v2 protocol fixes this by using article_id fields for unambiguous association. This parser: (1) Uses keyed association when article_id is present, validating for duplicate_id, unknown_id, and missing_id; (2) Falls back to positional only when no article_id fields exist, with strict count validation; (3) Refuses when association is ambiguous.",
+ "transcribed_from": "unknown"
+}

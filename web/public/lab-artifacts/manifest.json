@@ -2,8 +2,8 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "f027762ab4d08b35",
- "inputs_sha256": "4a014988db4d9f56",
- "built_at": "2026-09-29T23:22:40.670Z",
+ "inputs_sha256": "c9cdb019c3004ee3",
+ "built_at": "2026-09-30T04:08:31.493Z",
  "complete": true,
  "entries": [
   {
@@ -50,6 +50,126 @@
    "sha256": "5044418004b4239b9dd3439118b7b9a94f2dd27e0315cddb690148aba8558739",
    "bytes": 4860,
    "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-4.1",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-g41-default-03__sandbox",
+   "file": "agent-g41-default-03-sandbox.json",
+   "candidate_id": "agent-g41-default-03",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected"
+   },
+   "sha256": "97852704d31d6929b69757807eefb366fde55a7c15ffc5a7ca1c1c4919a1e7fe",
+   "bytes": 45879,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-4.1",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-g41-default-04__sandbox",
+   "file": "agent-g41-default-04-sandbox.json",
+   "candidate_id": "agent-g41-default-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "edb1661f80ffdfd55173f44ea0c7cbe5cb2820f0d843c2a7e3f16469b269b034",
+   "bytes": 4860,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-4.1",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-g41-default-05__sandbox",
+   "file": "agent-g41-default-05-sandbox.json",
+   "candidate_id": "agent-g41-default-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "d27ed5ac747b78677f72c1b42a476e1dd87218ed1e40ff1e0923a0f03c405e2c",
+   "bytes": 4860,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-4.1",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-g41-default-06__sandbox",
+   "file": "agent-g41-default-06-sandbox.json",
+   "candidate_id": "agent-g41-default-06",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected"
+   },
+   "sha256": "c08f7f776306846a58bdc4a0f692bee27511a3498f9a6d7579f6416ce3f506c0",
+   "bytes": 46452,
+   "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
     "model": "openai/gpt-4.1",
@@ -127,6 +247,156 @@
    }
   },
   {
+   "run_id": "article-to-verdict-association__agent-k2-default-02__sandbox",
+   "file": "agent-k2-default-02-sandbox.json",
+   "candidate_id": "agent-k2-default-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "55b994ae3a79dba555698936802b550ea72733070573128787b3690ea8bd1f78",
+   "bytes": 4811,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-default-03__sandbox",
+   "file": "agent-k2-default-03-sandbox.json",
+   "candidate_id": "agent-k2-default-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "3bfd99c3bb6cfbced7fa3dd694f3c4f22729c85d3515bb1566607db1dc1e1401",
+   "bytes": 4875,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-default-04__sandbox",
+   "file": "agent-k2-default-04-sandbox.json",
+   "candidate_id": "agent-k2-default-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "6a679bb1466b22c3dce6d0c510511002fbdb6c4b085877f635662325aca562d9",
+   "bytes": 4879,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-default-05__sandbox",
+   "file": "agent-k2-default-05-sandbox.json",
+   "candidate_id": "agent-k2-default-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "cb30d7b1074c3a5cb019242f3f20fb8b2224b8f90f146bcf404d62a519a0a6d4",
+   "bytes": 4881,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-default-06__sandbox",
+   "file": "agent-k2-default-06-sandbox.json",
+   "candidate_id": "agent-k2-default-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "08cdfd4a870256f3bdf307fd0bf74f30851259c509639d6df9d73d1690c90ead",
+   "bytes": 4878,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
    "run_id": "article-to-verdict-association__agent-k2-generous-01__sandbox",
    "file": "agent-k2-generous-01-sandbox.json",
    "candidate_id": "agent-k2-generous-01",
@@ -139,6 +409,156 @@
    },
    "sha256": "56c08512cc9701a2cae1c3b87b2deb1f6c4cbf584bc5ce7028a150b6b7dbe281",
    "bytes": 4877,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-02__sandbox",
+   "file": "agent-k2-generous-02-sandbox.json",
+   "candidate_id": "agent-k2-generous-02",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected"
+   },
+   "sha256": "abd5d2cb564bc3b05fd85fb0b0bfcca82a32c327199a29b258217a1207d20bb0",
+   "bytes": 47367,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-03__sandbox",
+   "file": "agent-k2-generous-03-sandbox.json",
+   "candidate_id": "agent-k2-generous-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "2963e70801856349eb38ed5986c70b50eaa5b551d843f7e53061b6374611dfa8",
+   "bytes": 4819,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-04__sandbox",
+   "file": "agent-k2-generous-04-sandbox.json",
+   "candidate_id": "agent-k2-generous-04",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected"
+   },
+   "sha256": "64c37664a4ddf3c76770b5f58f8bd92a9d80ba1da02e51c011f0e164bf8bee93",
+   "bytes": 47338,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-05__sandbox",
+   "file": "agent-k2-generous-05-sandbox.json",
+   "candidate_id": "agent-k2-generous-05",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected"
+   },
+   "sha256": "0a9daf371247198fc55f91a18006b64f9550ceb9f88613b88a7c8525d2f46cb8",
+   "bytes": 48430,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-06__sandbox",
+   "file": "agent-k2-generous-06-sandbox.json",
+   "candidate_id": "agent-k2-generous-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "0d1ca36fe2d71161333c3a176f594e313fe978e62b85ead9333343d845a4a3bd",
+   "bytes": 4808,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -183,6 +603,336 @@
      "max_tool_result_chars": 8000,
      "max_usd": 1.5,
      "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-out-02__sandbox",
+   "file": "agent-k2-generous-out-02-sandbox.json",
+   "candidate_id": "agent-k2-generous-out-02",
+   "kind": "agent-authored",
+   "verdict": "accepted-for-review",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "accepted-for-review",
+    "2": "accepted-for-review"
+   },
+   "sha256": "4ef536c9b01c67bc63e369497c6971e08c7c4bb17d9ba19b0445a0cc36d7d585",
+   "bytes": 46991,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-out-03__sandbox",
+   "file": "agent-k2-generous-out-03-sandbox.json",
+   "candidate_id": "agent-k2-generous-out-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "b670ab125a1ddcc3ba2252bd63f3f8aa9ea9f55607bf8d5326a1943eaa93621f",
+   "bytes": 4835,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-out-04__sandbox",
+   "file": "agent-k2-generous-out-04-sandbox.json",
+   "candidate_id": "agent-k2-generous-out-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "57a07e717ae35b6b62dfb367000b36b57be868f572ebc20b573c12a86a2cd1a9",
+   "bytes": 4820,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-out-05__sandbox",
+   "file": "agent-k2-generous-out-05-sandbox.json",
+   "candidate_id": "agent-k2-generous-out-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "b5ee06655ae8e8625330e5010fb469663c3b51361b3e66dcced02cb69f5da1b8",
+   "bytes": 4820,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-out-06__sandbox",
+   "file": "agent-k2-generous-out-06-sandbox.json",
+   "candidate_id": "agent-k2-generous-out-06",
+   "kind": "agent-authored",
+   "verdict": "accepted-for-review",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "accepted-for-review",
+    "2": "accepted-for-review"
+   },
+   "sha256": "26350214052d79cf5928b3245e3327f6e501388d6f4b33a812717e2f0bda0e3a",
+   "bytes": 47156,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-tight-01__sandbox",
+   "file": "agent-k2-tight-01-sandbox.json",
+   "candidate_id": "agent-k2-tight-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "733d4130b261b59a5b4329b729f13df6d2ebec5d4b8a25bbc2bb53ac4c840c87",
+   "bytes": 4852,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-tight-02__sandbox",
+   "file": "agent-k2-tight-02-sandbox.json",
+   "candidate_id": "agent-k2-tight-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "1906139ce79273f16a4e48eb8f7d8c9f28422039412e99b1ae18acf6004c1d73",
+   "bytes": 4863,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-tight-03__sandbox",
+   "file": "agent-k2-tight-03-sandbox.json",
+   "candidate_id": "agent-k2-tight-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "a332e34db5681e289c13ecbf0b03dde434897c474f411f55593243321940bfca",
+   "bytes": 4783,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-tight-04__sandbox",
+   "file": "agent-k2-tight-04-sandbox.json",
+   "candidate_id": "agent-k2-tight-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "a48538969c9be19c5c9726085dc04d10fa753043c24ed809e1bfb975ee58f46a",
+   "bytes": 4863,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-tight-05__sandbox",
+   "file": "agent-k2-tight-05-sandbox.json",
+   "candidate_id": "agent-k2-tight-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "cbee9fcfa83793a51da59e86067d6e8c45e2650382abbfdd994de2c580c8d3de",
+   "bytes": 4862,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-tight-06__sandbox",
+   "file": "agent-k2-tight-06-sandbox.json",
+   "candidate_id": "agent-k2-tight-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "17c5e27daed854f743251168fa786c887967041e8c437d47769a27ff908a79e8",
+   "bytes": 4862,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
     }
    }
   },
@@ -331,7 +1081,7 @@
   },
   {
    "severity": "info",
-   "message": "2 of 14 runs executed in an isolated microVM, because those candidates matched no committed implementation. 8 isolation probes ran inside those microVMs and all held.",
+   "message": "9 of 39 runs executed in an isolated microVM, because those candidates matched no committed implementation. 36 isolation probes ran inside those microVMs and all held.",
    "source": "web/lib/lab/sandbox.ts"
   }
  ]

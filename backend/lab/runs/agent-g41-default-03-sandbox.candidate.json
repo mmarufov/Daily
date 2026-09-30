@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_g41_default_03.py",
+ "declared_protocol": "positional-v0",
+ "description": "The correct parser should refuse with 'count_mismatch' if the number of results does not exactly match the number of articles, addressing the defect where spurious associations or padding occur. This is required by the expectations recorded in universal-refusal cases, e.g., observed-2026-09-02-002. Refusals with this kind are explicitly valid (see contract/types.py). All required contract functions must be defined inline.",
+ "transcribed_from": "unknown"
+}

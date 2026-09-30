@@ -1,0 +1,45 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T03:52:40.601Z",
+ "wall_clock_ms": 228713,
+ "finish_reason": "stop",
+ "stop_cause": "completed",
+ "tool_calls_made": 19,
+ "max_tool_calls": 24,
+ "model_calls_made": 12,
+ "budget_label": "generous",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 24,
+  "max_model_calls": 12,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 300000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 1.5,
+  "wall_clock_seconds": 360
+ },
+ "budget_ceiling_usd": 1,
+ "usage": {
+  "input_tokens": 294758,
+  "output_tokens": 7789,
+  "total_tokens": 302547
+ },
+ "tokens_used": 302547,
+ "cost_usd": 0.09414308,
+ "proposed": true,
+ "evaluation_requested_by": "agent",
+ "hypothesis": "The defect is positional association: results[i] maps to articles[i], which fails on reordering or count mismatch. The keyed-v2 protocol fixes this by using article_id fields for unambiguous association. This parser: (1) Uses keyed association when article_id is present, validating for duplicate_id, unknown_id, and missing_id; (2) Falls back to positional only when no article_id fields exist, with strict count validation; (3) Refuses when association is ambiguous.",
+ "evidence": [
+  "backend/lab/contract/types.py defines PROTOCOL_KEYED = 'keyed-v2' as the alternative to PROTOCOL_POSITIONAL = 'positional-v0'",
+  "backend/lab/contract/versions/positional_v0.py lines 86-97 show pure positional association with no validation",
+  "backend/lab/contract/versions/count_guard_v1.py lines 97-101 add count validation but still use positional association",
+  "REFUSAL_KINDS in types.py includes 'duplicate_id', 'unknown_id', 'missing_id' for keyed validation",
+  "backend/app/services/ranking_contract.py ArticleJudgment has article_id field showing keyed support"
+ ],
+ "scope_accepted": true,
+ "scope_reason": "within scope; queued for sandboxed evaluation",
+ "trace_path": "backend/lab/runs/agent-k2-generous-05-sandbox.trace.json",
+ "n_trace_steps": 47
+}

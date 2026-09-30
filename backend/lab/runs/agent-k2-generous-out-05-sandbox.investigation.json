@@ -1,0 +1,39 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T04:03:09.553Z",
+ "wall_clock_ms": 6437,
+ "finish_reason": "error",
+ "stop_cause": "call-error",
+ "tool_calls_made": 0,
+ "max_tool_calls": 24,
+ "model_calls_made": 0,
+ "budget_label": "generous-out",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 24,
+  "max_model_calls": 12,
+  "max_output_tokens": 8192,
+  "max_total_tokens": 300000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 1.5,
+  "wall_clock_seconds": 360
+ },
+ "budget_ceiling_usd": 1,
+ "usage": {
+  "input_tokens": "unknown",
+  "output_tokens": "unknown",
+  "total_tokens": "unknown"
+ },
+ "tokens_used": 0,
+ "cost_usd": "unknown",
+ "proposed": false,
+ "evaluation_requested_by": "unknown",
+ "hypothesis": "unknown",
+ "evidence": [],
+ "scope_accepted": false,
+ "scope_reason": "no proposal was made",
+ "trace_path": "backend/lab/runs/agent-k2-generous-out-05-sandbox.trace.json",
+ "n_trace_steps": 0
+}

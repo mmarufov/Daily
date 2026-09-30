@@ -1,0 +1,1375 @@
+{
+ "lab_artifact_version": 1,
+ "run_id": "article-to-verdict-association__agent-g41-default-06__sandbox",
+ "experiment_id": "article-to-verdict-association",
+ "candidate": {
+  "candidate_id": "agent-g41-default-06",
+  "kind": "agent-authored",
+  "description": "The association defect arises when the response count or order diverges from the articles. This candidate parser refuses with 'count_mismatch' when the 'results' count does not exactly match the article count, preventing incorrect associations and ensuring a complete, unambiguous mapping. All contract prelude, refusal kinds, and structure are inlined exactly as required.",
+  "declared_protocol": "unknown",
+  "source_path": "backend/lab/contract/candidates/agent_g41_default_06.py",
+  "source_sha256": "9e994c67a2527ce372ffef629218b9153c85b24092d0261ab79f01ae1d8c9325",
+  "source_bytes": 3040,
+  "transcribed_from": "unknown",
+  "patch": "diff --git a/backend/lab/contract/versions/positional_v0.py b/backend/lab/contract/candidates/agent_g41_default_06.py\n--- a/backend/lab/contract/versions/positional_v0.py\n+++ b/backend/lab/contract/candidates/agent_g41_default_06.py\n@@ -1,45 +1,21 @@\n-\"\"\"Historical behaviour, transcribed from `origin/main`.\n-\n-Source: backend/app/services/openai_service.py, score_articles_batch, the\n-`normalized` loop. Verbatim semantics:\n-\n-    if len(results_list) != len(articles):\n-        logger.warning(\"... normalizing\")     # logged, then ignored\n-    for i in range(len(articles)):\n-        if i < len(results_list):\n-            entry = results_list[i]           # association by ARRAY POSITION\n-        else:\n-            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n-\n-This version is preserved so the experiment can measure the defect rather than\n-describe it. It is not a control: it is what production does today.\n+\"\"\"\n+Candidate parser to fix association defect.\n+Only associates by positional index if count matches. Refuses otherwise.\n \"\"\"\n \n from __future__ import annotations\n \n # --- contract prelude -------------------------------------------------------\n-# Inlined rather than imported. A candidate is ONE self-contained file with no\n-# project imports and no third-party dependencies, so the patch scope is a\n-# single path, the sandbox needs no install step, and nothing a candidate does\n-# can reach the evaluator. The canonical definitions live in\n-# lab/contract/types.py, and tests/test_contract_prelude.py asserts that every\n-# copy still agrees with it.\n-\n import math as _math\n \n-\n def ok(verdicts):\n     return {\"ok\": True, \"verdicts\": verdicts}\n \n-\n def refuse(kind, detail=\"\"):\n     return {\"ok\": False, \"refusal\": {\"kind\": kind, \"detail\": str(detail)[:400]}}\n \n-\n def verdict(article_id, relevant, score, reason):\n-    return {\"article_id\": article_id, \"relevant\": bool(relevant),\n-            \"score\": float(score), \"reason\": str(reason)[:500]}\n-\n+    return {\"article_id\": article_id, \"relevant\": bool(relevant), \"score\": float(score), \"reason\": str(reason)[:500]}\n \n def finite_unit_score(raw):\n     if isinstance(raw, bool) or not isinstance(raw, (int, float)):\n@@ -50,49 +26,52 @@ def finite_unit_score(raw):\n     return value\n # --- end prelude ------------------------------------------------------------\n \n-import json\n-from typing import Any\n-\n-\n-VERSION_ID = \"positional-v0\"\n-PROTOCOL = \"positional-v0\"\n-\n+VERSION_ID = \"keyed-strict-v1\"\n+PROTOCOL = \"keyed-strict-v1\"\n \n-def parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n-    if response.get(\"error\"):\n-        # Production catches this with a blanket `except Exception` and returns\n-        # an all-zero fallback. Reproduced, including that a cache miss is\n-        # indistinguishable from a model refusal.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    content = response.get(\"content\")\n-    if content is None:\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    try:\n-        result = json.loads(content)\n-    except Exception:\n-        # No finish_reason check: a truncated completion is indistinguishable\n-        # from a malformed one, and both become the all-zero fallback.\n-        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n-\n-    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n-    if not results_list and isinstance(result, dict) and \"scores\" in result:\n-        results_list = [\n-            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n-            for s in result[\"scores\"]\n-        ]\n+import json\n \n-    out: list[dict[str, Any]] = []\n-    for i, article in enumerate(articles):\n-        if i < len(results_list):\n-            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n-            try:\n-                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n-            except Exception:\n-                score = 0.5\n-            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n-            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n-        else:\n-            out.append(verdict(article[\"id\"], False, 0.0, \"scoring incomplete\"))\n-    return ok(out)\n+# Closed refusal kinds, exactly from contract/types.py\n+REFUSAL_KINDS = {\n+    \"malformed_json\",\"truncated_response\",\"unexpected_shape\",\n+    \"count_mismatch\",\"duplicate_id\",\"unknown_id\",\"missing_id\",\n+    \"invalid_type\",\"score_out_of_range\",\"score_not_finite\",\n+    \"no_recording\",\"timeout\",\"retries_exhausted\",\"cancelled\",\"unsupported_protocol\"\n+}\n+\n+def parse(articles, response):\n+    # Defensive: response may be string or dict. Parse as json if needed.\n+    if isinstance(response, dict) and \"results\" in response:\n+        results = response[\"results\"]\n+    elif isinstance(response, str):\n+        try:\n+            obj = json.loads(response)\n+        except Exception as e:\n+            return refuse(\"malformed_json\", f\"Could not parse JSON: {e}\")\n+        if not isinstance(obj, dict) or \"results\" not in obj:\n+            return refuse(\"unexpected_shape\", \"JSON did not contain 'results' array.\")\n+        results = obj[\"results\"]\n+    else:\n+        return refuse(\"unexpected_shape\", f\"Response must be dict with 'results' or JSON str.\")\n+\n+    if not isinstance(results, list):\n+        return refuse(\"unexpected_shape\", \"'results' is not a list.\")\n+    if len(results) != len(articles):\n+        return refuse(\"count_mismatch\", f\"articles {len(articles)} vs results {len(results)}\")\n+\n+    verdicts = []\n+    for article, result in zip(articles, results):\n+        relevant = result.get(\"relevant\")\n+        score_raw = result.get(\"score\")\n+        reason = result.get(\"reason\", \"\")\n+        score = finite_unit_score(score_raw)\n+\n+        if not isinstance(relevant, bool):\n+            return refuse(\"invalid_type\", f\"'relevant' not bool: {relevant}\")\n+        if score is None:\n+            if isinstance(score_raw, (int, float)) and not _math.isfinite(float(score_raw)):\n+                return refuse(\"score_not_finite\", f\"Score not finite: {score_raw}\")\n+            else:\n+                return refuse(\"score_out_of_range\", f\"Score out of range: {score_raw}\")\n+        verdicts.append(verdict(article[\"id\"], relevant, score, reason))\n+    return ok(verdicts)\n",
+  "patch_base": "backend/lab/contract/versions/positional_v0.py"
+ },
+ "provenance": {
+  "executed_at_revision": "1c97bc0483f43673fc9f31820d8187d53659a0ff+dirty",
+  "inputs_sha256": "b068898a84929e29",
+  "executed_at": "2026-09-30T04:08:31.493Z",
+  "evaluator_sha256": "277ec81521ba14d8",
+  "spec_hash": "f027762ab4d08b35",
+  "spec_version": 2,
+  "execution_mode": "offline-replay",
+  "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
+  "python": "3.13.1",
+  "runner": "vercel-sandbox",
+  "sandbox": {
+   "sandbox_id": "turquoise-very-bat-K5Jp53",
+   "runtime": "python3.13",
+   "region": "iad1",
+   "network_policy": "deny-all",
+   "egress_bytes": 22455,
+   "active_cpu_ms": 1921,
+   "boot_ms": 261,
+   "wall_clock_ms": 403,
+   "exit_code": 0,
+   "uploaded": [
+    {
+     "path": "lab/__init__.py",
+     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+     "bytes": 0
+    },
+    {
+     "path": "lab/harness.py",
+     "sha256": "5a459209f6a0c84e4dd3e9d1cc7e478ba90a0b12911239183a5849fe4b63c7cd",
+     "bytes": 9807
+    },
+    {
+     "path": "lab/cases/observed.json",
+     "sha256": "8f23376a7e53f3bf55764945208c2ce37e2a8716a314902ed6175bec823a8753",
+     "bytes": 1749847
+    },
+    {
+     "path": "lab/cases/synthetic.json",
+     "sha256": "72e8c341c8a9fbbe9b062539ebb4245734ec7ef255ccd9a37c6780e2145bcbf9",
+     "bytes": 26035
+    },
+    {
+     "path": "lab/candidate.py",
+     "sha256": "9e994c67a2527ce372ffef629218b9153c85b24092d0261ab79f01ae1d8c9325",
+     "bytes": 3040
+    }
+   ],
+   "isolation": [
+    {
+     "name": "egress-dns",
+     "command": "python3 -c import socket;socket.setdefaulttimeout(8);socket.gethostbyname(\"api.openai.com\")",
+     "expectation": "DNS resolution of an external host fails",
+     "held": true,
+     "observed": "exit 1: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import socket;socket.setdefaulttimeout(8);socket.gethostbyname(\"api.openai.com\")\n                                              ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nsocket.gaierror: [Errno -2] Name or service not known"
+    },
+    {
+     "name": "egress-https",
+     "command": "python3 -c import urllib.request;urllib.request.urlopen(\"https://api.github.com/meta\",timeout=8).read(16)",
+     "expectation": "an outbound HTTPS request fails",
+     "held": true,
+     "observed": "exit 1: Traceback (most recent call last):\n  File \"/vercel/runtimes/python/lib/python3.13/urllib/request.py\", line 1319, in do_open\n    h.request(req.get_method(), req.selector, req.data, headers,\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n              encode_chunked=req.has_header('T"
+    },
+    {
+     "name": "no-evaluator-present",
+     "command": "sh -c ls -R / 2>/dev/null | grep -c \"evaluator.ts\" || true",
+     "expectation": "the code that grades the candidate is nowhere on the filesystem",
+     "held": true,
+     "observed": "exit 0: 0"
+    },
+    {
+     "name": "no-secrets-in-env",
+     "command": "sh -c env | grep -ciE \"^(VERCEL_TOKEN|AI_GATEWAY|OPENAI|BLOB_READ_WRITE|DATABASE|ANTHROPIC)\" || true",
+     "expectation": "no production credential is present in the environment",
+     "held": true,
+     "observed": "exit 0: 0"
+    }
+   ]
+  },
+  "investigation": {
+   "model": "openai/gpt-4.1",
+   "gateway": "vercel-ai-gateway",
+   "gateway_auth": "oidc",
+   "started_at": "2026-09-30T04:08:31.494Z",
+   "wall_clock_ms": 27646,
+   "finish_reason": "stop",
+   "stop_cause": "completed",
+   "tool_calls_made": 7,
+   "max_tool_calls": 12,
+   "model_calls_made": 6,
+   "budget_label": "default",
+   "budget": {
+    "max_proposals": 1,
+    "max_tool_calls": 12,
+    "max_model_calls": 6,
+    "max_output_tokens": 4096,
+    "max_total_tokens": 150000,
+    "max_tool_result_chars": 8000,
+    "max_usd": 0.75,
+    "wall_clock_seconds": 180
+   },
+   "budget_ceiling_usd": 0.75,
+   "usage": {
+    "input_tokens": 32590,
+    "output_tokens": 1660,
+    "total_tokens": 34250
+   },
+   "tokens_used": 34250,
+   "cost_usd": 0.059068,
+   "proposed": true,
+   "evaluation_requested_by": "harness",
+   "hypothesis": "The association defect arises when the response count or order diverges from the articles. This candidate parser refuses with 'count_mismatch' when the 'results' count does not exactly match the article count, preventing incorrect associations and ensuring a complete, unambiguous mapping. All contract prelude, refusal kinds, and structure are inlined exactly as required.",
+   "evidence": [
+    "Excerpt from positional_v0 showing association-by-index, padding, never refusing (lines 6-15, 8-12).",
+    "REFUSAL_KINDS from types.py: count_mismatch/shape/association errors (lines 22-45).",
+    "Case 000 + 001: Responses are simple arrays, no explicit article keys, positional association only works if counts match."
+   ],
+   "scope_accepted": true,
+   "scope_reason": "within scope; queued for sandboxed evaluation",
+   "trace_path": "backend/lab/runs/agent-g41-default-06-sandbox.trace.json",
+   "n_trace_steps": 16
+  },
+  "case_suites": [
+   {
+    "group": "observed",
+    "path": "backend/lab/cases/observed.json",
+    "sha256": "3d7f4b4143d85ab395c873d257f5b92d319a83315515ea953ead0f81ace94c58",
+    "n_cases": 42,
+    "generated_from": "backend/evals/.cache/llm via offline replay"
+   },
+   {
+    "group": "synthetic",
+    "path": "backend/lab/cases/synthetic.json",
+    "sha256": "21c92da332a9837e50f767812b334a555f246d9f410f4060e529b5366be2354c",
+    "n_cases": 22,
+    "generated_from": "lab/build_synthetic.py — fault injection, ground truth by construction"
+   }
+  ],
+  "notes": [
+   {
+    "severity": "info",
+    "message": "Every case ran offline against responses already committed to this repository, so grading made no inference call. The investigation that wrote the candidate did, and its spend is recorded under usage.",
+    "source": "backend/lab/runs/agent-g41-default-06-sandbox.trace.json"
+   },
+   {
+    "severity": "caution",
+    "message": "The case suite is public. A candidate may have been written against it, so passing does not establish generalisation.",
+    "source": "backend/lab/cases/"
+   },
+   {
+    "severity": "warning",
+    "message": "The candidate declared protocol \"keyed-strict-v1\", which the spec does not define (it defines positional-v0, keyed-v2). It was graded under that declaration by the same evaluator as every other candidate.",
+    "source": "backend/lab/contract/candidates/agent_g41_default_06.py"
+   }
+  ]
+ },
+ "verdict": "rejected",
+ "verdict_reason": "association-exact: 0/0 cases satisfied, threshold 1",
+ "verdict_scope": "Accepted means eligible for human review under this spec hash, against a public case suite. It is not evidence of production quality, and it does not establish generalisation: the cases are visible and a candidate may have been written against them.",
+ "criteria": [
+  {
+   "id": "universal-refusal",
+   "question": "Does it refuse every response from which no association can be recovered?",
+   "threshold": 1,
+   "applicable": 48,
+   "satisfied": 48,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "association-exact",
+   "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+   "threshold": 1,
+   "applicable": 0,
+   "satisfied": 0,
+   "rate": null,
+   "passed": false
+  },
+  {
+   "id": "protocol-violation-refusal",
+   "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+   "threshold": 1,
+   "applicable": 0,
+   "satisfied": 0,
+   "rate": null,
+   "passed": false
+  },
+  {
+   "id": "no-crash",
+   "question": "Does it terminate on every case without crashing or hanging?",
+   "threshold": 1,
+   "applicable": 48,
+   "satisfied": 48,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "complete-evidence",
+   "question": "Is there a prediction record for every applicable case?",
+   "threshold": 1,
+   "applicable": 48,
+   "satisfied": 48,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "protocol-exclusivity",
+   "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+   "threshold": 1,
+   "applicable": 16,
+   "satisfied": 16,
+   "rate": 1,
+   "passed": true
+  }
+ ],
+ "gradings": [
+  {
+   "spec_version": 1,
+   "spec_hash": "008af8266204438a",
+   "verdict": "rejected",
+   "verdict_reason": "association-exact: 0/0 cases satisfied, threshold 1",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 0,
+     "satisfied": 0,
+     "rate": null,
+     "passed": false
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 0,
+     "satisfied": 0,
+     "rate": null,
+     "passed": false
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    }
+   ]
+  },
+  {
+   "spec_version": 2,
+   "spec_hash": "f027762ab4d08b35",
+   "verdict": "rejected",
+   "verdict_reason": "association-exact: 0/0 cases satisfied, threshold 1",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 0,
+     "satisfied": 0,
+     "rate": null,
+     "passed": false
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 0,
+     "satisfied": 0,
+     "rate": null,
+     "passed": false
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-exclusivity",
+     "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+     "threshold": 1,
+     "applicable": 16,
+     "satisfied": 16,
+     "rate": 1,
+     "passed": true
+    }
+   ]
+  }
+ ],
+ "outcomes": [
+  {
+   "case_id": "observed-2026-09-02-000",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.135
+  },
+  {
+   "case_id": "observed-2026-09-02-001",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.01
+  },
+  {
+   "case_id": "observed-2026-09-02-002",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.004
+  },
+  {
+   "case_id": "observed-2026-09-02-003",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "observed-2026-09-02-004",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "observed-2026-09-02-005",
+   "group": "observed",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is positional-v0; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-006",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-007",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-008",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-009",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-010",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-011",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-012",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-013",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-014",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-015",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-016",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-017",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-018",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-019",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-020",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-021",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-022",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-023",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-024",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-025",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-026",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-027",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-028",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-029",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-030",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-031",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-032",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-033",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-034",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-035",
+   "group": "observed",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is positional-v0; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-036",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-037",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "observed-2026-09-02-038",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-039",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "observed-2026-09-02-040",
+   "group": "observed",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "observed-2026-09-02-041",
+   "group": "observed",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is positional-v0; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-keyed-in-order",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-keyed-reversed",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-keyed-rotated",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-duplicate-id",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "duplicate_id"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-unknown-id",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "unknown_id"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-missing-id",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "missing_id",
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-score-nan",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "score_not_finite",
+    "invalid_type",
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-score-out-of-range",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "score_out_of_range",
+    "invalid_type"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-score-string",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "invalid_type"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-score-null",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "invalid_type"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-relevant-not-bool",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "invalid_type"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-malformed-json",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "malformed_json"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-truncated-finish-reason",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "truncated_response",
+    "count_mismatch",
+    "missing_id"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-not-an-object",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "unexpected_shape"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-empty-results",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "keyed-v2",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is keyed-v2; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "missing_id",
+    "count_mismatch"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-exec-no-recording",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "no_recording"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-exec-timeout",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "timeout"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-exec-cancelled",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "cancelled"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-exec-budget",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "keyed-v2",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "retries_exhausted",
+    "no_recording"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-positional-short",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch",
+    "missing_id"
+   ],
+   "ms": 0.002
+  },
+  {
+   "case_id": "syn-positional-long",
+   "group": "synthetic",
+   "family": "universal-refusal",
+   "protocol": "positional-v0",
+   "applicability": "scored",
+   "status": "correct",
+   "detail": "refused (unexpected_shape)",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch",
+    "duplicate_id"
+   ],
+   "ms": 0.003
+  },
+  {
+   "case_id": "syn-positional-reordered",
+   "group": "synthetic",
+   "family": "protocol-association",
+   "protocol": "positional-v0",
+   "applicability": "not-applicable",
+   "status": "not-applicable",
+   "detail": "case is positional-v0; candidate declares keyed-strict-v1",
+   "counterexample": null,
+   "observed_refusal_kind": "unexpected_shape",
+   "expected_refusal_kinds": [
+    "count_mismatch",
+    "unexpected_shape",
+    "unsupported_protocol",
+    "invalid_type",
+    "missing_id"
+   ],
+   "ms": 0.002
+  }
+ ],
+ "counts": {
+  "correct": 48,
+  "wrong-association": 0,
+  "should-have-refused": 0,
+  "should-have-parsed": 0,
+  "crashed": 0,
+  "timeout": 0,
+  "missing-record": 0,
+  "not-applicable": 16
+ },
+ "smallest_counterexample": null,
+ "diagnostics": [
+  {
+   "id": "out-of-protocol-association",
+   "question": "On cases outside its declared protocol, did it refuse — or associate anyway?",
+   "value": 0,
+   "of": 16,
+   "detail": "It produced no association on any case outside its declared protocol.",
+   "case_ids": []
+  }
+ ],
+ "usage": {
+  "model_calls": 6,
+  "replay_spend_usd": 0,
+  "recording_cost_usd": "unknown",
+  "provider_reported": {
+   "input_tokens": 32590,
+   "output_tokens": 1660,
+   "total_tokens": 34250,
+   "tokens_used": 34250,
+   "cost_usd": 0.059068
+  },
+  "basis": "Grading replayed committed recordings and made no inference call; `replay_spend_usd` is that, and is $0. The investigation that authored the candidate did call a model: 6 call(s) to openai/gpt-4.1 through the AI Gateway, 34250 tokens, $0.059068 as the gateway reported it per call. That is in `provider_reported`. The microVM is metered compute billed at a rate this repository does not record: 1921ms of active CPU across 664ms wall clock."
+ },
+ "attempts": [
+  {
+   "attempt_id": "article-to-verdict-association__agent-g41-default-06#01",
+   "started_at": "2026-09-30T04:08:59.140Z",
+   "ended_at": "2026-09-30T04:09:05.729Z",
+   "status": "succeeded",
+   "runner": "vercel-sandbox",
+   "note": "sandbox turquoise-very-bat-K5Jp53 in iad1, exit 0 in 403ms; run by the harness after the loop ended, because the agent did not request evaluation"
+  }
+ ]
+}

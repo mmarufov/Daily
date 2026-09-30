@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_k2_generous_04.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The positional association defect causes wrong verdicts when results are reordered or counts mismatch. The fix is keyed association where each result contains article_id. The parser matches by ID, not position, and refuses on duplicate, unknown, or missing IDs. This implements keyed-v2 protocol.",
+ "transcribed_from": "unknown"
+}
