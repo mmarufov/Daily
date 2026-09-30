@@ -178,7 +178,7 @@ export default function EngineeringPage() {
         <Band {...band('cost', 'Identical inputs, only the parse differs')} />
         <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
           <Figure term="Guard fires" value="63" note="one run, ten fixtures" signal />
-          <Figure term="Worst response" value="201" note="verdicts for 40 articles" signal />
+          <Figure term="Worst in this run" value="201" note="verdicts for 40 articles" signal />
           <Figure term="Cache misses" value="0" note="replayed entirely offline" />
           <Figure term="Model calls" value="44 → 84" note="retries are not free" />
         </dl>
