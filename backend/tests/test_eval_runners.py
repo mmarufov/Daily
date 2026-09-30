@@ -170,7 +170,7 @@ class TestPrototypeRunner(unittest.TestCase):
 
     def test_preparation_cost_is_included_for_direct_runner_and_once_for_global(self):
         runner = PrototypeRunner(backend="bm25", judge=False, events=False)
-        measured = lambda fn: (fn(), 1, .125, 2, 0, .01)
+        measured = lambda fn: (fn(), 1, .125, 2, 0, 0, .01)
         with patch("evals.runners._meter_delta", side_effect=measured):
             shared = runner.prepare_global(_pool(3), NOW)
             result = runner.build(PERSONA, _pool(3), NOW)
@@ -192,7 +192,7 @@ class TestPrototypeRunner(unittest.TestCase):
     def test_shared_preparation_added_to_system_totals_once(self):
         from evals import run
         runner = PrototypeRunner(backend="bm25", judge=False, events=False)
-        prepared = {"calls": 7, "cost_usd": .25, "cache_misses": 0, "latency_s": .1}
+        prepared = {"calls": 7, "cost_usd": .25, "cache_misses": 0, "offline_misses": 3, "latency_s": .1}
         with patch.object(run, "get_runner", return_value=runner), \
                 patch.object(run, "load_snapshot", return_value={"articles": _pool(3), "built_at": NOW.isoformat()}), \
                 patch.object(run, "load_personas", return_value={"one": PERSONA, "two": PERSONA}), \
@@ -204,6 +204,8 @@ class TestPrototypeRunner(unittest.TestCase):
         self.assertEqual(report["summary"]["calls_total"], 7)
         self.assertEqual(report["summary"]["reader_calls_total"], 0)
         self.assertEqual(report["summary"]["cost_usd_total"], .25)
+        # A miss raised while preparing shared state still fails the offline check.
+        self.assertEqual(report["summary"]["offline_misses_total"], 3)
 
 
 if __name__ == "__main__":
