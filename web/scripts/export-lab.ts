@@ -27,7 +27,7 @@ import {
   type Case,
   type RecordBundle,
 } from '../lib/lab/records'
-import { EXPERIMENT, SPECS, specHash } from '../lib/lab/spec'
+import { EXPERIMENT, PROTOCOLS, SPECS, specHash } from '../lib/lab/spec'
 import { KNOWN_IMPLEMENTATIONS, SANDBOX_LIMITS, selectRunner } from '../lib/lab/runner'
 import {
   LAB_ARTIFACT_VERSION,
@@ -190,6 +190,8 @@ interface CandidateDescriptor {
   readonly description: string
   readonly declared_protocol: LabRun['candidate']['declared_protocol']
   readonly transcribed_from: string
+  /** A protocol the candidate named that the spec does not define, verbatim. */
+  readonly unrecognised_protocol?: string
 }
 
 function describeCandidate(
@@ -209,10 +211,15 @@ function describeCandidate(
   const descriptor = JSON.parse(readInput(rel)) as {
     kind: CandidateDescriptor['kind']
     source_path: string
-    declared_protocol: CandidateDescriptor['declared_protocol']
+    declared_protocol: string
     description: string
     transcribed_from?: string
   }
+  // An agent can name a protocol the spec does not define. The evaluator
+  // grades the records under whatever was declared; the artifact can only
+  // carry a defined protocol, so it says `unknown` and a note keeps the name.
+  const recognised =
+    descriptor.declared_protocol === UNKNOWN || (PROTOCOLS as readonly string[]).includes(descriptor.declared_protocol)
   return {
     candidate_id: input.candidate_id,
     path: descriptor.source_path,
@@ -220,8 +227,9 @@ function describeCandidate(
     // claims: the trace is the evidence, and it outranks a hand-written field.
     kind: investigation === null ? descriptor.kind : 'agent-authored',
     description: investigation === null ? descriptor.description : investigation.hypothesis,
-    declared_protocol: descriptor.declared_protocol,
+    declared_protocol: recognised ? (descriptor.declared_protocol as CandidateDescriptor['declared_protocol']) : UNKNOWN,
     transcribed_from: descriptor.transcribed_from ?? UNKNOWN,
+    ...(recognised ? {} : { unrecognised_protocol: descriptor.declared_protocol }),
   }
 }
 
@@ -531,6 +539,13 @@ function buildRunInScope(
     notes.unshift({
       severity: 'warning',
       message: `This is a seeded control with a deliberate defect. ${known.description}`,
+      source: known.path,
+    })
+  }
+  if (known.unrecognised_protocol !== undefined) {
+    notes.push({
+      severity: 'warning',
+      message: `The candidate declared protocol "${known.unrecognised_protocol}", which the spec does not define (it defines ${PROTOCOLS.join(', ')}). It was graded under that declaration by the same evaluator as every other candidate.`,
       source: known.path,
     })
   }
