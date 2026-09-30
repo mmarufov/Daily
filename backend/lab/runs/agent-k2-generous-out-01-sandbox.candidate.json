@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_k2_generous_out_01.py",
+ "declared_protocol": "positional-v0",
+ "description": "The positional-v0 defect is associating results by array index without validating the association is unambiguous. When result count differs from article count, wrong verdicts get assigned. The fix validates structure, refuses on count_mismatch when len(results) != len(articles), validates score ranges with finite_unit_score, and only returns ok() for complete unambiguous associations. Evidence from observed-2026-09-02-002 shows count_mismatch is expected when counts differ.",
+ "transcribed_from": "unknown"
+}

@@ -1,0 +1,43 @@
+{
+ "model": "openai/gpt-4.1",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T04:08:31.494Z",
+ "wall_clock_ms": 27646,
+ "finish_reason": "stop",
+ "stop_cause": "completed",
+ "tool_calls_made": 7,
+ "max_tool_calls": 12,
+ "model_calls_made": 6,
+ "budget_label": "default",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 12,
+  "max_model_calls": 6,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 150000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 0.75,
+  "wall_clock_seconds": 180
+ },
+ "budget_ceiling_usd": 0.75,
+ "usage": {
+  "input_tokens": 32590,
+  "output_tokens": 1660,
+  "total_tokens": 34250
+ },
+ "tokens_used": 34250,
+ "cost_usd": 0.059068,
+ "proposed": true,
+ "evaluation_requested_by": "harness",
+ "hypothesis": "The association defect arises when the response count or order diverges from the articles. This candidate parser refuses with 'count_mismatch' when the 'results' count does not exactly match the article count, preventing incorrect associations and ensuring a complete, unambiguous mapping. All contract prelude, refusal kinds, and structure are inlined exactly as required.",
+ "evidence": [
+  "Excerpt from positional_v0 showing association-by-index, padding, never refusing (lines 6-15, 8-12).",
+  "REFUSAL_KINDS from types.py: count_mismatch/shape/association errors (lines 22-45).",
+  "Case 000 + 001: Responses are simple arrays, no explicit article keys, positional association only works if counts match."
+ ],
+ "scope_accepted": true,
+ "scope_reason": "within scope; queued for sandboxed evaluation",
+ "trace_path": "backend/lab/runs/agent-g41-default-06-sandbox.trace.json",
+ "n_trace_steps": 16
+}

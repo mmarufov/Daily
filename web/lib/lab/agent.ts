@@ -28,7 +28,9 @@ import {
   ReadSourceInput,
   RequestEvaluationInput,
   readiness,
+  resolveInvestigationBudget,
   validateProposal,
+  type InvestigationBudget,
 } from './investigator'
 import type { Case } from './records'
 import type { Evaluation } from './evaluator'
@@ -80,9 +82,48 @@ export interface TraceStep {
   readonly at_ms: number
 }
 
+/**
+ * One model call, as the gateway reported it.
+ *
+ * `steps` above records what the *tools* saw, and only for calls that passed
+ * the tool's input schema: a call the SDK refused never reaches `execute`, so
+ * it never reached `record`. That made two things invisible that a trajectory
+ * verifier needs -- how many model calls were actually made, and what the
+ * model *tried* to call, including arguments the schema threw out. Both are
+ * here, one entry per call, in the order they happened.
+ */
+export interface ModelStepRecord {
+  readonly index: number
+  readonly finish_reason: string
+  readonly input_tokens: number | null
+  readonly output_tokens: number | null
+  /** Gateway-reported, in USD. Null when the gateway did not report one. */
+  readonly cost_usd: number | null
+  readonly generation_id: string | null
+  readonly tool_calls: readonly {
+    readonly name: string
+    /** JSON, truncated. File contents are summarised as a byte count. */
+    readonly input: string
+    /** True when the SDK refused the call before any tool ran. */
+    readonly invalid: boolean
+    readonly error: string | null
+  }[]
+}
+
+/** Why the loop stopped, in one word, so a reader does not parse error text. */
+export type StopCause =
+  | 'completed'
+  | 'step-limit'
+  | 'output-limit'
+  | 'token-budget'
+  | 'wall-clock'
+  | 'call-error'
+
 export interface InvestigationTrace {
   readonly model: string
   readonly gateway: string
+  /** Which credential reached the gateway. Same gateway, same meter either way. */
+  readonly gateway_auth: 'api-key' | 'oidc'
   readonly started_at: string
   readonly wall_clock_ms: number
   readonly steps: readonly TraceStep[]
@@ -102,14 +143,27 @@ export interface InvestigationTrace {
    * `error` so nothing downstream mistakes it for a completed loop.
    */
   readonly error: string | null
-  readonly budget: typeof BUDGET
+  readonly stop_cause: StopCause
+  /** The budget this run was *given*: `BUDGET` unless configuration overrode it. */
+  readonly budget: InvestigationBudget
+  /** `default`, or the label the operator gave an overridden budget. */
+  readonly budget_label: string
   /** The effective limit: the lower of the authorisation and the code ceiling. */
   readonly budget_ceiling_usd: number
   /** What the operator authorised, recorded so the clamp is visible. */
   readonly budget_authorised_usd: number
   /** Cumulative tokens observed, against `BUDGET.max_total_tokens`. */
   readonly tokens_used: number
+  /** Every tool call the loop was asked to execute, including ones the budget refused. */
   readonly tool_calls_made: number
+  /** Model calls that completed and reported usage. */
+  readonly model_calls_made: number
+  readonly model_steps: readonly ModelStepRecord[]
+  /**
+   * Sum of the gateway-reported cost of every completed model call. Null when
+   * any call lacked a reported cost, rather than a sum that quietly omits it.
+   */
+  readonly cost_usd: number | null
   readonly proposal: ProposalRecord | null
 }
 
@@ -139,13 +193,16 @@ const MAX_PAYLOAD = 4_000
  * cannot tell it received a fragment will reason about the fragment as though
  * it were the whole thing.
  */
-export function capForModel<T>(value: T): T | { truncated: true; of_chars: number; head: string } {
+export function capForModel<T>(
+  value: T,
+  limit: number = BUDGET.max_tool_result_chars,
+): T | { truncated: true; of_chars: number; head: string } {
   const text = JSON.stringify(value)
-  if (text.length <= BUDGET.max_tool_result_chars) return value
+  if (text.length <= limit) return value
   return {
     truncated: true,
     of_chars: text.length,
-    head: text.slice(0, BUDGET.max_tool_result_chars),
+    head: text.slice(0, limit),
   }
 }
 
@@ -204,6 +261,11 @@ export function resolveBudget(
 /* --------------------------------------------------------- the loop ---- */
 
 export interface InvestigationDeps {
+  /**
+   * The id the proposal is recorded under. Defaults to `agent-001`; a series
+   * of runs needs distinct ids so each one's evidence is its own file.
+   */
+  readonly candidateId?: string
   /** The frozen case suite the agent may inspect. */
   readonly cases: readonly Case[]
   /** Bounded reader for the allowlisted source paths. */
@@ -229,7 +291,11 @@ export interface InvestigationDeps {
 export type InvestigationResult =
   | { readonly ok: true; readonly trace: InvestigationTrace }
   /** Refused before anything was spent. There is no trace because nothing ran. */
-  | { readonly ok: false; readonly reason: 'missing-credentials' | 'missing-budget'; readonly needs: readonly string[] }
+  | {
+      readonly ok: false
+      readonly reason: 'missing-credentials' | 'missing-budget' | 'invalid-budget'
+      readonly needs: readonly string[]
+    }
   /** The call failed partway. A trace is returned, because spend happened. */
   | {
       readonly ok: false
@@ -254,9 +320,14 @@ export async function investigate(
     return { ok: false, reason: ready.reason, needs: ready.needs }
   }
 
-  const budget = resolveBudget(env)
-  if (!budget.ok) return { ok: false, reason: 'missing-budget', needs: budget.needs }
-  const { ceiling, authorised } = budget
+  const config = resolveInvestigationBudget(env)
+  if (!config.ok) return { ok: false, reason: 'invalid-budget', needs: config.needs }
+  const { budget, label: budgetLabel } = config
+
+  const dollars = resolveBudget(env, budget.max_usd)
+  if (!dollars.ok) return { ok: false, reason: 'missing-budget', needs: dollars.needs }
+  const { ceiling, authorised } = dollars
+  const candidateId = deps.candidateId ?? 'agent-001'
 
   const model = env.LAB_MODEL ?? DEFAULT_MODEL
   const onProgress = deps.onProgress ?? (() => {})
@@ -279,10 +350,10 @@ export async function investigate(
   /** Every tool shares one ceiling; exceeding it ends the tool, not the run. */
   const spend = (name: string): string | null => {
     toolCalls += 1
-    if (toolCalls > BUDGET.max_tool_calls) {
-      return `budget exhausted: ${BUDGET.max_tool_calls} tool calls is the ceiling. Submit your proposal now or stop.`
+    if (toolCalls > budget.max_tool_calls) {
+      return `budget exhausted: ${budget.max_tool_calls} tool calls is the ceiling. Submit your proposal now or stop.`
     }
-    onProgress(`tool ${toolCalls}/${BUDGET.max_tool_calls}: ${name}`)
+    onProgress(`tool ${toolCalls}/${budget.max_tool_calls}: ${name}`)
     return null
   }
 
@@ -314,7 +385,7 @@ export async function investigate(
           expectation: kase.expectation,
         }
         record('tool-result', 'inspect_failure', result)
-        return capForModel(result)
+        return capForModel(result, budget.max_tool_result_chars)
       },
     }),
 
@@ -329,7 +400,7 @@ export async function investigate(
         try {
           const excerpt = deps.readSource(path, start_line, line_count)
           record('tool-result', 'read_source_excerpt', excerpt)
-          return capForModel({ path, start_line, excerpt })
+          return capForModel({ path, start_line, excerpt }, budget.max_tool_result_chars)
         } catch (error) {
           const result = { error: error instanceof Error ? error.message : String(error) }
           record('tool-result', 'read_source_excerpt', result)
@@ -358,7 +429,7 @@ export async function investigate(
         }
         const outcome = validateProposal(input)
         proposal = {
-          candidate_id: 'agent-001',
+          candidate_id: candidateId,
           path: input.path,
           content: input.content,
           hypothesis: input.hypothesis,
@@ -408,28 +479,74 @@ export async function investigate(
   // moment cumulative usage crosses the budget, so the worst case is one
   // step's overshoot rather than unbounded.
   const overBudget = new AbortController()
+  const wallClock = AbortSignal.timeout(budget.wall_clock_seconds * 1000)
   let tokensUsed = 0
+  const modelSteps: ModelStepRecord[] = []
+
+  /** What the model asked for, including calls the SDK refused. */
+  const describeCall = (input: unknown): string => {
+    if (input !== null && typeof input === 'object' && 'content' in input) {
+      const { content, ...rest } = input as { content: unknown }
+      return truncate({ ...rest, content_bytes: typeof content === 'string' ? content.length : null })
+    }
+    return truncate(input ?? null)
+  }
+
+  const gatewayCost = (metadata: unknown): { cost: number | null; generation: string | null } => {
+    const gw = (metadata as { gateway?: { cost?: unknown; generationId?: unknown } } | undefined)?.gateway
+    const cost = typeof gw?.cost === 'string' || typeof gw?.cost === 'number' ? Number(gw.cost) : Number.NaN
+    return {
+      cost: Number.isFinite(cost) ? cost : null,
+      generation: typeof gw?.generationId === 'string' ? gw.generationId : null,
+    }
+  }
+
+  const stopCause = (finishReason: string, error: string | null): StopCause => {
+    if (error !== null) {
+      if (overBudget.signal.aborted) return 'token-budget'
+      if (wallClock.aborted) return 'wall-clock'
+      return 'call-error'
+    }
+    // The last call was cut off by `max_output_tokens`: whatever it was
+    // writing -- often the proposal itself -- never arrived.
+    if (finishReason === 'length') return 'output-limit'
+    // The loop ended on a tool call: the model wanted another turn and the
+    // step limit refused it.
+    return finishReason === 'tool-calls' && modelSteps.length >= budget.max_model_calls ? 'step-limit' : 'completed'
+  }
 
   const assemble = (
     usage: { input: number | null; output: number | null; total: number | null },
     finishReason: string,
     error: string | null,
-  ): InvestigationTrace => ({
-    model,
-    gateway: ready.gateway,
-    started_at: new Date(startedAt).toISOString(),
-    wall_clock_ms: Date.now() - startedAt,
-    steps,
-    usage: { input_tokens: usage.input, output_tokens: usage.output, total_tokens: usage.total },
-    finish_reason: finishReason,
-    error,
-    budget: BUDGET,
-    budget_ceiling_usd: ceiling,
-    budget_authorised_usd: authorised,
-    tool_calls_made: toolCalls,
-    tokens_used: tokensUsed,
-    proposal,
-  })
+  ): InvestigationTrace => {
+    const costs = modelSteps.map((m) => m.cost_usd)
+    return {
+      model,
+      gateway: ready.gateway,
+      gateway_auth: ready.auth,
+      started_at: new Date(startedAt).toISOString(),
+      wall_clock_ms: Date.now() - startedAt,
+      steps,
+      usage: { input_tokens: usage.input, output_tokens: usage.output, total_tokens: usage.total },
+      finish_reason: finishReason,
+      error,
+      stop_cause: stopCause(finishReason, error),
+      budget,
+      budget_label: budgetLabel,
+      budget_ceiling_usd: ceiling,
+      budget_authorised_usd: authorised,
+      tool_calls_made: toolCalls,
+      model_calls_made: modelSteps.length,
+      model_steps: modelSteps,
+      cost_usd:
+        costs.length === 0 || costs.some((c) => c === null)
+          ? null
+          : Number(costs.reduce<number>((a, c) => a + (c ?? 0), 0).toFixed(8)),
+      tokens_used: tokensUsed,
+      proposal,
+    }
+  }
 
   try {
     const result = await generateText({
@@ -438,17 +555,34 @@ export async function investigate(
       prompt:
         'Investigate the association defect and submit one candidate parser. Start by reading the current implementation and at least two recorded cases.',
       tools,
-      stopWhen: stepCountIs(BUDGET.max_model_calls),
-      maxOutputTokens: BUDGET.max_output_tokens,
-      abortSignal: AbortSignal.any([
-        AbortSignal.timeout(BUDGET.wall_clock_seconds * 1000),
-        overBudget.signal,
-      ]),
-      onStepFinish: ({ usage }) => {
+      stopWhen: stepCountIs(budget.max_model_calls),
+      maxOutputTokens: budget.max_output_tokens,
+      abortSignal: AbortSignal.any([wallClock, overBudget.signal]),
+      onStepFinish: (step) => {
+        const { usage } = step
+        const { cost, generation } = gatewayCost(step.providerMetadata)
+        modelSteps.push({
+          index: modelSteps.length,
+          finish_reason: step.finishReason,
+          input_tokens: usage.inputTokens ?? null,
+          output_tokens: usage.outputTokens ?? null,
+          cost_usd: cost,
+          generation_id: generation,
+          tool_calls: step.toolCalls.map((call) => {
+            const invalid = 'invalid' in call && call.invalid === true
+            const error = 'error' in call && call.error !== undefined ? call.error : null
+            return {
+              name: call.toolName,
+              input: describeCall(call.input),
+              invalid,
+              error: error === null ? null : plain(error instanceof Error ? error.message : String(error)).slice(0, 600),
+            }
+          }),
+        })
         tokensUsed += (usage.inputTokens ?? 0) + (usage.outputTokens ?? 0)
-        if (tokensUsed >= BUDGET.max_total_tokens) {
+        if (tokensUsed >= budget.max_total_tokens) {
           onProgress(`token budget reached at ${tokensUsed}; stopping`)
-          overBudget.abort(new Error(`token budget of ${BUDGET.max_total_tokens} reached`))
+          overBudget.abort(new Error(`token budget of ${budget.max_total_tokens} reached`))
         }
       },
     })
@@ -473,7 +607,8 @@ export async function investigate(
     // Still a trace. Whatever tool calls happened before this were paid for,
     // and the usage totals are unavailable because the call that would have
     // reported them is the one that failed -- so they are null rather than
-    // zero, which would read as "this cost nothing".
+    // zero, which would read as "this cost nothing". The calls that did
+    // complete are in `model_steps`, with the usage each one reported.
     const message = plain(cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause))
     onProgress(`the call failed after ${toolCalls} tool calls: ${message.slice(0, 120)}`)
     return {

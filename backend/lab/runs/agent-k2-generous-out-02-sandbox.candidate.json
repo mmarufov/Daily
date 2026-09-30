@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_k2_generous_out_02.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is positional association - when model returns results in different order or wrong count, articles get wrong verdicts. The fix is keyed-v2 protocol: each result must contain article_id for unambiguous association. Parser validates exact ID set matching, refuses with duplicate_id/unknown_id/missing_id/count_mismatch when association is ambiguous.",
+ "transcribed_from": "unknown"
+}

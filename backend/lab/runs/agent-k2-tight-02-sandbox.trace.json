@@ -1,0 +1,218 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T03:28:27.901Z",
+ "wall_clock_ms": 36651,
+ "steps": [
+  {
+   "index": 0,
+   "kind": "tool-call",
+   "name": "read_source_excerpt",
+   "payload": "{\"path\":\"backend/lab/contract/types.py\",\"start_line\":1,\"line_count\":120}",
+   "at_ms": 3607
+  },
+  {
+   "index": 1,
+   "kind": "tool-result",
+   "name": "read_source_excerpt",
+   "payload": "1\t\"\"\"The frozen interface between a candidate parser and the trusted evaluator.\n2\t\n3\tEverything crossing this boundary is plain JSON. A candidate never returns an\n4\tobject, a score, a verdict on itself, or an exit code that means anything: it\n5\treturns *prediction records* describing what association it produced, and the\n6\tevaluator — which lives in another language, in another process, outside the\n7\tsandbox — decides whether that was right.\n8\t\n9\t`REFUSAL_KINDS` is a closed vocabulary. A candidate that invents a new kind is\n10\ttreated as having failed the case rather than as having discovered a new way to\n11\tpass, because the expectation set is keyed on these strings.\n12\t\"\"\"\n13\t\n14\tfrom __future__ import annotations\n15\t\n16\timport math\n17\tfrom typing import Any\n18\t\n19\tPROTOCOL_POSITIONAL = \"positional-v0\"\n20\tPROTOCOL_KEYED = \"keyed-v2\"\n21\t\n22\t#: Closed set. The evaluator's expectation fixtures reference these by name.\n23\tREFUSAL_KINDS: frozenset[str] = frozenset(\n24\t    {\n25\t        # Response-shape failures\n26\t        \"malformed_json\",\n27\t        \"truncated_response\",\n28\t        \"unexpected_shape\",\n29\t        # Association failures\n30\t        \"count_mismatch\",\n31\t        \"duplicate_id\",\n32\t        \"unknown_id\",\n33\t        \"missing_id\",\n34\t        # Value failures\n35\t        \"invalid_type\",\n36\t        \"score_out_of_range\",\n37\t        \"score_not_finite\",\n38\t        # Execution failures — never a pass, never a silent zero\n39\t        \"no_recording\",\n40\t        \"timeout\",\n41\t        \"retries_exhausted\",\n42\t        \"cancelled\",\n43\t        \"unsupported_protocol\",\n44\t    }\n45\t)\n46\t\n47\t\n48\tdef ok(verdicts: list[dict[str, Any]]) -> dict[str, Any]:\n49\t    \"\"\"A complete, unambiguous association of every article to a verdict.\"\"\"\n50\t    return {\"ok\": True, \"verdicts\": verdicts}\n51\t\n52\t\n53\tdef refuse(kind: str, detail: str = \"\") -> dict[str, Any]:\n54\t    \"\"\"An explicit refusal.\n55\t\n56\t    Refusing is a first-class outcome, not an error path. The defect this\n57\t    experiment exists to study is precisely a parser that declined to refuse.\n58\t    \"\"\"\n59\t    return {\"ok\": False, \"refusal\": {\"kind\": kind, \"detail\": detail[:400]}}\n60\t\n61\t\n62\tdef verdict(article_id: str, relevant: bool, score: float, reason: str) -> dict[str, Any]:\n63\t    return {\n64\t        \"article_id\": article_id,\n65\t        \"relevant\": bool(relevant),\n66\t        \"score\": float(score),\n67\t        \"reason\": str(reason)[:500],\n68\t    }\n69\t\n70\t\n71\tdef finite_unit_score(raw: Any) -> float | None:\n72\t    \"\"\"Return a score in [0, 1], or None when the value is not usable.\n73\t\n74\t    Production clamps with `max(0.0, min(1.0, float(...)))`, which turns 9e9\n75\t    into 1.0 and raises on NaN only by accident — `float('nan')` clamps to nan\n76\t    and propagates. Returning None forces the caller to decide explicitly.\n77\t    \"\"\"\n78\t    if isinstance(raw, bool) or not isinstance(raw, (int, float)):\n79\t        return None\n80\t    value = float(raw)\n81\t    if not math.isfinite(value):\n82\t        return None\n83\t    if value < 0.0 or value > 1.0:\n84\t        return None\n85\t    return value\n86\t",
+   "at_ms": 3608
+  },
+  {
+   "index": 2,
+   "kind": "tool-call",
+   "name": "read_source_excerpt",
+   "payload": "{\"path\":\"backend/lab/contract/versions/positional_v0.py\",\"start_line\":1,\"line_count\":120}",
+   "at_ms": 3608
+  },
+  {
+   "index": 3,
+   "kind": "tool-result",
+   "name": "read_source_excerpt",
+   "payload": "1\t\"\"\"Historical behaviour, transcribed from `origin/main`.\n2\t\n3\tSource: backend/app/services/openai_service.py, score_articles_batch, the\n4\t`normalized` loop. Verbatim semantics:\n5\t\n6\t    if len(results_list) != len(articles):\n7\t        logger.warning(\"... normalizing\")     # logged, then ignored\n8\t    for i in range(len(articles)):\n9\t        if i < len(results_list):\n10\t            entry = results_list[i]           # association by ARRAY POSITION\n11\t        else:\n12\t            ... {\"relevant\": False, \"score\": 0.0, \"reason\": \"scoring incomplete\"}\n13\t\n14\tThis version is preserved so the experiment can measure the defect rather than\n15\tdescribe it. It is not a control: it is what production does today.\n16\t\"\"\"\n17\t\n18\tfrom __future__ import annotations\n19\t\n20\t# --- contract prelude -------------------------------------------------------\n21\t# Inlined rather than imported. A candidate is ONE self-contained file with no\n22\t# project imports and no third-party dependencies, so the patch scope is a\n23\t# single path, the sandbox needs no install step, and nothing a candidate does\n24\t# can reach the evaluator. The canonical definitions live in\n25\t# lab/contract/types.py, and tests/test_contract_prelude.py asserts that every\n26\t# copy still agrees with it.\n27\t\n28\timport math as _math\n29\t\n30\t\n31\tdef ok(verdicts):\n32\t    return {\"ok\": True, \"verdicts\": verdicts}\n33\t\n34\t\n35\tdef refuse(kind, detail=\"\"):\n36\t    return {\"ok\": False, \"refusal\": {\"kind\": kind, \"detail\": str(detail)[:400]}}\n37\t\n38\t\n39\tdef verdict(article_id, relevant, score, reason):\n40\t    return {\"article_id\": article_id, \"relevant\": bool(relevant),\n41\t            \"score\": float(score), \"reason\": str(reason)[:500]}\n42\t\n43\t\n44\tdef finite_unit_score(raw):\n45\t    if isinstance(raw, bool) or not isinstance(raw, (int, float)):\n46\t        return None\n47\t    value = float(raw)\n48\t    if not _math.isfinite(value) or value < 0.0 or value > 1.0:\n49\t        return None\n50\t    return value\n51\t# --- end prelude ------------------------------------------------------------\n52\t\n53\timport json\n54\tfrom typing import Any\n55\t\n56\t\n57\tVERSION_ID = \"positional-v0\"\n58\tPROTOCOL = \"positional-v0\"\n59\t\n60\t\n61\tdef parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n62\t    if response.get(\"error\"):\n63\t        # Production catches this with a blanket `except Exception` and returns\n64\t        # an all-zero fallback. Reproduced, including that a cache miss is\n65\t        # indistinguishable from a model refusal.\n66\t        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n67\t\n68\t    content = response.get(\"content\")\n69\t    if content is None:\n70\t        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n71\t\n72\t    try:\n73\t        result = json.loads(content)\n74\t    except Exception:\n75\t        # No finish_reason check: a truncated completion is indistinguishable\n76\t        # from a malformed one, and both become the all-zero fallback.\n77\t        return ok([verdict(a[\"id\"], False, 0.0, \"scoring unavailable\") for a in articles])\n78\t\n79\t    results_list = result.get(\"results\", []) if isinstance(result, dict) else []\n80\t    if not results_list and isinstance(result, dict) and \"scores\" in result:\n81\t        results_list = [\n82\t            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n83\t            for s in result[\"scores\"]\n84\t        ]\n85\t\n86\t    out: list[dict[str, Any]] = []\n87\t    for i, article in enumerate(articles):\n88\t        if i < len(results_list):\n89\t            entry = results_list[i] if isinstance(results_list[i], dict) else {}\n90\t            try:\n91\t                score = max(0.0, min(1.0, float(entry.get(\"score\", 0.5))))\n92\t            except Exception:\n93\t                score = 0.5\n94\t            relevant = bool(entry.get(\"relevant\", score >= 0.5))\n95\t            out.append(verdict(article[\"id\"], relevant, score, str(entry.get(\"reason\", \"\"))))\n96\t        else:\n97\t            out.append(\n… [4083 chars total]",
+   "at_ms": 3608
+  },
+  {
+   "index": 4,
+   "kind": "tool-call",
+   "name": "read_source_excerpt",
+   "payload": "{\"path\":\"backend/lab/contract/versions/count_guard_v1.py\",\"start_line\":1,\"line_count\":120}",
+   "at_ms": 3608
+  },
+  {
+   "index": 5,
+   "kind": "tool-result",
+   "name": "read_source_excerpt",
+   "payload": "1\t\"\"\"The count-mismatch guard, transcribed from PR #59 (head 81b2019).\n2\t\n3\tSource: backend/app/services/openai_service.py on\n4\t`mmarufov/batch-scoring-alignment`:\n5\t\n6\t    if len(results_list) != len(articles):\n7\t        logger.warning(\"... discarding the batch rather than assigning \"\n8\t                       \"verdicts by position\")\n9\t        continue                              # retry, then report unscored\n10\t\n11\tThat commit also stops swallowing the harness's stop signals:\n12\t\n13\t    except Exception as exc:\n14\t        if type(exc).__name__ in {\"CacheMiss\", \"BudgetExceeded\"}:\n15\t            raise\n16\t\n17\tBoth are reproduced. The guard is a real improvement over positional-v0 and\n18\tthis experiment is expected to show that — and also to show its ceiling: it\n19\tcompares *lengths*, so an equal-length reordered response still passes through\n20\tand is still associated by position.\n21\t\"\"\"\n22\t\n23\tfrom __future__ import annotations\n24\t\n25\t# --- contract prelude -------------------------------------------------------\n26\t# Inlined rather than imported. A candidate is ONE self-contained file with no\n27\t# project imports and no third-party dependencies, so the patch scope is a\n28\t# single path, the sandbox needs no install step, and nothing a candidate does\n29\t# can reach the evaluator. The canonical definitions live in\n30\t# lab/contract/types.py, and tests/test_contract_prelude.py asserts that every\n31\t# copy still agrees with it.\n32\t\n33\timport math as _math\n34\t\n35\t\n36\tdef ok(verdicts):\n37\t    return {\"ok\": True, \"verdicts\": verdicts}\n38\t\n39\t\n40\tdef refuse(kind, detail=\"\"):\n41\t    return {\"ok\": False, \"refusal\": {\"kind\": kind, \"detail\": str(detail)[:400]}}\n42\t\n43\t\n44\tdef verdict(article_id, relevant, score, reason):\n45\t    return {\"article_id\": article_id, \"relevant\": bool(relevant),\n46\t            \"score\": float(score), \"reason\": str(reason)[:500]}\n47\t\n48\t\n49\tdef finite_unit_score(raw):\n50\t    if isinstance(raw, bool) or not isinstance(raw, (int, float)):\n51\t        return None\n52\t    value = float(raw)\n53\t    if not _math.isfinite(value) or value < 0.0 or value > 1.0:\n54\t        return None\n55\t    return value\n56\t# --- end prelude ------------------------------------------------------------\n57\t\n58\timport json\n59\tfrom typing import Any\n60\t\n61\t\n62\tVERSION_ID = \"count-guard-v1\"\n63\tPROTOCOL = \"positional-v0\"\n64\t\n65\t\n66\tdef parse(articles: list[dict[str, Any]], response: dict[str, Any]) -> dict[str, Any]:\n67\t    error = response.get(\"error\")\n68\t    if error:\n69\t        # CacheMiss / BudgetExceeded propagate instead of degrading to zeros.\n70\t        if error in {\"no_recording\", \"budget_exceeded\"}:\n71\t            return refuse(\"no_recording\" if error == \"no_recording\" else \"retries_exhausted\", error)\n72\t        if error in {\"timeout\", \"cancelled\"}:\n73\t            return refuse(error, error)\n74\t        return refuse(\"retries_exhausted\", str(error))\n75\t\n76\t    content = response.get(\"content\")\n77\t    if content is None:\n78\t        return refuse(\"retries_exhausted\", \"no content returned\")\n79\t\n80\t    try:\n81\t        result = json.loads(content)\n82\t    except Exception as exc:\n83\t        return refuse(\"malformed_json\", str(exc))\n84\t\n85\t    if not isinstance(result, dict):\n86\t        return refuse(\"unexpected_shape\", f\"top level is {type(result).__name__}\")\n87\t\n88\t    results_list = result.get(\"results\", [])\n89\t    if not results_list and \"scores\" in result:\n90\t        results_list = [\n91\t            {\"relevant\": float(s) >= 0.5, \"score\": float(s), \"reason\": \"\"}\n92\t            for s in result[\"scores\"]\n93\t        ]\n94\t    if not isinstance(results_list, list):\n95\t        return refuse(\"unexpected_shape\", \"results is not a list\")\n96\t\n97\t    if len(results_list) != len(articles):\n98\t        return refuse(\n99\t            \"count_mismatch\",\n100\t            f\"{len(results_list)} results for {len(articles)} articles\",\n101\t        )\n102\t\n103\t    out: list[dict[str, Any]] = []\n104\t    for article, entry in zip(articles, results_list):\n105\t        if not\n… [4486 chars total]",
+   "at_ms": 3608
+  },
+  {
+   "index": 6,
+   "kind": "tool-call",
+   "name": "inspect_failure",
+   "payload": "{\"case_id\":\"observed-2024-01-15-001\"}",
+   "at_ms": 6929
+  },
+  {
+   "index": 7,
+   "kind": "tool-result",
+   "name": "inspect_failure",
+   "payload": "{\"error\":\"no such case\",\"available_sample\":[\"observed-2026-09-02-000\",\"observed-2026-09-02-001\",\"observed-2026-09-02-002\",\"observed-2026-09-02-003\",\"observed-2026-09-02-004\",\"observed-2026-09-02-005\",\"observed-2026-09-02-006\",\"observed-2026-09-02-007\"]}",
+   "at_ms": 6929
+  },
+  {
+   "index": 8,
+   "kind": "tool-call",
+   "name": "inspect_failure",
+   "payload": "{\"case_id\":\"observed-2024-01-15-002\"}",
+   "at_ms": 6929
+  },
+  {
+   "index": 9,
+   "kind": "tool-result",
+   "name": "inspect_failure",
+   "payload": "{\"error\":\"no such case\",\"available_sample\":[\"observed-2026-09-02-000\",\"observed-2026-09-02-001\",\"observed-2026-09-02-002\",\"observed-2026-09-02-003\",\"observed-2026-09-02-004\",\"observed-2026-09-02-005\",\"observed-2026-09-02-006\",\"observed-2026-09-02-007\"]}",
+   "at_ms": 6929
+  },
+  {
+   "index": 10,
+   "kind": "tool-call",
+   "name": "inspect_failure",
+   "payload": "{\"case_id\":\"syn-reordered-equal-count\"}",
+   "at_ms": 6929
+  },
+  {
+   "index": 11,
+   "kind": "tool-result",
+   "name": "inspect_failure",
+   "payload": "{\"error\":\"no such case\",\"available_sample\":[\"observed-2026-09-02-000\",\"observed-2026-09-02-001\",\"observed-2026-09-02-002\",\"observed-2026-09-02-003\",\"observed-2026-09-02-004\",\"observed-2026-09-02-005\",\"observed-2026-09-02-006\",\"observed-2026-09-02-007\"]}",
+   "at_ms": 6929
+  },
+  {
+   "index": 12,
+   "kind": "model-text",
+   "name": null,
+   "payload": "Now I understand the problem. Let me read some recorded cases to see what the actual failures look like:",
+   "at_ms": 36651
+  }
+ ],
+ "usage": {
+  "input_tokens": 10274,
+  "output_tokens": 317,
+  "total_tokens": 10591
+ },
+ "finish_reason": "tool-calls",
+ "error": null,
+ "stop_cause": "step-limit",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 6,
+  "max_model_calls": 3,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 60000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 0.3,
+  "wall_clock_seconds": 180
+ },
+ "budget_label": "tight",
+ "budget_ceiling_usd": 0.3,
+ "budget_authorised_usd": 1,
+ "tool_calls_made": 10,
+ "model_calls_made": 3,
+ "model_steps": [
+  {
+   "index": 0,
+   "finish_reason": "tool-calls",
+   "input_tokens": 810,
+   "output_tokens": 121,
+   "cost_usd": 0.00030224,
+   "generation_id": "gen_01M3R5PGVB4W8GCTSK0MKGHG1R",
+   "tool_calls": [
+    {
+     "name": "read_source_excerpt",
+     "input": "{\"path\":\"backend/lab/contract/types.py\",\"start_line\":1,\"line_count\":120}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "read_source_excerpt",
+     "input": "{\"path\":\"backend/lab/contract/versions/positional_v0.py\",\"start_line\":1,\"line_count\":120}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "read_source_excerpt",
+     "input": "{\"path\":\"backend/lab/contract/versions/count_guard_v1.py\",\"start_line\":1,\"line_count\":120}",
+     "invalid": false,
+     "error": null
+    }
+   ]
+  },
+  {
+   "index": 1,
+   "finish_reason": "tool-calls",
+   "input_tokens": 4503,
+   "output_tokens": 93,
+   "cost_usd": 0.00022701,
+   "generation_id": "gen_01M3R5PMBKAN9MZRCB6Q86F7MB",
+   "tool_calls": [
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"observed-2024-01-15-001\"}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"observed-2024-01-15-002\"}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"syn-reordered-equal-count\"}",
+     "invalid": false,
+     "error": null
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "finish_reason": "tool-calls",
+   "input_tokens": 4961,
+   "output_tokens": 103,
+   "cost_usd": 0.00306467,
+   "generation_id": "gen_01M3R5QH7CKD1EJ0HWTSFT9YR8",
+   "tool_calls": [
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"observed-2026-09-02-000\"}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"observed-2026-09-02-001\"}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"observed-2026-09-02-002\"}",
+     "invalid": false,
+     "error": null
+    },
+    {
+     "name": "inspect_failure",
+     "input": "{\"case_id\":\"observed-2026-09-02-003\"}",
+     "invalid": false,
+     "error": null
+    }
+   ]
+  }
+ ],
+ "cost_usd": 0.00359392,
+ "tokens_used": 10591,
+ "proposal": null
+}

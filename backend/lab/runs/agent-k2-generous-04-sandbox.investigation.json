@@ -1,0 +1,46 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T03:48:22.725Z",
+ "wall_clock_ms": 248513,
+ "finish_reason": "tool-calls",
+ "stop_cause": "step-limit",
+ "tool_calls_made": 18,
+ "max_tool_calls": 24,
+ "model_calls_made": 12,
+ "budget_label": "generous",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 24,
+  "max_model_calls": 12,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 300000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 1.5,
+  "wall_clock_seconds": 360
+ },
+ "budget_ceiling_usd": 1,
+ "usage": {
+  "input_tokens": 230114,
+  "output_tokens": 4592,
+  "total_tokens": 234706
+ },
+ "tokens_used": 234706,
+ "cost_usd": 0.0616165,
+ "proposed": true,
+ "evaluation_requested_by": "agent",
+ "hypothesis": "The positional association defect causes wrong verdicts when results are reordered or counts mismatch. The fix is keyed association where each result contains article_id. The parser matches by ID, not position, and refuses on duplicate, unknown, or missing IDs. This implements keyed-v2 protocol.",
+ "evidence": [
+  "From backend/lab/contract/types.py: PROTOCOL_KEYED = 'keyed-v2' defines the keyed protocol constant",
+  "From backend/lab/contract/types.py: REFUSAL_KINDS includes 'duplicate_id', 'unknown_id', 'missing_id', 'count_mismatch' for keyed association failures",
+  "From observed-2026-09-02-002: 18 verdicts for 20 articles with protocol positional-v0 expects refusal with count_mismatch",
+  "From observed-2026-09-02-005: 20 verdicts for 20 articles passes but association is unverified under positional protocol",
+  "From backend/lab/contract/versions/positional_v0.py lines 86-97: The defect is associating results[i] with articles[i] by position, padding with zeros when counts differ",
+  "From backend/lab/contract/versions/count_guard_v1.py lines 97-101: Count guard refuses on length mismatch but still uses positional association when counts match"
+ ],
+ "scope_accepted": true,
+ "scope_reason": "within scope; queued for sandboxed evaluation",
+ "trace_path": "backend/lab/runs/agent-k2-generous-04-sandbox.trace.json",
+ "n_trace_steps": 46
+}

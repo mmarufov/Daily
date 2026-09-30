@@ -1,0 +1,35 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T04:03:09.553Z",
+ "wall_clock_ms": 6437,
+ "steps": [],
+ "usage": {
+  "input_tokens": null,
+  "output_tokens": null,
+  "total_tokens": null
+ },
+ "finish_reason": "error",
+ "error": "AI_RetryError: Failed after 3 attempts. Last error: GatewayRateLimitError: Rate limit exceeded for moonshotai/kimi-k2 for provider novita: this team's limit of 5 requests per minute (across all regions) was reached. Retry after 60s.",
+ "stop_cause": "call-error",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 24,
+  "max_model_calls": 12,
+  "max_output_tokens": 8192,
+  "max_total_tokens": 300000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 1.5,
+  "wall_clock_seconds": 360
+ },
+ "budget_label": "generous-out",
+ "budget_ceiling_usd": 1,
+ "budget_authorised_usd": 1,
+ "tool_calls_made": 0,
+ "model_calls_made": 0,
+ "model_steps": [],
+ "cost_usd": null,
+ "tokens_used": 0,
+ "proposal": null
+}

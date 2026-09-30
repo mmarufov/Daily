@@ -27,7 +27,7 @@ import {
   type Case,
   type RecordBundle,
 } from '../lib/lab/records'
-import { EXPERIMENT, SPECS, specHash } from '../lib/lab/spec'
+import { EXPERIMENT, PROTOCOLS, SPECS, specHash } from '../lib/lab/spec'
 import { KNOWN_IMPLEMENTATIONS, SANDBOX_LIMITS, selectRunner } from '../lib/lab/runner'
 import {
   LAB_ARTIFACT_VERSION,
@@ -190,6 +190,8 @@ interface CandidateDescriptor {
   readonly description: string
   readonly declared_protocol: LabRun['candidate']['declared_protocol']
   readonly transcribed_from: string
+  /** A protocol the candidate named that the spec does not define, verbatim. */
+  readonly unrecognised_protocol?: string
 }
 
 function describeCandidate(
@@ -209,10 +211,15 @@ function describeCandidate(
   const descriptor = JSON.parse(readInput(rel)) as {
     kind: CandidateDescriptor['kind']
     source_path: string
-    declared_protocol: CandidateDescriptor['declared_protocol']
+    declared_protocol: string
     description: string
     transcribed_from?: string
   }
+  // An agent can name a protocol the spec does not define. The evaluator
+  // grades the records under whatever was declared; the artifact can only
+  // carry a defined protocol, so it says `unknown` and a note keeps the name.
+  const recognised =
+    descriptor.declared_protocol === UNKNOWN || (PROTOCOLS as readonly string[]).includes(descriptor.declared_protocol)
   return {
     candidate_id: input.candidate_id,
     path: descriptor.source_path,
@@ -220,13 +227,27 @@ function describeCandidate(
     // claims: the trace is the evidence, and it outranks a hand-written field.
     kind: investigation === null ? descriptor.kind : 'agent-authored',
     description: investigation === null ? descriptor.description : investigation.hypothesis,
-    declared_protocol: descriptor.declared_protocol,
+    declared_protocol: recognised ? (descriptor.declared_protocol as CandidateDescriptor['declared_protocol']) : UNKNOWN,
     transcribed_from: descriptor.transcribed_from ?? UNKNOWN,
+    ...(recognised ? {} : { unrecognised_protocol: descriptor.declared_protocol }),
   }
 }
 
 /** What "$0" is and is not claiming, for this particular run. */
-function usageBasis(sandbox: LabRun['provenance']['sandbox']): string {
+function usageBasis(
+  sandbox: LabRun['provenance']['sandbox'],
+  investigation: LabRun['provenance']['investigation'] = null,
+): string {
+  if (investigation !== null) {
+    const cost = investigation.cost_usd === UNKNOWN ? 'an amount the gateway did not fully report' : `$${investigation.cost_usd}`
+    const graded =
+      'Grading replayed committed recordings and made no inference call; `replay_spend_usd` is that, and is $0. ' +
+      `The investigation that authored the candidate did call a model: ${investigation.model_calls_made} call(s) to ${investigation.model} through the AI Gateway, ` +
+      `${investigation.tokens_used} tokens, ${cost} as the gateway reported it per call. That is in \`provider_reported\`.`
+    if (sandbox === null) return graded
+    const cpu = sandbox.active_cpu_ms === UNKNOWN ? 'an unrecorded amount of' : `${sandbox.active_cpu_ms}ms of`
+    return `${graded} The microVM is metered compute billed at a rate this repository does not record: ${cpu} active CPU across ${sandbox.boot_ms + sandbox.wall_clock_ms}ms wall clock.`
+  }
   const inference =
     'Offline replay of committed recordings: no inference call was made, so provider spend for this run is $0. ' +
     'What the original recordings cost is not attributed per batch anywhere in this repository, so it is left unknown rather than estimated.'
@@ -433,7 +454,10 @@ function buildRunInScope(
 ): LabRun {
   const investigation = investigationFor(input)
   const known = describeCandidate(input, investigation)
-  const sourceText = readInput(known.path)
+  // An investigation can end without proposing anything. There is then no
+  // source to hash or diff, and nothing executed; every field that would
+  // describe one says `unknown` rather than describing an empty file.
+  const sourceText = known.path === UNKNOWN ? null : readInput(known.path)
   const baselineText = readInput(BASELINE_PATH)
   const events = readEvents(input.eventsPath)
   const created = events.find((e) => e.type === 'created')
@@ -446,7 +470,10 @@ function buildRunInScope(
     if (parsed.ok) bundle = parsed.value
     else failure = `record bundle did not validate: ${parsed.issues.join('; ')}`
   } else {
-    failure = 'no record bundle was produced'
+    failure =
+      investigation !== null && !investigation.proposed
+        ? 'the investigation ended without proposing a candidate'
+        : 'no record bundle was produced'
   }
 
   // Graded once per generation. Execution happened once; grading is a pure
@@ -488,12 +515,19 @@ function buildRunInScope(
   const faultInjected = events.some((e) => (e.note ?? '').includes('orchestrator died'))
 
   const notes: LabRun['provenance']['notes'] = [
-    {
-      severity: 'info',
-      message:
-        'Every case ran offline against responses already committed to this repository. No inference call was made and no provider was charged.',
-      source: 'backend/evals/.cache/llm',
-    },
+    investigation === null
+      ? {
+          severity: 'info',
+          message:
+            'Every case ran offline against responses already committed to this repository. No inference call was made and no provider was charged.',
+          source: 'backend/evals/.cache/llm',
+        }
+      : {
+          severity: 'info',
+          message:
+            'Every case ran offline against responses already committed to this repository, so grading made no inference call. The investigation that wrote the candidate did, and its spend is recorded under usage.',
+          source: investigation.trace_path,
+        },
     {
       severity: 'caution',
       message:
@@ -505,6 +539,13 @@ function buildRunInScope(
     notes.unshift({
       severity: 'warning',
       message: `This is a seeded control with a deliberate defect. ${known.description}`,
+      source: known.path,
+    })
+  }
+  if (known.unrecognised_protocol !== undefined) {
+    notes.push({
+      severity: 'warning',
+      message: `The candidate declared protocol "${known.unrecognised_protocol}", which the spec does not define (it defines ${PROTOCOLS.join(', ')}). It was graded under that declaration by the same evaluator as every other candidate.`,
       source: known.path,
     })
   }
@@ -539,10 +580,10 @@ function buildRunInScope(
       description: known.description,
       declared_protocol: known.declared_protocol,
       source_path: known.path,
-      source_sha256: sha256(sourceText),
-      source_bytes: Buffer.byteLength(sourceText),
+      source_sha256: sourceText === null ? UNKNOWN : sha256(sourceText),
+      source_bytes: sourceText === null ? UNKNOWN : Buffer.byteLength(sourceText),
       transcribed_from: known.transcribed_from,
-      patch: unifiedDiff(BASELINE_PATH, baselineText, known.path, sourceText),
+      patch: sourceText === null ? '' : unifiedDiff(BASELINE_PATH, baselineText, known.path, sourceText),
       patch_base: BASELINE_PATH,
     },
     provenance: {
@@ -571,7 +612,7 @@ function buildRunInScope(
       // state what the rule says about this source today -- if someone adds a
       // candidate to KNOWN_IMPLEMENTATIONS, that widening shows up in the
       // export rather than staying invisible behind a stale recorded field.
-      runner: selectRunner(sourceText, knownHashes()).runner,
+      runner: sourceText === null ? 'none' : selectRunner(sourceText, knownHashes()).runner,
       sandbox: sandboxFor(input),
       investigation,
       case_suites: refs,
@@ -596,15 +637,26 @@ function buildRunInScope(
     smallest_counterexample: evaluation.smallest_counterexample,
     diagnostics: evaluation.diagnostics.map((d) => ({ ...d, case_ids: [...d.case_ids] })),
     usage: {
-      model_calls: 0,
+      model_calls: investigation?.model_calls_made ?? 0,
       replay_spend_usd: 0,
       recording_cost_usd: UNKNOWN,
-      provider_reported: UNKNOWN,
+      provider_reported:
+        investigation === null
+          ? UNKNOWN
+          : Object.fromEntries(
+              Object.entries({
+                input_tokens: investigation.usage.input_tokens,
+                output_tokens: investigation.usage.output_tokens,
+                total_tokens: investigation.usage.total_tokens,
+                tokens_used: investigation.tokens_used,
+                cost_usd: investigation.cost_usd,
+              }).filter((e): e is [string, number] => typeof e[1] === 'number'),
+            ),
       // `replay_spend_usd` is *inference* spend, which is genuinely zero here.
       // A sandboxed run still consumes metered compute, and reporting $0
       // without saying so would let a reader take "this run cost nothing"
       // from a sentence that only ever meant "no provider was charged".
-      basis: usageBasis(sandboxFor(input)),
+      basis: usageBasis(sandboxFor(input), investigation),
     },
     attempts,
   }
@@ -737,6 +789,14 @@ function main(): void {
       ),
       runner: w.run.provenance.runner,
       investigated: w.run.provenance.investigation !== null,
+      investigation:
+        w.run.provenance.investigation === null
+          ? null
+          : {
+              model: w.run.provenance.investigation.model,
+              budget_label: w.run.provenance.investigation.budget_label,
+              budget: w.run.provenance.investigation.budget,
+            },
     })),
     notes: [
       {

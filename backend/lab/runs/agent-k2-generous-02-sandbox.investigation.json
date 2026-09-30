@@ -1,0 +1,47 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T03:41:33.888Z",
+ "wall_clock_ms": 247682,
+ "finish_reason": "tool-calls",
+ "stop_cause": "step-limit",
+ "tool_calls_made": 22,
+ "max_tool_calls": 24,
+ "model_calls_made": 12,
+ "budget_label": "generous",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 24,
+  "max_model_calls": 12,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 300000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 1.5,
+  "wall_clock_seconds": 360
+ },
+ "budget_ceiling_usd": 1,
+ "usage": {
+  "input_tokens": 272186,
+  "output_tokens": 3043,
+  "total_tokens": 275229
+ },
+ "tokens_used": 275229,
+ "cost_usd": 0.06255452,
+ "proposed": true,
+ "evaluation_requested_by": "agent",
+ "hypothesis": "Implement a keyed protocol parser (keyed-v2) that requires each verdict to explicitly identify its article via article_id. This eliminates the positional association defect by: 1) Validating that every article has exactly one verdict, 2) Detecting duplicate or unknown article_ids, 3) Rejecting when the association is ambiguous or incomplete. The parser uses PROTOCOL_KEYED ('keyed-v2') and refuses with appropriate kinds (count_mismatch, duplicate_id, unknown_id, missing_id) when association cannot be guaranteed.",
+ "evidence": [
+  "From types.py: PROTOCOL_KEYED = 'keyed-v2' exists as an alternative to PROTOCOL_POSITIONAL",
+  "From types.py: REFUSAL_KINDS includes 'duplicate_id', 'unknown_id', 'missing_id' for association failures",
+  "From positional_v0.py lines 86-97: The defect is associating results[i] with articles[i] by position, which fails when model returns different order or count",
+  "From count_guard_v1.py lines 97-101: Count guard catches length mismatch but still uses positional association",
+  "From observed-2026-09-02-002: 18 verdicts for 20 articles should be refused with count_mismatch",
+  "From observed-2026-09-02-005: When counts match, positional association is accepted as 'parseable but unverified'",
+  "From ranking_contract.py lines 99-108: ArticleJudgment has article_id field showing the intended keyed design"
+ ],
+ "scope_accepted": true,
+ "scope_reason": "within scope; queued for sandboxed evaluation",
+ "trace_path": "backend/lab/runs/agent-k2-generous-02-sandbox.trace.json",
+ "n_trace_steps": 51
+}

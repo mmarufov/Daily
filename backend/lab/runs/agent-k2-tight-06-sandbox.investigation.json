@@ -1,0 +1,39 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T03:31:13.463Z",
+ "wall_clock_ms": 11573,
+ "finish_reason": "tool-calls",
+ "stop_cause": "step-limit",
+ "tool_calls_made": 9,
+ "max_tool_calls": 6,
+ "model_calls_made": 3,
+ "budget_label": "tight",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 6,
+  "max_model_calls": 3,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 60000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 0.3,
+  "wall_clock_seconds": 180
+ },
+ "budget_ceiling_usd": 0.3,
+ "usage": {
+  "input_tokens": 10264,
+  "output_tokens": 311,
+  "total_tokens": 10575
+ },
+ "tokens_used": 10575,
+ "cost_usd": 0.00116674,
+ "proposed": false,
+ "evaluation_requested_by": "unknown",
+ "hypothesis": "unknown",
+ "evidence": [],
+ "scope_accepted": false,
+ "scope_reason": "no proposal was made",
+ "trace_path": "backend/lab/runs/agent-k2-tight-06-sandbox.trace.json",
+ "n_trace_steps": 13
+}

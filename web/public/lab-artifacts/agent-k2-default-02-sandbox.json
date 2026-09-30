@@ -1,0 +1,141 @@
+{
+ "lab_artifact_version": 1,
+ "run_id": "article-to-verdict-association__agent-k2-default-02__sandbox",
+ "experiment_id": "article-to-verdict-association",
+ "candidate": {
+  "candidate_id": "agent-k2-default-02",
+  "kind": "agent-authored",
+  "description": "unknown",
+  "declared_protocol": "unknown",
+  "source_path": "unknown",
+  "source_sha256": "unknown",
+  "source_bytes": "unknown",
+  "transcribed_from": "unknown",
+  "patch": "",
+  "patch_base": "backend/lab/contract/versions/positional_v0.py"
+ },
+ "provenance": {
+  "executed_at_revision": "1c97bc0483f43673fc9f31820d8187d53659a0ff+dirty",
+  "inputs_sha256": "4084bb8e125d72bb",
+  "executed_at": "2026-09-30T03:31:34.439Z",
+  "evaluator_sha256": "277ec81521ba14d8",
+  "spec_hash": "f027762ab4d08b35",
+  "spec_version": 2,
+  "execution_mode": "offline-replay",
+  "execution_mode_basis": "The harness reads committed responses from disk and makes no network call. The candidate imports nothing beyond the standard library.",
+  "python": "unknown",
+  "runner": "none",
+  "sandbox": null,
+  "investigation": {
+   "model": "moonshotai/kimi-k2",
+   "gateway": "vercel-ai-gateway",
+   "gateway_auth": "oidc",
+   "started_at": "2026-09-30T03:31:34.440Z",
+   "wall_clock_ms": 180007,
+   "finish_reason": "error",
+   "stop_cause": "wall-clock",
+   "tool_calls_made": 14,
+   "max_tool_calls": 12,
+   "model_calls_made": 5,
+   "budget_label": "default",
+   "budget": {
+    "max_proposals": 1,
+    "max_tool_calls": 12,
+    "max_model_calls": 6,
+    "max_output_tokens": 4096,
+    "max_total_tokens": 150000,
+    "max_tool_result_chars": 8000,
+    "max_usd": 0.75,
+    "wall_clock_seconds": 180
+   },
+   "budget_ceiling_usd": 0.75,
+   "usage": {
+    "input_tokens": "unknown",
+    "output_tokens": "unknown",
+    "total_tokens": "unknown"
+   },
+   "tokens_used": 47426,
+   "cost_usd": 0.01651783,
+   "proposed": false,
+   "evaluation_requested_by": "unknown",
+   "hypothesis": "unknown",
+   "evidence": [],
+   "scope_accepted": false,
+   "scope_reason": "no proposal was made",
+   "trace_path": "backend/lab/runs/agent-k2-default-02-sandbox.trace.json",
+   "n_trace_steps": 24
+  },
+  "case_suites": [
+   {
+    "group": "observed",
+    "path": "backend/lab/cases/observed.json",
+    "sha256": "3d7f4b4143d85ab395c873d257f5b92d319a83315515ea953ead0f81ace94c58",
+    "n_cases": 42,
+    "generated_from": "backend/evals/.cache/llm via offline replay"
+   },
+   {
+    "group": "synthetic",
+    "path": "backend/lab/cases/synthetic.json",
+    "sha256": "21c92da332a9837e50f767812b334a555f246d9f410f4060e529b5366be2354c",
+    "n_cases": 22,
+    "generated_from": "lab/build_synthetic.py — fault injection, ground truth by construction"
+   }
+  ],
+  "notes": [
+   {
+    "severity": "info",
+    "message": "Every case ran offline against responses already committed to this repository, so grading made no inference call. The investigation that wrote the candidate did, and its spend is recorded under usage.",
+    "source": "backend/lab/runs/agent-k2-default-02-sandbox.trace.json"
+   },
+   {
+    "severity": "caution",
+    "message": "The case suite is public. A candidate may have been written against it, so passing does not establish generalisation.",
+    "source": "backend/lab/cases/"
+   }
+  ]
+ },
+ "verdict": "failed",
+ "verdict_reason": "the investigation ended without proposing a candidate",
+ "verdict_scope": "Accepted means eligible for human review under this spec hash, against a public case suite. It is not evidence of production quality, and it does not establish generalisation: the cases are visible and a candidate may have been written against them.",
+ "criteria": [],
+ "gradings": [
+  {
+   "spec_version": 1,
+   "spec_hash": "008af8266204438a",
+   "verdict": "failed",
+   "verdict_reason": "the investigation ended without proposing a candidate",
+   "criteria": []
+  },
+  {
+   "spec_version": 2,
+   "spec_hash": "f027762ab4d08b35",
+   "verdict": "failed",
+   "verdict_reason": "the investigation ended without proposing a candidate",
+   "criteria": []
+  }
+ ],
+ "outcomes": [],
+ "counts": {
+  "correct": 0,
+  "wrong-association": 0,
+  "should-have-refused": 0,
+  "should-have-parsed": 0,
+  "crashed": 0,
+  "timeout": 0,
+  "missing-record": 0,
+  "not-applicable": 0
+ },
+ "smallest_counterexample": null,
+ "diagnostics": [],
+ "usage": {
+  "model_calls": 5,
+  "replay_spend_usd": 0,
+  "recording_cost_usd": "unknown",
+  "provider_reported": {
+   "tokens_used": 47426,
+   "cost_usd": 0.01651783
+  },
+  "basis": "Grading replayed committed recordings and made no inference call; `replay_spend_usd` is that, and is $0. The investigation that authored the candidate did call a model: 5 call(s) to moonshotai/kimi-k2 through the AI Gateway, 47426 tokens, $0.01651783 as the gateway reported it per call. That is in `provider_reported`."
+ },
+ "attempts": []
+}

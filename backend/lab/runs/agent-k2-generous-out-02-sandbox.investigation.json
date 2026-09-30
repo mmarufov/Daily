@@ -1,0 +1,45 @@
+{
+ "model": "moonshotai/kimi-k2",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-09-30T03:57:19.781Z",
+ "wall_clock_ms": 253448,
+ "finish_reason": "tool-calls",
+ "stop_cause": "step-limit",
+ "tool_calls_made": 20,
+ "max_tool_calls": 24,
+ "model_calls_made": 12,
+ "budget_label": "generous-out",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 24,
+  "max_model_calls": 12,
+  "max_output_tokens": 8192,
+  "max_total_tokens": 300000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 1.5,
+  "wall_clock_seconds": 360
+ },
+ "budget_ceiling_usd": 1,
+ "usage": {
+  "input_tokens": 259125,
+  "output_tokens": 7000,
+  "total_tokens": 266125
+ },
+ "tokens_used": 266125,
+ "cost_usd": 0.04567901,
+ "proposed": true,
+ "evaluation_requested_by": "agent",
+ "hypothesis": "The defect is positional association - when model returns results in different order or wrong count, articles get wrong verdicts. The fix is keyed-v2 protocol: each result must contain article_id for unambiguous association. Parser validates exact ID set matching, refuses with duplicate_id/unknown_id/missing_id/count_mismatch when association is ambiguous.",
+ "evidence": [
+  "backend/lab/contract/types.py defines PROTOCOL_KEYED = 'keyed-v2' and refusal kinds duplicate_id, unknown_id, missing_id for keyed failures",
+  "backend/app/services/ranking_contract.py ArticleJudgment has article_id and validate_judgments checks exact ID set matching",
+  "observed-2026-09-02-002: 18 results for 20 articles should refuse count_mismatch",
+  "observed-2026-09-02-007: truncated response should refuse",
+  "count_guard_v1 only checks length, still associates by position, fails on reordering"
+ ],
+ "scope_accepted": true,
+ "scope_reason": "within scope; queued for sandboxed evaluation",
+ "trace_path": "backend/lab/runs/agent-k2-generous-out-02-sandbox.trace.json",
+ "n_trace_steps": 49
+}

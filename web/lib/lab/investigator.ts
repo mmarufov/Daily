@@ -5,12 +5,16 @@
  * only interesting if something trustworthy grades them, and the order the
  * pieces were built in is the order they have to be trusted in.
  *
- * **Nothing here has been executed.** There is no `AI_GATEWAY_API_KEY` in this
- * environment and no spending limit configured, so `readiness()` reports
- * `missing-credentials` and `/lab` says no agent has run. The tool schemas,
- * the scope enforcement and the budget are real code with real tests; the
- * model call is not, and no trace is depicted anywhere. Fabricating one would
- * make every other number on this site worth less.
+ * **This has now been executed, and every run is committed.** For a long time
+ * it had not been: there was no credential, `readiness()` reported
+ * `missing-credentials`, and `/lab` said no agent had run. The first runs were
+ * made on 2026-09-29 from `scripts/lab-agent-run.ts`, and each one left a
+ * trace, an investigation record and, where a proposal was accepted, a
+ * sandbox execution under `backend/lab/runs/`. Runs that proposed nothing are
+ * committed too; dropping them would make every rate computed from the set a
+ * rate over the runs that got far enough to be graded. No trace is depicted
+ * that was not produced by a real call, and fabricating one would make every
+ * other number on this site worth less.
  *
  * The important property is that an agent-authored candidate takes exactly the
  * same path as a human-authored one: `propose_patch` returns a patch, the scope
@@ -88,6 +92,96 @@ export const BUDGET: InvestigationBudget = {
   wall_clock_seconds: 180,
 }
 
+/**
+ * A budget other than the default, supplied as configuration.
+ *
+ *   LAB_BUDGET='{"max_model_calls":3,"max_tool_calls":6,"max_total_tokens":60000}'
+ *
+ * Exists to answer the question `agent.ts` raises and leaves open: is the
+ * accept rate a property of the model or of the budget? That needs runs at
+ * more than one budget with the model held fixed, and editing `BUDGET` to get
+ * them would silently change what every other run means.
+ *
+ * `max_proposals` is deliberately not in this schema, and `.strict()` refuses
+ * it rather than ignoring it. One proposal is not a budget knob, it is the
+ * property the whole loop protects: a second proposal is a retry, and a retry
+ * loop is exactly what would make the accept rate a property of the budget.
+ * Everything else is bounded so a typo cannot authorise an unbounded run.
+ */
+export const BudgetOverrideSchema = z
+  .object({
+    max_tool_calls: z.number().int().min(1).max(48),
+    max_model_calls: z.number().int().min(1).max(24),
+    max_output_tokens: z.number().int().min(256).max(16_384),
+    max_total_tokens: z.number().int().min(1_000).max(600_000),
+    max_tool_result_chars: z.number().int().min(500).max(32_000),
+    max_usd: z.number().positive().max(5),
+    wall_clock_seconds: z.number().int().min(30).max(900),
+  })
+  .partial()
+  .strict()
+
+export type BudgetOverride = z.infer<typeof BudgetOverrideSchema>
+
+export type BudgetConfig =
+  | {
+      readonly ok: true
+      readonly budget: InvestigationBudget
+      /** `default` when nothing was overridden, otherwise LAB_BUDGET_LABEL or `custom`. */
+      readonly label: string
+      readonly overridden: readonly (keyof BudgetOverride)[]
+    }
+  | { readonly ok: false; readonly needs: readonly string[] }
+
+/**
+ * The budget this run is given: `BUDGET`, with any configured overrides.
+ *
+ * Pure and exported so the refusal paths are testable without a model call.
+ * An override that does not parse is a refusal, not a fallback to the
+ * default: a run that silently used a different budget from the one asked for
+ * would be recorded under the wrong cell of the experiment.
+ */
+export function resolveInvestigationBudget(
+  env: Readonly<Record<string, string | undefined>> = process.env,
+): BudgetConfig {
+  const raw = (env.LAB_BUDGET ?? '').trim()
+  if (raw === '') return { ok: true, budget: BUDGET, label: 'default', overridden: [] }
+
+  let json: unknown
+  try {
+    json = JSON.parse(raw)
+  } catch {
+    return { ok: false, needs: ['LAB_BUDGET must be a JSON object'] }
+  }
+  const parsed = BudgetOverrideSchema.safeParse(json)
+  if (!parsed.success) {
+    return {
+      ok: false,
+      needs: parsed.error.issues.map((i) => `LAB_BUDGET ${i.path.join('.') || '<root>'}: ${i.message}`),
+    }
+  }
+  const overridden = (Object.keys(parsed.data) as (keyof BudgetOverride)[]).sort()
+  const label = (env.LAB_BUDGET_LABEL ?? '').trim()
+  if (label !== '' && !/^[a-z0-9-]{1,32}$/.test(label)) {
+    return { ok: false, needs: ['LAB_BUDGET_LABEL must match ^[a-z0-9-]{1,32}$'] }
+  }
+  return {
+    ok: true,
+    budget: {
+      max_proposals: BUDGET.max_proposals,
+      max_tool_calls: parsed.data.max_tool_calls ?? BUDGET.max_tool_calls,
+      max_model_calls: parsed.data.max_model_calls ?? BUDGET.max_model_calls,
+      max_output_tokens: parsed.data.max_output_tokens ?? BUDGET.max_output_tokens,
+      max_total_tokens: parsed.data.max_total_tokens ?? BUDGET.max_total_tokens,
+      max_tool_result_chars: parsed.data.max_tool_result_chars ?? BUDGET.max_tool_result_chars,
+      max_usd: parsed.data.max_usd ?? BUDGET.max_usd,
+      wall_clock_seconds: parsed.data.wall_clock_seconds ?? BUDGET.wall_clock_seconds,
+    },
+    label: overridden.length === 0 ? 'default' : label === '' ? 'custom' : label,
+    overridden,
+  }
+}
+
 /* ------------------------------------------------------------- tools ---- */
 
 export const InspectFailureInput = z.object({
@@ -156,7 +250,12 @@ export type ToolName = (typeof TOOLS)[number]['name']
 /* --------------------------------------------------------- readiness ---- */
 
 export type Readiness =
-  | { readonly ready: true; readonly gateway: 'vercel-ai-gateway' }
+  | {
+      readonly ready: true
+      readonly gateway: 'vercel-ai-gateway'
+      /** Which credential the gateway will be called with, recorded in the trace. */
+      readonly auth: 'api-key' | 'oidc'
+    }
   | { readonly ready: false; readonly reason: 'missing-credentials' | 'missing-budget'; readonly needs: readonly string[] }
 
 /**
@@ -182,12 +281,21 @@ export function readiness(env: Readonly<Record<string, string | undefined>> = pr
   //
   // A readiness check has to test what the call path actually needs. This one
   // now does, and the return type has no room for a second answer.
-  if ((env.AI_GATEWAY_API_KEY ?? '').trim() === '') {
+  //
+  // By the same rule, a Vercel OIDC token counts. The gateway provider
+  // authenticates with `AI_GATEWAY_API_KEY` when it is set and otherwise with
+  // `VERCEL_OIDC_TOKEN`, which `vercel env pull` writes locally; the first
+  // committed agent runs were made that way. Both reach the same gateway and
+  // the same meter, so the recorded `gateway` is unchanged and `auth` says
+  // which credential was used.
+  const apiKey = (env.AI_GATEWAY_API_KEY ?? '').trim() !== ''
+  const oidc = (env.VERCEL_OIDC_TOKEN ?? '').trim() !== ''
+  if (!apiKey && !oidc) {
     return {
       ready: false,
       reason: 'missing-credentials',
       needs: [
-        'AI_GATEWAY_API_KEY — the model is addressed as a `provider/model` string, which only the AI Gateway routes',
+        'AI_GATEWAY_API_KEY (or VERCEL_OIDC_TOKEN) — the model is addressed as a `provider/model` string, which only the AI Gateway routes',
       ],
     }
   }
@@ -198,7 +306,7 @@ export function readiness(env: Readonly<Record<string, string | undefined>> = pr
       needs: ['LAB_MAX_USD — an explicit per-investigation spending limit'],
     }
   }
-  return { ready: true, gateway: 'vercel-ai-gateway' }
+  return { ready: true, gateway: 'vercel-ai-gateway', auth: apiKey ? 'api-key' : 'oidc' }
 }
 
 /* -------------------------------------------------------- proposals ---- */

@@ -1,0 +1,117 @@
+{
+ "seed": 20260929,
+ "n": 300,
+ "strata": {
+  "fine/contested": {
+   "population": 340,
+   "requested": 55,
+   "drawn": 55
+  },
+  "fine/escalated": {
+   "population": 132,
+   "requested": 30,
+   "drawn": 30
+  },
+  "fine/pass1_only": {
+   "population": 1981,
+   "requested": 36,
+   "drawn": 36
+  },
+  "must_see/contested": {
+   "population": 7,
+   "requested": 7,
+   "drawn": 7
+  },
+  "must_see/escalated": {
+   "population": 235,
+   "requested": 60,
+   "drawn": 60
+  },
+  "never/contested": {
+   "population": 47,
+   "requested": 40,
+   "drawn": 40
+  },
+  "never/escalated": {
+   "population": 496,
+   "requested": 36,
+   "drawn": 36
+  },
+  "never/pass1_only": {
+   "population": 3414,
+   "requested": 36,
+   "drawn": 36
+  }
+ },
+ "allocation": {
+  "fine/contested": 55,
+  "fine/escalated": 30,
+  "fine/pass1_only": 36,
+  "must_see/contested": 7,
+  "must_see/escalated": 60,
+  "never/contested": 40,
+  "never/escalated": 36,
+  "never/pass1_only": 36
+ },
+ "judge": {
+  "pass1_model": "gpt-4.1-mini",
+  "pass2_model": "gpt-4.1",
+  "verdict": "final two-pass model label (pass2 if escalated, else pass1)"
+ },
+ "files": {
+  "sample.jsonl": "bc576bd3a3493dadaf412d7030fa989a103ff249f87af5f2c86273579ba45a8c",
+  "judge.jsonl": "3ac75220417de9ba056b82792bfba78a9ab5bb7f22cc73f7d1891fd9fdfa3b23",
+  "readers.json": "e0a6d052e83d81aa112020b9ebd378f88c8f765128272450da2ba1211696bc9e"
+ },
+ "population": {
+  "model_rows": 10431,
+  "eligible_units": 6652,
+  "excluded": {
+   "duplicate_judgement": 1151,
+   "unverified_prompt": 2628,
+   "missing_article": 0
+  },
+  "snapshots": [
+   "2026-08-31",
+   "2026-09-02",
+   "2026-08-31-quiet"
+  ],
+  "persona_revs": [
+   "HEAD",
+   "b15c6ef7^"
+  ]
+ },
+ "label_files": {
+  "2026-08-31/aisha.jsonl": "f4d39839ff11fcd7a57dfa5c6678bf404d7b2d39714e712776a72f9a196ff799",
+  "2026-08-31/cold.jsonl": "00e9198ce0f5018b0cec8198df8d2fc2fbf3415b282a4755cc6a750a9bed24d4",
+  "2026-08-31/dilshod.jsonl": "08d50071009f56d0a433f3a9dba0df7f774bdeb6cb153c0f6eca0305f12af118",
+  "2026-08-31/farrukh.jsonl": "7f6900fa50cadf2ce5a7904baff4263c8f065194600107c1b9cb91da5a8a6909",
+  "2026-08-31/lena.jsonl": "ffbd7c7c4b06f374ca8b25c1346242b7b558b2bd2586b68923a3878ccb2c7d5a",
+  "2026-08-31/maya.jsonl": "675bb90792d9e28f665b9cf596bab84676b064c47253eee3dc96204040ba9b9c",
+  "2026-08-31/priya.jsonl": "3bbb1e5b89d5307fb229fd63eff31e5e2a119b0395eb3c9815fb9f1d64b203ae",
+  "2026-08-31/ray.jsonl": "8eb888050cad416dcbf93534eed48b20d0090787ade42b51c5e819dd9cce797b",
+  "2026-08-31/tom.jsonl": "e8f9254d04b9ce018ee2a5738627bd770384431eddcb71cc232073b06be7b641",
+  "2026-08-31/wei.jsonl": "8ab2be83b6b26be04b925a6503eb289d0a654609d83cd42f6314775e1312a4e5",
+  "2026-09-02/aisha.jsonl": "7ec7bc18087396bd01cefab0f331f79d52023335fdaad8aff272dd96ffb05edc",
+  "2026-09-02/cold.jsonl": "edb61217f40812403a376eb3926dfbb8dbdd92ad68f8eccaa4e62fc27a3c7e7b",
+  "2026-09-02/dilshod.jsonl": "ab013ee58167282b7ec88881c8c1a6662b4cfea6865a677e869cfea69bd34e3f",
+  "2026-09-02/farrukh.jsonl": "c849d50c38e903c9832598d2b0852121b7f9174926869d0b22aabbe4584f38ea",
+  "2026-09-02/lena.jsonl": "50dadbee8893a41fee8572f1eeba3bd710198dad1e018a6e5916663c1673c0e6",
+  "2026-09-02/maya.jsonl": "f9fece8302d3dd193b4115bbb0ffb51c2642d53c33434e1963236fb46c160759",
+  "2026-09-02/priya.jsonl": "340041f14fa0eb44ee7ebf8b296df6f0c7be283262d086d563aee0decdb5e9a4",
+  "2026-09-02/ray.jsonl": "9cf72b556ee5c4dd55383b4474cd30d8181074e5f6e7b2300d02ad7ccbcd6c53",
+  "2026-09-02/tom.jsonl": "a2a4454e949c587da1975c72f00b8717003cbeb4c853895f2e5fa545983b41a2",
+  "2026-09-02/wei.jsonl": "f694e808570d485c76cbd28d9b0363cf99adad4d3c2b4c03df53d0610a9c17f9",
+  "2026-08-31-quiet/aisha.jsonl": "7c2b87951a36a498993af72a5ef37d29c30c2e5a1d8c32a2afb88440ceef97fc",
+  "2026-08-31-quiet/cold.jsonl": "8d591141a56b16cc1b8d633eae05bc18fd8a0d1878aeb2c16e3d5fa2a31160bf",
+  "2026-08-31-quiet/dilshod.jsonl": "339f038e9f92f2a48950d62c575886774fc451e17c824c1b0c7735540f95ae70",
+  "2026-08-31-quiet/farrukh.jsonl": "bb33600c4d31d1e3a8e47facca0fd76ec17b9fb8ae9d2b7515969b7b407407dc",
+  "2026-08-31-quiet/lena.jsonl": "828b047af88540efdf6e73d05b5c045ab8e62c1e2bb232b16a801fe4bb6f457a",
+  "2026-08-31-quiet/maya.jsonl": "c12d427ac28e727d4cd291b03179244f255ae1ac5cddc77098849487209fd660",
+  "2026-08-31-quiet/priya.jsonl": "28f081a2f40305e2f266f8d4c26a2e979f0c991ad1f8368d5af11ad2784f396e",
+  "2026-08-31-quiet/ray.jsonl": "c8587942892b728203e033203d4a62afd176f0a9726ada0a8c2bab80c554c5cd",
+  "2026-08-31-quiet/tom.jsonl": "464ebea81e6d1be7c285efbb1efc3ac383d8ed62781241e980ae7ea9aa849153",
+  "2026-08-31-quiet/wei.jsonl": "7b1a951ea91213c9828492d7f9d2316b1e1313cfea5248dab7dad0e1200d9240"
+ },
+ "command": "python -m evals.calibration sample --out evals/calibration/2026-09-29 --seed 20260929"
+}
