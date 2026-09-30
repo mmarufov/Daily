@@ -2,10 +2,160 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "f027762ab4d08b35",
- "inputs_sha256": "b2c5c47e443094be",
+ "inputs_sha256": "4a014988db4d9f56",
  "built_at": "2026-09-29T23:22:40.670Z",
  "complete": true,
  "entries": [
+  {
+   "run_id": "article-to-verdict-association__agent-g41-default-01__sandbox",
+   "file": "agent-g41-default-01-sandbox.json",
+   "candidate_id": "agent-g41-default-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "2181722a21823d2d3a18e68bd21f75a6bc60b004b8bf7f9a1bb12332c019f77c",
+   "bytes": 4862,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-4.1",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-g41-default-02__sandbox",
+   "file": "agent-g41-default-02-sandbox.json",
+   "candidate_id": "agent-g41-default-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "5044418004b4239b9dd3439118b7b9a94f2dd27e0315cddb690148aba8558739",
+   "bytes": 4860,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-4.1",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-g5m-default-01__sandbox",
+   "file": "agent-g5m-default-01-sandbox.json",
+   "candidate_id": "agent-g5m-default-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "958e2beb7c96238af9797c400ea7858f243ed168355c6351c8c314474bcd64bd",
+   "bytes": 4877,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "openai/gpt-5-mini",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-default-01__sandbox",
+   "file": "agent-k2-default-01-sandbox.json",
+   "candidate_id": "agent-k2-default-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "5b7f0847d17d6bc67a3c36bd737396d0604d16016f73bfab41b71bf989c31623",
+   "bytes": 4880,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-k2-generous-01__sandbox",
+   "file": "agent-k2-generous-01-sandbox.json",
+   "candidate_id": "agent-k2-generous-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed"
+   },
+   "sha256": "56c08512cc9701a2cae1c3b87b2deb1f6c4cbf584bc5ce7028a150b6b7dbe281",
+   "bytes": 4877,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "moonshotai/kimi-k2",
+    "budget_label": "generous",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
   {
    "run_id": "article-to-verdict-association__agent-k2-generous-out-01__sandbox",
    "file": "agent-k2-generous-out-01-sandbox.json",
@@ -181,7 +331,7 @@
   },
   {
    "severity": "info",
-   "message": "2 of 9 runs executed in an isolated microVM, because those candidates matched no committed implementation. 8 isolation probes ran inside those microVMs and all held.",
+   "message": "2 of 14 runs executed in an isolated microVM, because those candidates matched no committed implementation. 8 isolation probes ran inside those microVMs and all held.",
    "source": "web/lib/lab/sandbox.ts"
   }
  ]
