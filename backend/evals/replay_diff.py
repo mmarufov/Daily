@@ -51,6 +51,11 @@ METRICS = ("recall_at_k", "never_rate", "needle_recall", "lookalike_rate", "even
 # keyed build logs a refusal and applies nothing.
 _MISMATCH = re.compile(r"Batch scoring returned (\d+) results for (\d+) articles; normalizing")
 _REFUSED = re.compile(r"Batch scoring refused a response for (\d+) articles \((\w+):")
+# Production swallows provider errors and falls back, by design. A replay must
+# not: a diff against a build whose calls failed measures the outage, not the
+# build. This happened once, when the OpenAI account ran out of credits.
+_SCORING_ERROR = re.compile(r"Error in batch scoring")
+_TIMEOUT = re.compile(r"Batch scoring timed out")
 
 
 # ---------------------------------------------------------------------------
@@ -61,6 +66,7 @@ class _Capture(logging.Handler):
     def __init__(self):
         super().__init__(logging.WARNING)
         self.batches: list[dict] = []
+        self.provider_errors: list[str] = []
 
     def emit(self, record):
         # Scoring batches run concurrently, so a log line is attributed to the
@@ -70,6 +76,19 @@ class _Capture(logging.Handler):
         except RuntimeError:
             task = None
         message = record.getMessage()
+        if _TIMEOUT.search(message):
+            self.provider_errors.append(message)
+        elif _SCORING_ERROR.search(message):
+            exc_type = record.exc_info[0] if record.exc_info else None
+            module = getattr(exc_type, "__module__", "") or ""
+            if module.split(".")[0] in {"openai", "httpx"}:
+                self.provider_errors.append(f"{exc_type.__name__}: {record.exc_info[1]}"[:300])
+            else:
+                # The model's own output failed to parse (the positional build
+                # json.loads a truncated response inside the same handler).
+                # That is the build's behaviour, so it is counted, not fatal.
+                self.batches.append({"task": task, "outcome": "unparseable",
+                                     "error": getattr(exc_type, "__name__", "unknown")})
         if m := _MISMATCH.search(message):
             self.batches.append({"task": task, "articles": int(m.group(2)), "entries": int(m.group(1)),
                                  "outcome": "applied_by_position"})
@@ -143,6 +162,7 @@ def _child(snapshots: list[str]) -> dict:
                             for k, v in per.items()},
             "feeds": feeds, "verdicts": verdicts, "batches": batches,
         }
+    out["provider_errors"] = capture.provider_errors
     out["meter"] = {"calls": METER.calls, "usd": round(METER.usd, 6), "by_model": METER.by_model,
                     "cache_hits": client().hits, "cache_misses": client().misses}
     return out
@@ -191,7 +211,8 @@ def _run_side(ref: str, tree: Path, snapshots: list[str], live: bool, budget: fl
 def _batch_totals(side: dict) -> dict:
     totals = {"calls": 0, "calls_applied_by_position_after_count_mismatch": 0,
               "verdicts_applied_from_mismatched_batches": 0, "calls_refused": 0,
-              "refusals_by_kind": {}, "verdicts_applied_to_another_article": 0, "calls_keyed": 0}
+              "refusals_by_kind": {}, "verdicts_applied_to_another_article": 0, "calls_keyed": 0,
+              "unparseable_attempts": 0}
     for persona_calls in side["batches"].values():
         for call in persona_calls:
             totals["calls"] += 1
@@ -201,6 +222,7 @@ def _batch_totals(side: dict) -> dict:
             if any(e["outcome"] == "applied_by_position" for e in events):
                 totals["calls_applied_by_position_after_count_mismatch"] += 1
                 totals["verdicts_applied_from_mismatched_batches"] += call["articles"]
+            totals["unparseable_attempts"] += sum(1 for e in events if e["outcome"] == "unparseable")
             refused = [e for e in events if e["outcome"] == "refused"]
             for e in refused:
                 kinds = totals["refusals_by_kind"]
@@ -295,6 +317,12 @@ def main(argv: list[str] | None = None) -> int:
     with tempfile.TemporaryDirectory() as tmp:
         base = _run_side(args.base, _materialise(args.base, Path(tmp) / "base"), snapshots, False, None)
         head = _run_side(args.head, _materialise(args.head, Path(tmp) / "head"), snapshots, args.live, args.budget)
+
+    for name, side in (("base", base), ("head", head)):
+        if side["provider_errors"]:
+            raise SystemExit(f"{name}: {len(side['provider_errors'])} scoring calls hit a provider error, "
+                             f"so the diff would measure the outage, not the build. "
+                             f"First: {side['provider_errors'][0]}")
 
     per = {s: _diff_snapshot(base["snapshots"][s], head["snapshots"][s]) for s in snapshots}
     doc = {
