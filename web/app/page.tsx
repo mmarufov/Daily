@@ -197,7 +197,12 @@ export default async function HomePage() {
         </div>
         <dl className="statbar m-0">
             <Readout term="Guard fires" value="63" note="one run, ten fixtures" signal />
-            <Readout term="Worst response" value="201" note="verdicts for 40 articles" signal />
+            <Readout
+              term="Worst response"
+              value={offending !== null ? String(offending.verdicts_returned) : '254'}
+              note={`verdicts for ${offending !== null ? offending.articles_sent : 40} articles`}
+              signal
+            />
             <Readout term="Unwanted rate" value="+15.6" note="points, after the fix" signal />
           <Readout term="Re-baselined" value="No" note="the gate still reports red" />
         </dl>

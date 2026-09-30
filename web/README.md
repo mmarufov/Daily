@@ -418,8 +418,10 @@ flood-adjacent roster story was rejected for "discussing a music EP"; an Uzbek p
 rejected for "discussing NFL team rosters". One of the misattributed articles is a *planted
 needle* — an article injected so its correct answer is known by construction.
 
-On one runner and one corpus the new guard fires **63 times**, including a cached response that
-returned **201 verdicts for 40 articles**. Every production-pipeline number in the committed
+On one runner and one corpus the PR #59 guard (still open) fires **63 times**; the worst response
+in that run returned **201 verdicts for 40 articles**. The worst parseable response in the committed
+lab cases is larger: **254 verdicts for 40 articles** (`observed-2026-09-02-040`, the case `/lab`
+shows). Every production-pipeline number in the committed
 scorecards was computed with lists shifted against their articles.
 
 Fixing it makes the measured numbers **worse** — the unwanted rate rises 15.6 points — because
