@@ -367,6 +367,12 @@ describe('spend is bounded by something that actually stops', () => {
     const outputTotal = BUDGET.max_model_calls * BUDGET.max_output_tokens
     const worstUsd = inputTotal * USD_PER_INPUT + outputTotal * USD_PER_OUTPUT
 
+    // The arithmetic in the comment on BUDGET.max_usd, pinned so the prose
+    // cannot drift from the numbers again (it once said 85,260 input tokens).
+    expect(inputTotal).toBe(84_000)
+    expect(outputTotal).toBe(24_576)
+    expect(worstUsd).toBeCloseTo(0.62, 2)
+
     expect(worstUsd).toBeLessThanOrEqual(BUDGET.max_usd)
     // And not so slack that the declaration stops meaning anything.
     expect(BUDGET.max_usd).toBeLessThanOrEqual(worstUsd * 2)

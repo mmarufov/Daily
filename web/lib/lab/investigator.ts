@@ -81,9 +81,12 @@ export const BUDGET: InvestigationBudget = {
   // pessimism, it is the wrong arithmetic.
   //
   //   input   6 model calls, 2 capped tool results each, conversation resent
-  //           => 85,260 tokens at $3/M   = $0.26
+  //           => 84,000 tokens at $3/M   = $0.25
   //   output  6 x max_output_tokens      = 24,576 tokens at $15/M = $0.37
-  //                                                       total  = $0.63
+  //                                                       total  = $0.62
+  //
+  //   (4,000 new input tokens per call, 2 x 8,000 chars at 4 chars a token,
+  //   so 4,000 x (1+2+...+6) = 84,000. The test pins both totals.)
   //
   // Rounded up for rate drift. Rates are claude-sonnet-4.5 as of 2026-09;
   // `max_total_tokens` is the thing actually enforced, and this is what that
