@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "8c4e93754319f9132ceeb69347acc3b27354cc5d9b5fb05d5c207ab02e9810d2",
+  "preview": "User Profile:\nFree-form profile:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"83eb383a-e464-5249-9279-69ff5cbae381\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about the sale of the Angels, which is unrelated to New Jersey politics or local interests.\"},{\"article_id\":\"6485d1ff-3519-5d02-99a6-4e423e1f588b\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses an NFL rule, which does not directly impact local New Jersey politics or community issues.\"},{\"article_id\":\"59c4c288-6419-5312-8dbb-3e91d5bc1472\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a reality TV show, which falls under the excluded topics of entertainment.\"},{\"article_id\":\"7d41d20c-42c4-5510-a78d-7daea3de350f\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a name change by Apple, which is not relevant to local New Jersey issues.\"},{\"article_id\":\"8d6909c1-a510-53f5-af5a-4cb25f1dc016\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about AI chip packaging, which does not relate to the user's interests in local politics or sports.\"},{\"article_id\":\"2fb814a7-7f52-5afc-b7da-b46f132cf20e\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a development project in Singapore, which is unrelated to New Jersey.\"},{\"article_id\":\"bae0fc32-a458-50b0-98cb-231fae23ebaa\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a podcast and betting controversy, which falls under excluded entertainment topics.\"},{\"article_id\":\"453adfd8-3b1e-553a-a754-feea5fd54d7e\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a high school soccer match, which is not a major event impacting local politics or community issues.\"},{\"article_id\":\"ce36b21a-f4e2-5032-ba9d-829b838faddc\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses another high school soccer match, which does not meet the criteria for major news.\"},{\"article_id\":\"62b9d2ca-d843-53de-9fb3-796186254e8c\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article is a preview of a girls soccer season, which is routine coverage and not a major event.\"},{\"article_id\":\"d5cc4911-52c3-591d-a5b9-c96dab71c847\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a girls soccer preview, which does not intersect with the user's primary interests.\"},{\"article_id\":\"deb0984e-10c3-54ca-8df5-316fcad0194b\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses another routine soccer match, which is not relevant to local politics or major events.\"},{\"article_id\":\"248cdc42-2645-5800-b3f7-0c4997ea5423\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article is about a court case in Honduras, which does not relate to New Jersey or local interests.\"},{\"article_id\":\"b5e1c827-a178-5de0-aeb3-14ee9eaf401f\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a girls volleyball match, which is routine coverage and not a major event.\"},{\"article_id\":\"f19dbe96-5aac-5c37-8c3f-0e0d521dddc5\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a field hockey match, which does not intersect with the user's primary interests.\"},{\"article_id\":\"82022498-50db-5e7a-b0b6-e0a56ebbe764\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses another routine soccer match, which is not relevant to local politics or major events.\"},{\"article_id\":\"212da0cc-4d7a-58f8-973a-897b18c33191\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers a volleyball match, which is routine and not a major event.\"},{\"article_id\":\"5d0bd23d-5434-5283-a202-9a492d495a24\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses funding for research in Singapore, which is unrelated to New Jersey.\"},{\"article_id\":\"e970e400-0e0b-52d9-99ef-3ee1af0873b2\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article covers another field hockey match, which does not intersect with the user's primary interests.\"},{\"article_id\":\"eec6e0ef-591d-5f0d-91bb-dc8af375faac\",\"relevant\":false,\"score\":0.0,\"reason\":\"This article discusses a volleyball match, which is routine coverage and not a major event.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2499,
+  "completion_tokens": 1195
+ }
+}

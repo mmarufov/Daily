@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "5baa8ce9f47c6c42faae066018081d320d624153b2285b8819b02c59534efde7",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"00359bab-0895-50f5-8fd4-cae43819080d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"30ec9bbe-b9a5-5a17-8dd2-c6ad95c73341\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"402a0418-9060-5890-b0ae-78c55468a8a6\",\"relevant\":true,\"score\":0.7,\"reason\":\"Discusses challenges to authority in provinces bordering Central Asia, relevant to regional politics.\"},{\"article_id\":\"016f0ba3-376b-5e49-a9ad-eed164e92806\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"a65b99f3-d537-5484-8424-811796ba1304\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"cb157bbe-1a58-5d5f-b4e3-fa6c0140e47b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"13ef52a6-b016-58f8-8e09-91841f503419\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"3f8695d1-6498-5ed6-a67a-f4d999d2b8f8\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"e27\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"845cffb4-5694-5e2f-b336-b56fefab421a\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"cd195154-f132-55c6-a54b-9a5ff35cbf86\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"bf5d543d-dec6-5340-bb23-d6a0bfc085ed\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"a07eea15-5f78-5e92-8022-b14fe5ade21e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"1839cf22-6d5c-5cc2-b69c-45ef821433f1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"eec6e0ef-591d-5f0d-91bb-dc8af375faac\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"59c4c288-6419-5312-8dbb-3e91d5bc1472\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"e51dca75-fe24-5cab-9975-924516827907\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"e7849b9a-32bc-5412-97b4-8bcd63de4741\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"3dbc7480-09c4-5e05-8880-ae9d2e8e90cb\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"0e23bb76-6e72-5088-8bc0-8c997255649b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"},{\"article_id\":\"4c1d9b64-5c90-525f-aaa6-b3b85cb15cc7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asia or trade.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3119,
+  "completion_tokens": 987
+ }
+}

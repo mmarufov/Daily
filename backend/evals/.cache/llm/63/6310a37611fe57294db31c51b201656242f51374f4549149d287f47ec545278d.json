@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "7212a093de9aefaf4633ded64d647d0aec510b0006c0cab94dfc302eb741a05b",
+  "preview": "User Profile:\nFree-form profile:\nI live in Newark, New Jersey and I want news that actually affects my day. State and local politics, property taxes, NJ Transit, the school system, anything happening "
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"58a4e9d6-e41a-5f6c-862e-86e8e119daac\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"a65b99f3-d537-5484-8424-811796ba1304\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"8dee8ec6-aadb-5bd5-a535-5f04fefc9827\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"51b946d2-ca9f-5585-9134-6c67c8187ba0\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"bd18d3f5-c768-5a05-b018-cbce1e7ad4dc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"},{\"article_id\":\"00b645ae-2c81-547d-9d07-a59c4ca7c8b9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"de234674-cd88-5eb2-ac23-d87513734d2b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"1392e4d0-5240-55f1-91ca-66ba462f9497\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"6b172599-2198-57d6-864f-56ed268b1f9b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"},{\"article_id\":\"6f3d514e-e0df-5cf0-b2bc-e15342b11a91\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"e5f0e03c-231f-5668-9c44-74e5bc78e154\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"14a1b401-699c-51e4-9092-2f477a5d5357\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"6f3d514e-e0df-5cf0-b2bc-e15342b11a91\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"5adf5113-fb0a-5127-ba63-2f1d137c3889\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"},{\"article_id\":\"25e26d9c-f644-5915-9081-035aa6a2a512\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"},{\"article_id\":\"453adfd8-3b1e-553a-a754-feea5fd54d7e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"},{\"article_id\":\"ce36b21a-f4e2-5032-ba9d-829b838faddc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"},{\"article_id\":\"62b9d2ca-d843-53de-9fb3-796186254e8c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Routine sports coverage not directly relevant to user interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2478,
+  "completion_tokens": 865
+ }
+}

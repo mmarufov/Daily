@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "30ca6d8103349329c941a5afe141454bb78af965fc5d29b13ce77c2d45c95cd6",
+  "preview": "User Profile:\nFree-form profile:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nStructured interests:\n- Topics: AI products, AI industry, model rele"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"ed36b7e1-148f-55ab-a9ad-082d8af5c09e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Crypto.\"},{\"article_id\":\"d5e99d1c-c0ea-5cf2-b60d-31d25176d246\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"8b545103-60f7-5314-81e7-df61e6047280\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"bd18d3f5-c768-5a05-b018-cbce1e7ad4dc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"823fd046-dbda-5232-8671-8a41177e2e46\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"9e981c47-1854-5dcd-bed1-ce4d7ce0044b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"9ac0614e-ef50-5044-baf0-3634780a25af\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"030cf1da-8cdb-51b6-a73b-7754964f537b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: Crypto.\"},{\"article_id\":\"da285b46-0ef8-5ccb-b1f9-c105540a23ce\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"4952a6ac-d3f0-5d2b-8bec-9b92701322ad\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"5e83cb3b-3737-52e0-b84f-734214711b7c\",\"relevant\":true,\"score\":0.8,\"reason\":\"Discusses the structure of artificial neural networks, relevant to AI products and industry.\"},{\"article_id\":\"e2ad9478-fb62-532f-a53a-19a520471b0e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"105e8e48-5160-5aad-92b3-4e900c2ff7e9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"535b39b5-478a-5d81-b012-e7ac41ca4fdb\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"4309a1f3-294a-5611-9523-2261be9f927b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"aa708c0f-252c-5811-8499-622dfe524d62\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"e8075e2f-4e1b-55e5-9a49-d14c47f1c421\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"012f0cb4-d305-55c1-b917-09f4ee3fa430\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"b9406cb9-9546-536d-829b-dc4896df8259\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3342,
+  "completion_tokens": 962
+ }
+}

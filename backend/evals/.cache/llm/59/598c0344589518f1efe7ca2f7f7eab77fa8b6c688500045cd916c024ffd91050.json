@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "18113d3c41beececa98d109677bae11934c3cd7a011f3387a92874fd2123e6d2",
+  "preview": "User Profile:\nFree-form profile:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nStructured interests:\n- Topi"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"results\": [\n    {\n      \"article_id\": \"25e26d9c-f644-5915-9081-035aa6a2a512\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"2db02689-8ae9-53b4-8eb5-6f61ccded235\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: tech industry news.\"\n    },\n    {\n      \"article_id\": \"bdeda87f-cca6-54b0-9d22-3c13cd01b1a9\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on international military actions.\"\n    },\n    {\n      \"article_id\": \"0e4a5806-f5d6-5fc4-a1d7-fbf22df249c6\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"819ebd0d-cbaa-59f2-bec1-3d1970576a06\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on a natural disaster unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"453adfd8-3b1e-553a-a754-feea5fd54d7e\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"35f1c3db-04ad-506d-9683-ceb8e72142bc\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"9cb70dff-a43d-58cf-b1bb-ae594ae6ae2c\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on personal finance unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"9362aa08-555e-51b8-9a61-6b80d2d62ff4\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: tech industry news.\"\n    },\n    {\n      \"article_id\": \"ce36b21a-f4e2-5032-ba9d-829b838faddc\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"62b9d2ca-d843-53de-9fb3-796186254e8c\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"8640f794-c7b4-5369-b814-3e4ad82ca7be\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on environmental issues in a different region.\"\n    },\n    {\n      \"article_id\": \"08fcffe2-b8d1-5821-94ac-db4ba33d5bc7\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on personal finance unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"d5cc4911-52c3-591d-a5b9-c96dab71c847\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: sports.\"\n    },\n    {\n      \"article_id\": \"deb0984e-10c3-54ca-8df5-316fcad0194b\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on crime unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"051bc28a-8814-50c6-9e88-cfa42f25737f\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on corporate acquisitions unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"c9f0089c-c160-5686-a4fd-8b171a33b398\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on a tragic event unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"dab8e340-f76b-5064-8271-d8a040e181f0\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: tech industry news.\"\n    },\n    {\n      \"article_id\": \"3bbe9819-2cdf-50d6-8261-ecc7c8942a3e\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on international relations unrelated to daily life in Singapore.\"\n    },\n    {\n      \"article_id\": \"6d354a22-f270-56dd-8547-976aa8385998\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests; focuses on entertainment news unrelated to daily life in Singapore.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2360,
+  "completion_tokens": 1316
+ }
+}

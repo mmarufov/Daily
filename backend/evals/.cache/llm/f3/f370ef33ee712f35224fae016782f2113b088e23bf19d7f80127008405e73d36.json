@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "dc78218d51c5f23a41f10e44ce756552763810ab07f98a6eeb5fb89f00f8dfe7",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\n  \"results\": [\n    {\n      \"article_id\": \"5e7ffd4e-c532-5f1e-b531-2bd7f1b49a3f\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: US domestic politics.\"\n    },\n    {\n      \"article_id\": \"9183718c-2667-5bfd-91c2-ac923257fc12\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: US domestic politics.\"\n    },\n    {\n      \"article_id\": \"26be9681-aa91-52d1-a404-f615494d2250\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: US domestic politics.\"\n    },\n    {\n      \"article_id\": \"4e7c9f8d-ca6c-5ed6-bd21-2084474721a0\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: US domestic politics.\"\n    },\n    {\n      \"article_id\": \"2f3efc35-f231-5034-8ca8-6ece451b0e8f\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: US domestic politics.\"\n    },\n    {\n      \"article_id\": \"e51dca75-fe24-5cab-9975-924516827907\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"2f1b4370-4294-58f0-9564-ab8898afb0dd\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"0a01f2fd-7c8d-5a8f-b64a-1a87bf73a895\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"58594200-5172-5d63-aa2e-714272e5c6db\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"60d77de0-8c05-555c-bc59-a68e8e1d2c09\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"5128335b-32ec-5120-b7e0-1c6aed73b672\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"01000676-2024-5c0c-8b53-6c9ca48dac80\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"6f3d514e-e0df-5cf0-b2bc-e15342b11a91\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"aedf7c98-c5eb-5310-a01c-cf822f365aef\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"9db0571d-22a7-5fbd-bab8-b6dec52d0842\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"f5061651-75e5-5537-bdf4-5002df563476\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Excluded topic: US domestic politics.\"\n    },\n    {\n      \"article_id\": \"6d93a2f7-aa53-5ca1-a39a-32b141566fa2\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"ee2f0d55-601c-5396-a490-845186d85d14\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    },\n    {\n      \"article_id\": \"e3b0b99c-77a7-5d1e-8851-3d8cd5517c10\",\n      \"relevant\": false,\n      \"score\": 0.0,\n      \"reason\": \"Not relevant to user's interests.\"\n    }\n  ]\n}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3691,
+  "completion_tokens": 1166
+ }
+}

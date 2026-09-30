@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "2417026252393ec326911bc08e9c66f33b2539dc5c1311f7b25dd5f5b938e133",
+  "preview": "User Profile:\nFree-form profile:\nProduct manager at an AI startup in Boston with a focus on AI products and industry developments.\n\nStructured interests:\n- Topics: AI products, AI industry, model rele"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"35a15f9f-579a-580a-af80-dcf621ca9f4d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: fantasy football.\"},{\"article_id\":\"f3e9db88-9cab-545b-9377-177aa4fb9c40\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: news about a tragic event.\"},{\"article_id\":\"de234674-cd88-5eb2-ac23-d87513734d2b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: news about a tragic event.\"},{\"article_id\":\"da285b46-0ef8-5ccb-b1f9-c105540a23ce\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"9c5baba9-eff4-5072-a48e-cbb3922c2b1d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"ec8c2c6c-c96c-59d3-a1b0-45f9346bc0bc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"2f233a26-19c9-5d6c-a423-5e056f985999\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"1392e4d0-5240-55f1-91ca-66ba462f9497\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"c9649f71-1d2d-52ce-adcd-fdb065d6d49c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"e4490494-9cec-5011-944e-fd8cfc6af077\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"fe75e91d-70bc-5ccf-a7ce-d61a642069bb\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"c6193d07-59ff-54d3-b095-4dabc46bd073\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"6e2813d5-6f7d-55e6-a389-65a52a90c836\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"ed62dd89-47af-5e62-a19a-73604229d95c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"e5f0e03c-231f-5668-9c44-74e5bc78e154\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"2e9f3fb4-b103-553e-a907-0d1f05b97ad8\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: gaming.\"},{\"article_id\":\"14a1b401-699c-51e4-9092-2f477a5d5357\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"6b172599-2198-57d6-864f-56ed268b1f9b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"6ba44fc3-4bcf-59f1-ac0c-650cce6563d1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"28e59749-ea5e-5cbd-9332-8df08d64f7c4\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"},{\"article_id\":\"ESPN\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to AI or the user's primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2612,
+  "completion_tokens": 1042
+ }
+}

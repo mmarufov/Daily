@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "da2b70805ac37e4d7477d830052b488c3d979ecbc5abdad4b4b5bf40829e9da2",
+  "preview": "User Profile:\nFree-form profile:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nStructured interests:\n- Topi"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"d43e210c-9034-590d-b83a-6e37513ece30\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"36589d4e-3089-55ee-b496-96530c236b82\",\"relevant\":true,\"score\":0.9,\"reason\":\"The haze advisory directly impacts health and outdoor activities for residents, especially those with respiratory conditions like asthma.\"},{\"article_id\":\"be6bf2b3-785f-50f7-9457-ca7b18cf3432\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"f80c7a06-6051-5a3b-92a3-939de374b40f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"a9842a54-a44f-5ce1-bf77-4266fa95728c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"29599bee-aa7f-5144-a381-7b9d07895f67\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"3ce6be80-9bc6-59ba-9ffe-6fac9d520d48\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"845cffb4-5694-5e2f-b336-b56fefab421a\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"cd195154-f132-55c6-a54b-9a5ff35cbf86\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"1b4735d2-559d-532e-8ceb-f26abd479a78\",\"relevant\":true,\"score\":1.0,\"reason\":\"The increase in Baby Bonus and paternity leave directly supports new parents and is highly relevant to the user's interests.\"},{\"article_id\":\"ea7601d3-3d67-58ad-aa46-097328f78b69\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"305d6707-474f-5e14-a2b5-a97c1048b496\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"9b149638-cf33-540f-92ae-5beff960d364\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"00b645ae-2c81-547d-9d07-a59c4ca7c8b9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"6ba44fc3-4bcf-59f1-ac0c-650cce6563d1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"59b3b12b-d301-591f-9d4e-8704cd9ab8dd\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"6e9259a2-34d6-5bb3-9b79-c2af9140c7a7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"0ebeeb6c-64c2-596c-a860-99d5f63a0892\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"ade40ea5-db24-54b6-9728-e0f1abd69a19\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"f3c38e88-d42e-513f-b0d8-aeb0e972f247\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"5ecfac0f-7658-5468-8022-b738357a1d1a\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"016f0ba3-376b-5e49-a9ad-eed164e92806\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"105e8e48-5160-5aad-92b3-4e900c2ff7e9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 5231,
+  "completion_tokens": 1122
+ }
+}
