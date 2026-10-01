@@ -1,0 +1,306 @@
+{
+ "n_sampled": 300,
+ "n_answered": 300,
+ "n_skipped": 2,
+ "n_reviewed": 298,
+ "reviewers": [
+  "mmarufov"
+ ],
+ "seconds_per_row": {
+  "median": 11.0,
+  "mean": 14.688590604026846,
+  "total_minutes": 72.95333333333333
+ },
+ "min_reviewed": 100,
+ "bootstrap": 2000,
+ "seed": 20260929,
+ "judge": {
+  "sample": {
+   "n_weight": 298.0,
+   "agreement": 0.785234899328859,
+   "kappa": 0.6713310815468394,
+   "kappa_linear": 0.7347467227706749,
+   "per_class": {
+    "must_see": {
+     "precision": 0.7910447761194029,
+     "recall": 0.7162162162162162,
+     "judge_count": 67.0,
+     "human_count": 74.0
+    },
+    "fine": {
+     "precision": 0.6833333333333333,
+     "recall": 0.7735849056603774,
+     "judge_count": 120.0,
+     "human_count": 106.0
+    },
+    "never": {
+     "precision": 0.8918918918918919,
+     "recall": 0.8389830508474576,
+     "judge_count": 111.0,
+     "human_count": 118.0
+    }
+   },
+   "confusion_human_by_judge": {
+    "must_see": {
+     "must_see": 53.0,
+     "fine": 20.0,
+     "never": 1.0
+    },
+    "fine": {
+     "must_see": 13.0,
+     "fine": 82.0,
+     "never": 11.0
+    },
+    "never": {
+     "must_see": 1.0,
+     "fine": 18.0,
+     "never": 99.0
+    }
+   },
+   "kappa_ci95": [
+    0.6042682663086453,
+    0.7369739488041668
+   ]
+  },
+  "population_weighted": {
+   "n_weight": 6652.000000000008,
+   "agreement": 0.840205952161781,
+   "kappa": 0.6816021620340577,
+   "kappa_linear": 0.7182552600639859,
+   "per_class": {
+    "must_see": {
+     "precision": 0.8336776859504131,
+     "recall": 0.43089734949525005,
+     "judge_count": 241.9999999999999,
+     "human_count": 468.2089602925809
+    },
+    "fine": {
+     "precision": 0.6281157158267527,
+     "recall": 0.9120689542583164,
+     "judge_count": 2453.0000000000027,
+     "human_count": 1689.3107080658833
+    },
+    "never": {
+     "precision": 0.9720829271814867,
+     "recall": 0.8558346814374107,
+     "judge_count": 3957.0000000000055,
+     "human_count": 4494.480331641544
+    }
+   },
+   "confusion_human_by_judge": {
+    "must_see": {
+     "must_see": 201.7499999999999,
+     "fine": 265.283960292581,
+     "never": 1.175
+    },
+    "fine": {
+     "must_see": 39.25,
+     "fine": 1540.7678509230261,
+     "never": 109.29285714285712
+    },
+    "never": {
+     "must_see": 1.0,
+     "fine": 646.9481887843954,
+     "never": 3846.5321428571483
+    }
+   },
+   "kappa_ci95": [
+    0.5650384189695846,
+    0.7893973782557432
+   ],
+   "population_covered": 6652,
+   "population_total": 6652
+  },
+  "per_stratum": {
+   "fine/contested": {
+    "reviewed": 55,
+    "population": 340,
+    "agreement": 0.6363636363636364
+   },
+   "fine/escalated": {
+    "reviewed": 29,
+    "population": 132,
+    "agreement": 0.8620689655172413
+   },
+   "fine/pass1_only": {
+    "reviewed": 36,
+    "population": 1981,
+    "agreement": 0.6111111111111112
+   },
+   "must_see/contested": {
+    "reviewed": 7,
+    "population": 7,
+    "agreement": 0.2857142857142857
+   },
+   "must_see/escalated": {
+    "reviewed": 60,
+    "population": 235,
+    "agreement": 0.85
+   },
+   "never/contested": {
+    "reviewed": 40,
+    "population": 47,
+    "agreement": 0.725
+   },
+   "never/escalated": {
+    "reviewed": 36,
+    "population": 496,
+    "agreement": 1.0
+   },
+   "never/pass1_only": {
+    "reviewed": 35,
+    "population": 3414,
+    "agreement": 0.9714285714285714
+   }
+  }
+ },
+ "effective_labels": {
+  "sample": {
+   "n_weight": 298.0,
+   "agreement": 0.7885906040268457,
+   "kappa": 0.6709087084560371,
+   "kappa_linear": 0.7247875877355007,
+   "per_class": {
+    "must_see": {
+     "precision": 0.9487179487179487,
+     "recall": 0.5,
+     "judge_count": 39.0,
+     "human_count": 74.0
+    },
+    "fine": {
+     "precision": 0.6595744680851063,
+     "recall": 0.8773584905660378,
+     "judge_count": 141.0,
+     "human_count": 106.0
+    },
+    "never": {
+     "precision": 0.8898305084745762,
+     "recall": 0.8898305084745762,
+     "judge_count": 118.0,
+     "human_count": 118.0
+    }
+   },
+   "confusion_human_by_judge": {
+    "must_see": {
+     "must_see": 37.0,
+     "fine": 36.0,
+     "never": 1.0
+    },
+    "fine": {
+     "must_see": 1.0,
+     "fine": 93.0,
+     "never": 12.0
+    },
+    "never": {
+     "must_see": 1.0,
+     "fine": 12.0,
+     "never": 105.0
+    }
+   },
+   "kappa_ci95": [
+    0.608347198788364,
+    0.7386329178123718
+   ]
+  },
+  "population_weighted": {
+   "n_weight": 6652.000000000007,
+   "agreement": 0.8395070281653525,
+   "kappa": 0.6762013828716855,
+   "kappa_linear": 0.7094280881543903,
+   "per_class": {
+    "must_see": {
+     "precision": 0.9673951268525497,
+     "recall": 0.3115676978664166,
+     "judge_count": 150.7954545454546,
+     "human_count": 468.2089602925811
+    },
+    "fine": {
+     "precision": 0.6254844538200252,
+     "recall": 0.9204339403669046,
+     "judge_count": 2485.9113636363663,
+     "human_count": 1689.310708065883
+    },
+    "never": {
+     "precision": 0.9672078416424607,
+     "recall": 0.8640872281956611,
+     "judge_count": 4015.2931818181864,
+     "human_count": 4494.480331641543
+    }
+   },
+   "confusion_human_by_judge": {
+    "must_see": {
+     "must_see": 145.87878787878793,
+     "fine": 321.15517241379314,
+     "never": 1.175
+    },
+    "fine": {
+     "must_see": 3.9166666666666665,
+     "fine": 1554.8989115290865,
+     "never": 130.49512987012992
+    },
+    "never": {
+     "must_see": 1.0,
+     "fine": 609.8572796934866,
+     "never": 3883.6230519480564
+    }
+   },
+   "kappa_ci95": [
+    0.5590450442681408,
+    0.7852104151280909
+   ],
+   "population_covered": 6652,
+   "population_total": 6652
+  },
+  "per_stratum": {
+   "fine/contested": {
+    "reviewed": 55,
+    "population": 340,
+    "agreement": 0.7272727272727273
+   },
+   "fine/escalated": {
+    "reviewed": 29,
+    "population": 132,
+    "agreement": 0.8620689655172413
+   },
+   "fine/pass1_only": {
+    "reviewed": 36,
+    "population": 1981,
+    "agreement": 0.6111111111111112
+   },
+   "must_see/contested": {
+    "reviewed": 7,
+    "population": 7,
+    "agreement": 0.8571428571428571
+   },
+   "must_see/escalated": {
+    "reviewed": 60,
+    "population": 235,
+    "agreement": 0.6666666666666666
+   },
+   "never/contested": {
+    "reviewed": 40,
+    "population": 47,
+    "agreement": 0.8
+   },
+   "never/escalated": {
+    "reviewed": 36,
+    "population": 496,
+    "agreement": 1.0
+   },
+   "never/pass1_only": {
+    "reviewed": 35,
+    "population": 3414,
+    "agreement": 0.9714285714285714
+   }
+  }
+ },
+ "intra_rater": null,
+ "inputs": {
+  "manifest.json": "2a0fc45a909db043cb8450735397290702cd81dfdf81caea5cc6e6758b2d7313",
+  "protocol.json": "e278f424aa59de28688696a652dd00fb7064c929f0c519c35f34aafb1c4b625d",
+  "sample.jsonl": "bc576bd3a3493dadaf412d7030fa989a103ff249f87af5f2c86273579ba45a8c",
+  "judge.jsonl": "3ac75220417de9ba056b82792bfba78a9ab5bb7f22cc73f7d1891fd9fdfa3b23",
+  "readers.json": "e0a6d052e83d81aa112020b9ebd378f88c8f765128272450da2ba1211696bc9e",
+  "adjudications.jsonl": "44c3bc3a5a289e00aad1b8a3db4b2871b369d462c27f0a6e9c8683e6d22d527c"
+ }
+}
