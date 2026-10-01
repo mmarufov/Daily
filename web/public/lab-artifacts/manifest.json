@@ -2,8 +2,8 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "f027762ab4d08b35",
- "inputs_sha256": "c9cdb019c3004ee3",
- "built_at": "2026-09-30T04:08:31.493Z",
+ "inputs_sha256": "9a6910c0e5fecc60",
+ "built_at": "2026-10-01T23:14:58.101Z",
  "complete": true,
  "entries": [
   {
@@ -15,10 +15,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "2181722a21823d2d3a18e68bd21f75a6bc60b004b8bf7f9a1bb12332c019f77c",
-   "bytes": 4862,
+   "sha256": "5b0745b7b3f4431eafee1992fdaa79c775808748023c5389c1f8cc2d1548ea6d",
+   "bytes": 5049,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -45,10 +46,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "5044418004b4239b9dd3439118b7b9a94f2dd27e0315cddb690148aba8558739",
-   "bytes": 4860,
+   "sha256": "14aa981bb6b779b5a90592c78a5f799aa1f97749d83420601717ae346f22e8fd",
+   "bytes": 5047,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -75,10 +77,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "97852704d31d6929b69757807eefb366fde55a7c15ffc5a7ca1c1c4919a1e7fe",
-   "bytes": 45879,
+   "sha256": "2530c11cde731a6571a4ca7817d0f254b2e75cf3bf5ec8a05c9839b7f38b7173",
+   "bytes": 49449,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -105,10 +108,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "edb1661f80ffdfd55173f44ea0c7cbe5cb2820f0d843c2a7e3f16469b269b034",
-   "bytes": 4860,
+   "sha256": "b6b90b7d6abe0c05a82a04792480be7711a8f243d6a87f93d8098b0985392c4e",
+   "bytes": 5047,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -135,10 +139,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "d27ed5ac747b78677f72c1b42a476e1dd87218ed1e40ff1e0923a0f03c405e2c",
-   "bytes": 4860,
+   "sha256": "6d9c09c390a1e264354ea01e11193f1eaa42a71d0a8291dee07229ae53d5292f",
+   "bytes": 5047,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -165,10 +170,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "c08f7f776306846a58bdc4a0f692bee27511a3498f9a6d7579f6416ce3f506c0",
-   "bytes": 46452,
+   "sha256": "b86ce681d53dcf9ee60a20040e152ad6c98dea4fade30dcc93ae56e9bd9aef46",
+   "bytes": 50011,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -195,10 +201,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "958e2beb7c96238af9797c400ea7858f243ed168355c6351c8c314474bcd64bd",
-   "bytes": 4877,
+   "sha256": "1f1760ee51baa804513d178e011001426488c4bf017865a63a80f1177e474ebf",
+   "bytes": 5064,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -225,10 +232,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "5b7f0847d17d6bc67a3c36bd737396d0604d16016f73bfab41b71bf989c31623",
-   "bytes": 4880,
+   "sha256": "e0d2385a5d88f01d2d13a6b513f061b08f9ea21904fd26dbe1085037186d3c3a",
+   "bytes": 5067,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -255,10 +263,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "55b994ae3a79dba555698936802b550ea72733070573128787b3690ea8bd1f78",
-   "bytes": 4811,
+   "sha256": "bf7c8f4426fc5e71876429fb00687bc1b9ca1b4fd0949382ca4adcd30827ca35",
+   "bytes": 4998,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -285,10 +294,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "3bfd99c3bb6cfbced7fa3dd694f3c4f22729c85d3515bb1566607db1dc1e1401",
-   "bytes": 4875,
+   "sha256": "1c4dc1e825d0c5cfc4ea738be93d8f8a3f1f447fa37c84038642c40eb845f142",
+   "bytes": 5062,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -315,10 +325,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "6a679bb1466b22c3dce6d0c510511002fbdb6c4b085877f635662325aca562d9",
-   "bytes": 4879,
+   "sha256": "196a65b1d965697723f4abc77c8fc2064a61e070874fcd05a171b188d884998f",
+   "bytes": 5066,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -345,10 +356,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "cb30d7b1074c3a5cb019242f3f20fb8b2224b8f90f146bcf404d62a519a0a6d4",
-   "bytes": 4881,
+   "sha256": "d5fce8eb3da5e0f58e6c38b5a9c1b31ecfd45b8b5d4426cc68d864a4b7ea50ef",
+   "bytes": 5068,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -375,10 +387,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "08cdfd4a870256f3bdf307fd0bf74f30851259c509639d6df9d73d1690c90ead",
-   "bytes": 4878,
+   "sha256": "69b98057332e0ef3c211557d38a1afc78b5cf02e7e89b55f20ca6b28193a7a08",
+   "bytes": 5065,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -405,10 +418,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "56c08512cc9701a2cae1c3b87b2deb1f6c4cbf584bc5ce7028a150b6b7dbe281",
-   "bytes": 4877,
+   "sha256": "2c00a8e32feb0aa157f145b1cbf693f34d02a04257992e8d57e8d4548f32558f",
+   "bytes": 5064,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -435,10 +449,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "abd5d2cb564bc3b05fd85fb0b0bfcca82a32c327199a29b258217a1207d20bb0",
-   "bytes": 47367,
+   "sha256": "1d2b21946c6388e1b35fab4a039c000c51886d35744cc92c7a292c41693f56be",
+   "bytes": 50943,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -465,10 +480,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "2963e70801856349eb38ed5986c70b50eaa5b551d843f7e53061b6374611dfa8",
-   "bytes": 4819,
+   "sha256": "482bea4e2102ad4bcbd736f98843c9bf80d5ec3f2220423881343bb71e729cec",
+   "bytes": 5006,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -495,10 +511,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "64c37664a4ddf3c76770b5f58f8bd92a9d80ba1da02e51c011f0e164bf8bee93",
-   "bytes": 47338,
+   "sha256": "695626a00c51495f6ff63f5c1e638915324805cd17301326fc20518d65abe9f6",
+   "bytes": 50914,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -525,10 +542,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "0a9daf371247198fc55f91a18006b64f9550ceb9f88613b88a7c8525d2f46cb8",
-   "bytes": 48430,
+   "sha256": "efb0b4a689368cf523b196af37d98c5cf08af7a1691a44f8d6c0cdcc2ae53b4c",
+   "bytes": 52009,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -555,10 +573,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "0d1ca36fe2d71161333c3a176f594e313fe978e62b85ead9333343d845a4a3bd",
-   "bytes": 4808,
+   "sha256": "b673bc87fcf984e0e3f9a22644e5c53f3f9ceb2177c1c49689f98fb1595e28a9",
+   "bytes": 4995,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -585,10 +604,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "46350a619226ff7115c082e2c86999306673c0035ac8543471911d0a9f9a3485",
-   "bytes": 46598,
+   "sha256": "58639f5181d78b8b2a35ac4c1a157dc6e9a5c4dc0b4f74d90c52561f6950e0fc",
+   "bytes": 50168,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -615,10 +635,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "accepted-for-review",
-    "2": "accepted-for-review"
+    "2": "accepted-for-review",
+    "3": "accepted-for-review"
    },
-   "sha256": "4ef536c9b01c67bc63e369497c6971e08c7c4bb17d9ba19b0445a0cc36d7d585",
-   "bytes": 46991,
+   "sha256": "ad43d5149f2f41baa18e9fbe304478e8bd6e30cdf7197a9cd166bc4174dc2e73",
+   "bytes": 50551,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -645,10 +666,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "b670ab125a1ddcc3ba2252bd63f3f8aa9ea9f55607bf8d5326a1943eaa93621f",
-   "bytes": 4835,
+   "sha256": "43f75e3c57f1159c7d5f5929208d24865765bcc4f10e92ac6ca373c4034c4050",
+   "bytes": 5022,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -675,10 +697,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "57a07e717ae35b6b62dfb367000b36b57be868f572ebc20b573c12a86a2cd1a9",
-   "bytes": 4820,
+   "sha256": "ee69bed1a7e3d50dc58a8dfa57024790482dffb988799ca5c575dc1378e37718",
+   "bytes": 5007,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -705,10 +728,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "b5ee06655ae8e8625330e5010fb469663c3b51361b3e66dcced02cb69f5da1b8",
-   "bytes": 4820,
+   "sha256": "5bad27fd1cc8d06b16ac9f287827037d4d03d54d9a63afdc95848fed3ae7e228",
+   "bytes": 5007,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -735,10 +759,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "accepted-for-review",
-    "2": "accepted-for-review"
+    "2": "accepted-for-review",
+    "3": "accepted-for-review"
    },
-   "sha256": "26350214052d79cf5928b3245e3327f6e501388d6f4b33a812717e2f0bda0e3a",
-   "bytes": 47156,
+   "sha256": "94c57648ff8189b9447f877fcc63e9a3bee5411fdd1a12c4ed02cdcf29a75441",
+   "bytes": 50716,
    "runner": "vercel-sandbox",
    "investigated": true,
    "investigation": {
@@ -765,10 +790,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "733d4130b261b59a5b4329b729f13df6d2ebec5d4b8a25bbc2bb53ac4c840c87",
-   "bytes": 4852,
+   "sha256": "138cacd11cb862a60b66262b15ace00fb3b311ed9d83cd4a6df5a3be6124bbf3",
+   "bytes": 5039,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -795,10 +821,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "1906139ce79273f16a4e48eb8f7d8c9f28422039412e99b1ae18acf6004c1d73",
-   "bytes": 4863,
+   "sha256": "94c4043567923b29554209a0f9af9b56270d5d2e6f2c3feb61b0344abb569403",
+   "bytes": 5050,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -825,10 +852,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "a332e34db5681e289c13ecbf0b03dde434897c474f411f55593243321940bfca",
-   "bytes": 4783,
+   "sha256": "cbc148bfe4ef01f251202c67d5822aeaad50305fadbb39b66dc124c5f4d4e254",
+   "bytes": 4970,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -855,10 +883,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "a48538969c9be19c5c9726085dc04d10fa753043c24ed809e1bfb975ee58f46a",
-   "bytes": 4863,
+   "sha256": "42513b5f0802679e51aba8ddc971954e2146062b88b7e912ab70d24df806c555",
+   "bytes": 5050,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -885,10 +914,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "cbee9fcfa83793a51da59e86067d6e8c45e2650382abbfdd994de2c580c8d3de",
-   "bytes": 4862,
+   "sha256": "e1371e76d2a7677bb622fd65ef373803e82a1e0b3088299a9ba05f0cbe77f89c",
+   "bytes": 5049,
    "runner": "none",
    "investigated": true,
    "investigation": {
@@ -915,14 +945,573 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "failed",
-    "2": "failed"
+    "2": "failed",
+    "3": "failed"
    },
-   "sha256": "17c5e27daed854f743251168fa786c887967041e8c437d47769a27ff908a79e8",
-   "bytes": 4862,
+   "sha256": "8b08c798d0c484f08b165eb6ac72961c96ae4174739142150c205e64d6ede47f",
+   "bytes": 5049,
    "runner": "none",
    "investigated": true,
    "investigation": {
     "model": "moonshotai/kimi-k2",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-01__sandbox",
+   "file": "agent-s45-default-01-sandbox.json",
+   "candidate_id": "agent-s45-default-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "dd114bb7d30c62c5cdcb0908796d5fee1912b5e912ad3db4367b2d6f33470748",
+   "bytes": 5081,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-02__sandbox",
+   "file": "agent-s45-default-02-sandbox.json",
+   "candidate_id": "agent-s45-default-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "04923e97908e58b45a04a7882b591e12cb200f6b956fb105e7020db0b1c3537e",
+   "bytes": 5083,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-03__sandbox",
+   "file": "agent-s45-default-03-sandbox.json",
+   "candidate_id": "agent-s45-default-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "a3b3ae77afc53057fba1efef631ec45e15e3a0ed83f08d3f530608ae418c6a20",
+   "bytes": 5083,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-04__sandbox",
+   "file": "agent-s45-default-04-sandbox.json",
+   "candidate_id": "agent-s45-default-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "23cb021273900e580cc3ccfcf6291c23a7b06a5000c49432571fd0548ca3d68f",
+   "bytes": 5081,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-05__sandbox",
+   "file": "agent-s45-default-05-sandbox.json",
+   "candidate_id": "agent-s45-default-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "7f1cbb26da5017087846cca35d1526666664c70622ff3ed0fee12195e5b5fa0f",
+   "bytes": 5081,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-06__sandbox",
+   "file": "agent-s45-default-06-sandbox.json",
+   "candidate_id": "agent-s45-default-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "24c571124156170d39469f4717880772ffc718b282ba038ddfb2d1909b436300",
+   "bytes": 5083,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-01__sandbox",
+   "file": "agent-s45-generous-out-01-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-01",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "6a634f8e1aeffb622a199a37804d8b9fe9590e0489edb7811e666aa40962ca83",
+   "bytes": 50996,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-02__sandbox",
+   "file": "agent-s45-generous-out-02-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-02",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "32c68898175165370bf2307cf84af85ecd88fb0a37c3f57814a16c09a0e8c17b",
+   "bytes": 51392,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-03__sandbox",
+   "file": "agent-s45-generous-out-03-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-03",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "df0702f3c99808094d0b677080b74f51c3f4781b7d7836d0de4efe9dc7d3733a",
+   "bytes": 52582,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-04__sandbox",
+   "file": "agent-s45-generous-out-04-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-04",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "f94763b6badfc244d9cff1ce602a8285b7cadaaa1fe9b90c7c962f98f3c9e21d",
+   "bytes": 52103,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-05__sandbox",
+   "file": "agent-s45-generous-out-05-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-05",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "c931fd608056b90fba8f8f7a76128aee05048e78942d0b81f3e647bbf79090fd",
+   "bytes": 54639,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-06__sandbox",
+   "file": "agent-s45-generous-out-06-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-06",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "d59d6adaf3176631e987fbcf9a741fa104f152e4dcaf64b4deb2fb86a1a07a9b",
+   "bytes": 52184,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-01__sandbox",
+   "file": "agent-s45-tight-01-sandbox.json",
+   "candidate_id": "agent-s45-tight-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "a9d5d4918d704981bf1ef90783854ef90e9fc2665552bfd5f0b58d0586dd0900",
+   "bytes": 5066,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-02__sandbox",
+   "file": "agent-s45-tight-02-sandbox.json",
+   "candidate_id": "agent-s45-tight-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "c222f0fdca0e434bf4d4532dc0a58b6af1b98c7544be4db72b2c843f18cf7a4d",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-03__sandbox",
+   "file": "agent-s45-tight-03-sandbox.json",
+   "candidate_id": "agent-s45-tight-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "be2379555c67ce24ede1c04de7d5779307866413045b1f9b7faaff1bed0ae677",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-04__sandbox",
+   "file": "agent-s45-tight-04-sandbox.json",
+   "candidate_id": "agent-s45-tight-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "0a5582700a3a4b94e0c45a7615f6cbb30c0acca2ba2c76bd8c4185cf289a254f",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-05__sandbox",
+   "file": "agent-s45-tight-05-sandbox.json",
+   "candidate_id": "agent-s45-tight-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "9db2e62fdfb32edcec1057ed7f2873de0fd27430c51ec2c221c6260ce1a15fd5",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-06__sandbox",
+   "file": "agent-s45-tight-06-sandbox.json",
+   "candidate_id": "agent-s45-tight-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "de30ddb313f7b4e7821a3d8174caa8fbd5360472557290bdf79bdd7e31403cd1",
+   "bytes": 5065,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
     "budget_label": "tight",
     "budget": {
      "max_proposals": 1,
@@ -945,10 +1534,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "a8612a947c14df2cdc11c1d12c337ec54ff692610b57b8ff368252e915eef29e",
-   "bytes": 38485,
+   "sha256": "24e9435c3f3a4e211964e9c856c71c2d93030eb42fa2cb471e1f39857fb9f162",
+   "bytes": 40127,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -962,10 +1552,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "c2c4409c84eb87f7272802e129800920c6f6a2e91f9aa68507a2c4b4e8ae123a",
-   "bytes": 39947,
+   "sha256": "8a22c4f577ce63bb6bd6963b21dd1305786c3b56b3c064c8c7ee50a6413dd757",
+   "bytes": 41566,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -979,10 +1570,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "6b7cf4c9c244b30b443440d957dfafe6217126fc92fbc03062ef1449bc51f6a3",
-   "bytes": 39177,
+   "sha256": "901b80a79bde49de20ff521572f4f54228b65175f0e1f62598bd5b45184dcd3e",
+   "bytes": 40797,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -996,10 +1588,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "88e420ca8e3cdffaf1b722b4d5431476e29d52c3b9aeb62da0b713b6cf0b0efb",
-   "bytes": 39539,
+   "sha256": "0701e26301fe7a9ae1ed125652384c95965a43085dad3fd1a4a3353dbe09c8d6",
+   "bytes": 41175,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -1013,10 +1606,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "accepted-for-review",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "f0c756b47aeba93b4a4d964cc5155755d3086188ee716e38f0a4bf7c03c4c531",
-   "bytes": 44953,
+   "sha256": "e794346da537b4c02a78a41df1eedb03813a1bcd8c35feccc627dbc65174caa9",
+   "bytes": 46572,
    "runner": "vercel-sandbox",
    "investigated": false,
    "investigation": null
@@ -1030,10 +1624,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "accepted-for-review",
-    "2": "accepted-for-review"
+    "2": "accepted-for-review",
+    "3": "accepted-for-review"
    },
-   "sha256": "ed34d781e4102c89b238ce3a78a6a6b8bb00e1f8e47459285729f6dfc76b3596",
-   "bytes": 41893,
+   "sha256": "d19bcce9b7970897652eb6da2ab33eb9c323baeee32ca63b254300385b5821fe",
+   "bytes": 43517,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -1047,10 +1642,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "accepted-for-review",
-    "2": "accepted-for-review"
+    "2": "accepted-for-review",
+    "3": "accepted-for-review"
    },
-   "sha256": "38c58a9153d5234ed9270147116a93dab1d6c9957f6fa5bd5fbe679d88688be6",
-   "bytes": 42487,
+   "sha256": "368c93993429f3cdaa74daea5ba1ea753725a841047f0159fe6544291da0a319",
+   "bytes": 44111,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -1064,10 +1660,11 @@
    "spec_hash": "f027762ab4d08b35",
    "verdict_by_spec": {
     "1": "rejected",
-    "2": "rejected"
+    "2": "rejected",
+    "3": "rejected"
    },
-   "sha256": "6f35605c02a85be10a379bad3615341a25f1173d00a5b569db83f9f994327ac1",
-   "bytes": 34579,
+   "sha256": "02f581bf8de2f97fbf717ef06361c1c87476dc3ae37af8af39533901ec6a4d9d",
+   "bytes": 36199,
    "runner": "local-known",
    "investigated": false,
    "investigation": null
@@ -1081,7 +1678,7 @@
   },
   {
    "severity": "info",
-   "message": "9 of 39 runs executed in an isolated microVM, because those candidates matched no committed implementation. 36 isolation probes ran inside those microVMs and all held.",
+   "message": "15 of 57 runs executed in an isolated microVM, because those candidates matched no committed implementation. 60 isolation probes ran inside those microVMs and all held.",
    "source": "web/lib/lab/sandbox.ts"
   }
  ]

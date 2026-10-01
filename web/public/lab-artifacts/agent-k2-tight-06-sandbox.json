@@ -16,9 +16,9 @@
  },
  "provenance": {
   "executed_at_revision": "1c97bc0483f43673fc9f31820d8187d53659a0ff+dirty",
-  "inputs_sha256": "8d5083c858d5c078",
+  "inputs_sha256": "d614a7b86bd0077e",
   "executed_at": "2026-09-30T03:31:13.462Z",
-  "evaluator_sha256": "277ec81521ba14d8",
+  "evaluator_sha256": "05a2bbcb45586326",
   "spec_hash": "f027762ab4d08b35",
   "spec_version": 2,
   "execution_mode": "offline-replay",
@@ -109,6 +109,13 @@
   {
    "spec_version": 2,
    "spec_hash": "f027762ab4d08b35",
+   "verdict": "failed",
+   "verdict_reason": "the investigation ended without proposing a candidate",
+   "criteria": []
+  },
+  {
+   "spec_version": 3,
+   "spec_hash": "1db3520cbd1980fa",
    "verdict": "failed",
    "verdict_reason": "the investigation ended without proposing a candidate",
    "criteria": []

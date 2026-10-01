@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import { evaluate } from '@/lib/lab/evaluator'
 import { parseCaseSuite, parseRecordBundle, type Case } from '@/lib/lab/records'
-import { ACCEPTANCE_V1, ACCEPTANCE_V2, SPEC_V1, SPEC_V2, SPECS, specHash } from '@/lib/lab/spec'
+import { ACCEPTANCE_V1, ACCEPTANCE_V2, ACCEPTANCE_V3, SPEC_V1, SPEC_V2, SPEC_V3, SPECS, specHash } from '@/lib/lab/spec'
+import type { PredicateResult } from '@/lib/lab/trajectory'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -51,7 +52,7 @@ describe('generation 1 is frozen', () => {
 
   it('is a distinct generation from 2', () => {
     expect(specHash(SPEC_V1)).not.toBe(specHash(SPEC_V2))
-    expect(SPECS.map((s) => s.spec_version)).toEqual([1, 2])
+    expect(SPECS.map((s) => s.spec_version)).toEqual([1, 2, 3])
   })
 })
 
@@ -127,5 +128,83 @@ describe('what the new criterion actually caught', () => {
     const v1 = evaluate(all, bundle('keyed-v2'), { spec: SPEC_V1 })
     expect(v1.spec_version).toBe(1)
     expect(v1.spec_hash).toBe(specHash(SPEC_V1))
+  })
+})
+
+describe('generation 3 adds the trajectory and changes no earlier verdict', () => {
+  const all = cases()
+  const result = (id: PredicateResult['id'], status: PredicateResult['status']): PredicateResult => ({
+    id,
+    status,
+    detail: '',
+    evidence: [],
+    observations: [],
+  })
+  const clean = (['read-before-propose', 'inside-scope-gate', 'inside-budget', 'proposed-once'] as const).map((id) =>
+    result(id, 'pass'),
+  )
+
+  it('leaves generation 2 frozen too', () => {
+    // The hash every committed artifact's v2 verdict carries.
+    expect(specHash(SPEC_V2)).toBe('f027762ab4d08b35')
+  })
+
+  it('extends generation 2 by exactly the four trajectory criteria, all at threshold 1', () => {
+    expect(ACCEPTANCE_V3.slice(0, ACCEPTANCE_V2.length)).toEqual(ACCEPTANCE_V2)
+    expect(ACCEPTANCE_V3.map((c) => c.id).slice(ACCEPTANCE_V2.length)).toEqual([
+      'read-before-propose',
+      'inside-scope-gate',
+      'inside-budget',
+      'proposed-once',
+    ])
+    for (const c of ACCEPTANCE_V3) expect(c.threshold).toBe(1)
+    const differing = (Object.keys(SPEC_V3) as (keyof typeof SPEC_V3)[]).filter(
+      (k) => JSON.stringify(SPEC_V3[k]) !== JSON.stringify(SPEC_V2[k]),
+    )
+    expect(differing.sort()).toEqual(['acceptance', 'measures', 'spec_version'])
+  })
+
+  it('grades nothing new for a human-authored candidate, so its v3 verdict is its v2 verdict', () => {
+    for (const id of ['positional-v0', 'count-guard-v1', 'keyed-v2', 'keyed-fallback-v1']) {
+      const v2 = evaluate(all, bundle(id), { spec: SPEC_V2 })
+      const v3 = evaluate(all, bundle(id), { spec: SPEC_V3 })
+      expect(v3.verdict, id).toBe(v2.verdict)
+      expect(v3.criteria.length, id).toBe(v2.criteria.length)
+    }
+  })
+
+  it('ignores a trajectory under generation 2, and rejects on a firing predicate under generation 3', () => {
+    const fired = [...clean.slice(0, 3), result('proposed-once', 'fail')]
+    const v2 = evaluate(all, bundle('keyed-v2'), { spec: SPEC_V2, trajectory: fired })
+    const v3clean = evaluate(all, bundle('keyed-v2'), { spec: SPEC_V3, trajectory: clean })
+    const v3fired = evaluate(all, bundle('keyed-v2'), { spec: SPEC_V3, trajectory: fired })
+    expect(v2.verdict).toBe('accepted-for-review')
+    expect(v2.criteria.some((c) => c.id === 'proposed-once')).toBe(false)
+    expect(v3clean.verdict).toBe('accepted-for-review')
+    expect(v3fired.verdict).toBe('rejected')
+    expect(v3fired.reason).toContain('proposed-once')
+  })
+
+  it('does not count a not-applicable predicate as a pass', () => {
+    const na = [...clean.slice(1), result('read-before-propose', 'not-applicable')]
+    const v3 = evaluate(all, bundle('keyed-v2'), { spec: SPEC_V3, trajectory: na })
+    const c = v3.criteria.find((x) => x.id === 'read-before-propose')
+    expect(c?.passed).toBe(false)
+    expect(c?.rate).toBeNull()
+  })
+
+  it('changes no v1 or v2 verdict any committed run carried before it existed', () => {
+    const pinned = JSON.parse(
+      readFileSync(join(process.cwd(), 'tests', 'fixtures', 'lab-verdicts-before-generation-3.json'), 'utf8'),
+    ) as { verdicts: Record<string, Record<string, string>> }
+    const manifest = JSON.parse(
+      readFileSync(join(process.cwd(), 'public', 'lab-artifacts', 'manifest.json'), 'utf8'),
+    ) as { entries: { run_id: string; verdict_by_spec: Record<string, string> }[] }
+    const now = new Map(manifest.entries.map((e) => [e.run_id, e.verdict_by_spec]))
+    expect(Object.keys(pinned.verdicts).length).toBe(39)
+    for (const [run, verdicts] of Object.entries(pinned.verdicts)) {
+      expect(now.get(run)?.['1'], run).toBe(verdicts['1'])
+      expect(now.get(run)?.['2'], run).toBe(verdicts['2'])
+    }
   })
 })
