@@ -53,6 +53,17 @@ describe('the sandbox credential check', () => {
     }
     expect('missing' in sandboxCredentials(deployment)).toBe(false)
   })
+
+  it('defers to the request OIDC header on a deployment, where the env token is absent', () => {
+    // What production actually looks like inside a function: no
+    // VERCEL_OIDC_TOKEN in the environment, because the token arrives per
+    // request in `x-vercel-oidc-token`, which the SDK reads itself. Requiring
+    // it in env is what made every public run end without a microVM.
+    const deployed = { VERCEL: '1', VERCEL_ENV: 'production', VERCEL_PROJECT_ID: 'prj_real' }
+    expect('missing' in sandboxCredentials(deployed)).toBe(false)
+    // Off the platform, the same absence is still a refusal.
+    expect('missing' in sandboxCredentials({ VERCEL_PROJECT_ID: 'prj_real' })).toBe(true)
+  })
 })
 
 describe('what the sandbox can see', () => {
