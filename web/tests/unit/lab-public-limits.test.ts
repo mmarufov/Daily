@@ -17,6 +17,7 @@ import {
   addressBucket,
   PUBLIC_RUN_LIMITS,
   PublicRunGate,
+  REFUSAL_MEMORY_MS,
   releaseRun,
   UNMETERED_RUN_CPU_MS,
   upstashStore,
@@ -325,6 +326,24 @@ describe('a refusal costs nothing and says the truth', () => {
     // before it resets, so the store is not asked again.
     expect(h.redis.transactions).toBe(afterFirst)
     expect(afterFirst - before.transactions).toBe(2) // reserve, then refund
+  })
+
+  it('trusts a remembered refusal for a minute at most, so a corrected counter takes effect', async () => {
+    const h = harness()
+    // An exhausted day, as an operator correction or a simulation would leave it.
+    h.redis.strings.set('lab:public:runs:2026-10-01', String(PUBLIC_RUN_LIMITS.runs_per_day))
+    expect((await h.post('192.0.2.1')).body.limit).toBe('daily-runs')
+    const asked = h.redis.transactions
+
+    // Corrected. Within the minute the instance still answers from memory...
+    h.redis.strings.set('lab:public:runs:2026-10-01', '0')
+    h.at(T0 + REFUSAL_MEMORY_MS - 1)
+    expect((await h.post('192.0.2.1')).status).toBe(429)
+    expect(h.redis.transactions).toBe(asked)
+
+    // ...and after it, asks the store and admits. Not at midnight.
+    h.at(T0 + REFUSAL_MEMORY_MS)
+    expect((await h.post('192.0.2.1')).status).toBe(202)
   })
 
   it('reports the limit that resets last when several are exceeded', async () => {
