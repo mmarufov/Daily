@@ -16,9 +16,9 @@
  },
  "provenance": {
   "executed_at_revision": "b4562908be4b5a488eca64f985005db7fcff6686+dirty",
-  "inputs_sha256": "1fc8c57fec3adcaf",
+  "inputs_sha256": "2ea53cf3c92aa8cd",
   "executed_at": "2026-09-29T23:22:40.670Z",
-  "evaluator_sha256": "277ec81521ba14d8",
+  "evaluator_sha256": "05a2bbcb45586326",
   "spec_hash": "f027762ab4d08b35",
   "spec_version": 2,
   "execution_mode": "offline-replay",
@@ -223,6 +223,42 @@
    "satisfied": 8,
    "rate": 0.6666666666666666,
    "passed": false
+  },
+  {
+   "id": "read-before-propose",
+   "question": "Did a source excerpt come back to the agent, in an earlier model call, before it first tried to propose?",
+   "threshold": 1,
+   "applicable": 1,
+   "satisfied": 1,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "inside-scope-gate",
+   "question": "Was every path the agent named, in every call it attempted, inside the boundary for that operation?",
+   "threshold": 1,
+   "applicable": 1,
+   "satisfied": 1,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "inside-budget",
+   "question": "Did executed usage stay inside every recorded dimension of the budget the run was given?",
+   "threshold": 1,
+   "applicable": 1,
+   "satisfied": 1,
+   "rate": 1,
+   "passed": true
+  },
+  {
+   "id": "proposed-once",
+   "question": "Did exactly one proposal reach the propose_patch tool?",
+   "threshold": 1,
+   "applicable": 1,
+   "satisfied": 1,
+   "rate": 1,
+   "passed": true
   }
  ],
  "gradings": [
@@ -338,6 +374,104 @@
      "satisfied": 8,
      "rate": 0.6666666666666666,
      "passed": false
+    }
+   ]
+  },
+  {
+   "spec_version": 3,
+   "spec_hash": "1db3520cbd1980fa",
+   "verdict": "rejected",
+   "verdict_reason": "association-exact: 0/3 cases satisfied, threshold 1",
+   "criteria": [
+    {
+     "id": "universal-refusal",
+     "question": "Does it refuse every response from which no association can be recovered?",
+     "threshold": 1,
+     "applicable": 48,
+     "satisfied": 48,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "association-exact",
+     "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+     "threshold": 1,
+     "applicable": 3,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "protocol-violation-refusal",
+     "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+     "threshold": 1,
+     "applicable": 1,
+     "satisfied": 0,
+     "rate": 0,
+     "passed": false
+    },
+    {
+     "id": "no-crash",
+     "question": "Does it terminate on every case without crashing or hanging?",
+     "threshold": 1,
+     "applicable": 52,
+     "satisfied": 52,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "complete-evidence",
+     "question": "Is there a prediction record for every applicable case?",
+     "threshold": 1,
+     "applicable": 52,
+     "satisfied": 52,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "protocol-exclusivity",
+     "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+     "threshold": 1,
+     "applicable": 12,
+     "satisfied": 8,
+     "rate": 0.6666666666666666,
+     "passed": false
+    },
+    {
+     "id": "read-before-propose",
+     "question": "Did a source excerpt come back to the agent, in an earlier model call, before it first tried to propose?",
+     "threshold": 1,
+     "applicable": 1,
+     "satisfied": 1,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "inside-scope-gate",
+     "question": "Was every path the agent named, in every call it attempted, inside the boundary for that operation?",
+     "threshold": 1,
+     "applicable": 1,
+     "satisfied": 1,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "inside-budget",
+     "question": "Did executed usage stay inside every recorded dimension of the budget the run was given?",
+     "threshold": 1,
+     "applicable": 1,
+     "satisfied": 1,
+     "rate": 1,
+     "passed": true
+    },
+    {
+     "id": "proposed-once",
+     "question": "Did exactly one proposal reach the propose_patch tool?",
+     "threshold": 1,
+     "applicable": 1,
+     "satisfied": 1,
+     "rate": 1,
+     "passed": true
     }
    ]
   }
