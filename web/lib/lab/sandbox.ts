@@ -28,7 +28,7 @@ import { randomUUID } from 'node:crypto'
 
 import { Sandbox } from '@vercel/sandbox'
 
-import { SANDBOX_LIMITS, sha256 } from './runner'
+import { SANDBOX_LIMITS, SANDBOX_VCPUS, sha256 } from './runner'
 
 /** Where the harness lives inside the microVM. */
 const CANDIDATE_PATH = 'lab/candidate.py'
@@ -200,7 +200,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
     runtime: 'python3.13',
     timeout: SANDBOX_LIMITS.wall_clock_seconds * 1000,
     networkPolicy: 'deny-all',
-    resources: { vcpus: 2 },
+    resources: { vcpus: SANDBOX_VCPUS },
   })
   const bootMs = Date.now() - startedAt
   let stopped = false

@@ -52,6 +52,9 @@ const STAGE: readonly string[] = [
   'backend/lab/contract/types.py',
   'backend/lab/contract/versions/positional_v0.py',
   'backend/lab/contract/versions/count_guard_v1.py',
+  // Read at build time, not by a function: the `/lab` runner offers it as a
+  // starting point beside the two above.
+  'backend/lab/contract/versions/keyed_v2.py',
   'backend/app/services/openai_service.py',
   'backend/app/services/ranking_contract.py',
 ]
