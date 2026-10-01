@@ -12,6 +12,8 @@
  * same state through the same code path.
  */
 
+import { randomUUID } from 'node:crypto'
+
 import { start } from 'workflow/api'
 
 import { runCandidateWorkflow } from '@/lib/lab/orchestration'
@@ -35,9 +37,22 @@ function currentGate(): PublicRunGate | null {
   return gate
 }
 
+/**
+ * Which function instance answered, as an opaque random id.
+ *
+ * The limits are only limits if they hold across instances, and Fluid runs
+ * several at once. This header is how that is checked from outside: fire
+ * requests in parallel, see more than one id come back, and see the global
+ * ceiling hold anyway. It carries nothing but the fact of being a different
+ * instance.
+ */
+const INSTANCE = randomUUID().slice(0, 8)
+
 export async function POST(request: Request): Promise<Response> {
-  return handleRunRequest(request, {
+  const response = await handleRunRequest(request, {
     gate: currentGate(),
     start: (input) => start(runCandidateWorkflow, [input]),
   })
+  response.headers.set('X-Lab-Instance', INSTANCE)
+  return response
 }

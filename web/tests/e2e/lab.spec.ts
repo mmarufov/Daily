@@ -67,11 +67,12 @@ test.describe('Daily Lab', () => {
     await expect(page.getByText('succeeded').first()).toBeVisible()
   })
 
-  test('says how many agent runs proposed something, counted from the manifest', async ({ page }) => {
-    // This used to assert "No agent has run", which stopped being true when
-    // the first investigation was published and failed on main from then on.
-    // The claim is now derived, so the test derives its expectation the same
-    // way rather than pinning a number that moves with every sweep.
+  test('never claims more agent work than the manifest records', async ({ page }) => {
+    // This asserted "No agent has run" while that was true. Agents have run
+    // since, so the page rightly stopped saying it and the old assertion
+    // stopped matching. The claim is now counted from the manifest, and so is
+    // what this test expects: how many investigations were published, and how
+    // many of them actually proposed a candidate.
     const manifest = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'lab-artifacts', 'manifest.json'), 'utf8')) as {
       entries: { investigated: boolean; runner: string }[]
     }
