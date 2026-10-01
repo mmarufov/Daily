@@ -514,3 +514,10 @@ stops being read.** Fix it while you are in there, or the next red one is invisi
 4. **`vercel integration add` installs agent skills into the project as a side effect**
    (`.agents/`, `.claude/skills/`, `skills-lock.json`). Check `git status` after every
    provisioning command and remove what was not asked for before it reaches a commit.
+
+## 2026-10-01 — Portfolio README scope and emphasis
+
+The user confirmed the README target is Daily; the mention of Ravon was a typo.
+For this portfolio rewrite, lead with verified engineering strengths and a real demo.
+Keep necessary experimental/deployment qualifiers beside claims rather than turning
+README.md into a historical audit or an exhaustive list of shortcomings.
