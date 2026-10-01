@@ -2,7 +2,7 @@
 
 # Daily
 
-### News that knows you.
+### News that know you.
 
 An iOS news app that builds you a personal daily edition — and a backend that can prove
 whether it actually got better.
