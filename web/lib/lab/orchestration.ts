@@ -29,9 +29,10 @@
  * files are staged beside them, so each loads the suite itself.
  */
 
-import { sleep } from 'workflow'
+import { getWritable, sleep } from 'workflow'
 
 import { evaluate, type Evaluation } from './evaluator'
+import { PROGRESS_NAMESPACE, summariseGrading, summariseSandbox, type LiveGrading, type ProgressEvent, type SandboxSummary } from './live'
 import { parseRecordBundle } from './records'
 import type { RunEvent } from './runstate'
 import { checkPatchScope } from './scope'
@@ -90,6 +91,13 @@ export interface WorkflowInput {
    * skips it.
    */
   readonly suspend_seconds: number
+  /**
+   * The concurrency slot this run holds, and the UTC day its CPU is charged
+   * to. Issued by the public admission gate and handed back by `releaseStep`
+   * when the run ends, however it ends.
+   */
+  readonly slot: string
+  readonly day: string
 }
 
 /**
@@ -122,10 +130,56 @@ interface Base {
   readonly resumed: boolean
 }
 
+/**
+ * What a candidate run returns.
+ *
+ * `grading` is the per-case result joined to the case suite, so a reader can
+ * see which fault caught the candidate and not only that something did.
+ * `sandbox` is the microVM's own account of itself, read off the platform.
+ * Either is null when the run never got far enough to produce it.
+ */
 export type WorkflowOutcome =
   | ({ readonly kind: 'rejected-by-scope'; readonly detail: string } & Base)
-  | ({ readonly kind: 'graded'; readonly verdict: Evaluation['verdict']; readonly reason: string } & Base)
-  | ({ readonly kind: 'incomplete'; readonly detail: string } & Base)
+  | ({
+      readonly kind: 'graded'
+      readonly verdict: Evaluation['verdict']
+      readonly reason: string
+      readonly grading: LiveGrading
+      readonly sandbox: SandboxSummary | null
+    } & Base)
+  | ({
+      readonly kind: 'incomplete'
+      readonly detail: string
+      readonly grading: LiveGrading | null
+      readonly sandbox: SandboxSummary | null
+    } & Base)
+
+/**
+ * Report progress on the run's stream, from inside a step.
+ *
+ * The events are what actually happened, timestamped when they happened, so
+ * a visitor watching a run sees the microVM being created rather than a
+ * spinner standing in for it. Never allowed to fail a step: a progress line
+ * that cannot be written is a missing line, not a failed run.
+ */
+function progressWriter(): { say: (stage: string) => void; done: () => Promise<void> } {
+  let writer: WritableStreamDefaultWriter<ProgressEvent> | null = null
+  try {
+    writer = getWritable<ProgressEvent>({ namespace: PROGRESS_NAMESPACE }).getWriter()
+  } catch {
+    writer = null
+  }
+  const pending: Promise<unknown>[] = []
+  return {
+    say(stage) {
+      if (writer !== null) pending.push(writer.write({ at: new Date().toISOString(), stage }).catch(() => undefined))
+    },
+    async done() {
+      await Promise.all(pending)
+      writer?.releaseLock()
+    },
+  }
+}
 
 /* --------------------------------------------------------- the steps --- */
 
@@ -144,11 +198,11 @@ export async function scopeStep(input: WorkflowInput): Promise<{
   'use step'
   const path = ALLOWED_PATCH_PATHS[0] as string
   const result = checkPatchScope([{ path, content: input.source }])
-  return {
-    allowed: result.allowed,
-    detail: result.allowed ? `${path} — within the allowed patch scope` : `${result.rejection}: ${result.detail}`,
-    mark: mark(),
-  }
+  const detail = result.allowed ? `${path} is within the allowed patch scope` : `${result.rejection}: ${result.detail}`
+  const progress = progressWriter()
+  progress.say(result.allowed ? 'scope checked: only candidate.py is written' : `refused by the scope gate: ${detail}`)
+  await progress.done()
+  return { allowed: result.allowed, detail, mark: mark() }
 }
 
 /**
@@ -162,6 +216,14 @@ export async function executeStep(input: WorkflowInput): Promise<{
   detail: string
   sandbox_id: string | null
   records_json: string | null
+  sandbox: SandboxSummary | null
+  /**
+   * Active CPU to charge against the day's allowance. The platform's meter
+   * when it reported one, zero when no microVM was created, and null when one
+   * may have run and nothing metered it, which the release step charges at
+   * the worst case.
+   */
+  charge_cpu_ms: number | null
   mark: StepMark
 }> {
   'use step'
@@ -178,15 +240,41 @@ export async function executeStep(input: WorkflowInput): Promise<{
       detail: `the sandbox cannot run: missing ${credentials.missing.join(', ')}`,
       sandbox_id: null,
       records_json: null,
+      sandbox: null,
+      charge_cpu_ms: 0,
       mark: mark(),
     }
   }
 
-  const execution = await runInSandbox({
-    candidateSource: input.source,
-    files: await uploadSet(),
-    credentials,
-  })
+  const progress = progressWriter()
+  let execution: Awaited<ReturnType<typeof runInSandbox>>
+  try {
+    execution = await runInSandbox({
+      candidateSource: input.source,
+      files: await uploadSet(),
+      credentials,
+      onProgress: progress.say,
+    })
+  } catch (error) {
+    // Caught, not rethrown. A thrown step is retried, and a retry here runs
+    // the candidate again in a new microVM: on a public route, one bad run
+    // would cost up to four. The failure is journaled as what it is.
+    progress.say('the sandbox run failed')
+    await progress.done()
+    return {
+      ok: false,
+      detail: `the sandbox run failed: ${error instanceof Error ? error.message.split('\n')[0] : String(error)}`,
+      sandbox_id: null,
+      records_json: null,
+      sandbox: null,
+      charge_cpu_ms: null,
+      mark: mark(),
+    }
+  }
+  progress.say('microVM stopped')
+  await progress.done()
+
+  const sandbox = summariseSandbox(execution)
   const failed = execution.isolation.filter((p) => !p.held)
   if (failed.length > 0) {
     // A microVM that did not actually isolate produces evidence about nothing.
@@ -195,6 +283,8 @@ export async function executeStep(input: WorkflowInput): Promise<{
       detail: `isolation probes failed: ${failed.map((p) => p.name).join(', ')}`,
       sandbox_id: execution.sandbox_id,
       records_json: null,
+      sandbox,
+      charge_cpu_ms: execution.active_cpu_ms,
       mark: mark(),
     }
   }
@@ -206,9 +296,15 @@ export async function executeStep(input: WorkflowInput): Promise<{
         : `the harness exited ${execution.exit_code}`,
     sandbox_id: execution.sandbox_id,
     records_json: execution.records_json,
+    sandbox,
+    charge_cpu_ms: execution.active_cpu_ms,
     mark: mark(),
   }
 }
+// One attempt. The step catches its own failures above; this covers the ones
+// it cannot, such as the function itself being killed, which the queue would
+// otherwise redeliver into a fresh microVM.
+executeStep.maxRetries = 0
 
 /**
  * Grade the records with the trusted evaluator.
@@ -220,7 +316,7 @@ export async function executeStep(input: WorkflowInput): Promise<{
 export async function gradeStep(
   recordsJson: string | null,
   failure: string | null,
-): Promise<{ verdict: Evaluation['verdict']; reason: string; mark: StepMark }> {
+): Promise<{ verdict: Evaluation['verdict']; reason: string; grading: LiveGrading; mark: StepMark }> {
   'use step'
   const { loadCasesForRun } = await import('./case-loader')
   const cases = await loadCasesForRun()
@@ -237,19 +333,41 @@ export async function gradeStep(
   //
   // Order matters as much as the check: failure is consulted first, so there
   // is no path from "we could not tell" to a verdict on the merits.
-  if (failure !== null) {
-    const result = evaluate(cases, null, { failure })
-    return { verdict: result.verdict, reason: result.reason, mark: mark() }
-  }
-  if (recordsJson === null) {
-    const result = evaluate(cases, null, { failure: 'no records were produced' })
-    return { verdict: result.verdict, reason: result.reason, mark: mark() }
-  }
+  const graded = (result: Evaluation) => ({
+    verdict: result.verdict,
+    reason: result.reason,
+    grading: summariseGrading(result, cases),
+    mark: mark(),
+  })
+  if (failure !== null) return graded(evaluate(cases, null, { failure }))
+  if (recordsJson === null) return graded(evaluate(cases, null, { failure: 'no records were produced' }))
   const parsed = parseRecordBundle(JSON.parse(recordsJson))
-  const result = parsed.ok
-    ? evaluate(cases, parsed.value)
-    : evaluate(cases, null, { failure: `record bundle did not validate: ${parsed.issues.join('; ')}` })
-  return { verdict: result.verdict, reason: result.reason, mark: mark() }
+  return graded(
+    parsed.ok
+      ? evaluate(cases, parsed.value)
+      : evaluate(cases, null, { failure: `record bundle did not validate: ${parsed.issues.join('; ')}` }),
+  )
+}
+
+/**
+ * Hand the run's slot back and charge its CPU to the day it started on.
+ *
+ * Never throws. It runs in the workflow's `finally`, and an error there would
+ * replace a finished run's verdict with a failure. If the store cannot be
+ * reached the slot's lease expires on its own; the CPU charge is then lost,
+ * which is the one place this errs open, and only by one run.
+ */
+export async function releaseStep(slot: string, day: string, cpuMs: number | null): Promise<{ released: boolean }> {
+  'use step'
+  const { releaseRun, upstashStore } = await import('./public-limits')
+  const store = upstashStore()
+  if (store === null) return { released: false }
+  try {
+    await releaseRun(store, { slot, day, cpu_ms: cpuMs })
+    return { released: true }
+  } catch {
+    return { released: false }
+  }
 }
 
 /* ------------------------------------------------------ the workflow --- */
@@ -265,60 +383,84 @@ export async function gradeStep(
 export async function runCandidateWorkflow(input: WorkflowInput): Promise<WorkflowOutcome> {
   'use workflow'
 
-  const events: RunEvent[] = []
-  const processes: ProcessTrace[] = []
-  const attemptId = `${input.run_id}#01`
-  const summarise = (): { processes: ProcessTrace[]; resumed: boolean } => ({
-    processes,
-    resumed: new Set(processes.map((p) => p.process_id)).size > 1,
-  })
+  // Zero until a microVM may have run. The slot is released however the run
+  // ends, so a candidate that crashes the orchestrator does not keep it.
+  let chargeCpuMs: number | null = 0
+  try {
+    const events: RunEvent[] = []
+    const processes: ProcessTrace[] = []
+    const attemptId = `${input.run_id}#01`
+    const summarise = (): { processes: ProcessTrace[]; resumed: boolean } => ({
+      processes,
+      resumed: new Set(processes.map((p) => p.process_id)).size > 1,
+    })
 
-  const scope = await scopeStep(input)
-  processes.push({ step: 'scope', ...scope.mark })
-  events.push({
-    type: 'created',
-    run_id: input.run_id,
-    candidate_id: input.candidate_id,
-    at: scope.mark.at,
-    spec_hash: input.spec_hash,
-  })
-  events.push({ type: 'scope-checked', at: scope.mark.at, allowed: scope.allowed, detail: scope.detail })
-  if (!scope.allowed) {
-    return { kind: 'rejected-by-scope', detail: scope.detail, events, ...summarise() }
+    const scope = await scopeStep(input)
+    processes.push({ step: 'scope', ...scope.mark })
+    events.push({
+      type: 'created',
+      run_id: input.run_id,
+      candidate_id: input.candidate_id,
+      at: scope.mark.at,
+      spec_hash: input.spec_hash,
+    })
+    events.push({ type: 'scope-checked', at: scope.mark.at, allowed: scope.allowed, detail: scope.detail })
+    if (!scope.allowed) {
+      return { kind: 'rejected-by-scope', detail: scope.detail, events, ...summarise() }
+    }
+
+    events.push({ type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox', at: mark().at })
+    chargeCpuMs = null
+    const execution = await executeStep(input)
+    chargeCpuMs = execution.charge_cpu_ms
+    processes.push({ step: 'execute', ...execution.mark })
+    events.push({
+      type: 'attempt-ended',
+      attempt_id: attemptId,
+      at: execution.mark.at,
+      // `failed`, not `unknown-outcome`: this step returned, so its outcome is
+      // known. `unknown-outcome` is reserved for an attempt whose completion was
+      // never journaled at all, which is reconstructed on replay rather than
+      // written here — see `recoverAttempts`.
+      status: execution.ok ? 'succeeded' : 'failed',
+      note: execution.detail,
+    })
+
+    if (input.suspend_seconds > 0) {
+      // A real suspension, and the SDK's rather than a `setTimeout`. The
+      // difference is the whole claim: `setTimeout` holds a process open for
+      // the duration, which demonstrates nothing. This releases it. The process
+      // that resumes is not the process that slept, and `PROCESS_ID` on the
+      // next step is where a reader can see that rather than take it.
+      await sleep(`${input.suspend_seconds}s`)
+    }
+
+    const graded = await gradeStep(execution.records_json, execution.ok ? null : execution.detail)
+    processes.push({ step: 'grade', ...graded.mark })
+    events.push({ type: 'evaluated', at: graded.mark.at, verdict: graded.verdict, reason: graded.reason })
+
+    if (graded.verdict === 'incomplete' || graded.verdict === 'failed') {
+      return {
+        kind: 'incomplete',
+        detail: graded.reason,
+        grading: graded.grading,
+        sandbox: execution.sandbox,
+        events,
+        ...summarise(),
+      }
+    }
+    return {
+      kind: 'graded',
+      verdict: graded.verdict,
+      reason: graded.reason,
+      grading: graded.grading,
+      sandbox: execution.sandbox,
+      events,
+      ...summarise(),
+    }
+  } finally {
+    await releaseStep(input.slot, input.day, chargeCpuMs)
   }
-
-  events.push({ type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox', at: mark().at })
-  const execution = await executeStep(input)
-  processes.push({ step: 'execute', ...execution.mark })
-  events.push({
-    type: 'attempt-ended',
-    attempt_id: attemptId,
-    at: execution.mark.at,
-    // `failed`, not `unknown-outcome`: this step returned, so its outcome is
-    // known. `unknown-outcome` is reserved for an attempt whose completion was
-    // never journaled at all, which is reconstructed on replay rather than
-    // written here — see `recoverAttempts`.
-    status: execution.ok ? 'succeeded' : 'failed',
-    note: execution.detail,
-  })
-
-  if (input.suspend_seconds > 0) {
-    // A real suspension, and the SDK's rather than a `setTimeout`. The
-    // difference is the whole claim: `setTimeout` holds a process open for
-    // the duration, which demonstrates nothing. This releases it. The process
-    // that resumes is not the process that slept, and `PROCESS_ID` on the
-    // next step is where a reader can see that rather than take it.
-    await sleep(`${input.suspend_seconds}s`)
-  }
-
-  const graded = await gradeStep(execution.records_json, execution.ok ? null : execution.detail)
-  processes.push({ step: 'grade', ...graded.mark })
-  events.push({ type: 'evaluated', at: graded.mark.at, verdict: graded.verdict, reason: graded.reason })
-
-  if (graded.verdict === 'incomplete' || graded.verdict === 'failed') {
-    return { kind: 'incomplete', detail: graded.reason, events, ...summarise() }
-  }
-  return { kind: 'graded', verdict: graded.verdict, reason: graded.reason, events, ...summarise() }
 }
 
 /**

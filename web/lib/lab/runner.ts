@@ -142,6 +142,12 @@ export interface SandboxLimits {
   readonly secrets: 'none'
 }
 
+/**
+ * vCPUs given to every microVM. Here rather than in `sandbox.ts` so code that
+ * bounds the cost of a run can read it without importing the sandbox client.
+ */
+export const SANDBOX_VCPUS = 2
+
 export const SANDBOX_LIMITS: SandboxLimits = {
   image: 'python3.13',
   network: 'disabled',

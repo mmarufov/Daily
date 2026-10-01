@@ -5,9 +5,13 @@ import { Band } from '@/components/Band'
 import { Claim } from '@/components/Claim'
 import { Reveal } from '@/components/Reveal'
 import { OffendingCase } from '@/components/LabOffendingCase'
+import { LabRunner } from '@/components/LabRunner'
 import { VerdictBadge } from '@/components/LabVerdict'
 import { EXPERIMENT } from '@/lib/lab/spec'
 import { loadLabIndex, loadOffendingCase, otherRuns, walkthroughs } from '@/lib/lab/data'
+import { PUBLIC_RUN_LIMITS } from '@/lib/lab/public-limits'
+import { MAX_SOURCE_BYTES } from '@/lib/lab/public-run'
+import { loadCaseCatalog, loadRunnerPresets } from '@/lib/lab/runner-presets'
 
 export const metadata: Metadata = {
   title: 'Daily Lab',
@@ -23,6 +27,11 @@ function movedGeneration(entry: { verdict_by_spec: Readonly<Record<string, strin
 export default async function LabPage() {
   const { manifest, issues } = await loadLabIndex()
   const offending = await loadOffendingCase()
+  const [presets, catalog] = await Promise.all([loadRunnerPresets(), loadCaseCatalog()])
+  const limits = PUBLIC_RUN_LIMITS
+  // Configured limits, stated as limits. Read from the same constant the
+  // route enforces, so the page cannot promise a limit the server does not.
+  const limitsLine = `Limits: ${limits.per_address.runs} runs an hour from one address, ${limits.concurrent_runs} at once, and ${limits.runs_per_day} runs or ${limits.cpu_ms_per_day / 60_000} minutes of microVM CPU a day across every visitor. A live run is not added to the published runs below.`
 
   if (manifest === null) {
     return (
@@ -51,11 +60,12 @@ export default async function LabPage() {
   // them. These move on their own when a run moves.
   const sandboxed = manifest.entries.filter((e) => e.runner === 'vercel-sandbox')
   const investigated = manifest.entries.filter((e) => e.investigated)
+  const proposed = investigated.filter((e) => e.runner !== 'none')
 
   return (
     <div className="flex flex-col">
       <section className="hero frame relative flex flex-col gap-7 py-14 md:py-20">
-        <p className="label m-0 text-ink-40">Daily Lab · recorded replay, not a live run</p>
+        <p className="label m-0 text-ink-40">Daily Lab · live parser runs against recorded responses</p>
         <h1 className="display m-0 max-w-5xl text-[clamp(2.25rem,6.5vw,4.75rem)]">
           The scorer judged forty articles and never said which verdict belonged to which.
         </h1>
@@ -67,8 +77,11 @@ export default async function LabPage() {
           </span>
         </p>
         <div className="flex flex-wrap gap-2.5 pt-1">
+          <a href="#run" className="chip chip-on px-4 py-2.5 text-sm">
+            Run a parser yourself
+          </a>
           {shown[0] !== undefined ? (
-            <Link href={`/lab/${shown[0].slug}`} className="chip chip-on px-4 py-2.5 text-sm">
+            <Link href={`/lab/${shown[0].slug}`} className="chip px-4 py-2.5 text-sm">
               Replay the investigation
             </Link>
           ) : null}
@@ -85,8 +98,21 @@ export default async function LabPage() {
         </section>
       ) : null}
 
+      <section className="frame flex scroll-mt-20 flex-col gap-7 pb-20" id="run">
+        <Band index="02" title="Run a parser" note="Live, in a Vercel Sandbox microVM" />
+        <p className="prose measure m-0 text-ink-60">
+          Your parser runs for real, in a fresh microVM with networking denied, against the same{' '}
+          {catalog.length} model responses every run on this page faced.{' '}
+          {catalog.filter((c) => c.origin === 'recorded-replay').length} are real batches, recorded
+          and replayed. {catalog.filter((c) => c.origin === 'fault-injection').length} are fault
+          injections, each built to catch one specific mistake. The responses are replayed; the
+          execution and the grading are not.
+        </p>
+        <LabRunner presets={presets} catalog={catalog} limits={limitsLine} maxBytes={MAX_SOURCE_BYTES} />
+      </section>
+
       <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="02" title="The three walkthroughs" note="Every verdict below was computed, not written" />
+        <Band index="03" title="The three walkthroughs" note="Every verdict below was computed, not written" />
         <ul className="m-0 grid list-none gap-px border border-rule bg-rule p-0 lg:grid-cols-3">
           {shown.map((w) => {
             const entry = manifest.entries.find((e) => e.file === w.file)
@@ -114,7 +140,7 @@ export default async function LabPage() {
       </section>
 
       <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="03" title="What the experiment asks" note={`spec ${manifest.spec_hash}`} />
+        <Band index="04" title="What the experiment asks" note={`spec ${manifest.spec_hash}`} />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
           <div className="flex flex-col gap-6">
             {/* The question is the entry point, so it is the only thing here
@@ -150,7 +176,7 @@ export default async function LabPage() {
 
       {rest.length > 0 ? (
         <section className="frame flex flex-col gap-7 pb-20">
-          <Band index="04" title="Every run in the set" note="Including the ones that are not walkthroughs" />
+          <Band index="05" title="Every run in the set" note="Including the ones that are not walkthroughs" />
           <ul className="m-0 flex list-none flex-col gap-px border-y border-rule p-0">
             {rest.map((entry) => (
               <li key={entry.file}>
@@ -183,7 +209,7 @@ export default async function LabPage() {
       ) : null}
 
       <section className="frame flex flex-col gap-7 pb-8">
-        <Band index="05" title="What the Lab never claims" note="The boundaries of this result" />
+        <Band index="06" title="What the Lab never claims" note="The boundaries of this result" />
         <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
           <Claim term="Accepted is not shipped">
             It means eligible for human review under this spec hash. Merging and promotion stay a
@@ -197,9 +223,12 @@ export default async function LabPage() {
             Sending article ids changes the request, which invalidates every recorded response.
             New budgeted recordings would be needed and none exist.
           </Claim>
-          <Claim term="No live execution here">
-            Every run replayed committed recordings offline. No inference call was made; provider
-            spend for these runs is <span className="text-ink">$0</span>.
+          <Claim term="Live execution, recorded responses">
+            A parser run from this page executes for real, in a microVM. The model responses it
+            parses do not: they are the committed recordings and fault injections, replayed, and
+            grading calls no model. The same is true of every published run here. The
+            agent-authored ones called a model to write their candidate, and each run&rsquo;s page
+            states what that call cost.
           </Claim>
           {investigated.length === 0 ? (
             <Claim term="No agent has run">
@@ -208,10 +237,15 @@ export default async function LabPage() {
               behaviour is depicted anywhere on this site.
             </Claim>
           ) : (
-            <Claim term="One agent proposal, graded like any other">
-              {investigated.length} candidate{investigated.length === 1 ? ' was' : 's were'} authored by the
-              investigator and faced the same scope gate, sandbox and evaluator a human patch
-              faces. The model never saw the criteria or its own verdict.
+            // Counted, because the sentence this replaced said "one" over
+            // thirty-one runs and called every one of them a candidate. An
+            // investigation that ended without a proposal has runner `none`.
+            <Claim term="Agent proposals, graded like any other">
+              {investigated.length} investigator runs are published.{' '}
+              {proposed.length} of them proposed a candidate, and each faced the same scope gate,
+              sandbox and evaluator a human patch faces. The other{' '}
+              {investigated.length - proposed.length} ended without a proposal and are published
+              anyway. The model never saw the criteria or its own verdict.
             </Claim>
           )}
           {sandboxed.length === 0 ? (

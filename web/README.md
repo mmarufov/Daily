@@ -49,7 +49,8 @@ are committed.
 | `BLOB_READ_WRITE_TOKEN` | publish only | Vercel Blob write token. Absent, `publish:artifacts` exits 0 without uploading, so fork pull requests run the same pipeline with no secrets. |
 | `PUBLISH_AS_LATEST` | publish only | `true` moves the mutable `evidence/latest/` pointer. The trusted workflow sets it only for the default branch. |
 | `DEMO_RUN_ID` | no | Which exported run the reader demo replays. Defaults to `prod-llm__2026-09-02__47edb50`. |
-| `LAB_OWNER_TOKEN` | to start a run | Bearer token for `POST /api/lab/run`, compared in constant time. **Unset means nobody is the owner, not everybody** — the route returns 503 and no run can be started. Reading a run is public and needs nothing. |
+| `LAB_OWNER_TOKEN` | to start an investigation | Bearer token for `POST /api/lab/investigate`, compared in constant time. **Unset means nobody is the owner, not everybody**: the route returns 503 and no investigation can be started. On `POST /api/lab/run` it only unlocks `suspend_seconds`. Reading a run is public and needs nothing. |
+| `KV_REST_API_URL` + `KV_REST_API_TOKEN` | public runner | The Upstash Redis REST endpoint the public runner counts runs in, provisioned from the Vercel Marketplace on the free plan with auto-upgrade off. **Unset means the runner is closed**: `POST /api/lab/run` answers 503 and starts nothing, because a run nobody counted is not allowed to start. |
 | `VERCEL_TOKEN` + `VERCEL_TEAM_ID` + `VERCEL_PROJECT_ID` | local sandbox only | Credentials for `@vercel/sandbox`. On a Vercel deployment the SDK uses OIDC and needs none of them; `vercel env pull` also writes a `VERCEL_OIDC_TOKEN` that works locally. Partial credentials are treated as a misconfiguration rather than a fallback, because OIDC supplies all three at once. |
 | `AI_GATEWAY_API_KEY` | investigator only | Routes the model call through the AI Gateway, which is what meters the spend the budget is measured against. Absent, `readiness()` refuses and no call is made — there is no mock model and no demo mode. |
 | `LAB_MAX_USD` | investigator only | An explicit per-investigation ceiling. Required even when a key is present, and refused if it exceeds `BUDGET.max_usd`: raising the limit has to be a commit somebody reads, not an env var somebody sets. |
@@ -359,6 +360,53 @@ that served a call that never happened.
 
 Where this stands is recorded on `/lab`, derived from the manifest rather than asserted in prose,
 so the claim weakens itself when a run proves otherwise.
+
+### The public runner
+
+Anyone can run a parser from `/lab`. `POST /api/lab/run` takes the source and starts the same
+durable workflow the owner used to start by hand: scope gate, one microVM, the trusted evaluator.
+It calls no model, so the only thing a visitor can spend is Sandbox compute, and
+`lib/lab/public-limits.ts` bounds it.
+
+| Limit | Value | Resets |
+|---|---|---|
+| Per address (IPv6 by /64) | 5 runs | an hour after the oldest of them |
+| At once, across everyone | 3 runs | when one finishes, or its 300 s lease expires |
+| Per UTC day, across everyone | 50 runs | 00:00 UTC |
+| Per UTC day, across everyone | 20 minutes of microVM active CPU, as metered | 00:00 UTC |
+
+The limits are constants, not env vars, for the reason given for `LAB_MAX_USD` above. That
+variable is not reused: it authorises model dollars, and a sandbox run has a measured CPU figure,
+not a measured dollar figure. A run the platform did not meter is charged at its worst case,
+2 vCPU for 120 s.
+
+Each decision is one Redis transaction that reserves every counter and then decides. A refusal
+is compensated, so it consumes nothing. The counts include the request itself and come out of a
+serialised transaction, so a burst can be refused spuriously but never over-admitted. A refusal
+is a 429 with `Retry-After` and a body naming the limit and its reset time. When several limits
+are hit it names the one that resets last. Per-address and daily refusals are remembered by the
+instance until they reset, because nothing can lower those counts sooner.
+
+`executeStep` runs exactly once (`maxRetries = 0`) and catches its own failures. The SDK default
+is three retries, and a retry here is a new microVM: one bad public run would have cost up to
+four.
+
+What a malicious visitor can do once this is open:
+
+- run arbitrary stdlib Python for up to 120 s on 2 vCPUs, with no network and no credentials, 5
+  times an hour per address;
+- with enough addresses, exhaust the day's shared allowance and close the runner until 00:00 UTC;
+- spend the Redis free tier's commands from many addresses, which closes the runner for the rest
+  of that period rather than billing anyone. A Vercel WAF rate rule would close this, and is the
+  owner's decision because it changes the project's security settings;
+- share a run link that shows their parser's own refusal kinds and crash text, labelled as the
+  parser's and length-capped. The verdict is still the evaluator's.
+
+What they cannot do: write anywhere but `backend/lab/contract/candidate.py`, exceed 64 KB, reach
+the network, a credential, the evaluator or another visitor's code, cause a model call, start an
+investigation, make a run sleep and hold a slot, multiply cost through retries, spoof an address
+on Vercel (`x-real-ip` is set by the proxy), or get a run started while the counter is down. Live
+runs are not added to the published set.
 
 ### A gap the experiment found in itself, and the criterion that closed it
 
