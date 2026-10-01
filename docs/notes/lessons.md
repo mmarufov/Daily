@@ -496,3 +496,21 @@ ran from `prebuild`, a step *after* the unit tests. It passed on every developer
 the directory was already there from the last build. That is the exact failure the staging
 script was written to fix, named in its own docstring. **A check that has been red long enough
 stops being read.** Fix it while you are in there, or the next red one is invisible too.
+
+## Opening the Lab runner to visitors, 2026-10-01
+
+1. **A Workflow `getRun()` handle fetches nothing.** The first property read is the first
+   request, so a `try` around `getRun()` guards nothing and an unknown id threw past it as a
+   bodiless 500 on production for weeks, under a comment saying it returned 404. Check
+   `await run.exists` inside the guard, and curl the route on production before trusting what
+   its comment says.
+2. **Workflow steps retry three times by default.** For a step with an external effect that
+   means up to four of it: here, four microVMs for one public run. Any step that creates,
+   charges or sends gets `maxRetries = 0` and catches its own failure into a journaled result.
+3. **A test that fails because the world changed is not a broken test.** "Never claims an agent
+   has run" stopped matching because agents had run, and the page had correctly stopped saying
+   so. Calling that a broken baseline was wrong. Update the assertion to the current truth,
+   derive it from the same data the page uses, and keep the test.
+4. **`vercel integration add` installs agent skills into the project as a side effect**
+   (`.agents/`, `.claude/skills/`, `skills-lock.json`). Check `git status` after every
+   provisioning command and remove what was not asked for before it reaches a commit.
