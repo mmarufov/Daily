@@ -63,7 +63,17 @@ export function sandboxCredentials(
   // The rule it was reaching for is still worth keeping, and now sits where
   // it applies: with no OIDC token, a partial explicit set is a
   // misconfiguration rather than something to paper over.
-  if ((env.VERCEL_OIDC_TOKEN ?? '').trim() !== '') {
+  //
+  // And on a deployment the token is not in the environment at all. A
+  // deployed function receives it per request, in the `x-vercel-oidc-token`
+  // header, and the SDK reads it from the request context itself. Requiring
+  // `VERCEL_OIDC_TOKEN` in `process.env` therefore refused, on production,
+  // a credential the SDK would have found: the first public runs ended
+  // `missing VERCEL_TOKEN, VERCEL_TEAM_ID` without a microVM. `VERCEL` is set
+  // by the platform at runtime. If OIDC is genuinely unavailable there,
+  // `Sandbox.create` throws and the run is recorded as failed, which is
+  // still never a local execution.
+  if ((env.VERCEL_OIDC_TOKEN ?? '').trim() !== '' || env.VERCEL === '1') {
     return { token: '', teamId: '', projectId: '' }
   }
 
