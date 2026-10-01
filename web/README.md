@@ -384,8 +384,10 @@ Each decision is one Redis transaction that reserves every counter and then deci
 is compensated, so it consumes nothing. The counts include the request itself and come out of a
 serialised transaction, so a burst can be refused spuriously but never over-admitted. A refusal
 is a 429 with `Retry-After` and a body naming the limit and its reset time. When several limits
-are hit it names the one that resets last. Per-address and daily refusals are remembered by the
-instance until they reset, because nothing can lower those counts sooner.
+are hit it names the one that resets last. Per-address and daily refusals are repeated from the
+instance's memory for at most a minute, so a client hammering the route costs one store
+transaction per instance per minute, and a corrected counter still takes effect within that
+minute.
 
 `executeStep` runs exactly once (`maxRetries = 0`) and catches its own failures. The SDK default
 is three retries, and a retry here is a new microVM: one bad public run would have cost up to

@@ -181,6 +181,8 @@ export interface RunInSandboxOptions {
   readonly credentials: SandboxCredentials
   /** Called with progress so a long run is not a silent one. */
   readonly onProgress?: (step: string) => void
+  /** Platform tags for the microVM, so it can be found again by run. */
+  readonly tags?: Readonly<Record<string, string>>
 }
 
 /**
@@ -191,7 +193,7 @@ export interface RunInSandboxOptions {
  * and never a fabricated record set.
  */
 export async function runInSandbox(options: RunInSandboxOptions): Promise<SandboxExecution> {
-  const { candidateSource, files, credentials, onProgress = () => {} } = options
+  const { candidateSource, files, credentials, onProgress = () => {}, tags } = options
   const startedAt = Date.now()
 
   onProgress('creating microVM')
@@ -201,6 +203,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
     timeout: SANDBOX_LIMITS.wall_clock_seconds * 1000,
     networkPolicy: 'deny-all',
     resources: { vcpus: SANDBOX_VCPUS },
+    ...(tags === undefined ? {} : { tags: { ...tags } }),
   })
   const bootMs = Date.now() - startedAt
   let stopped = false

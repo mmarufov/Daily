@@ -428,19 +428,31 @@ export async function releaseRun(
 /* ------------------------------------------------------------ gate --- */
 
 /**
- * Admission with a memory of refusals that cannot change before they reset.
+ * How long one instance trusts a refusal before asking the store again.
+ *
+ * Remembering a daily refusal until midnight was exact only while counters
+ * never go down, and they can: an operator corrects one, or a test simulates
+ * an exhausted day and restores it. Then every instance that had cached the
+ * refusal kept refusing everyone until 00:00 UTC. A minute keeps the point,
+ * one store transaction per minute per instance however hard a client
+ * hammers, and lets a correction take effect within that minute.
+ */
+export const REFUSAL_MEMORY_MS = 60_000
+
+/**
+ * Admission with a short memory of refusals that cannot change on their own.
  *
  * An address over its hourly limit stays over it until its oldest run ages
- * out: refusals add nothing, so nothing else can lower the count. A day over
- * its ceiling stays over until midnight. Remembering those refusals until
- * their exact reset time means a client hammering the route costs one store
- * transaction per instance, not one per request, and every answer it gets is
- * still exact.
+ * out: refusals add nothing, so nothing a visitor does can lower the count. A
+ * day over its ceiling stays over until midnight. So those refusals are
+ * repeated from memory, until their reset or for `REFUSAL_MEMORY_MS`,
+ * whichever is sooner, and a client hammering the route costs one store
+ * transaction per instance per minute rather than one per request.
  *
  * The concurrent limit is not remembered. A slot can free at any moment.
  */
 export class PublicRunGate {
-  private readonly remembered = new Map<string, Refusal>()
+  private readonly remembered = new Map<string, { refusal: Refusal; until: number }>()
 
   constructor(
     private readonly store: LimitStore,
@@ -453,11 +465,11 @@ export class PublicRunGate {
     for (const key of [day, address]) {
       const known = this.remembered.get(key)
       if (known === undefined) continue
-      const resets = Date.parse(known.resets_at)
-      if (options.now < resets) {
+      if (options.now < known.until) {
+        const resets = Date.parse(known.refusal.resets_at)
         return {
           ok: false,
-          refusal: { ...known, retry_after_seconds: Math.max(1, Math.ceil((resets - options.now) / 1000)) },
+          refusal: { ...known.refusal, retry_after_seconds: Math.max(1, Math.ceil((resets - options.now) / 1000)) },
         }
       }
       this.remembered.delete(key)
@@ -466,8 +478,8 @@ export class PublicRunGate {
     const admission = await admitRun(this.store, { ...options, limits: this.limits })
     if (!admission.ok) {
       const { limit } = admission.refusal
-      if (limit === 'per-address') this.remember(address, admission.refusal)
-      if (limit === 'daily-runs' || limit === 'daily-cpu') this.remember(day, admission.refusal)
+      if (limit === 'per-address') this.remember(address, admission.refusal, options.now)
+      if (limit === 'daily-runs' || limit === 'daily-cpu') this.remember(day, admission.refusal, options.now)
     }
     return admission
   }
@@ -476,9 +488,9 @@ export class PublicRunGate {
     return refund(this.store, reservation)
   }
 
-  private remember(key: string, value: Refusal): void {
+  private remember(key: string, refusal: Refusal, now: number): void {
     // Bounded, because the keys are chosen by whoever is sending requests.
     if (this.remembered.size >= 10_000) this.remembered.clear()
-    this.remembered.set(key, value)
+    this.remembered.set(key, { refusal, until: Math.min(Date.parse(refusal.resets_at), now + REFUSAL_MEMORY_MS) })
   }
 }
