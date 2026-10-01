@@ -782,3 +782,39 @@ three options: `.context/batch-alignment-fix/FINDING.md`.
 Not done: live signed-in reader flow. Blocked on `CORS_ORIGINS` being unset, the absence of a web
 Google OAuth client, and delivery receipts that only exist on a live edition. Marked unverified in
 the UI rather than simulated.
+
+
+## Open the Lab candidate runner to visitors, 2026-10-01
+
+Approved plan, summarised. Goal: a visitor pastes a
+parser, it executes in a real Vercel Sandbox microVM, and the page shows which of the 64 cases
+passed and which fault-injected case caught it, and why.
+
+Found before writing code, and each one changes the brief:
+
+- `GET /api/lab/run/[runId]` answers 500, not 404, for an unknown id on production. `getRun()` is
+  lazy, so the `try` around it never catches; `await run.status` throws later. A `pending` run is
+  also treated as finished, which turns a poll into a long-poll.
+- Workflow steps retry three times by default. A failed `executeStep` could run one public
+  candidate in four microVMs.
+- The candidate workflow returns only a verdict and a reason. Per-case grading never left the step.
+- 9 of the 39 committed runs executed in a microVM, not 39.
+
+Decisions:
+
+- Store: Upstash for Redis (Marketplace, free plan, auto-upgrade off) over its REST `/multi-exec`.
+  Atomic across Fluid instances; one HTTP call per decision; no SDK.
+- Admission reserves every counter in one transaction, decides in TypeScript, and compensates on
+  refusal. It can refuse spuriously under a burst; it cannot over-admit.
+- Limits are code constants, not env vars: 5 runs per address per rolling hour, 3 at once, 50 runs
+  and 20 minutes of measured microVM CPU per UTC day. A run the platform did not meter counts as
+  the worst case. `LAB_MAX_USD` is not reused: it authorises model dollars, and sandbox runs have
+  measured CPU, not measured dollars.
+- Store missing or unreachable: 503, nothing starts.
+
+- [ ] P0: limits module, request handler, route wiring, fake-Redis tests that prove refusal and reset
+- [ ] P1: workflow: no retries on execute, grading and sandbox evidence in the outcome, slot release, progress stream
+- [ ] P2: status route: 404 on unknown id, pending is not finished, bounded progress read
+- [ ] P3: `/lab` runner UI, live result, fault-catch panel, honest copy
+- [ ] P4: e2e for refused, over-cap and fault-caught runs; full local suite green
+- [ ] P5: provision Upstash, PR, five checks, merge, verify on marufov.com with a real run and a real 429
