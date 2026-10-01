@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_s45_generous_out_06.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is that the current parser associates results[i] with articles[i] by position even when counts differ or responses are truncated, silently padding with zeros. This parser refuses on count mismatches (positional), detects keyed responses by article_id presence, validates all associations, and detects truncation via finish_reason, ensuring no ambiguous associations are returned as successful parses.",
+ "transcribed_from": "unknown"
+}

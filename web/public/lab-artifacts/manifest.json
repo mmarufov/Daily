@@ -2,8 +2,8 @@
  "lab_manifest_version": 1,
  "experiment_id": "article-to-verdict-association",
  "spec_hash": "f027762ab4d08b35",
- "inputs_sha256": "f9202b4647a65cb4",
- "built_at": "2026-09-30T04:08:31.493Z",
+ "inputs_sha256": "9a6910c0e5fecc60",
+ "built_at": "2026-10-01T23:14:58.101Z",
  "complete": true,
  "entries": [
   {
@@ -968,6 +968,564 @@
    }
   },
   {
+   "run_id": "article-to-verdict-association__agent-s45-default-01__sandbox",
+   "file": "agent-s45-default-01-sandbox.json",
+   "candidate_id": "agent-s45-default-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "dd114bb7d30c62c5cdcb0908796d5fee1912b5e912ad3db4367b2d6f33470748",
+   "bytes": 5081,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-02__sandbox",
+   "file": "agent-s45-default-02-sandbox.json",
+   "candidate_id": "agent-s45-default-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "04923e97908e58b45a04a7882b591e12cb200f6b956fb105e7020db0b1c3537e",
+   "bytes": 5083,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-03__sandbox",
+   "file": "agent-s45-default-03-sandbox.json",
+   "candidate_id": "agent-s45-default-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "a3b3ae77afc53057fba1efef631ec45e15e3a0ed83f08d3f530608ae418c6a20",
+   "bytes": 5083,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-04__sandbox",
+   "file": "agent-s45-default-04-sandbox.json",
+   "candidate_id": "agent-s45-default-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "23cb021273900e580cc3ccfcf6291c23a7b06a5000c49432571fd0548ca3d68f",
+   "bytes": 5081,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-05__sandbox",
+   "file": "agent-s45-default-05-sandbox.json",
+   "candidate_id": "agent-s45-default-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "7f1cbb26da5017087846cca35d1526666664c70622ff3ed0fee12195e5b5fa0f",
+   "bytes": 5081,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-default-06__sandbox",
+   "file": "agent-s45-default-06-sandbox.json",
+   "candidate_id": "agent-s45-default-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "24c571124156170d39469f4717880772ffc718b282ba038ddfb2d1909b436300",
+   "bytes": 5083,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "default",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 12,
+     "max_model_calls": 6,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 150000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.75,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-01__sandbox",
+   "file": "agent-s45-generous-out-01-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-01",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "6a634f8e1aeffb622a199a37804d8b9fe9590e0489edb7811e666aa40962ca83",
+   "bytes": 50996,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-02__sandbox",
+   "file": "agent-s45-generous-out-02-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-02",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "32c68898175165370bf2307cf84af85ecd88fb0a37c3f57814a16c09a0e8c17b",
+   "bytes": 51392,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-03__sandbox",
+   "file": "agent-s45-generous-out-03-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-03",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "df0702f3c99808094d0b677080b74f51c3f4781b7d7836d0de4efe9dc7d3733a",
+   "bytes": 52582,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-04__sandbox",
+   "file": "agent-s45-generous-out-04-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-04",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "f94763b6badfc244d9cff1ce602a8285b7cadaaa1fe9b90c7c962f98f3c9e21d",
+   "bytes": 52103,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-05__sandbox",
+   "file": "agent-s45-generous-out-05-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-05",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "c931fd608056b90fba8f8f7a76128aee05048e78942d0b81f3e647bbf79090fd",
+   "bytes": 54639,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-generous-out-06__sandbox",
+   "file": "agent-s45-generous-out-06-sandbox.json",
+   "candidate_id": "agent-s45-generous-out-06",
+   "kind": "agent-authored",
+   "verdict": "rejected",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "rejected",
+    "2": "rejected",
+    "3": "rejected"
+   },
+   "sha256": "d59d6adaf3176631e987fbcf9a741fa104f152e4dcaf64b4deb2fb86a1a07a9b",
+   "bytes": 52184,
+   "runner": "vercel-sandbox",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "generous-out",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 24,
+     "max_model_calls": 12,
+     "max_output_tokens": 8192,
+     "max_total_tokens": 300000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 1.5,
+     "wall_clock_seconds": 360
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-01__sandbox",
+   "file": "agent-s45-tight-01-sandbox.json",
+   "candidate_id": "agent-s45-tight-01",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "a9d5d4918d704981bf1ef90783854ef90e9fc2665552bfd5f0b58d0586dd0900",
+   "bytes": 5066,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-02__sandbox",
+   "file": "agent-s45-tight-02-sandbox.json",
+   "candidate_id": "agent-s45-tight-02",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "c222f0fdca0e434bf4d4532dc0a58b6af1b98c7544be4db72b2c843f18cf7a4d",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-03__sandbox",
+   "file": "agent-s45-tight-03-sandbox.json",
+   "candidate_id": "agent-s45-tight-03",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "be2379555c67ce24ede1c04de7d5779307866413045b1f9b7faaff1bed0ae677",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-04__sandbox",
+   "file": "agent-s45-tight-04-sandbox.json",
+   "candidate_id": "agent-s45-tight-04",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "0a5582700a3a4b94e0c45a7615f6cbb30c0acca2ba2c76bd8c4185cf289a254f",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-05__sandbox",
+   "file": "agent-s45-tight-05-sandbox.json",
+   "candidate_id": "agent-s45-tight-05",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "9db2e62fdfb32edcec1057ed7f2873de0fd27430c51ec2c221c6260ce1a15fd5",
+   "bytes": 5064,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
+   "run_id": "article-to-verdict-association__agent-s45-tight-06__sandbox",
+   "file": "agent-s45-tight-06-sandbox.json",
+   "candidate_id": "agent-s45-tight-06",
+   "kind": "agent-authored",
+   "verdict": "failed",
+   "spec_hash": "f027762ab4d08b35",
+   "verdict_by_spec": {
+    "1": "failed",
+    "2": "failed",
+    "3": "failed"
+   },
+   "sha256": "de30ddb313f7b4e7821a3d8174caa8fbd5360472557290bdf79bdd7e31403cd1",
+   "bytes": 5065,
+   "runner": "none",
+   "investigated": true,
+   "investigation": {
+    "model": "anthropic/claude-sonnet-4.5",
+    "budget_label": "tight",
+    "budget": {
+     "max_proposals": 1,
+     "max_tool_calls": 6,
+     "max_model_calls": 3,
+     "max_output_tokens": 4096,
+     "max_total_tokens": 60000,
+     "max_tool_result_chars": 8000,
+     "max_usd": 0.3,
+     "wall_clock_seconds": 180
+    }
+   }
+  },
+  {
    "run_id": "article-to-verdict-association__control-lenient-keyed__6a3f35522825__008af826__clean",
    "file": "control-lenient-keyed-clean.json",
    "candidate_id": "control-lenient-keyed",
@@ -1120,7 +1678,7 @@
   },
   {
    "severity": "info",
-   "message": "9 of 39 runs executed in an isolated microVM, because those candidates matched no committed implementation. 36 isolation probes ran inside those microVMs and all held.",
+   "message": "15 of 57 runs executed in an isolated microVM, because those candidates matched no committed implementation. 60 isolation probes ran inside those microVMs and all held.",
    "source": "web/lib/lab/sandbox.ts"
   }
  ]
