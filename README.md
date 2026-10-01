@@ -4,7 +4,7 @@
 
 ### News that know you.
 
-An iOS news app that builds you a personal daily edition — and a backend that can prove
+An iOS news app that builds you a personal daily edition - and a backend that can prove
 whether it actually got better.
 
 [![backend tests + eval gate](https://github.com/mmarufov/Daily/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/mmarufov/Daily/actions/workflows/backend-tests.yml)
