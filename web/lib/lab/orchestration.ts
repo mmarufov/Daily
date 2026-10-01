@@ -254,6 +254,10 @@ export async function executeStep(input: WorkflowInput): Promise<{
       files: await uploadSet(),
       credentials,
       onProgress: progress.say,
+      // The slot is this run's identity in the admission gate. Tagging the
+      // microVM with it means the platform itself can be asked how many
+      // microVMs one run created, which is the check that retries are off.
+      tags: { lab: 'public-run', slot: input.slot },
     })
   } catch (error) {
     // Caught, not rethrown. A thrown step is retried, and a retry here runs
@@ -409,7 +413,12 @@ export async function runCandidateWorkflow(input: WorkflowInput): Promise<Workfl
       return { kind: 'rejected-by-scope', detail: scope.detail, events, ...summarise() }
     }
 
-    events.push({ type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox', at: mark().at })
+    // `new Date()`, not `mark()`. This is the workflow body, which runs in
+    // the SDK's sandbox rather than in Node: `process.uptime` does not exist
+    // here, and calling it killed every candidate run on production right
+    // after the scope step. The SDK fixes `Date` per run, so this is also
+    // the same value on every replay.
+    events.push({ type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox', at: new Date().toISOString() })
     chargeCpuMs = null
     const execution = await executeStep(input)
     chargeCpuMs = execution.charge_cpu_ms
