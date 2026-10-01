@@ -67,7 +67,15 @@ export interface Refusal {
   readonly limit: LimitId
   /** The configured ceiling, in `unit`. */
   readonly allowed: number
-  /** What has been counted against it, in `unit`. */
+  /**
+   * What has been counted against it, in `unit`.
+   *
+   * For the run limits this is never more than `allowed`. The count it comes
+   * from includes requests being decided in the same instant, some of which
+   * are about to be refused and refunded, and the gate never admits past
+   * `allowed`. Reporting the raw count published `used: 6` against a limit
+   * of 5 on production, after a burst, when 5 runs had started.
+   */
   readonly used: number
   readonly unit: 'runs' | 'cpu-ms'
   /** The earliest moment a retry can succeed against this limit. */
@@ -276,7 +284,7 @@ export function decide(counts: Counts, now: number, limits = PUBLIC_RUN_LIMITS):
       refusal(
         'daily-runs',
         limits.runs_per_day,
-        counts.runs_today - 1,
+        Math.min(counts.runs_today - 1, limits.runs_per_day),
         'runs',
         midnight,
         now,
@@ -290,7 +298,7 @@ export function decide(counts: Counts, now: number, limits = PUBLIC_RUN_LIMITS):
       refusal(
         'per-address',
         limits.per_address.runs,
-        counts.address - 1,
+        Math.min(counts.address - 1, limits.per_address.runs),
         'runs',
         resets,
         now,
@@ -304,7 +312,7 @@ export function decide(counts: Counts, now: number, limits = PUBLIC_RUN_LIMITS):
       refusal(
         'concurrent',
         limits.concurrent_runs,
-        counts.active - 1,
+        Math.min(counts.active - 1, limits.concurrent_runs),
         'runs',
         resets,
         now,

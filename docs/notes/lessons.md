@@ -521,3 +521,20 @@ The user confirmed the README target is Daily; the mention of Ravon was a typo.
 For this portfolio rewrite, lead with verified engineering strengths and a real demo.
 Keep necessary experimental/deployment qualifiers beside claims rather than turning
 README.md into a historical audit or an exhaustive list of shortcomings.
+
+## The Lab runner on production, 2026-10-01
+
+1. **A workflow body is not Node, and nothing local proved otherwise.** `runCandidateWorkflow`
+   called `mark()`, which calls `process.uptime()`, which the Workflow runtime does not provide.
+   Unit tests import the module but never execute a workflow body under that runtime, so the
+   first production run died after its scope step. Run one real workflow locally with
+   `next build && next start` before claiming a workflow works, and keep
+   `tests/unit/lab-workflow-body.test.ts` guarding the bodies.
+2. **On a deployment the OIDC token is a request header, not an env var.** A deployed function
+   gets `x-vercel-oidc-token` per request and the SDKs read it from the request context. A gate
+   that requires `VERCEL_OIDC_TOKEN` in `process.env` passes every local check, because
+   `vercel env pull` writes it there, and refuses everything in production.
+3. **A count taken mid-burst is not a count of what happened.** The limiter's counts include
+   requests still being decided, so the raw number overstated runs started (`used: 6` against a
+   limit of 5). Publish the bound the code guarantees, not the transient count.
+
