@@ -1,4 +1,11 @@
-import { expect, test } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+import { expect, test, type Page } from '@playwright/test'
+
+import { decide, PUBLIC_RUN_LIMITS } from '../../lib/lab/public-limits'
+import { handleRunRequest } from '../../lib/lab/public-run'
+import { finishedRunBody } from '../fixtures/live-outcome'
 
 /**
  * The Lab's public claims, exercised in a real browser.
@@ -13,8 +20,10 @@ test.describe('Daily Lab', () => {
     await page.goto('/lab')
     await expect(page.getByRole('heading', { level: 1 })).toContainText('never said which verdict')
     await expect(page.getByRole('link', { name: 'Replay the investigation' })).toBeVisible()
-    // Recorded replay must never be presented as live execution.
-    await expect(page.getByText(/recorded replay, not a live run/i).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Run a parser yourself' })).toBeVisible()
+    // What is live and what is replayed, said where a reader starts. The
+    // execution is live; the model responses it parses are not.
+    await expect(page.getByText(/live parser runs against recorded responses/i).first()).toBeVisible()
   })
 
   test('shows the real offending response, not a description of one', async ({ page }) => {
@@ -58,14 +67,23 @@ test.describe('Daily Lab', () => {
     await expect(page.getByText('succeeded').first()).toBeVisible()
   })
 
-  test('never claims an agent has run', async ({ page }) => {
+  test('says how many agent runs proposed something, counted from the manifest', async ({ page }) => {
+    // This used to assert "No agent has run", which stopped being true when
+    // the first investigation was published and failed on main from then on.
+    // The claim is now derived, so the test derives its expectation the same
+    // way rather than pinning a number that moves with every sweep.
+    const manifest = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'lab-artifacts', 'manifest.json'), 'utf8')) as {
+      entries: { investigated: boolean; runner: string }[]
+    }
+    const investigated = manifest.entries.filter((e) => e.investigated)
+    const proposed = investigated.filter((e) => e.runner !== 'none')
+    expect(investigated.length).toBeGreaterThan(0)
     await page.goto('/lab')
-    // The never-claims list became `<details>` when the page was rewritten, so
-    // the heading is what is on screen and the sentence is one click down.
-    // Both matter: a reader who never clicks must still see the claim, and the
-    // reason must be there for the one who does.
-    await expect(page.getByText('No agent has run').first()).toBeVisible()
-    await expect(page.getByText(/no model has been called/i).first()).toBeAttached()
+    await expect(page.getByText('Agent proposals, graded like any other').first()).toBeVisible()
+    await expect(
+      page.getByText(new RegExp(`${investigated.length} investigator runs are published\\. ${proposed.length} of them proposed a candidate`)).first(),
+    ).toBeAttached()
+    await expect(page.getByText(/ended without a proposal and are published\s+anyway/).first()).toBeAttached()
   })
 
   test('reports zero spend and zero model calls for every published run', async ({ page }) => {
@@ -106,3 +124,137 @@ test.describe('Daily Lab', () => {
     expect(errors).toEqual([])
   })
 })
+
+/**
+ * The live runner, in a browser, without a microVM.
+ *
+ * These cannot start real runs, so the two API routes are answered from
+ * here. Nothing in those answers is typed in: refusals come from the real
+ * `decide()` and request handler, and the finished run is a committed record
+ * bundle graded by the real evaluator. What is under test is that the page
+ * says what the server said.
+ */
+test.describe('the live runner', () => {
+  const T = Date.parse('2026-10-01T10:30:00.000Z')
+
+  async function refuseWith(page: Page, body: unknown, status = 429) {
+    await page.route('**/api/lab/run', (route) =>
+      route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) }),
+    )
+  }
+
+  test('opens with a committed parser in the editor, so the first click needs no typing', async ({ page }) => {
+    await page.goto('/lab')
+    const editor = page.locator('#candidate-source')
+    await expect(editor).toHaveValue(/VERSION_ID = "count-guard-v1"/)
+    await expect(page.getByRole('button', { name: 'Run it in a microVM' })).toBeEnabled()
+    // All 64 cases, before anything has run: hollow, and split as the suite is.
+    await expect(page.locator('[data-case]')).toHaveCount(64)
+    await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+    await expect(page.getByText('Fault-injected · 22')).toBeVisible()
+    await expect(page.getByText(/5 runs an hour from one address, 3 at once/)).toBeVisible()
+  })
+
+  test('a refused run says which limit was hit and when it resets', async ({ page }) => {
+    const refusal = decide(
+      { active: 1, active_earliest_expiry: null, address: 6, address_oldest: T - 40 * 60_000, runs_today: 9, cpu_ms_today: 0 },
+      T,
+    )
+    expect(refusal?.limit).toBe('per-address')
+    await refuseWith(page, refusal)
+    await page.goto('/lab')
+    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await expect(page.getByText('Not started: the hourly limit for one address')).toBeVisible()
+    await expect(page.getByText(/has started 5 runs in the last hour/)).toBeVisible()
+    await expect(page.getByText(/Resets at 10:50 UTC/)).toBeVisible()
+    await expect(page.getByText(/A refused request is not counted against you/)).toBeVisible()
+  })
+
+  test('a run over the daily cap is refused until midnight UTC', async ({ page }) => {
+    const refusal = decide(
+      { active: 1, active_earliest_expiry: null, address: 1, address_oldest: T, runs_today: PUBLIC_RUN_LIMITS.runs_per_day + 1, cpu_ms_today: 0 },
+      T,
+    )
+    expect(refusal?.limit).toBe('daily-runs')
+    await refuseWith(page, refusal)
+    await page.goto('/lab')
+    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await expect(page.getByText('Not started: the daily run ceiling')).toBeVisible()
+    await expect(page.getByText(/50 runs have started today across every visitor/)).toBeVisible()
+    await expect(page.getByText(/Resets at 00:00 UTC/)).toBeVisible()
+  })
+
+  test('a deployment with no counter says the runner is closed', async ({ page }) => {
+    const closed = await handleRunRequest(
+      new Request('https://marufov.com/api/lab/run', {
+        method: 'POST',
+        body: JSON.stringify({ candidate_id: 'visitor', source: 'def parse(a, r):\n    pass\n' }),
+      }),
+      { gate: null, env: {}, start: async () => ({ runId: 'never' }) },
+    )
+    expect(closed.status).toBe(503)
+    await refuseWith(page, await closed.json(), 503)
+    await page.goto('/lab')
+    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await expect(page.getByText(/public runner is closed on this deployment/)).toBeVisible()
+  })
+
+  test('a run a fault-injected case catches names the fault and why', async ({ page }) => {
+    const runId = 'wrun_e2e_count_guard'
+    await page.route('**/api/lab/run', (route) =>
+      route.fulfill({ status: 202, contentType: 'application/json', body: JSON.stringify({ run_id: runId, suspend_seconds: 0, address_runs_left: 4 }) }),
+    )
+    let polls = 0
+    await page.route(`**/api/lab/run/${runId}`, (route) => {
+      polls += 1
+      const body =
+        polls === 1
+          ? { run_id: runId, status: 'running', finished: false, outcome: null, progress: [] }
+          : finishedRunBody(runId, 'count-guard-v1')
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) })
+    })
+
+    await page.goto('/lab')
+    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await expect(page.getByText('Caught by a fault-injected case')).toBeVisible()
+    const fault = page.locator('li').filter({ hasText: 'syn-positional-reordered' }).first()
+    await expect(fault).toContainText('equal length, internally reordered')
+    await expect(fault).toContainText('instead of refusing')
+    await expect(page.locator('[data-case="syn-positional-reordered"]')).toHaveAttribute('data-tone', 'wrong')
+    await expect(page.locator('[data-tone="pending"]')).toHaveCount(0)
+    await expect(page.getByText('Rejected').first()).toBeVisible()
+    // These bundles ran locally, so there is no microVM to report, and the
+    // page must say that rather than show zeros.
+    await expect(page.getByText('This run reported no microVM evidence.')).toBeVisible()
+    await expect(page).toHaveURL(new RegExp(`\\?run=${runId}`))
+
+    // The fault's description comes from the frozen case suite and contains
+    // an em dash; it is marked verbatim, and nothing else on the page is.
+    const dashes = await page.evaluate(() => {
+      const hits: string[] = []
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+      for (let n = walker.nextNode(); n !== null; n = walker.nextNode()) {
+        const parent = n.parentElement
+        if (parent === null || parent.closest('script, style, noscript, [data-verbatim]') !== null) continue
+        if ((n.textContent ?? '').includes('\u2014')) hits.push((n.textContent ?? '').trim().slice(0, 110))
+      }
+      return hits
+    })
+    expect(dashes).toEqual([])
+  })
+
+  test('an accepted parser is told no fault caught it, and which fault was not scored', async ({ page }) => {
+    const runId = 'wrun_e2e_keyed'
+    await page.route(`**/api/lab/run/${runId}`, (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(finishedRunBody(runId, 'keyed-v2')) }),
+    )
+    // Reached by link, the way a shared run is.
+    await page.goto(`/lab?run=${runId}#run`)
+    await expect(page.getByText('No fault-injected case caught this parser')).toBeVisible()
+    await expect(page.getByText(/21 of the 22 faults apply to the protocol it declared/)).toBeVisible()
+    await expect(page.getByText(/Not scored is not passed/)).toBeVisible()
+    await expect(page.locator('[data-case="syn-positional-reordered"]')).toHaveAttribute('data-tone', 'unscored')
+    await expect(page.getByText('Accepted for review').first()).toBeVisible()
+  })
+})
+
