@@ -496,3 +496,10 @@ ran from `prebuild`, a step *after* the unit tests. It passed on every developer
 the directory was already there from the last build. That is the exact failure the staging
 script was written to fix, named in its own docstring. **A check that has been red long enough
 stops being read.** Fix it while you are in there, or the next red one is invisible too.
+
+## 2026-10-01 — Portfolio README scope and emphasis
+
+The user confirmed the README target is Daily; the mention of Ravon was a typo.
+For this portfolio rewrite, lead with verified engineering strengths and a real demo.
+Keep necessary experimental/deployment qualifiers beside claims rather than turning
+README.md into a historical audit or an exhaustive list of shortcomings.

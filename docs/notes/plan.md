@@ -782,3 +782,30 @@ three options: `.context/batch-alignment-fix/FINDING.md`.
 Not done: live signed-in reader flow. Blocked on `CORS_ORIGINS` being unset, the absence of a web
 Google OAuth client, and delivery receipts that only exist on a live edition. Marked unverified in
 the UI rather than simulated.
+
+## README engineering portfolio rewrite, 2026-10-01
+
+Scope: documentation only. Preserve existing API/preferences and Lab work. Inspect the
+checkout at `40e264e` against fetched `origin/main` at `94a2580`; older vault audits are
+historical navigation, not current feature or deployment evidence.
+
+- [x] Inspect app/backend/evaluation/web code, build configuration, tests, CI and artifacts.
+- [x] Present discoveries, five engineering highlights, README corrections and hierarchy.
+- [x] Rewrite README with source links, readable architecture and scoped measurements.
+- [x] Verify documented commands and links; perform a skeptical claim-by-claim review.
+
+No deployment, provider calls, database mutations, or localhost servers are required.
+
+Completed: README reduced from 4,218 to 1,589 words, with a real Lab
+screenshot in `docs/assets/daily-lab.png`, five source-linked engineering highlights,
+Mermaid architecture, three decisions, and scoped offline evidence. Runtime files
+were not edited. Existing dirty API/preferences and concurrently generated Lab runs
+were preserved.
+
+Validation on this checkout: fault-matrix replay 31 passed in 139.48s; selected backend
+contracts 208 passed, 1 skipped, 9 subtests passed; web typecheck passed; nine evidence
+artifacts and manifest validated without writes; all README local links resolve;
+Lab/evidence public URLs returned HTTP 200; documentation diff whitespace check passed.
+Web unit suite: 286 passed, 2 failed due to active uncommitted Lab run artifacts.
+Lab export validation also fails on an incomplete run descriptor from that concurrent
+work. No new iOS build, deployment, or signed-in product E2E claim was made.
