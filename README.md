@@ -122,7 +122,7 @@ A tenth control changes the scorer's requests upstream. It makes no network call
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/architecture-dark.png">
-  <img src="docs/assets/architecture-light.png" alt="Architecture in three lanes. Product: the iOS app talks to a FastAPI API, which runs the ten-stage pipeline from sources to learning on PostgreSQL 16 with pgvector. Measurement: frozen inputs feed a replay of the same feed code, which produces scorecards, a gate with nine pre-registered faults, and the published evidence explorer. Daily Lab: a visitor parser passes a scope gate, runs in a Vercel Sandbox microVM with networking denied, and is graded by a TypeScript evaluator outside the VM, producing a verdict.">
+  <img src="docs/assets/architecture-light.png" alt="Architecture in three lanes. Product: the iOS app talks to a FastAPI API, which runs the ten-stage pipeline from sources to learning on PostgreSQL with pgvector. Measurement: frozen inputs feed a replay of the same feed code, which produces scorecards, a gate with nine pre-registered faults, and the published evidence explorer. Daily Lab: a visitor parser passes a scope gate, runs in a Vercel Sandbox microVM with networking denied, and is graded by a TypeScript evaluator outside the VM, producing a verdict.">
 </picture>
 
 | Stage | Responsibility | Mechanism |
@@ -142,7 +142,7 @@ A tenth control changes the scorer's requests upstream. It makes no network call
 |---|---|
 | iOS app | Swift, SwiftUI, Swift concurrency with main-actor default isolation, iOS 26, Google Sign-In, Keychain |
 | API and workers | Python 3.12, FastAPI, six background loops with leader election through PostgreSQL advisory locks, Fly.io |
-| Data | PostgreSQL 16 and pgvector: 80 tables, 86 CHECK constraints, 1,536-dimension embeddings behind an HNSW index |
+| Data | PostgreSQL and pgvector: 80 tables, 86 CHECK constraints, 1,536-dimension embeddings behind an HNSW index |
 | Models | OpenAI gpt-4.1-mini, gpt-4o-mini and text-embedding-3-small |
 | Web and Lab | Next.js 16, React 19, strict TypeScript, Tailwind CSS 4 |
 | Lab infrastructure | Vercel Sandbox, Vercel Workflow, Vercel Blob, Vercel AI Gateway, Upstash Redis |
