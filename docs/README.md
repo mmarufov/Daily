@@ -1,12 +1,9 @@
 # Daily documentation
 
-Daily is built as a chain of numbered stages. Each one has three documents written in
-this order: an **audit** that challenges the existing design and states what is
-actually broken, an **implementation plan** that commits to a specific fix, and a
-**status** file that records what landed and what is still open.
-
-The audits are deliberately unflattering. They exist so that decisions are traceable
-to evidence rather than to taste.
+Daily is built as a chain of numbered stages. Each stage starts with an **audit** that
+challenges the existing design, followed by an **implementation plan** that commits to a
+specific design and a **status** record of what landed, so every decision traces back to
+evidence.
 
 ## Start here
 
@@ -25,7 +22,7 @@ to evidence rather than to taste.
 | [`architecture/filtering-architecture-plan.md`](architecture/filtering-architecture-plan.md) | The news filtering architecture, and the absolute quality targets the eval gate checks against (§9) |
 | [`architecture/source-architecture.md`](architecture/source-architecture.md) | How sources are discovered, scored, and kept |
 | [`architecture/stage-a-global-pool-spec.md`](architecture/stage-a-global-pool-spec.md) | Global article pool and scalable retrieval |
-| [`architecture/personalization-audit.md`](architecture/personalization-audit.md) | Why the feed didn't work. The audit that started the rebuild |
+| [`architecture/personalization-audit.md`](architecture/personalization-audit.md) | The audit that started the rebuild |
 | [`architecture/design-redesign-plan.md`](architecture/design-redesign-plan.md) | The whole-app design redesign that produced `DESIGN.md` |
 
 ## Stages
@@ -45,9 +42,8 @@ to evidence rather than to taste.
 | **S10** | Learning: folding reading behavior back into the profile | [audit](stages/s10-learning-audit.md) | [plan](stages/s10-implementation-plan.md) | [status](stages/s10-implementation-status.md) |
 
 One extra note worth reading on its own:
-[`stages/s6-lexical-cache-limitation.md`](stages/s6-lexical-cache-limitation.md) records the real
-reliability limitation in lexical retrieval, and the several things it is commonly
-mistaken for.
+[`stages/s6-lexical-cache-limitation.md`](stages/s6-lexical-cache-limitation.md) is a
+production investigation of lexical retrieval latency and the explanations it rules out.
 
 ## Working notes
 
@@ -58,7 +54,7 @@ decision is usually more useful later than the decision itself.
 |---|---|
 | [`notes/plan.md`](notes/plan.md) | The active plan and its checklist |
 | [`notes/lessons.md`](notes/lessons.md) | Mistakes worth not repeating, and the rule each one produced |
-| [`notes/session-summary-2026-09-02.md`](notes/session-summary-2026-09-02.md) | What S0 and S1 Phase 0 actually delivered |
+| [`notes/session-summary-2026-09-02.md`](notes/session-summary-2026-09-02.md) | What S0 and S1 Phase 0 delivered |
 
 ## Conventions
 
