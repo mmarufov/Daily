@@ -15,6 +15,7 @@ import { describe, expect, it } from 'vitest'
 import type { WorkflowInput } from '@/lib/lab/orchestration'
 import {
   addressBucket,
+  decide,
   PUBLIC_RUN_LIMITS,
   PublicRunGate,
   REFUSAL_MEMORY_MS,
@@ -344,6 +345,22 @@ describe('a refusal costs nothing and says the truth', () => {
     // ...and after it, asks the store and admits. Not at midnight.
     h.at(T0 + REFUSAL_MEMORY_MS)
     expect((await h.post('192.0.2.1')).status).toBe(202)
+  })
+
+  it('never reports more runs used than the limit allows, even mid-burst', () => {
+    // Seven reservations held at the instant of decision: five admitted and
+    // two still being decided. Only five can ever have started.
+    const refused = decide(
+      { active: 1, active_earliest_expiry: null, address: 7, address_oldest: T0, runs_today: 7, cpu_ms_today: 0 },
+      T0 + MINUTE,
+    )
+    expect(refused?.limit).toBe('per-address')
+    expect(refused?.used).toBe(5)
+    const day = decide(
+      { active: 1, active_earliest_expiry: null, address: 1, address_oldest: T0, runs_today: 53, cpu_ms_today: 0 },
+      T0,
+    )
+    expect(day?.used).toBe(PUBLIC_RUN_LIMITS.runs_per_day)
   })
 
   it('reports the limit that resets last when several are exceeded', async () => {
