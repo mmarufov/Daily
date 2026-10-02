@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Band } from '@/components/Band'
@@ -71,10 +72,10 @@ export default async function LabPage() {
             <Readout term="Grading" value="Independent" note="Computed from prediction records" />
           </dl>
         </div>
-        <details className="lab-disclosure"><summary>The response that started it</summary>
+        <AnimatedDetails className="lab-disclosure"><summary>The response that started it</summary>
           {offending ? <OffendingCase data={offending} /> : <p>The recorded batch is unavailable.</p>}
-        </details>
-        <details className="lab-disclosure"><summary>Every published run <span>{manifest?.entries.length ?? 0} records</span></summary>
+        </AnimatedDetails>
+        <AnimatedDetails className="lab-disclosure"><summary>Every published run <span>{manifest?.entries.length ?? 0} records</span></summary>
           <ul className="lab-inventory">{manifest?.entries.map(entry => <li key={entry.file}>
             <Link href={`/lab/${entry.file.replace(/\.json$/, '')}`}>
               <span className="lab-inventory-id">{entry.candidate_id}</span>
@@ -84,15 +85,15 @@ export default async function LabPage() {
               <span className="lab-inventory-verdict"><VerdictBadge verdict={entry.verdict} small /></span>
             </Link>
           </li>)}</ul>
-        </details>
-        <details className="lab-disclosure"><summary>Limits of this evidence</summary>
+        </AnimatedDetails>
+        <AnimatedDetails className="lab-disclosure"><summary>Limits of this evidence</summary>
           <div className="grid gap-6 pb-6 text-sm text-ink-60 md:grid-cols-2">
             <p className="m-0">The cases are public, and candidates can be written against them. Passing establishes performance on these fixtures. It does not establish generalisation or measure the relevance of a news feed.</p>
             <p className="m-0">Execution is live; model responses are recorded or injected. Grading calls no model. Agent-authored published runs separately report the model calls used to write their candidates.</p>
             <p className="m-0">The runner preserves its admission checks, execution limits, denied networking and independent grader. A browser event is shown only when the service supplies it; case verdicts arrive with terminal grading.</p>
             <p className="m-0">A complete identity contract changes the scoring request. Evaluating its news quality would require new model recordings; parser correctness alone cannot establish that result.</p>
           </div>
-        </details>
+        </AnimatedDetails>
       </section>
     </div>
   )

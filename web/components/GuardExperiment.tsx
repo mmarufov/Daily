@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import { AnimatedDetails } from '@/components/AnimatedDetails'
+import { MotionContent } from '@/components/MotionContent'
 import { useState } from 'react'
 
 import type { GuardExperiment as GuardExperimentData } from '@/lib/guard-experiment'
@@ -22,7 +24,7 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
   return (
     <div className="finding-panel guard-panel" data-testid="guard-experiment-panel">
       <div className="guard-toolbar">
-        <div className="guard-toggle" role="group" aria-label="Historical comparison">
+        <div className="guard-toggle" data-variant={variant} role="group" aria-label="Historical comparison">
           <button type="button" aria-pressed={!isGuard} onClick={() => setVariant('original')}>Original</button>
           <button type="button" aria-pressed={isGuard} onClick={() => setVariant('guard')}>Guard experiment</button>
         </div>
@@ -56,7 +58,7 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
         })}
       </div>
 
-      <div className="guard-reading" aria-live="polite">
+      <MotionContent changeKey={variant} className="guard-reading" aria-live="polite">
         <p className="finding-summary-title">
           {isGuard ? 'Refusing the mismatch exposed the cost.' : 'A plausible number can hide a broken join.'}
         </p>
@@ -65,7 +67,7 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
             ? 'The guard discarded batches with the wrong number of verdicts. Recall fell and unwanted delivery rose; retrieval recall stayed unchanged.'
             : 'The original scorer assigned verdicts by position, even when the response count differed. These quality numbers include that ambiguous association.'}
         </p>
-      </div>
+      </MotionContent>
 
       <div className="guard-history">
         <div className="guard-failure-count">
@@ -78,7 +80,7 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
         </p>
       </div>
 
-      <details className="finding-provenance">
+      <AnimatedDetails className="finding-provenance">
         <summary>Experiment provenance</summary>
         <div className="finding-provenance-body">
           <p>
@@ -94,7 +96,7 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
           </p>
           <a href="/experiments/batch-alignment.json" className="text-link">Inspect summary and source hashes ↗</a>
         </div>
-      </details>
+      </AnimatedDetails>
       <div className="guard-footer">
         <p className="finding-footnote">Both charts use the same 0–100% scale. Labels remain provisional.</p>
         <Link href="/engineering" className="text-link">Read the investigation <span aria-hidden="true">↗</span></Link>

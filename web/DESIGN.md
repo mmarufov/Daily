@@ -27,3 +27,14 @@ An evaluation instrument with a cinematic opening. The evidence supplies every v
 ## Release
 
 Typecheck, unit tests, artifact checks and production build precede release. Browser QA targets marufov.com without a localhost server. Routine execution tests intercept API calls; one explicit real parser run establishes live execution. Capture mobile/desktop screenshots, run URL, deployment and lab performance results.
+
+## Motion polish
+
+Motion responds to intent. Disclosures ease between measured heights in roughly
+280ms, reversing from their current position when interrupted. Native details and
+summary remain functional without JavaScript. No animation owns the evidence or
+runner state. Finding changes ease their container height and gently reveal the
+new explanation, with exact numbers appearing immediately. Selection moves on one
+shared track; press feedback is small and quick. No new entrance delays, scroll
+reveals or continuous work. Reduced motion skips movement; hidden tabs and resized
+layouts settle immediately. Completed animations release their height constraints.

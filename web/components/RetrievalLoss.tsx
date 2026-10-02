@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { MotionContent } from '@/components/MotionContent'
 import { useId, useState } from 'react'
 
 import type { RetrievalLossData } from '@/lib/home-evidence'
@@ -66,7 +67,7 @@ export function RetrievalLoss({ data }: { readonly data: RetrievalLossData | nul
         </div>
       </figure>
 
-      <div className="retrieval-detail" id={detailId} aria-live="polite">
+      <MotionContent changeKey={selected.key} className="retrieval-detail" id={detailId} aria-live="polite">
         <div className="retrieval-explanation">
           <p className="eyebrow">{selected.beforeScorer ? 'Before scoring' : 'At or after scoring'}</p>
           <h3>{selected.label} removed {selected.count}</h3>
@@ -90,7 +91,7 @@ export function RetrievalLoss({ data }: { readonly data: RetrievalLossData | nul
             </Link>
           </div>
         )}
-      </div>
+      </MotionContent>
 
       <p className="finding-footnote">
         {data.total} {data.unit} across {data.fixtureCount} fixtures, from the {data.snapshot} corpus.

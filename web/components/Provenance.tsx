@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 import { UNKNOWN, type Artifact, type ProvenanceNote } from '@/lib/artifact'
 import type { Compatibility } from '@/lib/compare'
 
@@ -18,7 +19,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
   const warnings = p.notes.filter((n) => n.severity !== 'info')
 
   return (
-    <details className="border border-rule bg-paper-secondary">
+    <AnimatedDetails className="border border-rule bg-paper-secondary">
       <summary className="disclosure label px-4 py-3 text-ink">
         Provenance · {p.runner} · {p.snapshot.name}
         {warnings.length > 0 ? (
@@ -175,7 +176,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
           </section>
         ) : null}
       </div>
-    </details>
+    </AnimatedDetails>
   )
 }
 

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { SiteNav } from '@/components/SiteNav'
 import { fraunces, geistMono, geistSans } from './fonts'
 import './globals.css'
+import './motion.css'
 
 const DESCRIPTION = 'Run untrusted Python parsers in Vercel Sandbox against recorded and injected failures. Inspect independently graded results, versioned criteria, and the evidence behind every verdict.'
 

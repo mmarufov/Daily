@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 import { HEADLINE_METRICS, SECONDARY_METRICS } from '@/lib/aggregate'
 import { resolveMetric } from '@/lib/metrics'
 
@@ -12,7 +13,7 @@ import { resolveMetric } from '@/lib/metrics'
 export function Glossary() {
   const metrics = [...HEADLINE_METRICS, ...SECONDARY_METRICS]
   return (
-    <details className="border border-rule bg-paper-secondary">
+    <AnimatedDetails className="border border-rule bg-paper-secondary">
       <summary className="disclosure label px-4 py-3 text-ink">
         What each metric means, exactly
       </summary>
@@ -36,6 +37,6 @@ export function Glossary() {
           )
         })}
       </dl>
-    </details>
+    </AnimatedDetails>
   )
 }

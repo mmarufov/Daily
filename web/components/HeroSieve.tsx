@@ -1,5 +1,7 @@
 'use client'
 
+import { AnimatedDetails } from '@/components/AnimatedDetails'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 
@@ -147,10 +149,10 @@ export function HeroSieve({ fixtures, runId, snapshot }: {
       </div>
 
       <div className="instrument-bottomline">
-        <details className="instrument-provenance">
+        <AnimatedDetails className="instrument-provenance">
           <summary onClick={pause}>About this recording</summary>
           <p>Corpus {snapshot}, fixture {personaName(fixture.key)}. The pool includes injected test stories. Each cell represents one candidate count; positions do not identify articles. {current.reconstructed ? 'This stage count is reconstructed from recorded surrounding stages.' : current.explanation}</p>
-        </details>
+        </AnimatedDetails>
         <Link href={explorerHref({ run: runId, view: 'funnel' }, { persona: fixture.key })} className="instrument-link">Inspect <span aria-hidden="true">↗</span></Link>
       </div>
       <span className="sr-only" aria-live={playing ? 'off' : 'polite'}>{personaName(fixture.key)}: {current.survivors} of {data.total} candidates remain at {current.label}.</span>

@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 /**
  * A list that collapses to its own count.
  *
@@ -14,7 +15,8 @@
  *
  * `<details>` and not React state, deliberately: it is disclosure, the
  * platform has an element for it, it is keyboard- and screen-reader-correct
- * for free, and it works before hydration. There is no reason to own this.
+ * for free, and it works before hydration. The shared enhancement only owns
+ * the temporary animation; the browser still owns the disclosure state.
  */
 
 export function Reveal({
@@ -38,7 +40,7 @@ export function Reveal({
 }) {
   if (items.length === 0) return null
   return (
-    <details className="reveal">
+    <AnimatedDetails className="reveal">
       <summary className="reveal-summary">
         <span className={`label ${tone === 'signal' ? 'text-signal' : 'text-ink'}`}>{label}</span>
         <span className="reveal-count">{items.length}</span>
@@ -49,6 +51,6 @@ export function Reveal({
           <li key={item}>{item}</li>
         ))}
       </ul>
-    </details>
+    </AnimatedDetails>
   )
 }

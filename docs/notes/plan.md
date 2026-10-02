@@ -873,3 +873,12 @@ Sandbox executions. Original workspace and branch stay intact. Browser tests use
 production-only configuration, intercepting submissions except the one live check.
 
 Release verification: [daily-lab-release.md](daily-lab-release.md). Full browser suite: 202 passed, two intentional mobile keyboard skips. Live run: wrun_01M3X2KSBTMEPWJJZT74HCTHX3.
+
+## Motion polish, October 1
+
+- [x] Inspect shipped revision and preserve the original workspace.
+- [ ] Add shared interruptible native disclosure animation across the site.
+- [ ] Add restrained press feedback, sliding selection and finding transitions.
+- [ ] Verify keyboard, rapid reversal, reduced motion and no-JavaScript behavior.
+- [ ] Run unit/type/build checks, deploy and test the public domain.
+- [ ] Record final screenshots and performance observations.
