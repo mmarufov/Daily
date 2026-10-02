@@ -94,3 +94,13 @@ Acceptance includes the closed guard section near/below 760px at 1,440px, readab
 320px layouts, both themes, keyboard/forced-color/reduced-motion behavior, actual
 recordings and nullable states, unchanged URLs and no Sandbox submissions from QA.
 No API, artifact schema, evaluator, quota or execution changes.
+
+## Correction: original Daily-first composition, restrained polish
+
+Restore the pre-composition presentation at d1ca5383. Its asymmetric sections,
+bordered evidence cards, Lab workspace and supporting page layouts are the approved
+baseline again. Keep content, motion and all evidence/runner contracts unchanged.
+Only refine the guard card: cap its padding at 32px, metric numerals at 64px and chart
+tracks at 28px; tighten the internal metric/reading/history gaps. Preserve full text,
+44px controls, responsive stacking, provenance disclosure and historical caveats.
+Do not apply the previous full-width evidence-row specification in this pass.

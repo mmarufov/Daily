@@ -48,8 +48,8 @@ export function Controls({ state, entries, personas }: ControlsProps) {
   const comparable = runs.filter((e) => e.run_id !== state.run)
 
   return (
-    <div className="evidence-controls">
-      <form ref={formRef} method="get" action="/evidence" className="evidence-filter-form">
+    <div className="flex flex-col gap-4 border border-rule bg-paper-secondary p-4">
+      <form ref={formRef} method="get" action="/evidence" className="flex flex-col gap-4">
         {/* The story selection is context, not a control; preserve it across
             filter changes so moving between views does not lose the trace. */}
         {state.story !== undefined ? (
@@ -57,8 +57,7 @@ export function Controls({ state, entries, personas }: ControlsProps) {
         ) : null}
         <input type="hidden" name="view" value={state.view} />
 
-        <fieldset className="evidence-filter-group">
-          <legend className="sr-only">Recorded runs</legend>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Run" htmlFor="run-select">
             <Select id="run-select" name="run" value={state.run ?? ''} onChange={submitNow}>
               {runs.map((entry) => (
@@ -84,10 +83,9 @@ export function Controls({ state, entries, personas }: ControlsProps) {
               ))}
             </Select>
           </Field>
-        </fieldset>
+        </div>
 
-        <fieldset className="evidence-filter-group">
-          <legend className="sr-only">Reader and stories</legend>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Reader fixture" htmlFor="persona-select">
             <Select
               id="persona-select"
@@ -120,9 +118,9 @@ export function Controls({ state, entries, personas }: ControlsProps) {
               </Select>
             </Field>
           ) : null}
-        </fieldset>
+        </div>
 
-        <div className="evidence-filter-apply">
+        <div>
           <button
             type="submit"
             className="chip"
@@ -179,7 +177,7 @@ function Select({
       name={name}
       defaultValue={value}
       onChange={onChange}
-      className="w-full min-w-0 border border-rule bg-paper px-3 py-2 text-sm text-ink"
+      className="w-full border border-rule bg-paper px-2 py-1.5 text-xs text-ink"
     >
       {children}
     </select>
@@ -196,7 +194,7 @@ function Field({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-w-0 flex-col gap-2">
+    <div className="flex flex-col gap-1">
       <label htmlFor={htmlFor} className="label text-ink-40">
         {label}
       </label>

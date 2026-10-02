@@ -1,4 +1,3 @@
-import '../supporting-pages.css'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -61,8 +60,8 @@ export default async function ReaderPage({
   const others = bundle.editions.filter((e) => e.persona !== edition.persona)
 
   return (
-    <div className="reader-page flex flex-col">
-      <section className="reader-intro hero frame relative flex flex-col gap-5">
+    <div className="flex flex-col">
+      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-16">
         <p className="label m-0 text-ink-40">
           Replay · corpus {bundle.snapshot} · {bundle.runner}
         </p>
@@ -72,12 +71,12 @@ export default async function ReaderPage({
         <ReplayNotice dateLabel={dateLabel} bundle={bundle} />
       </section>
 
-      <section className="reader-profile-section frame flex flex-col gap-4">
+      <section className="frame flex flex-col gap-4 pb-8">
         <Band index="01" title="Read as" note="Ten fixtures, one corpus" />
         <ProfilePicker editions={bundle.editions} current={edition.persona} />
       </section>
 
-      <section className="reader-edition frame">
+      <section className="frame pb-20">
         {/*
           The one surface on this site that is the product rather than a
           measurement of it, so it is set on its own sheet: warmer ground,
@@ -120,7 +119,7 @@ export default async function ReaderPage({
         </article>
       </section>
 
-      <section className="support-section frame flex flex-col gap-6">
+      <section className="frame flex flex-col gap-6 pb-20">
         <Band
           index="02"
           title="The same corpus, nine other readers"
@@ -155,7 +154,7 @@ export default async function ReaderPage({
         </ul>
       </section>
 
-      <section className="support-section frame flex flex-col gap-6">
+      <section className="frame flex flex-col gap-6 pb-8">
         <Band index="03" title="Live mode" note="Not implemented" />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
           <p className="prose m-0">
@@ -267,7 +266,7 @@ function ReplayNotice({
           published on or before <strong>{dateLabel}</strong>, from a frozen corpus of{' '}
           {bundle.n_articles_in_corpus?.toLocaleString() ?? 'an unrecorded number of'} articles.
         </p>
-        <p className="m-0 mt-2 text-sm text-ink-60">
+        <p className="m-0 mt-2 text-xs text-ink-60">
           The profiles are adversarial evaluation fixtures, not people; reading here creates no
           reader data.{' '}
           <Link href={{ pathname: '/evidence', query: { run: bundle.run_id } }} className="link">
