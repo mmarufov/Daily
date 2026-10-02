@@ -63,7 +63,7 @@ test.describe('recorded parser run', () => {
     const story = page.getByTestId('run-story')
     await scrollStory(story, 0.10)
     await settledStory(story, 0)
-    for (const [progress, stage] of [[0.21, 1], [0.46, 2], [0.76, 3]] as const) {
+    for (const [progress, stage] of [[0.25, 1], [0.52, 2], [0.79, 3]] as const) {
       await scrollStory(story, progress)
       await expect(story).toHaveAttribute('data-stage', String(stage))
       const stoppedAt = await page.evaluate(() => window.scrollY)
@@ -81,11 +81,60 @@ test.describe('recorded parser run', () => {
     }
   })
 
+  test('small pulls hold the scene, thresholds release it, and small reversals do not retrigger it', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    await scrollStory(story, 0.10)
+    await settledStory(story, 0)
+    const trackHeight = await story.getByTestId('run-story-track').evaluate(element => element.getBoundingClientRect().height)
+    expect(trackHeight).toBeCloseTo(3 * 900, 0)
+    for (const [stage, before, after, reverseHold, reverseRelease] of [
+      [1, 0.23, 0.25, 0.22, 0.19],
+      [2, 0.50, 0.52, 0.49, 0.46],
+      [3, 0.77, 0.79, 0.76, 0.73],
+    ] as const) {
+      await scrollStory(story, before)
+      await expect(story).toHaveAttribute('data-stage', String(stage - 1))
+      await settledStory(story, stage - 1)
+      await page.waitForTimeout(150)
+      await settledStory(story, stage - 1)
+      const duration = await story.evaluate(async (element, destination) => {
+        const track = element.querySelector<HTMLElement>('[data-testid="run-story-track"]')!
+        const sticky = track.querySelector<HTMLElement>('.run-story-sticky')!
+        const top = window.scrollY + track.getBoundingClientRect().top - 96 + (track.offsetHeight - sticky.offsetHeight) * destination
+        window.scrollTo({ top, behavior: 'instant' })
+        return new Promise<number>((resolve, reject) => {
+          const requestedAt = performance.now()
+          let startedAt = 0
+          const sample = () => {
+            const now = performance.now()
+            if (element.getAttribute('data-transitioning') === 'true') startedAt ||= now
+            else if (startedAt) { resolve(now - startedAt); return }
+            if (now - requestedAt > 5000) { reject(new Error('The stage transition did not finish')); return }
+            requestAnimationFrame(sample)
+          }
+          requestAnimationFrame(sample)
+        })
+      }, after)
+      expect(duration).toBeGreaterThanOrEqual(900)
+      await settledStory(story, stage)
+      await scrollStory(story, reverseHold)
+      await expect(story).toHaveAttribute('data-stage', String(stage))
+      await settledStory(story, stage)
+      await page.waitForTimeout(150)
+      await settledStory(story, stage)
+      await scrollStory(story, reverseRelease)
+      await expect(story).toHaveAttribute('data-stage', String(stage - 1))
+      await settledStory(story, stage - 1)
+      await scrollStory(story, after)
+      await settledStory(story, stage)
+    }
+  })
+
   test('probe labels clear before the verdict appears during forward and reverse transitions', async ({ page }) => {
     const story = page.getByTestId('run-story')
     await scrollStory(story, 0.59)
     await settledStory(story, 2)
-    for (const [progress, stage] of [[0.76, 3], [0.46, 2]] as const) {
+    for (const [progress, stage] of [[0.79, 3], [0.60, 2]] as const) {
       const samples = await story.evaluate(async (element, destination) => {
         const track = element.querySelector<HTMLElement>('[data-testid="run-story-track"]')!
         const sticky = track.querySelector<HTMLElement>('.run-story-sticky')!
@@ -98,7 +147,7 @@ test.describe('recorded parser run', () => {
         await new Promise<void>(resolve => {
           const sample = () => {
             frames.push({ probes: Number(getComputedStyle(probes).opacity), result: Number(getComputedStyle(result).opacity) })
-            if (performance.now() - start < 550) requestAnimationFrame(sample)
+            if (performance.now() - start < 1150) requestAnimationFrame(sample)
             else resolve()
           }
           requestAnimationFrame(sample)

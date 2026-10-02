@@ -152,3 +152,8 @@ keyboard, touch, forced colors, reduced motion and JavaScript disabled. Verify
 static and missing-data states, same-recording provenance, LCP/CLS and stopped
 work offscreen. Provide screenshots and a short motion recording with the PR.
 Production remains unchanged pending visual review.
+
+
+### Run story pacing correction
+
+The desktop diagram holds each completed stage while native scrolling advances toward 24%, 51% and 78% of the track. A 4% reverse buffer prevents small direction changes from flipping stages. The track is 300svh tall. Adjacent stage changes take 1,000ms; jumps across multiple stages scale with distance to avoid compressing the motion. individual movements ease across the timeline, with cases and checks leaving before the VM moves and grading appears. A stopped scroll still completes the transition. New input can retarget the current frame. Mobile, reduced-motion, hidden-tab and offscreen behavior remain unchanged.

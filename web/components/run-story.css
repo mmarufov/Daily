@@ -103,7 +103,7 @@
 .run-story-unavailable { padding-block: 24px; color: var(--d-ink-58); }
 .run-story:not([data-run-id]) .run-story-track { height: auto; }
 @media (min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference) {
-  .run-story-track { height: 240svh; }
+  .run-story-track { height: 300svh; }
   .run-story-sticky { position: sticky; top: 96px; }
   .run-story-chapters { display: none; }
   .run-story-animation { display: grid; grid-template-columns: 126px minmax(0, 1fr); gap: clamp(30px, 5vw, 76px); }
@@ -139,7 +139,7 @@
 }
 
 @media (min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference) {
-  .run-story[data-active='true'] .run-scene-caption > div:first-child { animation: run-caption-in 180ms ease-out; }
+  .run-story[data-active='true'] .run-scene-caption > div:first-child { animation: run-caption-in 420ms ease-out; }
   .run-rail button:hover { color: var(--d-ink); }
   .run-rail button > span { transition: transform 150ms ease-out; }
   .run-rail button:active > span { transform: translateY(1px); }

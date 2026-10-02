@@ -1084,3 +1084,13 @@ validation and build passed. HTTPS Chromium/WebKit acceptance: 283 passed, two
 existing touch-keyboard skips. Transition frames exclude overlapping probes and
 verdicts in both directions. Paused threshold tests keep the same scroll position.
 Screenshots and motion recording: `.context/stage-after/` in the Sydney workspace.
+
+## Run story pacing, October 2
+
+- [x] Inspect current motion and preserve the original dirty workspace in an isolated checkout from main.
+- [x] Hold each stage through a longer native scroll interval; use reverse-threshold hysteresis to ignore small direction changes.
+- [x] Spread visible motion across a 1,000ms transition with eased, sequenced phases. Keep input interruptible and offscreen work stopped.
+- [ ] Verify threshold holds, transition duration, reversals, layer separation, static layouts and reduced motion in unit and deployed browser tests.
+- [ ] Commit, merge through CI, deploy, and verify marufov.com with screenshots and mocked runner tests.
+
+Native page scrolling remains continuous. The diagram waits for the next threshold, then completes its animation independently of further scrolling. Desktop track: 300svh; stage boundaries: 24%, 51%, 78%; reverse buffer: 4% of track travel. Mobile and reduced-motion views stay static.
