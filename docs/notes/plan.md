@@ -896,8 +896,8 @@ checkout, leaving the original Sydney branch and working tree intact.
 - [x] Scope Fraunces to Reader and prevent homepage reader-font prefetch.
 - [x] Refresh metadata/social artwork and Lab context.
 - [x] Verify typecheck, unit tests, artifacts, production build and final diff.
-- [ ] Deploy and verify public browser journeys, fonts, accessibility and motion.
-- [ ] Record screenshots, performance, deployment and release evidence.
+- [x] Deploy and verify public browser journeys, fonts, accessibility and motion.
+- [x] Record screenshots, performance, deployment and release evidence.
 
 ## Daily-first release completion
 
@@ -907,8 +907,10 @@ deployment and one real default-parser run. Earlier stop instructions are lifted
 - [x] Remove the decorative hero eyebrow; keep the numbered section sequence.
 - [x] Port only the recorded execution timeline and its source record from
   lab-instrument commit 07caa9cc, preserving distinct run/spec provenance.
-- [ ] Rebase onto current origin/main and run the full web validation suite.
-- [ ] Open PR, verify CI, merge and confirm the public deployment.
-- [ ] Run production Chromium/WebKit checks with mocked execution endpoints.
-- [ ] Execute one real default parser on production and verify terminal grading/reload.
-- [ ] Record desktop/mobile screenshots, performance and release identifiers.
+- [x] Rebase onto current origin/main and run the full web validation suite.
+- [x] Open PR, verify CI, merge and confirm the public deployment.
+- [x] Run production Chromium/WebKit checks with mocked execution endpoints.
+- [x] Execute one real default parser on production and verify terminal grading/reload.
+- [x] Record desktop/mobile screenshots, performance and release identifiers.
+
+Release evidence: [daily-first-release.md](daily-first-release.md).
