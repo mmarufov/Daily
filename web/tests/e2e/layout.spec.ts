@@ -31,6 +31,13 @@ test.describe('no page scrolls sideways', () => {
           return de.scrollWidth - de.clientWidth
         })
         expect(overflow, `${path} overflows by ${overflow}px at ${width}px`).toBeLessThanOrEqual(0)
+        if (path.startsWith('/evidence')) {
+          for (const select of await page.getByRole('combobox').all()) {
+            const box = await select.boundingBox()
+            expect(box!.height, 'Native Evidence selects must retain their touch target').toBeGreaterThanOrEqual(44)
+            expect(box!.x + box!.width).toBeLessThanOrEqual(width)
+          }
+        }
       }
     })
   }

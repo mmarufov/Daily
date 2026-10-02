@@ -930,3 +930,11 @@ rows. Start from main d1ca5383 in an isolated checkout; preserve Sydney's dirty 
 - [ ] Pass production Chromium/WebKit suite with mocked Lab endpoints.
 - [ ] Record before/after screenshots and throttled mobile performance.
 - [ ] Read-only verify existing run wrun_01M3X9RYY80MHVRYFT7GWSWCN0; no new execution.
+
+Production acceptance follow-up: the first deployed pass exposed a 5px Evidence
+overflow at 320px in WebKit and a Lab selector that assumed faults preceded the
+case field. Correct the narrow-screen sizing without clipping and select the fault
+by its exact case identifier; rerun affected tests and the production suite.
+
+- [ ] Correct the WebKit Evidence overflow and verify the complete width matrix.
+- [ ] Update the Lab fault selector for the intended verdict / case / detail order.

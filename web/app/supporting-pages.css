@@ -44,8 +44,30 @@
 }
 
 .evidence-controls select {
+  /* Native iOS appearance ignores the touch height and can paint long selected
+     labels outside the field. The option menu keeps its complete native labels. */
+  appearance: none;
+  -webkit-appearance: none;
   min-height: 44px;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
   border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evidence-filter-group > div:has(> select) {
+  position: relative;
+}
+
+.evidence-filter-group > div:has(> select)::after {
+  content: "⌄";
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  color: currentColor;
+  font-size: 14px;
+  line-height: 20px;
+  pointer-events: none;
 }
 
 .evidence-filter-apply {
