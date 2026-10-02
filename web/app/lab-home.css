@@ -84,6 +84,7 @@
 .recorded-result-note { color: var(--d-ink-38); font-size: 11px; margin: 8px 0 24px; }
 .recorded-case-field { display: grid; grid-template-columns: repeat(16, minmax(0,1fr)); gap: 4px; margin-block: 20px; }
 .recorded-case-field span { aspect-ratio: 1; border-radius: 2px; background: var(--d-ink); }
+.recorded-case-field span[data-status='correct'] { background: var(--d-success); }
 .recorded-case-field span[data-status='not-applicable'] { background: var(--d-paper-3); border: 1px solid var(--d-rule-strong); }
 .recorded-case-field span[data-status='wrong'], .recorded-case-field span[data-status='missing'], .recorded-case-field span[data-status='crash'], .recorded-case-field span[data-status='refused'] { background: var(--d-signal); }
 .recorded-result-summary { color: var(--d-ink-58); font-size: 12px; margin-block: 16px 8px; }

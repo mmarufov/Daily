@@ -184,7 +184,7 @@ type CellTone = 'pending' | 'correct' | 'wrong' | 'unscored' | 'outside'
 
 const CELL: Record<CellTone, { className: string; label: string }> = {
   pending: { className: 'border border-rule bg-paper', label: 'not run yet' },
-  correct: { className: 'bg-ink', label: 'correct' },
+  correct: { className: 'bg-success', label: 'correct' },
   wrong: { className: 'bg-signal', label: 'wrong' },
   unscored: { className: 'border border-rule bg-paper-secondary', label: 'not scored, another protocol' },
   outside: { className: 'border-2 border-signal bg-paper', label: 'associated outside its declared protocol' },

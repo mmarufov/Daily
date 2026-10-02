@@ -6,8 +6,9 @@ The original `mmarufov/sydney-v11` checkout and unrelated changes were preserved
 
 ## Release and rollback
 
-- Runtime revision: `2aab0d75` (headline polish after `7948dfd1`).
-- Public deployment: `dpl_9fqqwzF9FQYdm7nPnEyXFq22dZ3W`,
+- Full runtime checks: `7948dfd1`; another 78 homepage/layout checks passed after
+  headline polish at `2aab0d75`. Final status-color alignment is presentation only.
+- Verified deployment: `dpl_9fqqwzF9FQYdm7nPnEyXFq22dZ3W`,
   https://daily-ai3gwqr1z-mmarufovs-projects.vercel.app.
 - Previous production, retained for rollback: `dpl_C3iXth1No7VtHRMdGuTLJwv3h82L`,
   https://daily-7xtpnq75o-mmarufovs-projects.vercel.app.

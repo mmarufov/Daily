@@ -1,18 +1,13 @@
 import type { LabRun } from '@/lib/lab/artifact'
 
-/**
- * Colour rule, unchanged from the rest of the site: ink is what worked,
- * vermilion is loss, slate is what cannot be established. An `incomplete` run
- * is slate rather than red, because "we could not tell" is a different fact
- * from "it was wrong" — and conflating them is how missing evidence starts
- * reading as a result.
- */
+/** Confirmed passing is green, failed checks red, and incomplete evidence amber.
+ * Every state keeps its text label; color never carries the verdict alone. */
 const TONE: Record<LabRun['verdict'], { fill: string; text: string; label: string }> = {
-  'accepted-for-review': { fill: 'bg-ink', text: 'text-paper', label: 'Accepted for review' },
+  'accepted-for-review': { fill: 'bg-success', text: 'text-paper', label: 'Accepted for review' },
   rejected: { fill: 'bg-signal', text: 'text-paper', label: 'Rejected' },
-  incomplete: { fill: 'bg-unknown', text: 'text-paper', label: 'Incomplete' },
-  failed: { fill: 'bg-unknown', text: 'text-paper', label: 'Failed' },
-  cancelled: { fill: 'bg-rule-strong', text: 'text-paper', label: 'Cancelled' },
+  incomplete: { fill: 'bg-caution', text: 'text-paper', label: 'Incomplete' },
+  failed: { fill: 'bg-signal', text: 'text-paper', label: 'Failed' },
+  cancelled: { fill: 'bg-caution', text: 'text-paper', label: 'Cancelled' },
 }
 
 export function VerdictBadge({ verdict, small }: { verdict: LabRun['verdict']; small?: boolean }) {
