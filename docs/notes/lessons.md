@@ -538,3 +538,9 @@ README.md into a historical audit or an exhaustive list of shortcomings.
    requests still being decided, so the raw number overstated runs started (`used: 6` against a
    limit of 5). Publish the bound the code guarantees, not the transient count.
 
+
+## October 1: restraint still needs interaction craft
+
+The user liked the visual foundation but found interactions too simple. Treat
+opening, closing, selection and press feedback as part of the finished design.
+Verify reversibility, keyboard and reduced-motion behavior alongside screenshots.

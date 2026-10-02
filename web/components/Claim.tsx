@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 /**
  * A claim the site declines to make.
  *
@@ -25,12 +26,12 @@ export function Claim({
   readonly children: React.ReactNode
 }) {
   return (
-    <details className="claim">
+    <AnimatedDetails className="claim">
       <summary className="claim-summary">
         <span className="label text-ink">{term}</span>
         <span className="claim-more" aria-hidden="true" />
       </summary>
       <p className="m-0 mt-2 text-sm text-ink-60">{children}</p>
-    </details>
+    </AnimatedDetails>
   )
 }

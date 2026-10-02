@@ -1,0 +1,142 @@
+/* Movement belongs to the control being used. No ambient loops or hidden copy. */
+:root {
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-press: cubic-bezier(.2, .7, .3, 1);
+  --motion-fast: 160ms;
+  --motion-settle: 280ms;
+}
+
+.animated-disclosure { box-sizing: border-box; }
+
+:is(button, a):is(.button-primary, .button-secondary, .playback-button, .lab-preset, .retrieval-option, .chip) {
+  transition:
+    transform var(--motion-settle) var(--motion-ease),
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    color var(--motion-fast) ease,
+    box-shadow var(--motion-settle) var(--motion-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+:is(button, a):is(.button-primary, .button-secondary, .playback-button, .lab-preset, .retrieval-option, .chip):not(:disabled):not([aria-disabled="true"]):active {
+  transform: translateY(1px) scale(.975);
+  transition-duration: 90ms;
+  transition-timing-function: var(--motion-press);
+}
+
+:is(.button-primary, .button-secondary):is(:disabled, [aria-disabled="true"]):active {
+  transform: none;
+}
+
+:is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a) > span[aria-hidden="true"] {
+  display: inline-block;
+  transition: transform var(--motion-settle) var(--motion-ease);
+}
+
+:is(.text-link, .instrument-link, .footer-links a, .site-nav a) {
+  transition: color var(--motion-fast) ease, text-decoration-color var(--motion-fast) ease;
+}
+
+.lab-walkthroughs > li > a {
+  transition:
+    transform var(--motion-settle) var(--motion-ease),
+    border-color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
+}
+
+.lab-walkthroughs > li > a:active {
+  transform: translateY(1px);
+  transition-duration: 90ms;
+}
+
+.lab-inventory a {
+  transition: background-color var(--motion-fast) ease;
+}
+
+.fixture-control select {
+  transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease;
+}
+
+.lab-source-editor {
+  transition: box-shadow var(--motion-fast) ease;
+}
+
+/* Draw the disclosure sign as two lines so plus becomes minus continuously. */
+:is(details.lab-disclosure > summary, summary.disclosure)::before,
+summary.reveal-summary .reveal-mark::after,
+details.instrument-provenance > summary::after {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  padding: 0;
+  background-image: linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 1px, 1px 100%;
+  transform: rotate(0);
+  transition: transform var(--motion-settle) var(--motion-ease), background-size var(--motion-settle) var(--motion-ease);
+}
+
+details.instrument-provenance > summary::after { margin-left: 7px; }
+summary.reveal-summary .reveal-mark { display: inline-flex; align-items: center; justify-content: center; width: 16px; }
+
+details.lab-disclosure[open] > summary::before,
+details[open] > .disclosure::before,
+details.reveal[open] summary.reveal-summary .reveal-mark::after,
+details.instrument-provenance[open] > summary::after {
+  content: '';
+  background-size: 100% 1px, 1px 0%;
+  transform: rotate(180deg);
+}
+
+details.lab-disclosure[data-motion="closing"] > summary::before,
+details[data-motion="closing"] > .disclosure::before,
+details.reveal[data-motion="closing"] summary.reveal-summary .reveal-mark::after,
+details.instrument-provenance[data-motion="closing"] > summary::after {
+  background-size: 100% 1px, 1px 100%;
+  transform: rotate(0);
+}
+
+:is(.reveal-summary, .lab-disclosure > summary, .finding-provenance > summary, details.instrument-provenance > summary, .disclosure) {
+  transition: color var(--motion-fast) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.button-primary, .button-secondary):not(:disabled):not([aria-disabled="true"]):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px -5px rgb(0 0 0 / .3);
+  }
+
+  :is(.button-primary, .button-secondary):not(:disabled):not([aria-disabled="true"]):active {
+    transform: translateY(1px) scale(.975);
+    box-shadow: none;
+  }
+
+  :is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a):hover > span[aria-hidden="true"] {
+    transform: translateX(2px);
+  }
+
+  .lab-walkthroughs > li > a:hover { transform: translateY(-2px); background-color: var(--d-paper-2); }
+  .lab-walkthroughs > li > a:active { transform: translateY(1px); }
+  .fixture-control select:hover { border-color: var(--d-zone-ink); }
+  :is(.reveal-summary, .lab-disclosure > summary, .finding-provenance > summary):hover { color: var(--d-ink); }
+  details.instrument-provenance > summary:hover { color: var(--d-zone-ink); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.button-primary, .button-secondary, .playback-button, .lab-preset, .retrieval-option, button.chip, .lab-walkthroughs > li > a),
+  :is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a) > span[aria-hidden="true"] {
+    transform: none !important;
+  }
+
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.claim[data-motion="closing"] .claim-more::after { transform: rotate(90deg); }

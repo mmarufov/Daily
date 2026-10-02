@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -288,7 +289,7 @@ export default async function EvidencePage({
       ) : null}
 
       <section className="frame pb-12">
-        <details className="border-t border-rule pt-4 text-sm">
+        <AnimatedDetails className="border-t border-rule pt-4 text-sm">
           <summary className="disclosure min-h-11 cursor-pointer">Published scorecards and corpus inventory</summary>
           <p className="max-w-2xl text-ink-60">{index.entries.length} published scorecards, including retained baselines. Snapshots overlap; their article counts are not unique articles across the collection. {labelRows === null ? 'Label totals are unavailable.' : `${labelRows.toLocaleString()} provisional model and agent label rows across these snapshots.`}</p>
           <ul className="m-0 grid list-none gap-5 p-0 md:grid-cols-3">{index.manifest?.snapshots.map(snapshot => <li key={snapshot.name} className="min-w-0 border border-rule p-4">
@@ -296,7 +297,7 @@ export default async function EvidencePage({
             <p className="mt-2 text-ink-60">{snapshot.n_articles?.toLocaleString() ?? 'Unknown'} corpus articles</p>
             <p className="break-all font-mono text-xs text-ink-40">SHA-256 {snapshot.sha256}</p>
           </li>)}</ul>
-        </details>
+        </AnimatedDetails>
       </section>
 
       <section className="frame flex flex-col gap-4 pb-8">

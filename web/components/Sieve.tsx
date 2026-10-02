@@ -1,5 +1,7 @@
 'use client'
 
+import { AnimatedDetails } from '@/components/AnimatedDetails'
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { personaName } from '@/lib/personas'
@@ -251,7 +253,7 @@ export function Sieve({
         })}
       </ol>
 
-      <details className="text-xs text-ink-40">
+      <AnimatedDetails className="text-xs text-ink-40">
         <summary className="disclosure label text-ink-40">
           Where these counts come from
         </summary>
@@ -263,7 +265,7 @@ export function Sieve({
           took is not recorded anywhere, so cells are scattered by a fixed hash. The quantities
           are evidence, the positions are not.
         </p>
-      </details>
+      </AnimatedDetails>
     </div>
   )
 }

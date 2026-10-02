@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 import { z } from 'zod'
 
 /**
@@ -72,7 +73,7 @@ export function OffendingCase({ data }: { data: OffendingCase }) {
 
       <p className="m-0 max-w-3xl text-xs text-ink-60">{data.note}</p>
 
-      <details className="border border-rule bg-paper-secondary">
+      <AnimatedDetails className="border border-rule bg-paper-secondary">
         <summary className="disclosure label px-4 py-3 text-ink">
           The recorded response · {data.response_bytes.toLocaleString()} bytes, first 600 shown
         </summary>
@@ -84,7 +85,7 @@ export function OffendingCase({ data }: { data: OffendingCase }) {
           <span className="text-ink-60">{data.snapshot}</span>, read from{' '}
           <span className="text-ink-60">{data.source}</span>.
         </p>
-      </details>
+      </AnimatedDetails>
     </div>
   )
 }

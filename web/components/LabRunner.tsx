@@ -1,5 +1,7 @@
 'use client'
 
+import { AnimatedDetails } from '@/components/AnimatedDetails'
+
 import { useEffect, useRef, useState } from 'react'
 
 import type { CatalogCase, LiveOutcome, ProgressEvent, RunStatusBody } from '@/lib/lab/live'
@@ -274,7 +276,7 @@ export function LabRunner({
 
       <div className="lab-runner-meta">
         <p>{limits}</p>
-        <details className="lab-run-explainer">
+        <AnimatedDetails className="lab-run-explainer">
           <summary className="disclosure">How a run works</summary>
           <ol>
             <li>The scope gate checks that only candidate.py is written.</li>
@@ -289,7 +291,7 @@ export function LabRunner({
             </li>
             <li>The records are graded outside the microVM by the independent evaluator.</li>
           </ol>
-        </details>
+        </AnimatedDetails>
       </div>
 
       {complete && watching.outcome !== null ? (

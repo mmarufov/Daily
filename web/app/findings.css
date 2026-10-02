@@ -71,9 +71,12 @@
 .retrieval-story .text-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 0.5rem; }
 
 .guard-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
-.guard-toggle { display: flex; gap: 3px; padding: 4px; border: 1px solid var(--d-rule); border-radius: 8px; background: var(--d-paper-2); }
-.guard-toggle button { min-height: 44px; padding: 0.65rem 1.05rem; border: 1px solid transparent; border-radius: 5px; color: var(--d-ink-38); background: transparent; font-size: 0.8125rem; font-weight: 550; cursor: pointer; }
-.guard-toggle button[aria-pressed="true"] { background: var(--d-ink); border-color: var(--d-ink); color: var(--d-paper); }
+.guard-toggle { position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px; padding: 4px; border: 1px solid var(--d-rule); border-radius: 8px; background: var(--d-paper-2); }
+.guard-toggle::before { content: ''; position: absolute; z-index: -1; inset-block: 4px; left: 4px; width: calc((100% - 11px) / 2); border-radius: 5px; background: var(--d-ink); transform: translateX(0); transition: transform 300ms var(--motion-ease, cubic-bezier(.22, 1, .36, 1)); }
+.guard-toggle[data-variant="guard"]::before { transform: translateX(calc(100% + 3px)); }
+.guard-toggle button { position: relative; min-height: 44px; padding: 0.65rem 1.05rem; border: 1px solid transparent; border-radius: 5px; color: var(--d-ink-38); background: transparent; font-size: 0.8125rem; font-weight: 550; cursor: pointer; transition: color 160ms ease, transform 200ms var(--motion-ease, ease-out); -webkit-tap-highlight-color: transparent; }
+.guard-toggle button[aria-pressed="true"] { color: var(--d-paper); }
+.guard-toggle button:active { transform: scale(.97); transition-duration: 90ms; }
 .guard-toggle button:hover:not([aria-pressed="true"]) { color: var(--d-ink); }
 .guard-date { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--d-ink-38); }
 .guard-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); margin-top: 2.5rem; }
@@ -122,5 +125,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .retrieval-strip-segment, .guard-chart-fill { transition: none; }
+  .retrieval-strip-segment, .guard-chart-fill, .guard-toggle::before, .guard-toggle button { transition: none; }
+  .guard-toggle button:active { transform: none; }
 }

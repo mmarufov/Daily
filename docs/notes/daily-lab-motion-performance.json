@@ -1,0 +1,42 @@
+{
+  "url": "https://marufov.com",
+  "at": "2026-10-02T01:39:11.831Z",
+  "conditions": "Headless Chromium; Pixel 7 412x839 CSS pixels; fresh context/cache disabled each of 3 samples; 4x CPU slowdown; 1.6 Mbps download, 750 Kbps upload, 150 ms RTT; macOS host. Browser PerformanceObserver LCP and sum of layout shifts without recent input. Not field data.",
+  "results": [
+    {
+      "lcp": 1024,
+      "cls": 0.020483915995793214,
+      "longTasks": [
+        80,
+        55
+      ],
+      "inactiveDomMutations": 0,
+      "inactivePlaying": "false",
+      "inactiveTaskMs": 2.1609999999998575
+    },
+    {
+      "lcp": 1000,
+      "cls": 0.020483915995793214,
+      "longTasks": [
+        82,
+        55,
+        57
+      ],
+      "inactiveDomMutations": 0,
+      "inactivePlaying": "false",
+      "inactiveTaskMs": 0.22399999999977993
+    },
+    {
+      "lcp": 1004,
+      "cls": 0.020483915995793214,
+      "longTasks": [
+        75,
+        56,
+        58
+      ],
+      "inactiveDomMutations": 0,
+      "inactivePlaying": "false",
+      "inactiveTaskMs": 0.06100000000008876
+    }
+  ]
+}
