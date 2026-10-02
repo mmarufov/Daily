@@ -49,14 +49,18 @@ describe('homepage evidence', async () => {
     expect(e.defect?.finishReason).toBe('stop')
   })
 
-  it('compares the guarded replay on identical inputs only', () => {
+  it('takes the guard comparison from the provenanced experiment, matched to this run', () => {
     const m = new Map(e.guard?.metrics.map((x) => [x.key, x]) ?? [])
-    expect(e.guard?.revision).toBe('3b11a3c')
+    expect(e.guard?.href).toBe('/experiments/batch-alignment.json')
+    expect(e.guard?.recordedOn).toBe('2026-09-21')
+    expect(e.guard?.baseRevision).toBe('3b11a3c')
     expect(m.get('recall_at_k_mean')?.before).toBe(0.2207)
     expect(m.get('recall_at_k_mean')?.after).toBe(0.1866)
     expect(m.get('never_rate_mean')?.before).toBe(0.2694)
     expect(m.get('never_rate_mean')?.after).toBe(0.425)
     expect(m.get('recall_at_retrieval_mean')?.before).toBe(m.get('recall_at_retrieval_mean')?.after)
+    expect(e.guard?.gateFailures).toBe(6)
+    expect(e.guard?.baselineReRecorded).toBe(false)
   })
 
   it('shows a recorded production run that was graded, with its microVM evidence', () => {

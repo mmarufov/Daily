@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import type { DefectBatch, GuardMetric } from '@/lib/home'
+import type { DefectBatch, GuardMetric, HomeEvidence } from '@/lib/home'
 
 type Mode = 'positional' | 'guard'
 
@@ -16,20 +16,11 @@ const SHOWN_POSITIONS = [2, 3, 4, 5]
  * sits under the forty articles it was paired with by position, and the
  * other 214 hang below with nothing at their position to attach to. The
  * toggle switches the parse, not the data: both modes show the same response.
- * The scoreboard is the whole run, every batch for ten fixtures, measured
- * twice on identical inputs with only the parse changed.
+ * The scoreboard is the whole run, every batch for ten fixtures, replayed
+ * with and without the guard on September 21. It is historical evidence,
+ * and the footer says what it cannot establish.
  */
-export function DefectFigure({
-  batch,
-  metrics,
-  revision,
-  date,
-}: {
-  batch: DefectBatch
-  metrics: readonly GuardMetric[] | null
-  revision: string | null
-  date: string | null
-}) {
+export function DefectFigure({ batch, experiment }: { batch: DefectBatch; experiment: HomeEvidence['guard'] }) {
   const [mode, setMode] = useState<Mode>('positional')
   const guard = mode === 'guard'
   const sent = batch.articles.length
@@ -187,80 +178,68 @@ export function DefectFigure({
           </p>
         </div>
 
-        {metrics !== null ? <Scoreboard metrics={metrics} guard={guard} revision={revision} date={date} /> : null}
+        {experiment !== null ? <Scoreboard experiment={experiment} on={guard} /> : null}
       </div>
     </div>
   )
 }
 
-function Scoreboard({
-  metrics,
-  guard,
-  revision,
-  date,
-}: {
-  metrics: readonly GuardMetric[]
-  guard: boolean
-  revision: string | null
-  date: string | null
-}) {
+function Scoreboard({ experiment, on }: { experiment: NonNullable<HomeEvidence['guard']>; on: boolean }) {
   return (
     <aside className="panel order-first flex h-max flex-col gap-0 p-0 lg:order-none lg:sticky lg:top-24" aria-live="polite">
       <div className="border-b border-rule px-5 py-4">
         <p className="m-0 text-[0.875rem] font-medium text-ink">The whole run</p>
         <p className="m-0 mt-0.5 text-[0.8125rem] text-ink-40">
-          Every batch for ten readers, replayed twice on identical inputs. Only the parse differs.
+          Every batch for ten readers, replayed with and without the guard.
         </p>
       </div>
       <dl className="m-0 flex flex-col">
-        {metrics.map((m) => {
-          const value = guard ? m.after : m.before
-          const delta = (m.after - m.before) * 100
-          const worse = m.lowerIsBetter ? delta > 0.05 : delta < -0.05
-          const same = Math.abs(delta) <= 0.05
-          return (
-            <div key={m.key} className="flex items-start justify-between gap-4 border-b border-rule px-5 py-4">
-              <dt className="pt-1 text-[0.8125rem] text-ink-60">{m.label}</dt>
-              <dd className="m-0 text-right">
-                <Tween value={value * 100} className="readout-sm block" suffix="%" />
-                <span
-                  className={`data block !text-[0.75rem] transition-opacity duration-300 ${guard ? 'opacity-100' : 'opacity-0'} ${
-                    same ? 'text-ink-40' : worse ? 'text-signal' : 'text-ink-60'
-                  }`}
-                >
-                  {same ? 'unchanged' : `${delta > 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)} pts`}
-                </span>
-              </dd>
-            </div>
-          )
-        })}
+        {experiment.metrics.map((m) => (
+          <Reading key={m.key} metric={m} on={on} />
+        ))}
         <div className="flex items-center justify-between gap-4 border-b border-rule px-5 py-4">
-          <dt className="text-[0.8125rem] text-ink-60">Baseline re-recorded</dt>
-          <dd className="m-0 text-[0.875rem] font-medium text-ink">No</dd>
-        </div>
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <dt className="text-[0.8125rem] text-ink-60">The fix&rsquo;s regression gate</dt>
-          <dd className="m-0">
-            <a
-              href="https://github.com/mmarufov/Daily/pull/59/checks"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-[0.875rem] font-medium text-signal no-underline hover:underline"
-            >
-              <span className="size-2 rounded-full bg-loss" aria-hidden="true" />
-              Failing
-            </a>
+          <dt className="text-[0.8125rem] text-ink-60">Regression gate</dt>
+          <dd className="m-0 inline-flex items-center gap-1.5 text-[0.875rem] font-medium text-signal">
+            <span className="size-2 rounded-full bg-loss" aria-hidden="true" />
+            {experiment.gateFailures} failed
           </dd>
         </div>
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <dt className="text-[0.8125rem] text-ink-60">Baseline re-recorded</dt>
+          <dd className="m-0 text-[0.875rem] font-medium text-ink">{experiment.baselineReRecorded ? 'Yes' : 'No'}</dd>
+        </div>
       </dl>
-      {revision !== null ? (
-        <p className="m-0 border-t border-rule bg-paper-secondary px-5 py-3 text-[0.75rem] text-ink-40">
-          Guarded replay at <span className="data">{revision}</span>, {date}.{' '}
-          <a href="/experiments/count-guard-prod-llm-2026-09-02.json" className="link">
-            The scorecard
-          </a>
-        </p>
-      ) : null}
+      <p className="m-0 border-t border-rule bg-paper-secondary px-5 py-3 text-[0.75rem] text-ink-40">
+        Recorded {experiment.recordedOn} on a working tree at <span className="data">{experiment.baseRevision}</span>,
+        not a commit that contains the guard. The two runs recorded different cache keys, so this is historical
+        evidence, not a controlled test.{' '}
+        <a href={experiment.href} className="link">
+          The experiment and its limits
+        </a>
+      </p>
     </aside>
+  )
+}
+
+function Reading({ metric, on }: { metric: GuardMetric; on: boolean }) {
+  const value = on ? metric.after : metric.before
+  const delta = (metric.after - metric.before) * 100
+  const same = Math.abs(delta) <= 0.05
+  const worse = metric.lowerIsBetter ? delta > 0.05 : delta < -0.05
+  return (
+    <div className="flex items-start justify-between gap-4 border-b border-rule px-5 py-4">
+      <dt className="pt-1 text-[0.8125rem] text-ink-60">{metric.label}</dt>
+      <dd className="m-0 text-right">
+        <Tween value={value * 100} className="readout-sm block" suffix="%" />
+        <span
+          className={`data block !text-[0.75rem] transition-opacity duration-300 ${on ? 'opacity-100' : 'opacity-0'} ${
+            same ? 'text-ink-40' : worse ? 'text-signal' : 'text-ink-60'
+          }`}
+        >
+          {same ? 'unchanged' : `${delta > 0 ? '+' : '\u2212'}${Math.abs(delta).toFixed(1)} pts`}
+        </span>
+      </dd>
+    </div>
   )
 }
 

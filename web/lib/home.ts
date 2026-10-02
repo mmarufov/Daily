@@ -9,9 +9,8 @@
  * and the section that needs it does not render; nothing is filled in.
  *
  *   artifact   public/artifacts/prod-llm__2026-09-02__47edb50.json
- *   guard      public/experiments/count-guard-prod-llm-2026-09-02.json
- *              (the same runner and snapshot replayed with the count guard,
- *              revision 3b11a3c, 2026-09-21)
+ *   guard      public/experiments/batch-alignment.json, the September 21
+ *              replay with the count guard, with its provenance and limits
  *   defect     lab-evidence/backend/lab/cases/observed.json, the case suite
  *   recorded   public/runs/wrun_01M3WXWPKMF3H8Q66KZA56MZCV.json
  *   lab        public/lab-artifacts/manifest.json
@@ -22,6 +21,7 @@ import { join } from 'node:path'
 
 import { parseArtifact, type Artifact } from './artifact'
 import { loadIndex } from './data'
+import { GUARD_EXPERIMENT_HREF, loadGuardExperiment } from './guard-experiment'
 import { loadLabIndex } from './lab/data'
 import { loadCasesForRun } from './lab/case-loader'
 import type { RunStatusBody } from './lab/live'
@@ -31,7 +31,6 @@ export const HOME_RUN = 'prod-llm__2026-09-02__47edb50'
 export const HOME_FIXTURE = 'ray'
 export const DEFECT_CASE = 'observed-2026-09-02-040'
 export const RECORDED_RUN = 'wrun_01M3WXWPKMF3H8Q66KZA56MZCV'
-const GUARD_FILE = 'count-guard-prod-llm-2026-09-02.json'
 
 const PUBLIC = join(process.cwd(), 'public')
 
@@ -95,7 +94,15 @@ export interface HomeEvidence {
   readonly ladder: { readonly reached: number; readonly delivered: number; readonly fixtures: readonly FixtureRecall[] } | null
   readonly misses: { readonly total: number; readonly stages: readonly MissStage[] } | null
   readonly defect: DefectBatch | null
-  readonly guard: { readonly revision: string; readonly date: string; readonly metrics: readonly GuardMetric[] } | null
+  readonly guard: {
+    readonly href: string
+    readonly recordedOn: string
+    /** The checkout the replay ran on. Not a commit containing the guard. */
+    readonly baseRevision: string
+    readonly metrics: readonly GuardMetric[]
+    readonly gateFailures: number
+    readonly baselineReRecorded: boolean
+  } | null
   readonly recorded: RecordedRun | null
   readonly lab: {
     readonly specHash: string
@@ -179,33 +186,31 @@ async function loadDefect(): Promise<DefectBatch | null> {
 
 async function loadGuard(artifact: Artifact | null): Promise<HomeEvidence['guard']> {
   if (artifact === null) return null
-  try {
-    const raw = (await readJson(join(PUBLIC, 'experiments', GUARD_FILE))) as {
-      git_sha?: unknown
-      created_at?: unknown
-      runner?: unknown
-      snapshot?: unknown
-      k?: unknown
-      summary?: Record<string, unknown>
-    }
-    // The comparison only means something on identical inputs.
-    if (raw.runner !== 'prod-llm' || raw.snapshot !== artifact.provenance.snapshot.name || raw.k !== artifact.provenance.k) {
-      return null
-    }
-    const metrics: GuardMetric[] = []
-    for (const m of GUARD_METRICS) {
-      const before = num(artifact.summary[m.key])
-      const after = num(raw.summary?.[m.key])
-      if (before === null || after === null) return null
-      metrics.push({ key: m.key, label: m.label, before, after, lowerIsBetter: m.lowerIsBetter })
-    }
-    return {
-      revision: typeof raw.git_sha === 'string' ? raw.git_sha : 'unknown',
-      date: typeof raw.created_at === 'string' ? raw.created_at.slice(0, 10) : 'unknown',
-      metrics,
-    }
-  } catch {
+  const experiment = await loadGuardExperiment()
+  // The comparison only describes this run if it is the same runner, corpus
+  // and k, and if its "before" is this run's own scorecard.
+  if (
+    experiment === null ||
+    experiment.runner !== artifact.provenance.runner ||
+    experiment.snapshot !== artifact.provenance.snapshot.name ||
+    experiment.k !== artifact.provenance.k
+  ) {
     return null
+  }
+  const metrics: GuardMetric[] = []
+  for (const m of GUARD_METRICS) {
+    const before = num(experiment.original.summary[m.key])
+    const after = num(experiment.guard.summary[m.key])
+    if (before === null || after === null || before !== num(artifact.summary[m.key])) return null
+    metrics.push({ key: m.key, label: m.label, before, after, lowerIsBetter: m.lowerIsBetter })
+  }
+  return {
+    href: GUARD_EXPERIMENT_HREF,
+    recordedOn: experiment.recorded_on,
+    baseRevision: experiment.guard.source.recorded_git_sha,
+    metrics,
+    gateFailures: experiment.historical_test_result.failed,
+    baselineReRecorded: experiment.historical_test_result.baseline_re_recorded,
   }
 }
 

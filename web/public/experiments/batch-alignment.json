@@ -1,0 +1,263 @@
+{
+  "artifact_version": 1,
+  "experiment_id": "batch-alignment-guard",
+  "scope": "historical-working-tree-experiment",
+  "recorded_on": "2026-09-21",
+  "runner": "prod-llm",
+  "snapshot": "2026-09-02",
+  "k": 12,
+  "fixtures": 10,
+  "original": {
+    "source": {
+      "path": "backend/evals/results/47edb50-prod-llm-2026-09-02.json",
+      "sha256": "728c62a3f532978221f30b6c1ba70d22818c7a55e749fd97fc6760f2634826be",
+      "recorded_git_sha": "47edb50",
+      "recorded_created_at": "2026-09-02T07:14:29+00:00"
+    },
+    "execution_mode": "unknown",
+    "summary": {
+      "recall_at_k_mean": 0.2207,
+      "recall_at_k_min": 0.0,
+      "raw_recall_at_k_mean": 0.2026,
+      "raw_recall_at_k_min": 0.0,
+      "recall_at_retrieval_mean": 0.3211,
+      "recall_at_retrieval_min": 0.1176,
+      "need_to_know_recall_mean": 0.1739,
+      "need_to_know_recall_min": 0.0,
+      "followup_recall_mean": 0.1111,
+      "followup_recall_min": 0.0,
+      "never_rate_mean": 0.2694,
+      "never_rate_min": 0.0,
+      "event_delivery_mean": 0.25,
+      "event_delivery_min": 0.0,
+      "major_delivery_mean": 0.22,
+      "major_delivery_min": 0.0,
+      "false_major_rate_mean": null,
+      "false_major_rate_min": null,
+      "judge_precision_mean": 0.4561,
+      "judge_precision_min": 0.0,
+      "judge_recall_mean": 0.35,
+      "judge_recall_min": 0.0,
+      "needle_recall_mean": 0.6,
+      "needle_recall_min": 0.0,
+      "lookalike_rate_mean": 0.15,
+      "lookalike_rate_min": 0.0,
+      "feed_size_k_mean": 11.7,
+      "feed_size_k_min": 9,
+      "distinct_sources_mean": 6.7,
+      "distinct_sources_min": 5,
+      "latency_s_mean": 2.581,
+      "latency_s_min": 0.39,
+      "calls_total": 44,
+      "calls_max_per_persona": 7,
+      "cost_usd_total": 0.26526,
+      "cache_misses_total": 0,
+      "personas": 10
+    }
+  },
+  "guard": {
+    "source": {
+      "path": ".context/batch-alignment-fix/after-fix.json",
+      "sha256": "268c898b8e1cd5a9367713e181ff7ed613a999d739f86b28d758eb7e7ae072fa",
+      "recorded_git_sha": "3b11a3c",
+      "recorded_created_at": "2026-09-21T18:18:03+00:00"
+    },
+    "execution_mode": "offline-replay-reported",
+    "revision_is_guard_commit": false,
+    "implementation_sha256": null,
+    "summary": {
+      "recall_at_k_mean": 0.1866,
+      "recall_at_k_min": 0.0,
+      "raw_recall_at_k_mean": 0.1719,
+      "raw_recall_at_k_min": 0.0,
+      "recall_at_retrieval_mean": 0.3211,
+      "recall_at_retrieval_min": 0.1176,
+      "need_to_know_recall_mean": 0.1656,
+      "need_to_know_recall_min": 0.0,
+      "followup_recall_mean": 0.0952,
+      "followup_recall_min": 0.0,
+      "never_rate_mean": 0.425,
+      "never_rate_min": 0.0,
+      "event_delivery_mean": 0.1,
+      "event_delivery_min": 0.0,
+      "major_delivery_mean": 0.16,
+      "major_delivery_min": 0.0,
+      "false_major_rate_mean": null,
+      "false_major_rate_min": null,
+      "event_slot_contamination_mean": null,
+      "event_slot_contamination_min": null,
+      "judge_precision_mean": null,
+      "judge_precision_min": null,
+      "judge_recall_mean": 0.0,
+      "judge_recall_min": 0.0,
+      "needle_recall_mean": 0.45,
+      "needle_recall_min": 0.0,
+      "lookalike_rate_mean": 0.25,
+      "lookalike_rate_min": 0.0,
+      "feed_size_k_mean": 11.3,
+      "feed_size_k_min": 5,
+      "distinct_sources_mean": 5.9,
+      "distinct_sources_min": 2,
+      "latency_s_mean": 4.954,
+      "latency_s_min": 4.52,
+      "calls_total": 84,
+      "calls_max_per_persona": 9,
+      "cost_usd_total": 0.30196,
+      "cache_misses_total": 0,
+      "personas": 10,
+      "reader_pipeline_calls_max_per_persona": 9
+    }
+  },
+  "input_provenance": {
+    "equivalence": "reported-by-historical-note",
+    "finding": {
+      "path": ".context/batch-alignment-fix/FINDING.md",
+      "sha256": "4363ac4b24ce566fd6761f3509b0b8bfca6fe8d63db1b3619140d23c39ae3266"
+    },
+    "reference_revision": "b95a9a63562a6c7b7c36550f1ca7f90ce5e4ceaa",
+    "reference_files": [
+      {
+        "path": "backend/evals/snapshots/2026-09-02.json.gz",
+        "sha256": "d556f5244080c1917442f189022de32306d88113ca8c86009c064ba47e590b78"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/aisha.jsonl",
+        "sha256": "7ec7bc18087396bd01cefab0f331f79d52023335fdaad8aff272dd96ffb05edc"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/cache_keys.json",
+        "sha256": "2a769832096bf126cf278351e7911ef7444ac51d380d4824a813b64df8c4e77d"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/cold.jsonl",
+        "sha256": "edb61217f40812403a376eb3926dfbb8dbdd92ad68f8eccaa4e62fc27a3c7e7b"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/dilshod.jsonl",
+        "sha256": "ab013ee58167282b7ec88881c8c1a6662b4cfea6865a677e869cfea69bd34e3f"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/events.json",
+        "sha256": "73cf182db49e4da037ce74907b8916674314620b46799f8b277f9786c2e3a9a6"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/farrukh.jsonl",
+        "sha256": "c849d50c38e903c9832598d2b0852121b7f9174926869d0b22aabbe4584f38ea"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/lena.jsonl",
+        "sha256": "50dadbee8893a41fee8572f1eeba3bd710198dad1e018a6e5916663c1673c0e6"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/maya.jsonl",
+        "sha256": "f9fece8302d3dd193b4115bbb0ffb51c2642d53c33434e1963236fb46c160759"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/needles.json",
+        "sha256": "fb321e8cd1918c69fcc0258738c8cbb985cc9c715cb600bfe72eb9d4ddda09bd"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/priya.jsonl",
+        "sha256": "340041f14fa0eb44ee7ebf8b296df6f0c7be283262d086d563aee0decdb5e9a4"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/ray.jsonl",
+        "sha256": "9cf72b556ee5c4dd55383b4474cd30d8181074e5f6e7b2300d02ad7ccbcd6c53"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/tom.jsonl",
+        "sha256": "a2a4454e949c587da1975c72f00b8717003cbeb4c853895f2e5fa545983b41a2"
+      },
+      {
+        "path": "backend/evals/labels/2026-09-02/wei.jsonl",
+        "sha256": "f694e808570d485c76cbd28d9b0363cf99adad4d3c2b4c03df53d0610a9c17f9"
+      }
+    ],
+    "recorded_cache_keys": {
+      "original_count": 89,
+      "guard_count": 30,
+      "original_sha256": "f1a27a7767b4bce238eef53d7007b2f3aedd6cffcfc65b51827a31cbc4e64486",
+      "guard_sha256": "94ddf2688e49f30a301e3c756a330988a6ba203af5fa12762407fc324dacc4af",
+      "hash_encoding": "sorted keys joined by newline, no trailing newline"
+    },
+    "needles": true,
+    "quiet_corpus": false
+  },
+  "observations": {
+    "guard_fires": 63,
+    "largest_reported_mismatch": {
+      "returned": 201,
+      "sent": 40
+    }
+  },
+  "historical_test_result": {
+    "failed": 6,
+    "passed": 1969,
+    "skipped": 185,
+    "subtests_passed": 233,
+    "baseline_re_recorded": false,
+    "failures": [
+      {
+        "metric": "never_rate_mean",
+        "snapshot": "2026-08-31"
+      },
+      {
+        "metric": "never_rate_mean",
+        "snapshot": "2026-08-31-quiet"
+      },
+      {
+        "metric": "lookalike_rate_mean",
+        "snapshot": "2026-08-31"
+      },
+      {
+        "metric": "lookalike_rate_mean",
+        "snapshot": "2026-08-31-quiet"
+      },
+      {
+        "metric": "lookalike_rate_mean",
+        "snapshot": "2026-09-02"
+      },
+      {
+        "metric": "needle_recall_mean",
+        "snapshot": "2026-09-02"
+      }
+    ]
+  },
+  "notes": [
+    {
+      "severity": "caution",
+      "message": "This is a summary of the September 21, 2026 experiment, not a current CI result, a production release, or a Lab parser execution. Its baseline was not re-recorded.",
+      "source": ".context/batch-alignment-fix/FINDING.md"
+    },
+    {
+      "severity": "warning",
+      "message": "The guard scorecard records 3b11a3c, the base checkout revision. It does not identify a commit containing the tested working-tree guard. The exact guard implementation bytes were not preserved with this summary.",
+      "source": ".context/batch-alignment-fix/after-fix.json:git_sha"
+    },
+    {
+      "severity": "caution",
+      "message": "The historical note reports the same snapshot, ten fixtures, k=12 and offline replay with no cache misses on both sides. The original scorecard itself does not record execution mode; zero misses alone do not prove offline replay.",
+      "source": ".context/batch-alignment-fix/FINDING.md; backend/evals/results/47edb50-prod-llm-2026-09-02.json"
+    },
+    {
+      "severity": "info",
+      "message": "Source hashes identify the original note and scorecard bytes used to make this summary. Reference-file hashes identify the committed corpus and labels at reference_revision; they were not captured during the historical execution.",
+      "source": "input_provenance.reference_files"
+    },
+    {
+      "severity": "caution",
+      "message": "Recorded cache-key sets differ between the original scorecard and the guard scorecard. Their hashes preserve that difference instead of asserting byte-for-byte identical execution inputs.",
+      "source": "input_provenance.recorded_cache_keys"
+    },
+    {
+      "severity": "caution",
+      "message": "Labels are provisional model and agent labels. These historical quality measurements are not human-reviewed ground truth.",
+      "source": "web/public/artifacts/prod-llm__2026-09-02__47edb50.json:provenance.labels"
+    },
+    {
+      "severity": "info",
+      "message": "201 verdicts for 40 articles is the largest mismatch listed in the September 21 finding. It is not a claim about the largest recorded response across all Lab cases. Guard-fire and test counts are transcribed from that finding, not recomputed from raw logs.",
+      "source": ".context/batch-alignment-fix/FINDING.md"
+    }
+  ]
+}

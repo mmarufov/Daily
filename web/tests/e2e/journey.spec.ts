@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 /**
  * The main visitor journey: understand the product, read an edition, then
@@ -107,7 +107,7 @@ test.describe('visitor journey', () => {
   test('engineering links back into the exact explorer state', async ({ page }) => {
     await page.goto('/engineering')
     await expect(page.getByRole('heading', { level: 1 })).toContainText('rejected for discussing')
-    const link = page.getByRole('link', { name: /open this story’s recorded trace/ }).first()
+    const link = page.getByRole('link', { name: /open this story’s recorded trace/i }).first()
     await link.click()
     await expect(page).toHaveURL(/story=a00407/)
     await expect(page.getByRole('complementary')).toContainText('music EP')

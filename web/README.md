@@ -215,29 +215,30 @@ pull request ──▶ evaluation artifacts   (no secrets, runs on forks)
 
 ## The visual system
 
-One rule governs every surface: **colour means loss.** In any chart, table or diagram, ink is
-what survived the pipeline, vermilion is what it threw away, and slate is what cannot be verified
-either way. Nothing that worked is ever coloured, so a glance at a figure says where the system
-failed before you have read a label. Chrome — links, focus, selection — borrows the same
-vermilion, because there it carries the meaning the eye has already learned: look here.
+One rule governs every surface: **an instrument is grey; only its readings have colour.** Every
+surface, rule, control and piece of navigation is exactly neutral. Red marks a measured failure or
+loss, slate marks something that could not be measured, and nothing that worked is coloured, so a
+glance at a figure says where the system failed before you have read a label. Links, focus and
+buttons get attention from contrast and weight, never from hue. `tests/unit/palette.test.ts`
+parses `app/globals.css` and enforces it. [`DESIGN.md`](DESIGN.md) has the rest.
 
-Two typefaces and no sans between them. Prose is set in Fraunces; every number, identifier, stage
-name and micro-label is set in Geist Mono. The site is a newspaper assembled by a measuring
-instrument and is meant to look like both objects at once. Both fonts are **vendored** under
+Three typefaces with three jobs: Geist for the product, Geist Mono for data a reader might copy,
+and Fraunces only for article text from the frozen corpus. All three are **vendored** under
 `app/fonts/` and loaded with `next/font/local`, so `npm run build` never needs network access and
 the bytes that ship are the bytes in the tree. Licences: [`app/fonts/LICENSE.md`](app/fonts/LICENSE.md).
 
-`docs/DESIGN.md` governs the iOS app and is written as an iOS-first source of truth. This tier is
-a different medium doing a different job — an evidence explorer, not a reading app — so it does
-not inherit those tokens. `/reader` is the one surface that stays close to the app's
-paper-and-serif register, because there it is showing the product rather than measuring it.
+`docs/DESIGN.md` governs the iOS app. This tier is a different medium doing a different job, so it
+does not inherit those tokens.
 
 ### The figures
 
 | Figure | Where | What it draws |
 |---|---|---|
-| **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus** — 1,362 marks, not a summary of them. Stepping a stage flashes the candidates that stage removed in vermilion and settles the rest to ghost, so the discarded mass stays part of the picture. |
-| **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `Daniel` is almost solid vermilion; `Will` is mostly loss. The run's 22.1% mean hides both. |
+| **The console** | `/`, `/lab` | A real run: the run's own timestamped events, the four isolation probes, the 64 cases graded, the fault that caught the parser, and the microVM's meters. The homepage opens on a stored production run, labelled recorded; Run starts a live one. |
+| **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus**: 1,362 marks, not a summary of them. Each stage flashes the candidates it removed in red and settles them to ghost, so the discarded mass stays part of the picture. |
+| **The ranking ceiling** | `/` | The 97 must-see misses placed at the stage that lost them. A switch makes every stage after the recency window perfect; at most 22 come back. Arithmetic on the recorded attribution, not a new run. |
+| **The batch** | `/` | The 40 articles of one recorded request over the 254 verdicts that came back, laid out forty to a row so position pairing is visible. A toggle switches the parse, and the scoreboard shows the September 21 guard experiment with its limits. |
+| **Every fixture, no averaging** | `/`, `/evidence` | Delivered recall per reader fixture. `Will` is at zero; the run's 22.1% mean hides that. |
 | **The slope** | `/evidence`, `/engineering` | Two runs on one shared 0–100% scale. Fraction metrics only: costs and latencies share no scale with a recall rate, and per-row normalisation would make a 0.4-point move look like a 40-point one. |
 | **The trace ribbon** | `/evidence` story detail | One story's journey across the same ten stages, with its death point marked. Answers "did ranking make a mistake, or did nothing ever look at this?". |
 | **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page — the counts are recorded, the merge point is not. |

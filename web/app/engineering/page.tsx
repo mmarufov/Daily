@@ -1,278 +1,193 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { Band, PageIndex, type Section } from '@/components/Band'
+import { Band } from '@/components/Band'
 import { Misalignment } from '@/components/Misalignment'
-import { Slope, type SlopeRow } from '@/components/Slope'
+import { GUARD_EXPERIMENT_HREF, loadGuardExperiment, type GuardExperiment } from '@/lib/guard-experiment'
 import { personaName } from '@/lib/personas'
 import { explorerHref } from '@/lib/url-state'
 
 export const metadata: Metadata = {
-  title: 'Engineering notes',
+  title: 'Defect report',
   description:
-    'One verified defect in Daily’s production relevance scorer, followed from the symptom in a stored scorecard to the lines that caused it, the test that now fails without the fix, and the cost of fixing it.',
+    'One defect in Daily’s batch scorer, followed from a stored scorecard to the lines that caused it, and what refusing to guess cost in the September 21 recorded experiment.',
 }
 
 const RUN = 'prod-llm__2026-08-31__47edb50'
-const GH = 'https://github.com/mmarufov/Daily/blob/main'
 
-const SECTIONS: readonly Section[] = [
-  { index: '01', slug: 'symptom', title: 'Symptom' },
-  { index: '02', slug: 'cause', title: 'Cause' },
-  { index: '03', slug: 'fix', title: 'The fix' },
-  { index: '04', slug: 'cost', title: 'What it cost' },
-  { index: '05', slug: 'verification', title: 'Verification' },
-  { index: '06', slug: 'remaining', title: 'Still broken' },
+/** The rows the cost table shows, in the experiment's own metric keys. */
+const ROWS: readonly { key: string; label: string; lowerIsBetter: boolean }[] = [
+  { key: 'recall_at_k_mean', label: 'Needed stories delivered (capped recall@12)', lowerIsBetter: false },
+  { key: 'raw_recall_at_k_mean', label: 'Raw recall@12', lowerIsBetter: false },
+  { key: 'recall_at_retrieval_mean', label: 'Needed stories that reached the scorer', lowerIsBetter: false },
+  { key: 'never_rate_mean', label: 'Unwanted stories delivered', lowerIsBetter: true },
+  { key: 'need_to_know_recall_mean', label: 'Need-to-know recall', lowerIsBetter: false },
+  { key: 'needle_recall_mean', label: 'Planted-needle recall', lowerIsBetter: false },
+  { key: 'lookalike_rate_mean', label: 'Lookalike rate', lowerIsBetter: true },
 ]
 
-const band = (slug: string, note?: string) => {
-  const s = SECTIONS.find((x) => x.slug === slug)
-  return { index: s?.index ?? '', title: s?.title ?? '', slug, note }
-}
-
-/**
- * Measured under identical evaluation inputs: same corpus, same k, same ten
- * fixtures, same response cache, zero cache misses on both sides. Only the
- * parse differs, which is what makes this a comparison rather than two
- * unrelated runs.
- */
-const COST: readonly SlopeRow[] = [
-  { key: 'recall_at_k', label: 'Capped recall@12', a: 0.221, b: 0.187, verdict: 'worse', display: '−3.4 pp', material: true },
-  { key: 'recall_at_retrieval', label: 'Reached the scorer', a: 0.321, b: 0.321, verdict: 'unchanged', display: 'unchanged', material: false },
-  { key: 'never_rate', label: 'Unwanted rate', a: 0.269, b: 0.425, verdict: 'worse', display: '+15.6 pp', material: true },
-  { key: 'needle_recall', label: 'Planted-needle recall', a: 0.6, b: 0.45, verdict: 'worse', display: '−15.0 pp', material: true },
-  { key: 'lookalike_rate', label: 'Lookalike rate', a: 0.15, b: 0.25, verdict: 'worse', display: '+10.0 pp', material: true },
-  { key: 'event_delivery', label: 'World-critical delivery', a: 0.25, b: 0.1, verdict: 'worse', display: '−15.0 pp', material: true },
-]
-
-const TESTS: readonly (readonly [string, string, boolean])[] = [
-  ['short response is discarded rather than shifted', 'applied by position', true],
-  ['short response is retried before giving up', 'never retried', true],
-  ['long response is also discarded', 'extra entry silently dropped', true],
-  ['cache miss propagates', 'swallowed, scored everything 0.0', true],
-  ['budget exceeded propagates', 'swallowed', true],
-  ['aligned response is applied in order', 'unchanged', false],
-  ['scores are clamped to the unit interval', 'unchanged', false],
-  ['ordinary provider errors still fall back', 'unchanged', false],
-  ['request kwargs are the expected shape', 'documents the remaining gap', false],
-]
-
-export default function EngineeringPage() {
+export default async function EngineeringPage() {
+  const experiment = await loadGuardExperiment()
   return (
     <div className="flex flex-col">
-      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-16">
-        <p className="label m-0 text-ink-40">Defect report</p>
-        <h1 className="display m-0 max-w-4xl text-[clamp(2rem,5.5vw,4rem)]">
+      <section className="frame pt-14 sm:pt-20">
+        <h1 className="display m-0 max-w-4xl text-[clamp(2.25rem,5.5vw,4rem)]">
           A story the reader needed, rejected for discussing something else entirely
         </h1>
-        <p className="lede measure m-0 text-ink-60">
-          One bug, from the symptom in a stored scorecard to the lines that caused it, and what
-          fixing it cost.
+        <p className="lede measure m-0 mt-6 text-ink-60">
+          One defect in the batch scorer, from the symptom in a stored scorecard to the lines that caused it, and what
+          refusing to guess cost.
         </p>
-        <PageIndex sections={SECTIONS} />
       </section>
 
-      <section className="frame flex flex-col gap-6 pb-20">
-        <Band {...band('symptom', 'Reasons attached to the wrong articles')} />
-        <ul className="m-0 grid list-none gap-px border border-rule bg-rule p-0 lg:grid-cols-3">
+      <section className="frame mt-24 flex flex-col gap-6" id="symptom">
+        <Band index="01" title="A reason about the wrong story" note="Actual traces from the August 31 scorecard" />
+        <ul className="m-0 grid list-none gap-px overflow-hidden rounded-lg border border-rule bg-rule p-0 lg:grid-cols-3">
           <Offset
             persona="ray"
             story="a00407"
-            title="Giants’ 53-man roster to include Odell Beckham"
-            reason="The article discusses a music EP, which is irrelevant to the user’s interests."
+            title="Giants' 53-man roster to include Odell Beckham"
+            reason="The article discusses a music EP, which is irrelevant to the user's interests."
             stage="blended"
           />
           <Offset
             persona="dilshod"
             story="n-dil-02"
             title="Mirziyoyev signs decree abolishing exit visa-style registration"
-            reason="The article discusses NFL team rosters, which is not relevant to the user’s interests."
+            reason="The article discusses NFL team rosters, which is not relevant to the user's interests."
             stage="blended"
             needle
           />
           <Offset
             persona="farrukh"
             story="a00037"
-            title="World mostly shrugs off Bessent’s ‘D-Day’ Iran sanctions threat"
-            reason="The article discusses China’s manufacturing activity…"
+            title="World mostly shrugs off Bessent's 'D-Day' Iran sanctions threat"
+            reason="The article discusses China's manufacturing activity…"
             stage="rank"
           />
         </ul>
-        <p className="m-0 measure text-sm text-ink-60">
-          A clean offset, not a model reasoning badly. The middle one is sharpest:{' '}
-          <span className="text-ink">n-dil-02</span> is a <em>planted needle</em>, injected so its
-          right answer is known by construction. It was rejected on another
-          article&rsquo;s reasoning.
+        <p className="measure m-0 text-[0.875rem] text-ink-60">
+          The middle one is the sharpest: <span className="data">n-dil-02</span> is a planted needle, injected so its
+          right answer is known by construction, and it was rejected on another article&rsquo;s reasoning. These
+          examples show shifted associations. They do not establish that every verdict in every batch was wrong.
         </p>
       </section>
 
-      <section className="frame flex flex-col gap-6 pb-20">
-        <Band {...band('cause', 'Positional output misalignment')} />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+      <section className="frame mt-24 flex flex-col gap-6" id="cause">
+        <Band index="02" title="The missing identity contract" note="Order was the only link" />
+        <div className="grid gap-10 lg:grid-cols-2">
           <div className="flex flex-col gap-5">
             <p className="prose m-0">
-              The feed scores candidates in batches of forty through{' '}
-              <Code href={`${GH}/backend/app/services/openai_service.py`}>score_articles_batch</Code>
-              , which asks for one verdict per article in the same order and{' '}
-              <strong>sends no article identifier</strong>. The parse is positional. A count
-              mismatch was logged and then ignored.
+              The scorer asks for one verdict per article, in order, without an article identifier. Its positional
+              parser logs a count mismatch and then keeps assigning output by position.
             </p>
-            <p className="m-0 border-t border-rule-strong pt-3 text-sm text-ink-60">
-              Misattributed relevance is worse than absent relevance. A missing score is visible
-              downstream and can be retried; a shifted one silently drops a story and files a
-              plausible rationale about a different one.
+            <p className="prose m-0">
+              One recorded Lab case has 40 inputs and 254 verdicts. Once a response shifts, a plausible reason attaches
+              to an unrelated article, and nothing downstream can tell.
             </p>
-            <details className="text-sm text-ink-60">
-              <summary className="disclosure label text-ink-40">
-                How the repository itself confirms this
-              </summary>
-              <p className="m-0 mt-2">
-                The prototype pipeline requires every verdict to echo its{' '}
-                <span className="text-ink">id</span> and drops unmatched ones, and every rejection
-                reason in its scorecards matches its own headline. A correct implementation exists
-                on the product side too, in{' '}
-                <Code href={`${GH}/backend/app/services/ranking_provider.py`}>ranking_provider.py</Code>
-                , which keys by article id, caps output and treats truncation as failure. It is
-                gated behind <span className="text-ink">S7_PROVIDER_ENABLED</span> and is not what
-                the live feed calls.
-              </p>
-            </details>
+            <a
+              className="go"
+              href="https://github.com/mmarufov/Daily/blob/b95a9a63562a6c7b7c36550f1ca7f90ce5e4ceaa/backend/app/services/openai_service.py#L647"
+            >
+              The audited parser revision
+            </a>
           </div>
           <Misalignment />
         </div>
       </section>
 
-      <section className="frame flex flex-col gap-6 pb-20">
-        <Band {...band('fix', 'And one deliberate non-fix')} />
+      <section className="frame mt-24 flex flex-col gap-6" id="cost">
+        <Band index="03" title="Refusing to guess has a cost" note="The September 21 recorded experiment" />
+        {experiment === null ? (
+          <p role="status" className="m-0 text-[0.875rem] text-unknown">
+            The recorded experiment could not be read, so no cost is shown.
+          </p>
+        ) : (
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+            <CostTable experiment={experiment} />
+            <div className="flex flex-col gap-5">
+              <p className="prose m-0">
+                The count guard discards a mismatched batch and retries. A response with the right count in the wrong
+                order still passes, so counting is a partial contract. Discarded batches lose their relevance signal,
+                and the delivered feed did not improve.
+              </p>
+              <p className="m-0 text-[0.875rem] text-ink-60">
+                {experiment.historical_test_result.failed} regression checks failed and the baseline was not
+                re-recorded. The guard scorecard names the base checkout,{' '}
+                <span className="data">{experiment.guard.source.recorded_git_sha}</span>, not a commit containing the
+                guard, and the exact guard bytes were not kept. The two scorecards recorded different cache keys. This
+                is historical evidence, not a controlled estimate.
+              </p>
+              <a className="go" href={GUARD_EXPERIMENT_HREF}>
+                The experiment, its source hashes and limits
+              </a>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="frame mt-24 flex flex-col gap-6" id="next">
+        <Band index="04" title="Correct association comes first" note="Quality remains a separate question" />
         <div className="grid gap-10 lg:grid-cols-2">
-          <div className="flex flex-col gap-4">
-            <p className="label m-0 text-ink-40">What landed</p>
-            <ul className="m-0 flex list-none flex-col gap-4 p-0">
-              <Item term="A length mismatch discards the batch">
-                The retry loop gets another attempt instead of verdicts assigned by position. If
-                every attempt mismatches, the batch reports itself unscored.
-              </Item>
-              <Item term="CacheMiss and BudgetExceeded propagate">
-                Both were swallowed by a blanket handler, so an offline replay that should have
-                failed closed instead scored every article 0.0 while reporting zero cache misses.
-              </Item>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-4">
-            <p className="label m-0 text-ink">What was deliberately left broken</p>
-            <p className="prose m-0 text-base">
-              The complete fix is id-keyed output, which changes the scoring prompt, and the
-              regression gate replays responses keyed by a hash of the request. Changing the prompt
-              invalidates the entire evidence base the gate runs against.
+          <p className="prose m-0">
+            The Lab makes the identity contract testable. Submit a parser, run it against the public cases in a Sandbox
+            microVM, and read failures computed by code it never sees.
+          </p>
+          <div className="flex flex-col gap-5">
+            <p className="prose m-0">
+              Passing those checks does not prove better relevance. The quality scorecards use provisional model and
+              agent labels, and a changed scoring request needs new recordings.
             </p>
-            <p className="prose m-0 text-base">
-              Bundling a correctness fix with the destruction of the baseline that proves it leaves
-              no way to show the fix helped. So the guard lands first, and the prompt change is
-              staged behind a cache rebuild.
-            </p>
+            <Link className="btn btn-primary self-start" href="/lab#run">
+              Run a parser
+            </Link>
           </div>
         </div>
       </section>
+    </div>
+  )
+}
 
-      <section className="frame flex flex-col gap-6 pb-20">
-        <Band {...band('cost', 'Identical inputs, only the parse differs')} />
-        <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
-          <Figure term="Guard fires" value="63" note="one run, ten fixtures" signal />
-          <Figure term="Worst in this run" value="201" note="verdicts for 40 articles" signal />
-          <Figure term="Cache misses" value="0" note="replayed entirely offline" />
-          <Figure term="Model calls" value="44 → 84" note="retries are not free" />
-        </dl>
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
-          <Slope rows={COST} aLabel="Committed scorecard" bLabel="With the guard" />
-          <div className="flex flex-col gap-4 self-start">
-            <p className="prose m-0 text-base">
-              Not &ldquo;the fix made it worse&rdquo;. Two facts at once. The committed 22.1% was
-              never a measurement of the pipeline judging correctly, because it counted verdicts
-              that landed on the right article by accident.
-            </p>
-            <p className="prose m-0 text-base">
-              And refusing to guess is expensive: on a mismatch the guard discards all forty
-              verdicts, so those candidates carry no relevance signal at all. That is why the
-              unwanted rate climbs. Neither number describes a healthy pipeline: the first is
-              meaningless, the second is the price of having no way to salvage a partial response.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="frame flex flex-col gap-6 pb-20">
-        <Band {...band('verification', 'Nine tests, five of them new failures')} />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
-          <ul className="m-0 flex list-none flex-col gap-px border-y border-rule p-0">
-            {TESTS.map(([name, before, fails]) => (
-              <li
-                key={name}
-                className="grid grid-cols-[1fr_auto] items-baseline gap-4 py-2 sm:grid-cols-[1fr_14rem]"
-              >
-                <span className="text-xs text-ink">{name}</span>
-                <span className={`text-xs ${fails ? 'text-signal' : 'text-ink-40'}`}>
-                  {fails ? 'failed' : 'passed'} before: {before}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <div className="flex flex-col gap-4 self-start">
-            <p className="prose m-0 text-base">
-              Nine tests in{' '}
-              <Code href={`${GH}/backend/tests/test_batch_scoring_alignment.py`}>
-                test_batch_scoring_alignment.py
-              </Code>
-              . Five fail against the unfixed code; four are non-regression guards.
-            </p>
-            <p className="m-0 border-t border-rule-strong pt-3 text-sm text-ink-60">
-              The gate goes from <span className="text-ink">42 passed</span> to{' '}
-              <span className="text-ink">6 failed</span>, and{' '}
-              <strong className="text-ink">the baseline was not re-recorded</strong>. It is
-              correctly reporting that behaviour changed; re-recording it for a green badge would
-              destroy the only evidence the change had a cost.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="frame flex flex-col gap-6 pb-8">
-        <Band {...band('remaining', 'Stated rather than buried')} />
-        <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-          <Item term="Reordering still slips through" signal>
-            No article ids are sent, so a response of the right length but internally reordered is
-            still misapplied.
-          </Item>
-          <Item term="No output cap or finish_reason check" signal>
-            Both still missing on this path. Both belong with the prompt change.
-          </Item>
-          <Item term="The evidence predates main" signal>
-            Every scorecard here ran at a revision not reachable from the default branch, and none
-            records an evaluation protocol.
-          </Item>
-          <Item term="The corrected prototype is untested" signal>
-            CI&rsquo;s prototype tier runs a historical legacy adapter, so the corrected pipeline
-            is not exercised at all.
-          </Item>
-        </div>
-        <details className="mt-2 text-sm text-ink-60">
-          <summary className="disclosure label text-ink-40">
-            Where this site stops and the backend begins
-          </summary>
-          <div className="mt-3 grid gap-x-10 gap-y-5 sm:grid-cols-2">
-            <p className="m-0">
-              Daily is an iPhone app against a FastAPI backend and Postgres. The backend is a
-              stateful daemon: seven background loops, schema application, and a Postgres advisory
-              lock for leader election. It stays where it runs today.
-            </p>
-            <p className="m-0">
-              This site is a separate read tier: the reader replays a frozen corpus, the explorer
-              renders immutable artifacts exported from the harness&rsquo;s own scorecards, and
-              nothing here scores an article. Labels are model-written with an agent pass, so
-              absolute values are provisional.
-            </p>
-          </div>
-        </details>
-      </section>
+function CostTable({ experiment }: { experiment: GuardExperiment }) {
+  const rows = ROWS.flatMap((r) => {
+    const before = experiment.original.summary[r.key]
+    const after = experiment.guard.summary[r.key]
+    return typeof before === 'number' && typeof after === 'number' ? [{ ...r, before, after }] : []
+  })
+  return (
+    <div className="overflow-x-auto rounded-lg border border-rule bg-sheet">
+      <table className="w-full min-w-md border-collapse text-[0.8125rem]">
+        <caption className="sr-only">
+          Quality metrics for the same snapshot and readers, without and with the count guard
+        </caption>
+        <thead>
+          <tr className="border-b border-rule bg-paper-secondary text-left text-[0.75rem] text-ink-40">
+            <th scope="col" className="px-4 py-2 font-medium">Metric</th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">Without</th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">With the guard</th>
+            <th scope="col" className="px-4 py-2 text-right font-medium">Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => {
+            const delta = (r.after - r.before) * 100
+            const same = Math.abs(delta) <= 0.05
+            const worse = r.lowerIsBetter ? delta > 0.05 : delta < -0.05
+            return (
+              <tr key={r.key} className="border-b border-rule last:border-b-0">
+                <th scope="row" className="px-4 py-2.5 text-left font-normal text-ink-60">
+                  {r.label}
+                </th>
+                <td className="data px-4 py-2.5 text-right text-ink">{(r.before * 100).toFixed(1)}%</td>
+                <td className="data px-4 py-2.5 text-right text-ink">{(r.after * 100).toFixed(1)}%</td>
+                <td className={`data px-4 py-2.5 text-right ${same ? 'text-ink-40' : worse ? 'text-signal' : 'text-ink-60'}`}>
+                  {same ? 'unchanged' : `${delta > 0 ? '+' : '−'}${Math.abs(delta).toFixed(1)} pts`}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }
@@ -293,70 +208,23 @@ function Offset({
   needle?: boolean
 }) {
   return (
-    <li className="flex flex-col gap-3 bg-paper p-4">
-      <p className="headline m-0 text-base">{title}</p>
-      <p className="m-0 rounded-md bg-signal-wash px-3 py-2 text-sm text-signal">&ldquo;{reason}&rdquo;</p>
-      <p className="m-0 mt-auto text-xs text-ink-40">
-        fixture {personaName(persona)} · dropped at {stage}
-        {needle === true ? ' · planted needle' : ''}
+    <li className="flex flex-col gap-3 bg-sheet p-5">
+      <p className="headline m-0 text-base" data-verbatim>
+        {title}
+      </p>
+      <p className="m-0 rounded-md bg-signal-wash px-3 py-2 text-[0.8125rem] text-signal" data-verbatim>
+        &ldquo;{reason}&rdquo;
+      </p>
+      <p className="m-0 mt-auto text-[0.75rem] text-ink-40">
+        Fixture {personaName(persona)}, dropped at <span className="data">{stage}</span>
+        {needle === true ? ', a planted needle' : ''}
       </p>
       <Link
         href={explorerHref({ run: RUN }, { persona, view: 'stories', story, outcome: 'all' })}
-        className="link label self-start"
+        className="go self-start !text-[0.8125rem]"
       >
-        open this story&rsquo;s recorded trace
+        Open this story&rsquo;s recorded trace
       </Link>
     </li>
-  )
-}
-
-function Code({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a href={href} className="link text-xs" rel="noreferrer">
-      {children}
-    </a>
-  )
-}
-
-function Item({
-  term,
-  children,
-  signal,
-}: {
-  term: string
-  children: React.ReactNode
-  signal?: boolean
-}) {
-  return (
-    <li className="list-none border-t border-rule-strong pt-3">
-      <p className="label m-0 text-ink">{term}</p>
-      <p className="m-0 mt-2 max-w-md text-sm text-ink-60">{children}</p>
-    </li>
-  )
-}
-
-function Figure({
-  term,
-  value,
-  note,
-  signal,
-}: {
-  term: string
-  value: string
-  note: string
-  signal?: boolean
-}) {
-  return (
-    <div>
-      <dt className="label m-0 text-ink-40">{term}</dt>
-      <dd className={`readout-sm m-0 mt-1.5 text-2xl ${signal === true ? 'text-signal' : ''}`}>
-        {value}
-        {/* See the note in app/page.tsx: only <dt>/<dd> may sit inside a
-            <div> within a <dl>. */}
-        <span className="block font-sans text-xs font-normal tracking-normal text-ink-40">
-          {note}
-        </span>
-      </dd>
-    </div>
   )
 }

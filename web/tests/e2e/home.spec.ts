@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 import { finishedRunBody } from '../fixtures/live-outcome'
 
@@ -89,13 +89,13 @@ test.describe('homepage', () => {
     await section.getByRole('radio', { name: 'With the count guard' }).click()
     await expect(section.getByText('42.5%')).toBeVisible()
     await expect(section.getByText('+15.6 pts')).toBeVisible()
-    await expect(section.getByText('−3.4 pts')).toBeVisible()
-    await expect(section.getByRole('link', { name: /Failing/ })).toHaveAttribute(
-      'href',
-      'https://github.com/mmarufov/Daily/pull/59/checks',
-    )
-    const scorecard = await section.getByRole('link', { name: 'The scorecard' }).getAttribute('href')
-    expect((await page.request.get(scorecard as string)).status()).toBe(200)
+    await expect(section.getByText('\u22123.4 pts')).toBeVisible()
+    await expect(section.getByText('6 failed')).toBeVisible()
+    // The limits travel with the numbers.
+    await expect(section.getByText(/not a commit that contains the guard/)).toBeVisible()
+    const source = await section.getByRole('link', { name: 'The experiment and its limits' }).getAttribute('href')
+    expect(source).toBe('/experiments/batch-alignment.json')
+    expect((await page.request.get(source as string)).status()).toBe(200)
   })
 
   test('reduced motion gets the answer, not the performance', async ({ browser }) => {

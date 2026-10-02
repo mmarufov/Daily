@@ -198,14 +198,14 @@ body {
 }
 .skip-link:focus { clip-path: none; }
 
+/* Reduced motion gets end states, not short animations: a 0.01ms transition
+   is still a running animation to anything that waits on one. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
+    animation: none !important;
+    transition: none !important;
     scroll-behavior: auto !important;
   }
 }
@@ -916,3 +916,11 @@ details[open] > .disclosure::before { content: "\2013"; }
   font-size: 0.875rem;
   color: var(--d-ink-58);
 }
+
+/* `AnimatedDetails` keeps a closing disclosure open until its height has
+   animated shut, and marks it `data-motion="closing"` meanwhile. The sign
+   flips at the start of the gesture, not the end of it. */
+.animated-disclosure { box-sizing: border-box; }
+details[data-motion="closing"] > .disclosure::before { content: "+"; }
+.claim[data-motion="closing"] .claim-more::after,
+.reveal[data-motion="closing"] .reveal-mark::after { transform: rotate(90deg); }

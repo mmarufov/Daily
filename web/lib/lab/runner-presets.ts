@@ -4,7 +4,7 @@
  * Read at build time from the staged evidence, so the editor is prefilled
  * with the committed bytes of a real implementation rather than a copy that
  * could drift from it. The first preset is the default on purpose: it is the
- * fix that shipped, and a fault-injected case catches it, so the first click
+ * experimental count guard, and a fault-injected case catches it, so the first click
  * shows the thing the Lab exists to show.
  */
 
@@ -22,8 +22,8 @@ export interface RunnerPreset {
 }
 
 const PRESETS: readonly { id: string; file: string; note: string }[] = [
-  { id: 'count-guard-v1', file: 'count_guard_v1.py', note: 'the fix from PR #59' },
-  { id: 'positional-v0', file: 'positional_v0.py', note: 'what production does today' },
+  { id: 'count-guard-v1', file: 'count_guard_v1.py', note: 'experimental count guard' },
+  { id: 'positional-v0', file: 'positional_v0.py', note: 'original positional parser' },
   { id: 'keyed-v2', file: 'keyed_v2.py', note: 'the proposed contract' },
 ]
 

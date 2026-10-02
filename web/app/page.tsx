@@ -126,12 +126,7 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="mt-12">
-            <DefectFigure
-              batch={defect}
-              metrics={guard?.metrics ?? null}
-              revision={guard?.revision ?? null}
-              date={guard?.date ?? null}
-            />
+            <DefectFigure batch={defect} experiment={guard} />
           </div>
         </section>
       ) : null}

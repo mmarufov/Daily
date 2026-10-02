@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 /**
  * Layout integrity across the breakpoints the site is actually read at.

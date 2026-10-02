@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 import { decide, PUBLIC_RUN_LIMITS } from '../../lib/lab/public-limits'
 import { handleRunRequest } from '../../lib/lab/public-run'

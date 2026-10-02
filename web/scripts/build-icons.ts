@@ -10,15 +10,13 @@
  *                           ignore an SVG favicon (Safari before 16.4)
  *   app/opengraph-image.png 1200x630, link previews
  *
- * The OG image is the sieve rather than the letterform. The tab icon had to
- * survive 16px and a grid of cells cannot; at 1200x630 the same figure is the
- * most characteristic thing the product has, so each mark is used where it
- * actually works.
+ * The tab icon is the mark: a three-by-three sieve that survives 16px. The OG
+ * image is the homepage's first screen at card size, with the 64 cases of the
+ * recorded production run drawn from the stored response.
  *
  * Playwright renders these rather than `next/og`, because Satori supports a
- * subset of CSS and the cell field is 1,362 positioned elements. A committed
- * PNG also means a link preview cannot be broken by a runtime failure on a
- * route nobody visits.
+ * subset of CSS. A committed PNG also means a link preview cannot be broken by
+ * a runtime failure on a route nobody visits.
  */
 
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -30,60 +28,73 @@ import { chromium } from 'playwright'
 
 const WEB = join(fileURLToPath(new URL('.', import.meta.url)), '..')
 
-/** The frozen run this figure describes. Kept in sync with the home page. */
-const POOL = 1362
-const DELIVERED = 50
+/**
+ * The recorded production run the homepage opens on. The card draws its 64
+ * cases from the stored response, so the picture is that run, not a pattern.
+ */
+const RECORDED = 'public/runs/wrun_01M3WXWPKMF3H8Q66KZA56MZCV.json'
 
-/** Deterministic, so regenerating does not produce a spurious diff. */
-function rng(seed: number): () => number {
-  let s = seed >>> 0
-  return () => {
-    s = (s * 1664525 + 1013904223) >>> 0
-    return s / 0x100000000
-  }
+interface StoredCase {
+  case_id: string
+  origin: string
+  applicability: string
+  status: string
 }
 
 function ogHtml(): string {
-  const fontPath = join(WEB, 'app/fonts/Fraunces-latin.woff2')
+  const fontPath = join(WEB, 'app/fonts/GeistSans-variable.woff2')
   const monoPath = join(WEB, 'app/fonts/GeistMono-latin.woff2')
-  const cols = 62
-  const rows = 22
-  const total = cols * rows
-
-  // Which cells survived. Spread rather than clustered: the real figure is a
-  // corpus in recency order, not a blob.
-  const next = rng(20260902)
-  const lit = new Set<number>()
-  while (lit.size < DELIVERED) lit.add(Math.floor(next() * total))
-
-  const cells = Array.from({ length: total }, (_, i) =>
-    `<i${lit.has(i) ? ' class="on"' : ''}></i>`,
-  ).join('')
+  const stored = JSON.parse(readFileSync(join(WEB, RECORDED), 'utf8')) as {
+    response: { outcome: { verdict: string; grading: { cases: StoredCase[]; out_of_protocol_case_ids: string[] } } }
+  }
+  const grading = stored.response.outcome.grading
+  const outside = new Set(grading.out_of_protocol_case_ids)
+  const tone = (c: StoredCase) =>
+    c.applicability === 'not-applicable' ? (outside.has(c.case_id) ? 'out' : 'na') : c.status === 'correct' ? 'ok' : 'bad'
+  const caught = grading.cases.find(
+    (c) => c.origin === 'fault-injection' && c.applicability === 'scored' && c.status !== 'correct',
+  )
+  const row = (origin: string) =>
+    grading.cases
+      .filter((c) => c.origin === origin)
+      .map((c) => `<i class="${tone(c)}${c === caught ? ' caught' : ''}"></i>`)
+      .join('')
 
   return `<!doctype html><meta charset="utf-8">
 <style>
-  @font-face{font-family:F;src:url("file://${fontPath}") format("woff2");font-weight:400 700}
+  @font-face{font-family:G;src:url("file://${fontPath}") format("woff2");font-weight:100 900}
   @font-face{font-family:M;src:url("file://${monoPath}") format("woff2")}
   *{margin:0;box-sizing:border-box}
-  body{width:1200px;height:630px;background:#161513;color:#f4f1ea;
-       display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
-  .plate{display:grid;grid-template-columns:repeat(${cols},1fr);gap:5px;padding:54px 64px 0}
-  .plate i{aspect-ratio:1;background:#2b2825;border-radius:1px}
-  .plate i.on{background:#f4f1ea}
-  .foot{padding:0 64px 58px;display:flex;align-items:flex-end;justify-content:space-between;gap:48px}
-  h1{font:400 92px/0.95 F;letter-spacing:-0.022em}
-  p{font:400 27px/1.42 F;color:#b9b5ac;margin-top:18px;max-width:30ch}
-  .n{font:400 21px/1.5 M;color:#7e786f;text-align:right;white-space:nowrap}
-  .n b{display:block;font:400 54px/1.1 M;color:#f4f1ea;font-weight:400}
+  body{width:1200px;height:630px;background:#fafafa;color:#171717;font-family:G;padding:64px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+  .brand{display:flex;align-items:center;gap:14px;font:600 26px G;letter-spacing:-.5px}
+  .brand svg{width:28px;height:28px}
+  .main{display:grid;grid-template-columns:1fr 524px;gap:48px;align-items:end}
+  h1{font:600 84px/1 G;letter-spacing:-4px}
+  .panel{background:#fff;border:1px solid #e6e6e6;border-radius:18px;padding:30px;box-shadow:0 24px 48px -24px rgb(0 0 0/.18)}
+  .k{font:500 16px G;color:#6b6b6b;margin:0 0 10px}
+  .cells{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;max-width:calc(22 * 15px + 21 * 6px)}
+  .cells i{width:15px;height:15px;border-radius:3.5px;box-shadow:inset 0 0 0 1px #d0d0d0}
+  .cells i.ok{background:#171717;box-shadow:none}
+  .cells i.bad{background:#e5484d;box-shadow:none}
+  .cells i.na{background:#ebebeb;box-shadow:none}
+  .cells i.out{background:#fff;box-shadow:inset 0 0 0 2px #e5484d}
+  .cells i.caught{box-shadow:0 0 0 2px #fff,0 0 0 3.5px #e5484d}
+  .verdict{display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid #e6e6e6;padding-top:18px}
+  .verdict b{font:600 34px G;letter-spacing:-1.2px;color:#ce2c31}
+  .verdict span{font:400 15px M;color:#4d4d4d}
+  .foot{font:400 21px G;color:#4d4d4d}
 </style>
-<div class="plate">${cells}</div>
-<div class="foot">
-  <div>
-    <h1>Daily</h1>
-    <p>A daily edition is mostly the stories you never see.</p>
+<div class="brand"><svg viewBox="0 0 18 18"><rect x="0" y="0" width="5" height="5" rx="1"/><rect x="6.5" y="0" width="5" height="5" rx="1" opacity=".2"/><rect x="13" y="0" width="5" height="5" rx="1" opacity=".2"/><rect x="0" y="6.5" width="5" height="5" rx="1" opacity=".2"/><rect x="6.5" y="6.5" width="5" height="5" rx="1"/><rect x="13" y="6.5" width="5" height="5" rx="1"/><rect x="0" y="13" width="5" height="5" rx="1" opacity=".2"/><rect x="6.5" y="13" width="5" height="5" rx="1"/><rect x="13" y="13" width="5" height="5" rx="1" opacity=".2"/></svg>Daily Lab</div>
+<div class="main">
+  <h1>Find out if the fix fixes anything.</h1>
+  <div class="panel">
+    <p class="k">Recorded production run, 64 cases</p>
+    <div class="cells">${row('recorded-replay')}</div>
+    <div class="cells">${row('fault-injection')}</div>
+    <div class="verdict"><b>${stored.response.outcome.verdict === 'rejected' ? 'Rejected' : stored.response.outcome.verdict}</b><span>${caught?.case_id ?? ''}</span></div>
   </div>
-  <div class="n"><b>${POOL.toLocaleString()} in</b>${DELIVERED} out</div>
-</div>`
+</div>
+<p class="foot">A proposed fix, run in a Vercel Sandbox microVM against cases built to break it. Every result published.</p>`
 }
 
 async function main(): Promise<void> {
@@ -121,6 +132,7 @@ async function main(): Promise<void> {
     const page = await ctx.newPage()
     await page.goto(`file://${ogPage}`)
     await page.evaluate(() => document.fonts.ready)
+    await page.waitForTimeout(100)
     await page.screenshot({ path: join(WEB, 'app/opengraph-image.png') })
     await ctx.close()
     console.log('  1200x630 -> web/app/opengraph-image.png')

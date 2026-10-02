@@ -846,6 +846,43 @@ Web unit suite: 286 passed, 2 failed due to active uncommitted Lab run artifacts
 Lab export validation also fails on an incomplete run descriptor from that concurrent
 work. No new iOS build, deployment, or signed-in product E2E claim was made.
 
+## Daily Lab cinematic redesign - 2026-10-01
+
+Approved plan: cinematic evidence instrument, four-section homepage, runner-first Lab,
+shared visual system, truthful historical experiment, preserved public contracts.
+
+- [x] Isolate work from original dirty checkout; start at main b95a9a63.
+- [x] Record production rollback: dpl_C3iXth1No7VtHRMdGuTLJwv3h82L,
+  https://daily-7xtpnq75o-mmarufovs-projects.vercel.app.
+- [x] Install dependencies and record web/DESIGN.md.
+- [x] Establish clean baseline checks.
+- [x] Implement typed pinned narrative data and publish guard experiment evidence.
+- [x] Build shared typography/palette/navigation and cinematic hero sieve.
+- [x] Complete retrieval finding, guard experiment, and parser invitation.
+- [x] Rebuild Lab workspace and update supporting evidence/engineering copy.
+- [x] Refresh branding and social assets.
+- [x] Typecheck, unit tests, artifact checks/staleness and production build.
+- [x] Review final diff and deploy the reviewed revision.
+- [x] Verify production browser journeys, responsive/reduced-motion states and accessibility.
+- [x] Run one real default parser and verify terminal grading plus reloadable URL.
+- [x] Record screenshots, deployment/revision, and performance observations.
+
+Source boundaries: the historical guard has not replaced the production scorer;
+case correctness differs from relevance quality; 39 published records are not 39
+Sandbox executions. Original workspace and branch stay intact. Browser tests use
+production-only configuration, intercepting submissions except the one live check.
+
+Release verification: [daily-lab-release.md](daily-lab-release.md). Full browser suite: 202 passed, two intentional mobile keyboard skips. Live run: wrun_01M3X2KSBTMEPWJJZT74HCTHX3.
+
+## Motion polish, October 1
+
+- [x] Inspect shipped revision and preserve the original workspace.
+- [x] Add shared interruptible native disclosure animation across the site.
+- [x] Add restrained press feedback, sliding selection and finding transitions.
+- [x] Verify keyboard, rapid reversal, reduced motion and no-JavaScript behavior.
+- [x] Run unit/type/build checks, deploy and test the public domain.
+- [x] Record final screenshots and performance observations.
+
 ## marufov.com redesign: the instrument, 2026-10-01
 
 Brief: position Daily Lab as the product and the news pipeline as what it measures. A VP of
@@ -859,20 +896,29 @@ One visual unit everywhere: the cell (an article, a case, a miss, a verdict).
 
 Homepage, one idea per screen:
 1. Hero: what the Lab is, plus the console showing a real recorded production run
-   (`wrun_01M3WXWPKMF3H8Q66KZA56MZCV`, 14.95 s), with a button that runs it again live.
+   (`wrun_01M3WXWPKMF3H8Q66KZA56MZCV`), with a button that runs it again live.
 2. The subject: the sieve, 1,362 candidates to 50.
-3. Retrieval had already lost: 97 misses placed where they died, plus a "perfect ranking" switch
-   that brings back at most the 22 that died after ranking began.
+3. Retrieval had already lost: 97 misses placed where they died, plus a switch that makes every
+   later stage perfect and brings back at most 22.
 4. The fix made the numbers worse: 40 articles against 254 verdicts, positional against guard,
-   with the measured cost and PR #59's gate still failing.
+   with the September 21 experiment's measured cost and its stated limits.
 5. The method: hashed criteria, 64 cases, every run published.
 
-- [ ] Map data loaders and test constraints; capture the recorded run as committed evidence.
-- [ ] Tokens, type, header and footer (achromatic system, dark scheme by preference only).
-- [ ] Console component shared by the hero and /lab (idle, running, refused, finished states).
-- [ ] Homepage sections 2 to 5.
-- [ ] /lab and /lab/[run] on the same components.
-- [ ] /evidence, /engineering, /reader inherit the system; fix anything that breaks.
-- [ ] Palette test rewritten for the achromatic rule; e2e specs updated; em-dash rule kept.
-- [ ] Typecheck, unit, e2e, build; screenshots desktop and mobile, light and dark.
+A Codex session shipped a different redesign of the same brief (#91, #92) while this was built.
+The user chose this one. It replaces #91's homepage, Lab page and styles, and keeps #92's
+`AnimatedDetails`, #91's provenanced guard experiment file and its Lab API guard for e2e tests.
+
+- [x] Map data loaders and test constraints; capture the recorded run as committed evidence.
+- [x] Tokens, type, header and footer (achromatic system, dark scheme by preference only).
+- [x] Console component shared by the hero and /lab (idle, running, refused, finished states).
+- [x] Homepage sections 2 to 5.
+- [x] /lab and /lab/[run] on the same components.
+- [x] /evidence, /engineering, /reader inherit the system; fix anything that breaks.
+- [x] Palette test rewritten for the achromatic rule; e2e specs updated; em-dash rule kept.
+- [x] Merge main (#91, #92); reuse its guard evidence; regenerate icons and the social card.
+- [x] Typecheck, unit (290), export checks, build, e2e (188 on three device profiles).
 - [ ] Review, PR, merge, verify on marufov.com with one real run.
+
+Data corrections found on the way: in this run one reader is at zero (Will), not two; the
+254-verdict batch matches for its first three positions, then slips, then repeats one sentence
+238 times; the guard comparison cannot claim identical inputs (cache-key sets 89 and 30).

@@ -1,3 +1,4 @@
+import { AnimatedDetails } from '@/components/AnimatedDetails'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -141,7 +142,7 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
             This run is the baseline itself, so there is nothing to diff against.
           </p>
         ) : (
-          <details className="border border-rule bg-paper-secondary">
+          <AnimatedDetails className="border border-rule bg-paper-secondary">
             <summary className="disclosure label px-4 py-3 text-ink">
               Unified diff · {run.candidate.patch.split('\n').length} lines · applies with git apply
             </summary>
@@ -161,7 +162,7 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
                 </span>
               ))}
             </pre>
-          </details>
+          </AnimatedDetails>
         )}
         <div className="grid gap-6 md:grid-cols-2">
           <div className="min-w-0">
@@ -207,7 +208,7 @@ cd ../web && npm run export:lab -- --check`}
           <Figure term="Wrong" value={String(wrong.length)} note="see the table" signal={wrong.length > 0} />
         </dl>
         {wrong.length > 0 ? (
-          <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-md border-collapse text-xs">
               <caption className="sr-only">Every case this candidate got wrong</caption>
               <thead>
@@ -347,7 +348,7 @@ cd ../web && npm run export:lab -- --check`}
           ))}
         </ul>
 
-        <details className="border border-rule bg-paper-secondary">
+        <AnimatedDetails className="border border-rule bg-paper-secondary">
           <summary className="disclosure label px-4 py-3 text-ink">
             The full artifact, as published
           </summary>
@@ -362,7 +363,7 @@ cd ../web && npm run export:lab -- --check`}
             </a>
             .
           </p>
-        </details>
+        </AnimatedDetails>
       </section>
     </div>
   )
