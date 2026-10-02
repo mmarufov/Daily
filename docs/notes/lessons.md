@@ -591,3 +591,12 @@ copy cuts. For a long sequence, give each step a clear place and keep the main a
 visible. Use motion to explain a recorded transition. Keep prose readable while the
 visual changes. Prototype the affected homepage section before extending the change
 across the site; the prior broad composition pass was reverted.
+
+## Check the frames between milestones
+
+The four screenshot stops passed, but intermediate scroll positions overlaid the
+isolation checks and verdict, and a decorative connector crossed useful content.
+Review stopped scroll at arbitrary positions and sample forward/reverse transitions.
+Require outgoing and incoming text layers to be mutually exclusive. Route connectors
+between objects, with clearance from text and case marks. Let a stage transition
+finish without moving the visitor's page position.

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import type { RunStoryData } from '@/lib/run-story'
-import { clamp, storyFrame, storyStage, STORY_MEDIA, STORY_STOPS, STORY_TOP } from '@/lib/run-story-motion'
+import { clamp, storyFrame, storyStage, STORY_DURATION, STORY_MEDIA, STORY_STOPS, STORY_TOP } from '@/lib/run-story-motion'
 import { AnimatedDetails } from './AnimatedDetails'
 import { CaseStatusMark, type CaseStatusTone } from './CaseStatusMark'
 import { RunDiagram } from './RunDiagram'
@@ -68,22 +68,61 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
     let frame = 0
     let lastStage = -1
     let observingScroll = false
-    const update = () => {
+    let needsRead = true
+    let resolveImmediately = true
+    let visual: number = STORY_STOPS[0]
+    let from = visual
+    let target = visual
+    let startedAt = 0
+    let moving = false
+
+    const paint = (progress: number) => {
+      for (const [key, value] of Object.entries(storyFrame(progress))) element.style.setProperty(key, value)
+      element.dataset.visualProgress = progress.toFixed(3)
+    }
+    const update = (now: number) => {
       frame = 0
       if (!media.matches || !visible || document.hidden) return
-      const travel = Math.max(1, area.offsetHeight - panel.offsetHeight)
-      const progress = clamp((STORY_TOP - area.getBoundingClientRect().top) / travel)
-      for (const [key, value] of Object.entries(storyFrame(progress))) element.style.setProperty(key, value)
-      element.dataset.progress = progress.toFixed(3)
-      const next = storyStage(progress)
-      if (next !== lastStage) { lastStage = next; setStage(next) }
+      if (needsRead) {
+        needsRead = false
+        const travel = Math.max(1, area.offsetHeight - panel.offsetHeight)
+        const progress = clamp((STORY_TOP - area.getBoundingClientRect().top) / travel)
+        element.dataset.progress = progress.toFixed(3)
+        const next = storyStage(progress)
+        if (next !== lastStage || resolveImmediately) {
+          lastStage = next
+          setStage(next)
+          from = visual
+          target = STORY_STOPS[next]!
+          startedAt = now
+          moving = !resolveImmediately && Math.abs(target - from) > 0.0001
+          if (!moving) visual = target
+          element.dataset.transitioning = String(moving)
+          resolveImmediately = false
+          paint(visual)
+        }
+      }
+      if (moving) {
+        const elapsed = clamp((now - startedAt) / STORY_DURATION)
+        const eased = elapsed * elapsed * (3 - 2 * elapsed)
+        visual = from + (target - from) * eased
+        paint(visual)
+        if (elapsed === 1) {
+          moving = false
+          element.dataset.transitioning = 'false'
+        } else frame = window.requestAnimationFrame(update)
+      }
     }
-    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update) }
+    const schedule = () => {
+      needsRead = true
+      if (!frame) frame = window.requestAnimationFrame(update)
+    }
     const sync = () => {
       const running = visible && media.matches && !document.hidden
       setActive(running)
       setEnhanced(media.matches)
       if (running && !observingScroll) {
+        resolveImmediately = true
         window.addEventListener('scroll', schedule, { passive: true })
         observingScroll = true
       } else if (!running && observingScroll) {
@@ -91,7 +130,16 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
         observingScroll = false
       }
       if (running) schedule()
-      else { window.cancelAnimationFrame(frame); frame = 0 }
+      else {
+        window.cancelAnimationFrame(frame)
+        frame = 0
+        if (moving) {
+          moving = false
+          visual = target
+          paint(visual)
+        }
+        element.dataset.transitioning = 'false'
+      }
     }
     const observer = new IntersectionObserver(([entry]) => { visible = entry?.isIntersecting === true; sync() })
     observer.observe(area)

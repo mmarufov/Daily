@@ -22,11 +22,28 @@ describe('recorded run scroll progress', () => {
   })
 
   it('keeps result visuals hidden until the grading chapter', () => {
-    for (let step = 0; step <= 75; step++) {
+    for (let step = 0; step <= 82; step++) {
       expect(value(step / 100, '--run-verdict')).toBe(0)
     }
-    expect(value(0.8, '--run-verdict')).toBeGreaterThan(0)
-    expect(value(0.86, '--run-verdict')).toBe(1)
+    expect(value(0.85, '--run-verdict')).toBeGreaterThan(0)
+    expect(value(0.88, '--run-verdict')).toBe(1)
+  })
+
+  it('clears the case suite and isolation checks before revealing the verdict', () => {
+    for (let step = 0; step <= 1000; step++) {
+      const progress = step / 1000
+      const resultVisible = value(progress, '--run-verdict') > 0
+      if (resultVisible) {
+        expect(value(progress, '--run-tests'), `suite at ${progress}`).toBe(0)
+        expect(value(progress, '--run-checks'), `checks at ${progress}`).toBe(0)
+      }
+    }
+    expect(value(0.68, '--run-checks')).toBe(1)
+    expect(value(0.7, '--run-checks')).toBeGreaterThan(0)
+    expect(value(0.7, '--run-checks')).toBeLessThan(1)
+    expect(value(0.73, '--run-checks')).toBe(0)
+    expect(value(0.73, '--run-tests')).toBe(0)
+    expect(value(0.82, '--run-verdict')).toBe(0)
   })
 
   it('starts with the file alone and ends with the result held in place', () => {

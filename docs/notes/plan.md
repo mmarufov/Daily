@@ -1061,3 +1061,20 @@ Capture desktop/mobile states and a short motion recording on the HTTPS preview.
 The deliverable is a reviewable PR; production stays unchanged.
 
 Verification: [homepage-run-story.md](homepage-run-story.md).
+
+## Run-stage transition correction
+
+October 2 correction, based on main `100bc67b`. The screenshots reveal connector
+collisions and overlapping Tests/Verdict layers between the sampled stops.
+
+- [ ] Replace direct scrubbing with interruptible transitions to complete stages.
+- [ ] Separate test exit, Sandbox movement and verdict entry in both directions.
+- [ ] Route connectors through open space, clear of cells and labels.
+- [ ] Check arbitrary intermediate positions, stopped scroll and rapid reversals.
+- [ ] Validate desktop/mobile, reduced motion, keyboard and inactive work on HTTPS.
+- [ ] Run types, units, artifact checks and build; open a focused preview PR.
+
+Native page scrolling remains in control. Scroll thresholds select one of four
+stages; a 360ms visual transition completes even when scrolling stops. New input
+retargets the current visual frame. Hidden/offscreen/static modes cancel work.
+Keep all recorded data, live runner behavior and supporting pages unchanged.
