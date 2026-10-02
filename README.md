@@ -4,7 +4,7 @@
 
 # Daily
 
-**News that knows you.**
+**News that know you**
 
 A native iOS news app built on a ten-stage LLM pipeline,<br>
 measured by offline replay and tested in a public sandbox.
