@@ -43,7 +43,7 @@ export function RunDiagram({ data, chapter }: { data: RunStoryData; chapter?: nu
       <text className="run-input-count" x="72" y="260">{data.counts.total}</text>
       <text className="run-svg-small" x="109" y="259">cases</text>
       <text className="run-svg-small" x="72" y="283">{data.counts.faultInjected} fault-injected</text>
-      <g className="run-test-packet"><rect x="225" y="254" width="10" height="10" rx="2" /><rect x="243" y="254" width="10" height="10" rx="2" /><rect x="261" y="254" width="10" height="10" rx="2" /></g>
+      <g className="run-test-packet"><rect x="225" y="210" width="8" height="8" rx="2" /><rect x="243" y="210" width="8" height="8" rx="2" /><rect x="261" y="210" width="8" height="8" rx="2" /></g>
     </g>
     <g className="run-grading-path"><path d="M445 207h100m-8-6 8 6-8 6" /><text className="run-svg-label" x="163" y="358">MICROVM STOPPED · {data.events[6]!.elapsed}s</text></g>
   </svg>
