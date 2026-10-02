@@ -1067,14 +1067,20 @@ Verification: [homepage-run-story.md](homepage-run-story.md).
 October 2 correction, based on main `100bc67b`. The screenshots reveal connector
 collisions and overlapping Tests/Verdict layers between the sampled stops.
 
-- [ ] Replace direct scrubbing with interruptible transitions to complete stages.
-- [ ] Separate test exit, Sandbox movement and verdict entry in both directions.
-- [ ] Route connectors through open space, clear of cells and labels.
-- [ ] Check arbitrary intermediate positions, stopped scroll and rapid reversals.
-- [ ] Validate desktop/mobile, reduced motion, keyboard and inactive work on HTTPS.
-- [ ] Run types, units, artifact checks and build; open a focused preview PR.
+- [x] Replace direct scrubbing with interruptible transitions to complete stages.
+- [x] Separate test exit, Sandbox movement and verdict entry in both directions.
+- [x] Route connectors through open space, clear of cells and labels.
+- [x] Check arbitrary intermediate positions, stopped scroll and rapid reversals.
+- [x] Validate desktop/mobile, reduced motion, keyboard and inactive work on HTTPS.
+- [x] Run types, units, artifact checks and build; open a focused preview PR.
 
 Native page scrolling remains in control. Scroll thresholds select one of four
 stages; a 360ms visual transition completes even when scrolling stops. New input
 retargets the current visual frame. Hidden/offscreen/static modes cancel work.
 Keep all recorded data, live runner behavior and supporting pages unchanged.
+
+Verified application revision: `e88a0149`; PR #103. Types, 333 unit tests, artifact
+validation and build passed. HTTPS Chromium/WebKit acceptance: 283 passed, two
+existing touch-keyboard skips. Transition frames exclude overlapping probes and
+verdicts in both directions. Paused threshold tests keep the same scroll position.
+Screenshots and motion recording: `.context/stage-after/` in the Sydney workspace.
