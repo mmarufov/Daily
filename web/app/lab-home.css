@@ -93,10 +93,9 @@
   .playback-button:hover { background: #272b2e; }
   .instrument-link:hover { color: #fafaf9; }
 }
-@media (min-width: 90rem) { .lab-headline { font-size: 86px; } }
 @media (max-width: 64rem) {
   .lab-hero-grid { grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 28px; }
-  .lab-headline { font-size: 60px; }
+  .lab-headline { font-size: clamp(44px, 5.65vw, 60px); }
   .instrument { padding-inline: 20px; }
   .instrument-field { grid-template-columns: repeat(48,minmax(0,1fr)); gap: 3px; }
   .instrument-version { display: none; }
