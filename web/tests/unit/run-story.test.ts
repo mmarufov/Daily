@@ -16,7 +16,7 @@ describe('the recorded run story fallback', () => {
     expect(html).not.toContain('data-testid="recorded-case-field"')
     expect(html).not.toContain('Recorded production execution timeline')
     expect(html).not.toContain('Recorded isolation checks')
-    expect(html).not.toContain('Inspect this recorded run')
+    expect(html).not.toContain('Inspect run details')
     expect(html).not.toContain('Rejected')
   })
 })

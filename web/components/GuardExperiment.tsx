@@ -28,7 +28,6 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
           <button type="button" aria-pressed={!isGuard} onClick={() => setVariant('original')}>Original</button>
           <button type="button" aria-pressed={isGuard} onClick={() => setVariant('guard')}>Guard experiment</button>
         </div>
-        <p className="guard-date">Recorded September 21, 2026</p>
       </div>
 
       <div className="guard-metrics" aria-live="polite">
@@ -72,16 +71,14 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
       <div className="guard-history">
         <div className="guard-failure-count">
           <span>{experiment.historical_test_result.failed}</span>
-          <p>recorded gate failures<span>September 21 experiment</span></p>
+          <p>failed checks</p>
         </div>
-        <p className="finding-muted">
-          Historical working-tree experiment; the baseline was retained.
-        </p>
       </div>
 
       <AnimatedDetails className="finding-provenance">
         <summary>Experiment provenance</summary>
         <div className="finding-provenance-body">
+          <p>September 21, 2026. Historical working-tree experiment; the baseline was retained. Labels remain provisional.</p>
           <p>
             Corpus {experiment.snapshot}, {experiment.fixtures} fixtures, k={experiment.k}.
             {' '}Reported cache misses: {experiment.original.summary.cache_misses_total} original,
@@ -94,7 +91,6 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
         </div>
       </AnimatedDetails>
       <div className="guard-footer">
-        <p className="finding-footnote">Both charts use the same 0–100% scale. Labels remain provisional.</p>
         <Link href="/engineering" className="text-link">Read the investigation <span aria-hidden="true">↗</span></Link>
       </div>
     </div>

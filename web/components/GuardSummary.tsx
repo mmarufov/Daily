@@ -15,7 +15,6 @@ export function GuardSummary({ experiment }: { readonly experiment: GuardExperim
           <p className="eyebrow">02 / Guard experiment</p>
           <h2 id="guard-summary-heading">A safer guard. A worse score.</h2>
         </div>
-        <p className="guard-summary-date">Recorded September 21, 2026</p>
       </div>
 
       {experiment ? <>
@@ -31,7 +30,6 @@ export function GuardSummary({ experiment }: { readonly experiment: GuardExperim
             </div>
           ))}
         </dl>
-        <p className="guard-summary-history">Historical working-tree experiment: {experiment.historical_test_result.failed} recorded gate failures; the baseline was retained. Labels remain provisional.</p>
       </> : <p className="guard-summary-unavailable" role="status">The historical guard experiment is unavailable.</p>}
 
       <div className="guard-summary-links">

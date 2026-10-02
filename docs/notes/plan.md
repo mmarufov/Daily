@@ -1094,3 +1094,13 @@ Screenshots and motion recording: `.context/stage-after/` in the Sydney workspac
 - [ ] Commit, merge through CI, deploy, and verify marufov.com with screenshots and mocked runner tests.
 
 Native page scrolling remains continuous. The diagram waits for the next threshold, then completes its animation independently of further scrolling. Desktop track: 300svh; stage boundaries: 24%, 51%, 78%; reverse buffer: 4% of track travel. Mobile and reduced-motion views stay static.
+
+## Presentation copy cleanup, October 2
+
+- [x] Inspect the reported label and start an isolated checkout from current main.
+- [x] Remove recording/date strips from the run diagram and repeated historical notices from homepage/Findings presentation.
+- [x] Keep dates and source qualifications within existing Inspect destinations; simplify edition labels.
+- [ ] Update browser text/layout expectations, run typecheck, unit tests, artifacts, build and deployed browser checks.
+- [ ] Commit, merge through CI, deploy and verify marufov.com with screenshots.
+
+Scope: presentation copy and unused styles only. Preserve motion, metrics, run controls, missing-data states, source artifacts and routes.

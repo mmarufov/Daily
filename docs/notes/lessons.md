@@ -604,3 +604,7 @@ finish without moving the visitor's page position.
 ## Run stage pacing
 
 A complete transition can still feel abrupt when its visible changes occupy only a small part of the timeline. Give each stage enough scroll distance to read, distribute motion across the transition, and use a reverse buffer around thresholds. Verify intermediate frames and elapsed time as well as the final state.
+
+## Provenance placement
+
+Keep the primary presentation focused on the product and its results. Put recording dates and detailed qualifications in Inspect views instead of repeating them as banners above the same visual. Use ordinary reader-facing labels in the edition preview.
