@@ -43,3 +43,7 @@
 /backend/app/services/*
 !/backend/app/services/openai_service.py
 !/backend/app/services/ranking_contract.py
+
+# Browser acceptance artifacts are local, not deployment inputs.
+/web/test-results
+/web/playwright-report

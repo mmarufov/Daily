@@ -95,7 +95,7 @@ function Moved({ gradings }: { gradings: readonly Grading[] }) {
 
 function CriteriaRows({ grading }: { grading: Grading }) {
   return (
-    <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+    <div className="relative overflow-x-auto">
       <table className="w-full min-w-md border-collapse text-xs">
         <caption className="sr-only">
           Acceptance criteria under generation {grading.spec_version}, how many cases each applied

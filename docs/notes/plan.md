@@ -845,3 +845,31 @@ Lab/evidence public URLs returned HTTP 200; documentation diff whitespace check 
 Web unit suite: 286 passed, 2 failed due to active uncommitted Lab run artifacts.
 Lab export validation also fails on an incomplete run descriptor from that concurrent
 work. No new iOS build, deployment, or signed-in product E2E claim was made.
+
+## Daily Lab cinematic redesign - 2026-10-01
+
+Approved plan: cinematic evidence instrument, four-section homepage, runner-first Lab,
+shared visual system, truthful historical experiment, preserved public contracts.
+
+- [x] Isolate work from original dirty checkout; start at main b95a9a63.
+- [x] Record production rollback: dpl_C3iXth1No7VtHRMdGuTLJwv3h82L,
+  https://daily-7xtpnq75o-mmarufovs-projects.vercel.app.
+- [x] Install dependencies and record web/DESIGN.md.
+- [x] Establish clean baseline checks.
+- [x] Implement typed pinned narrative data and publish guard experiment evidence.
+- [x] Build shared typography/palette/navigation and cinematic hero sieve.
+- [x] Complete retrieval finding, guard experiment, and parser invitation.
+- [x] Rebuild Lab workspace and update supporting evidence/engineering copy.
+- [x] Refresh branding and social assets.
+- [x] Typecheck, unit tests, artifact checks/staleness and production build.
+- [x] Review final diff and deploy the reviewed revision.
+- [x] Verify production browser journeys, responsive/reduced-motion states and accessibility.
+- [x] Run one real default parser and verify terminal grading plus reloadable URL.
+- [x] Record screenshots, deployment/revision, and performance observations.
+
+Source boundaries: the historical guard has not replaced the production scorer;
+case correctness differs from relevance quality; 39 published records are not 39
+Sandbox executions. Original workspace and branch stay intact. Browser tests use
+production-only configuration, intercepting submissions except the one live check.
+
+Release verification: [daily-lab-release.md](daily-lab-release.md). Full browser suite: 202 passed, two intentional mobile keyboard skips. Live run: wrun_01M3X2KSBTMEPWJJZT74HCTHX3.

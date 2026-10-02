@@ -1,293 +1,102 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-
 import { Band } from '@/components/Band'
-import { Claim } from '@/components/Claim'
 import { Reveal } from '@/components/Reveal'
 import { OffendingCase } from '@/components/LabOffendingCase'
 import { LabRunner } from '@/components/LabRunner'
 import { VerdictBadge } from '@/components/LabVerdict'
 import { EXPERIMENT } from '@/lib/lab/spec'
-import { loadLabIndex, loadOffendingCase, otherRuns, walkthroughs } from '@/lib/lab/data'
+import { loadLabIndex, loadOffendingCase, walkthroughs } from '@/lib/lab/data'
 import { PUBLIC_RUN_LIMITS } from '@/lib/lab/public-limits'
 import { MAX_SOURCE_BYTES } from '@/lib/lab/public-run'
 import { loadCaseCatalog, loadRunnerPresets } from '@/lib/lab/runner-presets'
+import '../lab-workspace.css'
 
 export const metadata: Metadata = {
-  title: 'Daily Lab',
-  description:
-    'A controlled experiment on Daily’s batch relevance scorer: does a candidate parser associate every verdict with the article it was actually about, and refuse when it cannot? Verdicts computed by trusted code from prediction records.',
-}
-
-/** True when this run is graded differently by different generations. */
-function movedGeneration(entry: { verdict_by_spec: Readonly<Record<string, string>> }): boolean {
-  return new Set(Object.values(entry.verdict_by_spec)).size > 1
+  title: 'Run a parser · Daily Lab',
+  description: 'Submit a Python parser to Vercel Sandbox. Inspect real execution and independent grading against recorded responses and injected failures.',
 }
 
 export default async function LabPage() {
-  const { manifest, issues } = await loadLabIndex()
-  const offending = await loadOffendingCase()
-  const [presets, catalog] = await Promise.all([loadRunnerPresets(), loadCaseCatalog()])
+  const [{ manifest }, offending, presets, catalog] = await Promise.all([
+    loadLabIndex(), loadOffendingCase(), loadRunnerPresets(), loadCaseCatalog(),
+  ])
   const limits = PUBLIC_RUN_LIMITS
-  // Configured limits, stated as limits. Read from the same constant the
-  // route enforces, so the page cannot promise a limit the server does not.
-  const limitsLine = `Limits: ${limits.per_address.runs} runs an hour from one address, ${limits.concurrent_runs} at once, and ${limits.runs_per_day} runs or ${limits.cpu_ms_per_day / 60_000} minutes of microVM CPU a day across every visitor. A live run is not added to the published runs below.`
-
-  if (manifest === null) {
-    return (
-      <div className="frame flex max-w-2xl flex-col gap-4 py-16">
-        <h1 className="editorial m-0 text-3xl">The Lab export is unavailable</h1>
-        <p className="prose m-0">
-          Run <span className="text-ink-60">npm run export:lab</span> in{' '}
-          <span className="text-ink-60">web/</span> to rebuild it from{' '}
-          <span className="text-ink-60">backend/lab/</span>.
-        </p>
-        <ul className="m-0 flex list-none flex-col gap-1 p-0 text-xs text-signal">
-          {issues.map((i) => (
-            <li key={i}>{i}</li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
-  const shown = walkthroughs(manifest)
-  const rest = otherRuns(manifest, shown)
-  const accepted = manifest.entries.filter((e) => e.verdict === 'accepted-for-review').length
-  const rejected = manifest.entries.filter((e) => e.verdict === 'rejected').length
-  // Derived, never asserted. The claims below used to be prose, which meant
-  // they stayed at their most flattering until somebody remembered to weaken
-  // them. These move on their own when a run moves.
-  const sandboxed = manifest.entries.filter((e) => e.runner === 'vercel-sandbox')
-  const investigated = manifest.entries.filter((e) => e.investigated)
-  const proposed = investigated.filter((e) => e.runner !== 'none')
-
+  const limitsLine = `Limits: ${limits.per_address.runs} runs an hour from one address, ${limits.concurrent_runs} at once, and ${limits.runs_per_day} runs or ${limits.cpu_ms_per_day / 60_000} minutes of microVM CPU a day across every visitor. Live runs are separate from the published inventory.`
+  const shown = manifest === null ? [] : walkthroughs(manifest)
   return (
-    <div className="flex flex-col">
-      <section className="hero frame relative flex flex-col gap-7 py-14 md:py-20">
-        <p className="label m-0 text-ink-40">Daily Lab · live parser runs against recorded responses</p>
-        <h1 className="display m-0 max-w-5xl text-[clamp(2.25rem,6.5vw,4.75rem)]">
-          The scorer judged forty articles and never said which verdict belonged to which.
-        </h1>
-        <p className="lede measure m-0 text-ink-60">
-          So every later verdict landed on the wrong article.
-          <span className="block text-ink-40">
-            This measures whether a fix actually fixes it, decided by independent checks, not by
-            the candidate.
-          </span>
-        </p>
-        <div className="flex flex-wrap gap-2.5 pt-1">
-          <a href="#run" className="chip chip-on px-4 py-2.5 text-sm">
-            Run a parser yourself
-          </a>
-          {shown[0] !== undefined ? (
-            <Link href={`/lab/${shown[0].slug}`} className="chip px-4 py-2.5 text-sm">
-              Replay the investigation
-            </Link>
-          ) : null}
-          <Link href="/engineering" className="chip px-4 py-2.5 text-sm">
-            Read the original defect report
-          </Link>
+    <div className="frame lab-page">
+      <section className="lab-intro">
+        <p className="eyebrow">The workspace</p>
+        <h1>Put your parser through it.</h1>
+        <div className="lab-intro-copy">
+          <p>Run Python in a fresh Vercel Sandbox against {catalog.length} cases. The default parser has a known gap. Run it, inspect the failure, then try a change.</p>
+          <div className="lab-intro-links"><a className="text-link" href="#recorded">Recorded investigations <span aria-hidden="true">↓</span></a><Link className="text-link" href="/engineering">The original defect <span aria-hidden="true">↗</span></Link></div>
         </div>
       </section>
-
-      {offending !== null ? (
-        <section className="frame flex flex-col gap-7 pb-20">
-          <Band index="01" title="The response that started it" note="One real batch, read from the recordings" />
-          <OffendingCase data={offending} />
-        </section>
-      ) : null}
-
-      <section className="frame flex scroll-mt-20 flex-col gap-7 pb-20" id="run">
-        <Band index="02" title="Run a parser" note="Live, in a Vercel Sandbox microVM" />
-        <p className="prose measure m-0 text-ink-60">
-          Your parser runs for real, in a fresh microVM with networking denied, against the same{' '}
-          {catalog.length} model responses every run on this page faced.{' '}
-          {catalog.filter((c) => c.origin === 'recorded-replay').length} are real batches, recorded
-          and replayed. {catalog.filter((c) => c.origin === 'fault-injection').length} are fault
-          injections, each built to catch one specific mistake. The responses are replayed; the
-          execution and the grading are not.
-        </p>
+      <section id="run" className="scroll-mt-6" aria-label="Run a parser">
         <LabRunner presets={presets} catalog={catalog} limits={limitsLine} maxBytes={MAX_SOURCE_BYTES} />
       </section>
-
-      <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="03" title="The three walkthroughs" note="Every verdict below was computed, not written" />
-        <ul className="m-0 grid list-none gap-px border border-rule bg-rule p-0 lg:grid-cols-3">
-          {shown.map((w) => {
+      <section id="recorded" className="lab-support-section">
+        <Band index="01" title="Recorded investigations" note="Published evidence, separate from your live run" />
+        {manifest === null ? <p role="status">The published run inventory is unavailable.</p> : (
+          <ul className="lab-walkthroughs">{shown.map((w) => {
             const entry = manifest.entries.find((e) => e.file === w.file)
-            return (
-              <li key={w.slug} className="bg-paper">
-                <Link
-                  href={`/lab/${w.slug}`}
-                  className="flex h-full flex-col gap-3 p-4 no-underline transition-colors duration-150 hover:bg-paper-secondary"
-                >
-                  {entry !== undefined ? <VerdictBadge verdict={entry.verdict} small /> : null}
-                  <span className="headline text-base text-ink" data-verbatim>
-                    {w.title}
-                  </span>
-                  <span className="text-xs text-ink-60">{w.blurb}</span>
-                  {entry?.kind === 'seeded-control' ? (
-                    <span className="label mt-auto pt-1 text-signal">Seeded control</span>
-                  ) : (
-                    <span className="label mt-auto pt-1 text-ink-40">{entry?.candidate_id}</span>
-                  )}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+            return <li key={w.slug}><Link href={`/lab/${w.slug}`}>
+              {entry && <VerdictBadge verdict={entry.verdict} small />}
+              <span className="lab-walkthrough-title">{w.title}</span>
+              <span className="lab-walkthrough-copy">{w.blurb}</span>
+              <span className="lab-walkthrough-kind">{entry?.kind === 'seeded-control' ? 'Seeded control' : entry?.candidate_id}</span>
+            </Link></li>
+          })}</ul>
+        )}
       </section>
-
-      <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="04" title="What the experiment asks" note={`spec ${manifest.spec_hash}`} />
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-6">
-            {/* The question is the entry point, so it is the only thing here
-                set in display type. Everything that was competing with it is
-                now behind a count. */}
-            <p className="prose m-0 text-[1.35rem] leading-snug">{EXPERIMENT.question}</p>
-            <div className="flex flex-col">
-              {/* Both lists come straight out of the hashed spec. */}
-              <Reveal label="What it measures" items={EXPERIMENT.measures} verbatim />
-              <Reveal
-                label="What it does not measure"
-                items={EXPERIMENT.does_not_measure}
-                tone="signal"
-                verbatim
-              />
-              <Reveal
-                label="Why the criteria are hashed"
-                items={[
-                  'The criteria were written down and hashed before any candidate ran.',
-                  'The hash travels with every verdict, so moving a threshold to get a green result changes the hash and invalidates the comparison.',
-                ]}
-              />
-            </div>
+      <section className="lab-support-section">
+        <Band index="02" title="What a verdict means" note="Contract correctness, independently graded" />
+        <div className="lab-criteria-summary">
+          <div>
+            <p className="prose m-0 mb-5">{EXPERIMENT.question}</p>
+            <Reveal label="What it measures" items={EXPERIMENT.measures} verbatim />
+            <Reveal label="What it does not measure" items={EXPERIMENT.does_not_measure} verbatim />
+            <Reveal label="Versioned and hashed criteria" items={[
+              'Both criteria generations and their verdicts are retained. The second generation closes a gap found after earlier runs.',
+              'Every verdict identifies its criteria hash. Changing a threshold creates a new comparison rather than rewriting an old result.',
+              'Accepted for review means contract checks passed under those criteria. It does not mean shipped, production ready, or better news relevance.',
+            ]} />
           </div>
-          <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-7 self-start">
-            <Readout term="Cases" value="64" note="42 recorded, 22 fault-injected" />
-            <Readout term="Runs" value={String(manifest.entries.length)} note="3 versions, 3 seeded controls" />
-            <Readout term="Accepted" value={String(accepted)} note="for human review only" />
-            <Readout term="Rejected" value={String(rejected)} note="by independent checks" signal />
+          <dl className="lab-readouts">
+            <Readout term="Cases" value={catalog.length} note={`${catalog.filter(c => c.origin === 'recorded-replay').length} recorded, ${catalog.filter(c => c.origin === 'fault-injection').length} fault-injected`} />
+            <Readout term="Published records" value={manifest?.entries.length ?? 'Unavailable'} note="Including records with no execution" />
+            <Readout term="Sandbox executions" value={manifest?.entries.filter(e => e.runner === 'vercel-sandbox').length ?? 'Unavailable'} note="Within the published inventory" />
+            <Readout term="Grading" value="Independent" note="Computed from prediction records" />
           </dl>
         </div>
-      </section>
-
-      {rest.length > 0 ? (
-        <section className="frame flex flex-col gap-7 pb-20">
-          <Band index="05" title="Every run in the set" note="Including the ones that are not walkthroughs" />
-          <ul className="m-0 flex list-none flex-col gap-px border-y border-rule p-0">
-            {rest.map((entry) => (
-              <li key={entry.file}>
-                <Link
-                  href={`/lab/${entry.file.replace(/\.json$/, '')}`}
-                  className="grid grid-cols-[1fr_auto] items-center gap-3 py-2 no-underline transition-colors duration-150 hover:bg-paper-secondary sm:grid-cols-[14rem_1fr_9rem]"
-                >
-                  <span className="text-xs text-ink">{entry.candidate_id}</span>
-                  <span className="hidden text-xs text-ink-40 sm:block">
-                    {entry.kind === 'seeded-control' ? 'seeded control' : 'preserved version'}
-                    {/* The manifest carries the verdict under every generation
-                        so this list can flag a run whose verdict *moved*
-                        without loading each run, which is the one thing a
-                        reader most wants pointed out and would otherwise have
-                        to find by opening eight pages. */}
-                    {movedGeneration(entry) ? (
-                      <span className="block pt-0.5 text-signal">
-                        verdict moved between criteria generations
-                      </span>
-                    ) : null}
-                  </span>
-                  <span className="text-right">
-                    <VerdictBadge verdict={entry.verdict} small />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      <section className="frame flex flex-col gap-7 pb-8">
-        <Band index="06" title="What the Lab never claims" note="The boundaries of this result" />
-        <div className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Claim term="Accepted is not shipped">
-            It means eligible for human review under this spec hash. Merging and promotion stay a
-            human decision.
-          </Claim>
-          <Claim term="The cases are public">
-            A candidate may have been written against them, so passing does not establish
-            generalisation. Fixture performance is reported as fixture performance.
-          </Claim>
-          <Claim term="Relevance quality is unmeasured">
-            Sending article ids changes the request, which invalidates every recorded response.
-            New budgeted recordings would be needed and none exist.
-          </Claim>
-          <Claim term="Live execution, recorded responses">
-            A parser run from this page executes for real, in a microVM. The model responses it
-            parses do not: they are the committed recordings and fault injections, replayed, and
-            grading calls no model. The same is true of every published run here. The
-            agent-authored ones called a model to write their candidate, and each run&rsquo;s page
-            states what that call cost.
-          </Claim>
-          {investigated.length === 0 ? (
-            <Claim term="No agent has run">
-              The investigator&rsquo;s tools, budget and scope gate are implemented and tested, and
-              no model has been called. There is no gateway key on this deployment. No agent
-              behaviour is depicted anywhere on this site.
-            </Claim>
-          ) : (
-            // Counted, because the sentence this replaced said "one" over
-            // thirty-one runs and called every one of them a candidate. An
-            // investigation that ended without a proposal has runner `none`.
-            <Claim term="Agent proposals, graded like any other">
-              {investigated.length} investigator runs are published.{' '}
-              {proposed.length} of them proposed a candidate, and each faced the same scope gate,
-              sandbox and evaluator a human patch faces. The other{' '}
-              {investigated.length - proposed.length} ended without a proposal and are published
-              anyway. The model never saw the criteria or its own verdict.
-            </Claim>
-          )}
-          {sandboxed.length === 0 ? (
-            <Claim term="Nothing novel has executed">
-              Every candidate here is byte-identical to a committed implementation, so all runs
-              took the local path. The sandbox boundary is implemented and unexercised.
-            </Claim>
-          ) : (
-            <Claim term="Egress is an upper bound, not a measurement">
-              {sandboxed.length} of {manifest.entries.length} runs executed in an isolated microVM.
-              The metered egress on those runs includes the bytes spent reading the record bundle
-              back, so it is non-zero on a run that reached nothing. The negative controls are the
-              direct evidence.
-            </Claim>
-          )}
-        </div>
+        <details className="lab-disclosure"><summary>The response that started it</summary>
+          {offending ? <OffendingCase data={offending} /> : <p>The recorded batch is unavailable.</p>}
+        </details>
+        <details className="lab-disclosure"><summary>Every published run <span>{manifest?.entries.length ?? 0} records</span></summary>
+          <ul className="lab-inventory">{manifest?.entries.map(entry => <li key={entry.file}>
+            <Link href={`/lab/${entry.file.replace(/\.json$/, '')}`}>
+              <span className="lab-inventory-id">{entry.candidate_id}</span>
+              <span className="lab-inventory-note">{entry.runner === 'none' ? 'No candidate execution' : entry.runner}
+                {new Set(Object.values(entry.verdict_by_spec)).size > 1 && <span>Verdict moved between criteria generations</span>}
+              </span>
+              <span className="lab-inventory-verdict"><VerdictBadge verdict={entry.verdict} small /></span>
+            </Link>
+          </li>)}</ul>
+        </details>
+        <details className="lab-disclosure"><summary>Limits of this evidence</summary>
+          <div className="grid gap-6 pb-6 text-sm text-ink-60 md:grid-cols-2">
+            <p className="m-0">The cases are public, and candidates can be written against them. Passing establishes performance on these fixtures. It does not establish generalisation or measure the relevance of a news feed.</p>
+            <p className="m-0">Execution is live; model responses are recorded or injected. Grading calls no model. Agent-authored published runs separately report the model calls used to write their candidates.</p>
+            <p className="m-0">The runner preserves its admission checks, execution limits, denied networking and independent grader. A browser event is shown only when the service supplies it; case verdicts arrive with terminal grading.</p>
+            <p className="m-0">A complete identity contract changes the scoring request. Evaluating its news quality would require new model recordings; parser correctness alone cannot establish that result.</p>
+          </div>
+        </details>
       </section>
     </div>
   )
 }
-
-function Readout({
-  term,
-  value,
-  note,
-  signal,
-}: {
-  term: string
-  value: string
-  note: string
-  signal?: boolean
-}) {
-  return (
-    <div>
-      <dt className="label m-0 text-ink-40">{term}</dt>
-      <dd className={`readout-sm m-0 mt-1.5 text-3xl ${signal === true ? 'text-signal' : ''}`}>
-        {value}
-        <span className="block font-sans text-xs font-normal tracking-normal text-ink-40">
-          {note}
-        </span>
-      </dd>
-    </div>
-  )
+function Readout({ term, value, note }: { term: string; value: string | number; note: string }) {
+  return <div><dt className="label text-ink-40">{term}</dt><dd className="m-0 mt-2 text-xl tracking-tight">{value}<span className="mt-1 block text-xs text-ink-60">{note}</span></dd></div>
 }
-

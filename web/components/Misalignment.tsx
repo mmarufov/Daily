@@ -67,7 +67,7 @@ export function Misalignment() {
               onClick={() => setMode(value)}
               aria-pressed={mode === value}
               className={[
-                'px-3 py-1.5 text-xs transition-colors duration-150',
+                'min-h-11 px-3 py-1.5 text-xs transition-colors duration-150',
                 mode === value ? 'bg-ink text-paper' : 'bg-paper text-ink hover:bg-paper-secondary',
               ].join(' ')}
             >
@@ -180,8 +180,7 @@ export function Misalignment() {
             One merged entry is enough: the parse assigns{' '}
             <span className="text-ink">results[i]</span> to{' '}
             <span className="text-ink">articles[i]</span> regardless of length, so seven of twelve
-            articles are judged on another story&rsquo;s reasoning. At batches of forty this fires
-            63 times in one run.
+            articles are judged on another story&rsquo;s reasoning in this schematic.
           </>
         ) : (
           <>

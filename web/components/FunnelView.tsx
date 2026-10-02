@@ -51,7 +51,7 @@ export function FunnelView({ artifact, persona }: FunnelViewProps) {
           containing block is the viewport rather than this scroll port, so it
           escapes the clip and widens the whole document at 375px.
         */}
-        <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+        <div className="relative overflow-x-auto">
         <table className="w-full min-w-md border-collapse text-xs">
           <caption className="sr-only">
             Candidate funnel: survivors, articles lost entering each stage, and pass rate

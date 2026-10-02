@@ -184,7 +184,7 @@ type CellTone = 'pending' | 'correct' | 'wrong' | 'unscored' | 'outside'
 
 const CELL: Record<CellTone, { className: string; label: string }> = {
   pending: { className: 'border border-rule bg-paper', label: 'not run yet' },
-  correct: { className: 'bg-ink', label: 'correct' },
+  correct: { className: 'bg-success', label: 'correct' },
   wrong: { className: 'bg-signal', label: 'wrong' },
   unscored: { className: 'border border-rule bg-paper-secondary', label: 'not scored, another protocol' },
   outside: { className: 'border-2 border-signal bg-paper', label: 'associated outside its declared protocol' },
@@ -284,7 +284,7 @@ function Recorded({ grading }: { grading: LiveGrading }) {
 
 function Criteria({ grading }: { grading: LiveGrading }) {
   return (
-    <section className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+    <section className="relative overflow-x-auto">
       <table className="w-full min-w-md border-collapse text-xs">
         <caption className="label pb-2 text-left text-ink-40">
           The {grading.criteria.length} acceptance criteria
