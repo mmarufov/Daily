@@ -44,6 +44,10 @@ describe('recorded run scroll progress', () => {
     expect(value(0.73, '--run-checks')).toBe(0)
     expect(value(0.73, '--run-tests')).toBe(0)
     expect(value(0.82, '--run-verdict')).toBe(0)
+    expect(value(0.73, '--run-system-x')).toBe(0)
+    expect(value(0.77, '--run-system-x')).toBeGreaterThan(-200)
+    expect(value(0.77, '--run-system-x')).toBeLessThan(0)
+    expect(value(0.81, '--run-system-x')).toBe(-200)
   })
 
   it('starts with the file alone and ends with the result held in place', () => {
@@ -76,6 +80,8 @@ describe('recorded run scroll progress', () => {
       expect(value(progress, '--run-file-x')).toBeLessThanOrEqual(200)
       expect(value(progress, '--run-packet-x')).toBeGreaterThanOrEqual(0)
       expect(value(progress, '--run-packet-x')).toBeLessThanOrEqual(260)
+      expect(value(progress, '--run-system-x')).toBeGreaterThanOrEqual(-200)
+      expect(value(progress, '--run-system-x')).toBeLessThanOrEqual(0)
     }
   })
 

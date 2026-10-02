@@ -61,6 +61,8 @@ test.describe('recorded parser run', () => {
 
   test('stopping just past a chapter boundary completes the scene without moving the page', async ({ page }) => {
     const story = page.getByTestId('run-story')
+    await scrollStory(story, 0.10)
+    await settledStory(story, 0)
     for (const [progress, stage] of [[0.21, 1], [0.46, 2], [0.76, 3]] as const) {
       await scrollStory(story, progress)
       await expect(story).toHaveAttribute('data-stage', String(stage))
@@ -125,7 +127,10 @@ test.describe('recorded parser run', () => {
 
   test('rapid direction changes settle at the current position without queued transitions', async ({ page }) => {
     const story = page.getByTestId('run-story')
-    for (const progress of [0.90, 0.10, 0.60, 0.30, 0.90]) await scrollStory(story, progress)
+    for (const progress of [0.90, 0.10, 0.60, 0.30, 0.90]) {
+      await scrollStory(story, progress)
+      await page.waitForTimeout(60)
+    }
     await expect(story).toHaveAttribute('data-stage', '3')
     await expect(story.getByRole('button', { name: 'Verdict', exact: true })).toHaveAttribute('aria-current', 'step')
     await expect.poll(() => story.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
@@ -157,6 +162,47 @@ test.describe('recorded parser run', () => {
     await expect(story).toHaveAttribute('data-active', 'true')
     await expect(story).toHaveAttribute('data-stage', '2')
     await settledStory(story, 2)
+  })
+
+  test('diagram connectors leave the suite and visible labels clear at desktop widths', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    for (const width of [1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      for (const [progress, stage] of [[0.59, 2], [0.92, 3]] as const) {
+        await scrollStory(story, progress)
+        await settledStory(story, stage)
+        const collisions = await story.evaluate(element => {
+          const scene = element.querySelector('.run-scene-canvas')!
+          const visible = (node: Element) => {
+            let opacity = 1
+            for (let current: Element | null = node; current && current !== scene; current = current.parentElement) {
+              const style = getComputedStyle(current)
+              if (style.display === 'none' || style.visibility === 'hidden') return false
+              opacity *= Number(style.opacity)
+            }
+            return opacity > 0.01
+          }
+          const obstacles = [...scene.querySelectorAll('.run-input-cell, .run-inputs > text, .run-scene-checks > p, .run-scene-checks li, .run-scene-result')]
+            .filter(visible).map(node => ({ label: node.textContent?.trim() || node.getAttribute('class'), box: node.getBoundingClientRect() }))
+          const overlaps: string[] = []
+          for (const path of scene.querySelectorAll<SVGPathElement>('.run-path-base, .run-path, .run-grading-path > path')) {
+            if (!visible(path)) continue
+            const transform = path.getScreenCTM()!
+            const length = path.getTotalLength()
+            for (let offset = 0; offset <= length; offset += 2) {
+              const point = path.getPointAtLength(offset).matrixTransform(transform)
+              for (const { label, box } of obstacles) {
+                if (point.x > box.left - 1 && point.x < box.right + 1 && point.y > box.top - 1 && point.y < box.bottom + 1) {
+                  overlaps.push(`${path.getAttribute('class')} intersects ${label}`)
+                }
+              }
+            }
+          }
+          return [...new Set(overlaps)]
+        })
+        expect(collisions, `connector collisions at ${width}px, stage ${stage}`).toEqual([])
+      }
+    }
   })
 
   test('every sticky scene fits a 720px-tall desktop viewport', async ({ page }) => {
