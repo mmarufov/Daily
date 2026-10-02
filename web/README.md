@@ -215,8 +215,8 @@ The site, the explorer and the recorded runs need no credentials, database or pr
 | `npm run dev` | Development server |
 | `npm run build` / `npm run start` | Production build and server |
 | `npm run typecheck` | `tsc --noEmit` with `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` |
-| `npm test` | Vitest: 333 tests, including the sieve, the evaluator, the limits and export determinism |
-| `npm run test:e2e` | Playwright: 92 tests in desktop Chrome, Pixel 7 and iPhone 14 WebKit, against marufov.com by default, with every Lab API call intercepted |
+| `npm test` | Vitest: more than 330 tests, including the sieve, the evaluator, the limits and export determinism |
+| `npm run test:e2e` | Playwright: more than 90 tests in desktop Chrome, Pixel 7 and iPhone 14 WebKit, against marufov.com by default, with every Lab API call intercepted |
 | `npm run export:all` | Rebuild `public/artifacts/`, `public/demo/` and `public/lab-artifacts/` from committed evidence |
 | `npm run export:artifacts -- --check` / `npm run export:lab -- --check` | Validate without writing |
 | `npm run publish:artifacts` | Upload validated artifacts to Vercel Blob |

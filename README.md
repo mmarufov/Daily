@@ -50,7 +50,7 @@ The repository holds about 99,000 lines of first-party Python, TypeScript, Swift
 - **Agent benchmark.** 31 budgeted agent investigations by GPT-4.1, GPT-5 mini and Kimi K2 worked on the parser through the Vercel AI Gateway, for $0.78 in total. Their 8 proposals faced the same scope gate, microVM and evaluator as a human submission, and 2 were accepted for review.
 - **Correctness under concurrency.** The server uses PostgreSQL leases with version tokens, compare-and-set publication and per-reader monotonic sequencing. The app fences feed and reader work by operation and account, so a late response cannot replace a newer edition or cross an account boundary.
 - **Hardened fetching.** Every live fetch of an untrusted URL goes through [`safe_http`](backend/app/services/safe_http.py), which requires every DNS answer to be public, connects to the validated address, revalidates each redirect and caps the response at 2 MB.
-- **Tested in depth.** 2,935 backend tests, 333 web unit tests, 92 Playwright tests in three browser projects and 150 iOS tests. CI provisions PostgreSQL 16 with pgvector 0.8.0 and fails when a required database suite is skipped.
+- **Tested in depth.** More than 2,900 backend tests, 330 web unit tests, 90 Playwright tests in three browser projects and 150 iOS tests. CI provisions PostgreSQL 16 with pgvector 0.8.0 and fails when a required database suite is skipped.
 
 ## Daily Lab
 
@@ -205,9 +205,9 @@ Backend deployment settings live in [fly.toml](backend/fly.toml) and [.env.examp
 
 | Suite | Tests | Runs in |
 |---|---|---|
-| Backend, pytest | 2,935, including an exhaustive 720-ordering permutation suite | CI on every pull request, offline; 180 database tests against PostgreSQL 16 and pgvector 0.8.0 |
-| Web unit, Vitest | 333 | CI |
-| Web end-to-end, Playwright | 92 tests in 3 projects: desktop Chrome, Pixel 7, iPhone 14 WebKit | Against marufov.com, with every Lab API call intercepted |
+| Backend, pytest | 2,900+, including an exhaustive 720-ordering permutation suite | CI on every pull request, offline; 180 database tests against PostgreSQL 16 and pgvector 0.8.0 |
+| Web unit, Vitest | 330+ | CI |
+| Web end-to-end, Playwright | 90+ tests in 3 projects: desktop Chrome, Pixel 7, iPhone 14 WebKit | Against marufov.com, with every Lab API call intercepted |
 | iOS, XCTest | 150 | Xcode, `Daily` test action |
 
 - **Backend** covers extraction policy, stale leases, ranking publication, budget admission, delivery receipts, adversarial edition assembly and concurrent claims against real PostgreSQL.
