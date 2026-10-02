@@ -9,17 +9,6 @@ import type { GuardExperiment as GuardExperimentData } from '@/lib/guard-experim
 
 type Variant = 'original' | 'guard'
 
-const READINGS = {
-  original: {
-    title: 'A plausible number can hide a broken join.',
-    detail: 'The original scorer assigned verdicts by position despite count mismatches; these quality scores include that ambiguous association.',
-  },
-  guard: {
-    title: 'Refusing the mismatch exposed the cost.',
-    detail: 'Discarding mismatched batches lowered recall and raised unwanted delivery. Retrieval recall stayed unchanged.',
-  },
-} as const
-
 export function GuardExperiment({ experiment }: { readonly experiment: GuardExperimentData | null }) {
   const [variant, setVariant] = useState<Variant>('original')
   if (experiment === null) {
@@ -55,10 +44,8 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
               </figcaption>
               <div className="guard-metric-value">
                 <span>{(value * 100).toFixed(1)}<span className="guard-percent">%</span></span>
-                <span className="guard-value-note">
-                  <span className="guard-original-label" data-active={!isGuard} aria-hidden={isGuard} inert={isGuard}>Original scorecard</span>
-                  <span className="guard-delta" data-active={isGuard} aria-hidden={!isGuard} inert={!isGuard}>{delta > 0 ? '+' : ''}{delta.toFixed(1)} pp</span>
-                </span>
+                {isGuard ? <span className="guard-delta">{delta > 0 ? '+' : ''}{delta.toFixed(1)} pp</span> :
+                  <span className="guard-original-label">Original scorecard</span>}
               </div>
               <div className="guard-chart" aria-hidden="true">
                 <div className="guard-chart-fill" data-guard={isGuard} style={{ width: `${value * 100}%` }} />
@@ -71,23 +58,25 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
         })}
       </div>
 
-      {/* Both readings determine intrinsic height; only the active one is accessible. */}
       <MotionContent changeKey={variant} className="guard-reading" aria-live="polite">
-        {(Object.keys(READINGS) as Variant[]).map((key) => (
-          <div key={key} className="guard-reading-state" data-active={variant === key} aria-hidden={variant !== key} inert={variant !== key}>
-            <p className="finding-summary-title">{READINGS[key].title}</p>
-            <p>{READINGS[key].detail}</p>
-          </div>
-        ))}
+        <p className="finding-summary-title">
+          {isGuard ? 'Refusing the mismatch exposed the cost.' : 'A plausible number can hide a broken join.'}
+        </p>
+        <p>
+          {isGuard
+            ? 'The guard discarded batches with the wrong number of verdicts. Recall fell and unwanted delivery rose; retrieval recall stayed unchanged.'
+            : 'The original scorer assigned verdicts by position, even when the response count differed. These quality numbers include that ambiguous association.'}
+        </p>
       </MotionContent>
 
       <div className="guard-history">
-        <p className="guard-failure-count">
-          <strong>{experiment.historical_test_result.failed} recorded gate failures</strong>
-        </p>
+        <div className="guard-failure-count">
+          <span>{experiment.historical_test_result.failed}</span>
+          <p>recorded gate failures<span>September 21 experiment</span></p>
+        </div>
         <p className="finding-muted">
-          Baseline retained. This historical working-tree experiment does not establish
-          current CI status or a shipped backend guard.
+          The baseline was retained. This is a historical working-tree experiment;
+          it does not establish the current CI result or a shipped backend guard.
         </p>
       </div>
 

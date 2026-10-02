@@ -568,3 +568,10 @@ to short introductions as unfinished. Separate introductions, primary visuals an
 supporting notes into rows. Balance content through composition rather than adding
 filler, shrinking text, hiding key evidence or vertically centering stranded copy.
 Keep intentional functional surfaces, such as the editor and newspaper, distinct.
+
+## Preserve a liked design when polishing it
+
+The owner preferred the original card-based version after the broad composition
+refinement. When feedback says the overall design is liked but a region feels too
+large, start with its padding, scale and spacing. Preserve the existing layout and
+visual character; do not expand a local polish request into sitewide restructuring.

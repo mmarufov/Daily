@@ -1337,7 +1337,7 @@ details[open] > .disclosure::before {
 .site-nav a { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; font-size: 13px; text-decoration: none; color: var(--d-ink-38); transition: color 150ms; }
 .site-nav a:hover, .site-nav a[aria-current] { color: var(--d-ink); }
 .site-nav a[aria-current] { text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 1px; }
-.site-footer { border-top: 1px solid var(--d-rule); margin-top: var(--section-space); }
+.site-footer { border-top: 1px solid var(--d-rule); margin-top: 80px; }
 .site-footer-inner { padding-block: 36px; display: flex; justify-content: space-between; gap: 32px; }
 .site-footer p { margin: 12px 0 0; color: var(--d-ink-38); font-size: 12px; max-width: 48ch; }
 .footer-links { display: flex; align-items: start; flex-wrap: wrap; gap: 12px 24px; }
@@ -1375,11 +1375,5 @@ details[open] > .disclosure::before {
 .reveal-mark { margin-left: auto; color: var(--d-ink-38); }
 .reveal-mark::after { content: '+'; }
 .reveal[open] .reveal-mark::after { content: '−'; }
-.reveal-list { margin: 0; padding: 0 0 20px 20px; color: var(--d-ink-58); font-size: 14px; line-height: 1.7; }
+.reveal-list { margin: 0; padding: 0 0 20px 20px; color: var(--d-ink-58); font-size: 13px; line-height: 1.7; }
 .reveal-list li + li { margin-top: 8px; }
-
-/* Shared section rhythm; functional surfaces retain their own padding. */
-:root { --section-space: 72px; }
-@media (width < 64rem) {
-  :root { --section-space: 48px; }
-}

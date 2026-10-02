@@ -940,3 +940,18 @@ by its exact case identifier; rerun affected tests and the production suite.
 - [x] Update the Lab fault selector for the intended verdict / case / detail order.
 
 Release evidence: [daily-composition-release.md](daily-composition-release.md).
+
+## Restore Daily-first, then apply restrained polish
+
+The owner prefers the pre-composition version. Restore the web presentation from
+`d1ca5383`, retaining its Daily-first story, original cards and section layouts,
+execution timeline, accessible status marks and established interactions. Keep the
+original Sydney checkout untouched. Historical release notes remain as records.
+
+- [x] Restore the prior web layout and its matching acceptance expectations.
+- [x] Make only modest guard-card padding, metric sizing and spacing adjustments.
+- [x] Verify the result against the prior version in desktop/mobile light/dark views.
+- [ ] Pass typecheck, unit/artifact/build checks, then PR/CI and production acceptance.
+- [ ] Record screenshots and read-only verification of the existing completed run.
+
+No new section architecture, copy rewrite, backend change or Sandbox submission.

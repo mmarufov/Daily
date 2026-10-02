@@ -1,9 +1,9 @@
 .recorded-execution { min-width: 0; color: var(--d-ink); }
 .recorded-execution-heading h3, .recorded-execution > h3 { margin: 0; font-size: 14px; line-height: 1.5; font-weight: 500; }
 .recorded-execution-heading h3 span { color: var(--d-ink-58); font-weight: 400; }
-.recorded-execution-heading p { margin: 6px 0 22px; color: var(--d-ink-58); font-size: 12px; }
+.recorded-execution-heading p { margin: 6px 0 22px; color: var(--d-ink-58); font-size: 11px; }
 .recorded-timeline { display: flex; flex-direction: column; gap: .65rem; list-style: none; margin: 0; padding: 0; }
-.recorded-timeline-row { position: relative; display: grid; grid-template-columns: 2.5rem .5rem minmax(0, 1fr); gap: .75rem; align-items: start; font-size: 14px; line-height: 1.4; }
+.recorded-timeline-row { position: relative; display: grid; grid-template-columns: 2.5rem .5rem minmax(0, 1fr); gap: .75rem; align-items: start; font-size: 13px; line-height: 1.4; }
 .recorded-timeline-row:not(:last-child)::before { content: ''; position: absolute; left: calc(2.5rem + .75rem + .25rem - .5px); top: .95rem; bottom: -.65rem; width: 1px; background: var(--d-rule); }
 .recorded-timeline-time { text-align: right; color: var(--d-ink-58); font-family: var(--font-mono); font-size: 12px; line-height: 1.55; font-variant-numeric: tabular-nums; }
 .recorded-timeline-dot { position: relative; z-index: 1; justify-self: center; width: 7px; height: 7px; margin-top: .36rem; border-radius: 50%; background: currentColor; }
@@ -12,7 +12,7 @@
 .recorded-timeline-probes li { display: flex; gap: 7px; align-items: center; color: var(--d-ink-58); font-size: 12px; line-height: 1.5; }
 .recorded-timeline-probes svg { flex: none; }
 .recorded-timeline-probes li[data-held='false'] { color: var(--d-signal); }
-.recorded-execution-provenance { margin: 20px 0 0; font-size: 12px; line-height: 1.7; color: var(--d-ink-58); }
+.recorded-execution-provenance { margin: 20px 0 0; font-size: 11px; line-height: 1.7; color: var(--d-ink-58); }
 .recorded-execution-provenance code { font-family: var(--font-mono); overflow-wrap: anywhere; }
 .recorded-execution-source { min-height: 44px; margin-top: 4px; font-size: 12px; }
 @media (max-width: 639px) {
