@@ -4,6 +4,8 @@ import type { SieveFixture } from '@/components/Sieve'
 
 import type { Artifact, Story } from './artifact'
 import { findEntry, loadArtifact, loadIndex } from './data'
+import type { DemoBundle, DemoStory } from './demo'
+import { loadDemo } from './demo-data'
 import { loadGuardExperimentResult, type GuardExperiment } from './guard-experiment'
 import type { LabRun } from './lab/artifact'
 import { loadLabIndex, loadLabRun, loadOffendingCase } from './lab/data'
@@ -64,6 +66,7 @@ export interface RetrievalLossData {
 }
 
 export interface HomeEvidence {
+  readonly editionPreview: EditionPreviewData | null
   readonly artifact: Artifact | null
   readonly fixtures: readonly SieveFixture[]
   readonly offendingCase: OffendingCase | null
@@ -78,8 +81,29 @@ export interface HomeEvidence {
     readonly specHash: string | null
   }
   readonly recordedRun: LabRun | null
-  readonly recordedRunHref: string
+  readonly recordedRunHref: typeof HOME_RECORDED_RUN_HREF
   readonly issues: readonly string[]
+}
+
+export interface EditionPreviewData {
+  readonly persona: 'ray'
+  readonly frozenAt: string
+  readonly stories: readonly DemoStory[]
+}
+
+/** The preview is a slice of the same recording, never a substitute edition. */
+export function deriveEditionPreview(bundle: DemoBundle, artifact: Artifact | null): EditionPreviewData | null {
+  if (artifact === null || bundle.run_id !== HOME_RUN_ID || bundle.run_id !== artifact.run_id ||
+      bundle.snapshot !== artifact.provenance.snapshot.name ||
+      artifact.provenance.snapshot.sha256 === 'unknown' ||
+      bundle.snapshot_sha256 !== artifact.provenance.snapshot.sha256 ||
+      !Number.isFinite(Date.parse(bundle.frozen_at)) ||
+      Date.parse(bundle.frozen_at) !== Date.parse(artifact.provenance.snapshot.frozen_now)) return null
+  const edition = bundle.editions.find((item) => item.persona === 'ray')
+  if (!edition || edition.stories.length < 3) return null
+  const stories = edition.stories.slice(0, 3)
+  if (stories.some((story, index) => story.position !== index + 1)) return null
+  return { persona: 'ray', frozenAt: bundle.frozen_at, stories }
 }
 
 /**
@@ -157,12 +181,14 @@ export async function loadHomeEvidence(): Promise<HomeEvidence> {
     loadLabRun(HOME_RECORDED_RUN_FILE),
     loadOffendingCase(),
     loadGuardExperimentResult(),
+    loadDemo(),
   ])
   const index = settledValue(results[0], 'Evaluation index', issues)
   const labIndex = settledValue(results[1], 'Lab index', issues)
   let recordedRun = settledValue(results[2], 'Recorded parser run', issues)
   const offendingCase = settledValue(results[3], 'Recorded batch', issues)
   const guardResult = settledValue(results[4], 'Guard experiment', issues)
+  const demo = settledValue(results[5], 'Recorded edition', issues)
 
   for (const error of index?.errors ?? []) issues.push(`${error.where}: ${error.issues.join('; ')}`)
   issues.push(...(labIndex?.issues ?? []))
@@ -223,8 +249,11 @@ export async function loadHomeEvidence(): Promise<HomeEvidence> {
   const manifest = labIndex?.manifest ?? null
   const losses = artifact === null ? null : deriveRetrievalLoss(artifact)
   if (artifact !== null && losses === null) issues.push('Retrieval-loss counts and recorded story traces do not reconcile.')
+  const editionPreview = demo?.ok === true ? deriveEditionPreview(demo.bundle, artifact) : null
+  if (editionPreview === null) issues.push('The recorded Ray edition is unavailable or does not match the pinned recording.')
 
   return {
+    editionPreview,
     artifact,
     fixtures: artifact?.personas.map((persona) => ({ key: persona.key, steps: persona.funnel })) ?? [],
     offendingCase,

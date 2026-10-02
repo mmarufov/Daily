@@ -544,3 +544,19 @@ README.md into a historical audit or an exhaustive list of shortcomings.
 The user liked the visual foundation but found interactions too simple. Treat
 opening, closing, selection and press feedback as part of the finished design.
 Verify reversibility, keyboard and reduced-motion behavior alongside screenshots.
+
+## October 1: establish the product before its diagnostic tool
+
+The owner could not recognize Daily in the Lab-first homepage. Before introducing
+a fix or evaluation result, state what the product does and show actual output.
+Treat product -> failure -> test rig as an explicit relationship in copy and
+navigation. A prominent call to action does not require erasing product context.
+Status grids also need visible symbols, not only red/green and screen-reader text.
+Scope editorial fonts to the route that uses them and verify network requests.
+
+## Daily-first release: show the basis for trust
+
+Pair a verdict with the actual execution record: scope, isolation checks, teardown
+and independent grading. Keep recording IDs and criteria generations explicit when
+showing records side by side. Decorative category labels add no context when the
+headline already establishes the product; preserve numbering only for real sequence.

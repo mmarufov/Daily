@@ -1,5 +1,5 @@
 /**
- * Render the committed icon set from `app/icon.svg` and the sieve figure.
+ * Render the committed icon set from `app/icon.svg` and the Daily/Lab story.
  *
  *   npm run build:icons
  *
@@ -10,15 +10,8 @@
  *                           ignore an SVG favicon (Safari before 16.4)
  *   app/opengraph-image.png 1200x630, link previews
  *
- * The OG image is the sieve rather than the letterform. The tab icon had to
- * survive 16px and a grid of cells cannot; at 1200x630 the same figure is the
- * most characteristic thing the product has, so each mark is used where it
- * actually works.
- *
- * Playwright renders these rather than `next/og`, because Satori supports a
- * subset of CSS and the cell field is 1,362 positioned elements. A committed
- * PNG also means a link preview cannot be broken by a runtime failure on a
- * route nobody visits.
+ * The social card introduces Daily and its Lab using the recorded offending
+ * batch. A committed PNG keeps crawlers independent of runtime rendering.
  */
 
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -30,54 +23,34 @@ import { chromium } from 'playwright'
 
 const WEB = join(fileURLToPath(new URL('.', import.meta.url)), '..')
 
-/** The frozen run this figure describes. Kept in sync with the home page. */
-const POOL = 1362
-const DELIVERED = 50
-
-/** Deterministic, so regenerating does not produce a spurious diff. */
-function rng(seed: number): () => number {
-  let s = seed >>> 0
-  return () => {
-    s = (s * 1664525 + 1013904223) >>> 0
-    return s / 0x100000000
-  }
-}
-
 function ogHtml(): string {
   const fontPath = join(WEB, 'app/fonts/GeistSans-variable.woff2')
   const monoPath = join(WEB, 'app/fonts/GeistMono-latin.woff2')
-  const total = POOL
-
-  // Which cells survived. Spread rather than clustered: the real figure is a
-  // corpus in recency order, not a blob.
-  const next = rng(20260902)
-  const lit = new Set<number>()
-  while (lit.size < DELIVERED) lit.add(Math.floor(next() * total))
-
-  const cells = Array.from({ length: total }, (_, i) =>
-    `<i${lit.has(i) ? ' class="on"' : ''}></i>`,
-  ).join('')
-
+  const batch = JSON.parse(readFileSync(join(WEB, 'public/lab-artifacts/offending-case.json'), 'utf8')) as {
+    articles_sent: number; verdicts_returned: number
+  }
   return `<!doctype html><meta charset="utf-8">
 <style>
   @font-face{font-family:F;src:url("file://${fontPath}") format("woff2");font-weight:100 900}
   @font-face{font-family:M;src:url("file://${monoPath}") format("woff2")}
   *{margin:0;box-sizing:border-box}
-  body{width:1200px;height:630px;background:#fafaf9;color:#171717;padding:54px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;font-family:F;overflow:hidden}
+  body{width:1200px;height:630px;background:#fafaf9;color:#171717;padding:54px;display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;font-family:F;overflow:hidden}
   .copy{display:flex;flex-direction:column;gap:28px}
   .brand{font-size:26px;font-weight:600;letter-spacing:-1px}
-  h1{font:600 74px/1.02 F;letter-spacing:-4px}
-  p{font:400 22px/1.45 F;color:#626262;max-width:25ch}
-  .instrument{background:#111315;border-radius:12px;padding:30px;color:#fafaf9}
-  .label{font:400 13px M;color:#bfc3c6}
-  .plate{display:grid;grid-template-columns:repeat(48,1fr);gap:3px;margin:32px 0}
-  .plate i{aspect-ratio:1;background:#303436;border-radius:1px}
-  .plate i.on{background:#fafaf9}
-  .n{font:400 18px M;color:#a4a8aa}
-  .n b{font:400 48px/1.1 M;color:#fafaf9;font-weight:400}
+  h1{font:550 76px/1.02 F;letter-spacing:-4px}
+  p{font:400 22px/1.45 F;color:#626262;max-width:26ch}
+  .instrument{background:#111315;border:1px solid #35393b;border-radius:12px;padding:32px;color:#fafaf9}
+  .label{font:400 12px M;color:#bfc3c6;letter-spacing:1px}
+  h2{font:500 39px/1.08 F;letter-spacing:-1.5px;margin:28px 0 36px}
+  .batch{display:flex;align-items:center;gap:24px;padding:28px 0;border-top:1px solid #383c40;border-bottom:1px solid #383c40}
+  .n{display:flex;flex-direction:column;gap:8px;font:400 12px M;color:#bfc3c6}
+  .n b{font:400 54px/1 M;color:#fafaf9;letter-spacing:-3px}
+  .n:last-child b{color:#ed927b}
+  .arrow{color:#a4a8aa;font-size:22px}
+  .foot{color:#bfc3c6;font:400 13px/1.6 F;margin-top:24px}
 </style>
-<div class="copy"><div class="brand">Daily Lab</div><h1>Does the fix<br>actually work?</h1><p>Run a parser in Vercel Sandbox. Inspect the verdict.</p></div>
-<div class="instrument"><div class="label">RECORDED PIPELINE REPLAY</div><div class="plate">${cells}</div><div class="n"><b>${DELIVERED}</b> / ${POOL.toLocaleString()} delivered</div></div>`
+<div class="copy"><div class="brand">Daily</div><h1>Daily makes<br>news personal.</h1><p>A personalized news app.<br>A Lab to test what breaks.</p></div>
+<div class="instrument"><div class="label">DAILY LAB</div><h2>Does the fix<br>actually work?</h2><div class="batch"><div class="n"><b>${batch.articles_sent}</b><span>articles sent</span></div><span class="arrow">→</span><div class="n"><b>${batch.verdicts_returned}</b><span>verdicts returned</span></div></div><div class="foot">A recorded parser failure.<br>Test a proposed fix in Vercel Sandbox.</div></div>`
 }
 
 async function main(): Promise<void> {

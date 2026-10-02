@@ -1,0 +1,83 @@
+/* Case outcomes must remain distinguishable without their status colors. */
+.case-status-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-inline-size: 20px;
+  min-block-size: 20px;
+  flex: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+
+.case-status-mark {
+  display: block;
+  inline-size: 14px;
+  block-size: 14px;
+  flex: none;
+}
+
+.case-status-cell[data-tone='correct'] {
+  background: var(--d-success);
+  color: var(--d-paper);
+}
+
+.case-status-cell[data-tone='wrong'] {
+  background: var(--d-signal);
+  color: var(--d-paper);
+}
+
+.case-status-cell[data-tone='unscored'] {
+  background: var(--d-paper-2);
+  border-color: var(--d-control);
+  color: var(--d-ink-58);
+}
+
+.case-status-cell[data-tone='pending'] {
+  background: var(--d-paper);
+  border-color: var(--d-control);
+  color: var(--d-ink-38);
+}
+
+.case-status-cell[data-tone='outside'] {
+  background: var(--d-paper);
+  border: 2px solid var(--d-signal);
+  color: var(--d-signal);
+}
+
+.live-case-grid .case-status-cell {
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+.case-status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--d-ink-58);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.case-status-legend > li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.case-status-legend .case-status-cell {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+@media (forced-colors: active) {
+  .case-status-cell[data-tone] {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+}

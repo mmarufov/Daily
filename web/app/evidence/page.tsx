@@ -425,7 +425,7 @@ function NoArtifacts({
 }) {
   return (
     <div className="frame flex max-w-2xl flex-col gap-4 py-16">
-      <h1 className="editorial m-0 text-3xl">No evaluation artifacts are available</h1>
+      <h1 className="display m-0 text-3xl">No evaluation artifacts are available</h1>
       <p className="prose m-0">
         {incomplete
           ? 'Artifact files were found but no validated manifest was, so nothing is shown rather than presenting an unverified partial set.'
@@ -462,7 +462,7 @@ function LoadFailure({
 }) {
   return (
     <div className="frame flex max-w-2xl flex-col gap-3 py-16">
-      <h1 className="editorial m-0 text-3xl">{title}</h1>
+      <h1 className="display m-0 text-3xl">{title}</h1>
       <p className="m-0 text-xs text-ink-60">{where}</p>
       <ul className="m-0 flex list-none flex-col gap-1 p-0 text-xs text-signal">
         {issues.map((issue, i) => (

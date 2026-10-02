@@ -1,21 +1,22 @@
 import type { Metadata, Viewport } from 'next'
 import Link from 'next/link'
 import { SiteNav } from '@/components/SiteNav'
-import { fraunces, geistMono, geistSans } from './fonts'
+import { geistMono, geistSans } from './fonts'
 import './globals.css'
 import './motion.css'
+import './case-status.css'
 
-const DESCRIPTION = 'Run untrusted Python parsers in Vercel Sandbox against recorded and injected failures. Inspect independently graded results, versioned criteria, and the evidence behind every verdict.'
+const DESCRIPTION = 'Daily builds news editions around a reader\'s interests. Read a recorded edition, then explore Daily Lab to test the parsers inside its news pipeline.'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://marufov.com'),
-  title: { default: 'Daily Lab', template: '%s' },
+  title: { default: 'Daily', template: '%s' },
   description: DESCRIPTION,
   openGraph: {
-    type: 'website', siteName: 'Daily Lab', url: 'https://marufov.com',
-    title: 'Daily Lab · Does the fix actually work?', description: DESCRIPTION,
+    type: 'website', siteName: 'Daily', url: 'https://marufov.com',
+    title: 'Daily makes news personal.', description: DESCRIPTION,
   },
-  twitter: { card: 'summary_large_image', title: 'Daily Lab · Does the fix actually work?', description: DESCRIPTION },
+  twitter: { card: 'summary_large_image', title: 'Daily makes news personal.', description: DESCRIPTION },
 }
 
 export const viewport: Viewport = {
@@ -26,17 +27,17 @@ export const viewport: Viewport = {
 }
 
 function Brand() {
-  return <><span className="brand-symbol" aria-hidden="true"><i /><i /><i /><i /></span><span>Daily Lab</span></>
+  return <><span className="brand-symbol" aria-hidden="true"><i /><i /><i /><i /></span><span>Daily</span></>
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="min-h-screen bg-paper text-ink antialiased">
         <a href="#main" className="skip-link">Skip to content</a>
         <header className="site-header">
           <div className="frame site-header-inner">
-            <Link href="/" className="site-brand" aria-label="Daily Lab, home"><Brand /></Link>
+            <Link href="/" className="site-brand" aria-label="Daily, home"><Brand /></Link>
             <SiteNav />
           </div>
         </header>
@@ -45,10 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="frame site-footer-inner">
             <div>
               <Link href="/" className="site-brand"><Brand /></Link>
-              <p>A working instrument for an unfinished news pipeline.<br />Recorded inputs. Live parser execution. Independent verdicts.</p>
+              <p>News editions shaped around a reader's interests.<br />Daily Lab tests the parsers behind the pipeline.</p>
             </div>
             <div className="footer-links">
-              <Link href="/reader">Sample newspaper</Link>
+              <Link href="/reader" prefetch={false}>Read an edition</Link>
               <Link href="/evidence">Evidence</Link>
               <a href="https://github.com/mmarufov/Daily" rel="noreferrer">Source <span aria-hidden="true">↗</span></a>
             </div>

@@ -1,10 +1,32 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+import type { DemoBundle } from '../../lib/demo'
+
 import { expect, test } from './fixtures'
 
 const NARRATIVE_RUN = 'prod-llm__2026-09-02__47edb50'
+const RECORDED_EXECUTION = 'wrun_01M3WXWPKMF3H8Q66KZA56MZCV'
 // The pinned Ray recording, independently read from the exported artifact.
 const RAY_SURVIVORS = [1362, 300, 298, 100, 100, 55, 55, 55, 55, 50] as const
 
-test.describe('recorded hero instrument', () => {
+test.describe('recorded pipeline instrument', () => {
+  test('the below-fold replay does no work before the visitor reaches it', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const sieve = page.getByTestId('hero-sieve')
+    await expect(sieve).not.toBeInViewport()
+    await expect(sieve).toHaveAttribute('data-stage', '0')
+    await expect(sieve).toHaveAttribute('data-playing', 'false')
+    await page.waitForTimeout(1700)
+    await expect(sieve).toHaveAttribute('data-stage', '0')
+    await expect(sieve).toHaveAttribute('data-playing', 'false')
+
+    await sieve.scrollIntoViewIfNeeded()
+    await expect(sieve).toHaveAttribute('data-playing', 'true')
+    await expect(sieve).not.toHaveAttribute('data-stage', '0')
+  })
+
   test('reduced motion starts with all 1,362 marks and the 50 recorded survivors', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
@@ -136,6 +158,61 @@ test.describe('recorded hero instrument', () => {
 })
 
 test.describe('homepage evidence', () => {
+  test('Daily opens with the unchanged first three stories of the pinned Ray edition', async ({ page }) => {
+    const bundle = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'demo', 'editions.json'), 'utf8')) as DemoBundle
+    const stories = bundle.editions.find((edition) => edition.persona === 'ray')!.stories.slice(0, 3)
+    expect(bundle.run_id).toBe(NARRATIVE_RUN)
+    expect(bundle.snapshot).toBe('2026-09-02')
+    await page.goto('/')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
+    await expect(page.getByText('A personalized news app', { exact: true })).toHaveCount(0)
+    const preview = page.getByTestId('edition-preview')
+    await expect(preview).toContainText('Recorded edition')
+    await expect(preview).toContainText('September 2, 2026')
+    await expect(preview).toContainText('Reader fixture: Ray')
+    await expect(preview.locator('[data-verbatim]')).toHaveText(stories.map((story) => story.headline))
+    const rows = preview.locator('li')
+    await expect(rows).toHaveCount(3)
+    for (const [index, story] of stories.entries()) {
+      await expect(rows.nth(index)).toContainText(story.publication ?? 'Publication not recorded')
+      if (story.synthetic) await expect(rows.nth(index)).toContainText(/authored test story/i)
+    }
+  })
+
+  test('the first invitation connects the news product, parser failure and a runnable fix', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByText("Daily builds a news edition around a reader's interests.", { exact: false })).toBeVisible()
+    const invitation = page.getByRole('heading', { name: 'Does the fix actually work?', exact: true })
+      .locator('xpath=ancestor::section[1]')
+    await expect(invitation).toContainText(/parser/i)
+    await expect(invitation).toContainText(/40 articles/)
+    await expect(invitation).toContainText(/254 verdicts/)
+    await expect(invitation.getByRole('link', { name: 'Run the default parser', exact: true })).toHaveAttribute('href', '/lab#run')
+    const order = await page.locator('.lab-landing > section[id]').evaluateAll((sections) => sections.map((section) => section.id))
+    expect(order).toEqual(['daily-lab', 'experiment', 'pipeline', 'retrieval'])
+    await expect(page.locator('#pipeline').getByTestId('hero-sieve')).toHaveCount(1)
+  })
+
+  test('the recorded result identifies every outcome with a shape and a counted text legend', async ({ page }) => {
+    await page.goto('/')
+    const field = page.getByTestId('recorded-case-field')
+    await expect(field).toHaveAccessibleName('48 correct, 4 failed, 12 not applicable, out of 64 cases')
+    await expect(field.locator('[data-case-mark="correct"]')).toHaveCount(48)
+    await expect(field.locator('[data-case-mark="wrong"]')).toHaveCount(4)
+    await expect(field.locator('[data-case-mark="unscored"]')).toHaveCount(12)
+    const result = field.locator('xpath=..')
+    for (const text of ['48 correct', '4 failed', '12 not applicable']) {
+      await expect(result.getByText(text, { exact: true })).toBeVisible()
+    }
+    await expect(field.locator('[tabindex], button, a')).toHaveCount(0)
+    const marks = await field.locator('[data-case-mark]').evaluateAll((elements) => elements.map((element) => ({
+      tag: element.tagName.toLowerCase(),
+      hidden: element.getAttribute('aria-hidden'),
+      size: Math.min(element.parentElement!.getBoundingClientRect().width, element.parentElement!.getBoundingClientRect().height),
+    })))
+    expect(marks.every((mark) => mark.tag === 'svg' && mark.hidden === 'true' && mark.size >= 20)).toBe(true)
+  })
+
   test('all 97 retrieval losses have a selectable explanation and a real story trace', async ({ page }) => {
     await page.goto('/')
     const panel = page.getByTestId('retrieval-loss-panel')
@@ -191,10 +268,49 @@ test.describe('homepage evidence', () => {
 test.describe('server-rendered opening', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('the question and both destinations are visible before JavaScript runs', async ({ page }) => {
+  test('section 01 exposes the real execution sequence and isolation evidence without JavaScript', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Does the fix actually work?')
-    await expect(page.getByRole('link', { name: 'Run a parser', exact: true }).first()).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Explore the evidence', exact: true })).toBeVisible()
+    const timeline = page.locator('#daily-lab').getByTestId('recorded-run-timeline')
+    await expect(timeline).toHaveAttribute('data-run-id', RECORDED_EXECUTION)
+    await expect(timeline).toContainText('Recorded production execution')
+    await expect(timeline).toContainText('count-guard-v1')
+    const rows = timeline.locator('ol.recorded-timeline > li')
+    const expected = [
+      ['0.00', 'scope checked: only candidate.py is written'],
+      ['0.84', 'creating microVM'],
+      ['1.07', 'uploading 5 files'],
+      ['1.20', 'running the harness'],
+      ['1.74', 'probing isolation'],
+      ['2.61', 'stopping the microVM'],
+      ['6.77', 'microVM stopped'],
+    ] as const
+    await expect(rows).toHaveCount(expected.length + 1)
+    for (const [index, [elapsed, stage]] of expected.entries()) {
+      await expect(rows.nth(index).locator('.recorded-timeline-time')).toHaveText(elapsed)
+      await expect(rows.nth(index)).toContainText(stage)
+    }
+    await expect(rows.last()).toContainText('graded outside the microVM')
+    // Grading is a terminal fact, not a made-up timestamp in the progress feed.
+    await expect(rows.last().locator('.recorded-timeline-time')).toHaveText('')
+    const probes = rows.nth(4).getByRole('list', { name: 'Recorded isolation checks' })
+    for (const label of ['DNS lookup fails', 'HTTPS request fails', 'Grader not on disk', 'No credentials in env']) {
+      const probe = probes.getByRole('listitem').filter({ hasText: label })
+      await expect(probe).toBeVisible()
+      await expect(probe).toHaveAttribute('data-held', 'true')
+      await expect(probe).toContainText('passed')
+    }
+    await expect(probes.getByRole('listitem')).toHaveCount(4)
+    await expect(timeline).toContainText('f027762ab4d08b35')
+    await expect(timeline).toContainText('A separate execution from the published spec 1 result above.')
+    await expect(timeline.locator(`a[href="/runs/${RECORDED_EXECUTION}.json"]`)).toBeVisible()
+  })
+
+  test('the product, recorded headlines and both destinations render before JavaScript runs', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
+    await expect(page.getByText('A personalized news app', { exact: true })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: 'Explore the Lab', exact: true }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Read an edition', exact: true }).first()).toBeVisible()
+    await expect(page.getByTestId('edition-preview').locator('[data-verbatim]')).toHaveCount(3)
   })
 })
