@@ -20,18 +20,18 @@ import { finishedRunBody } from '../fixtures/live-outcome'
 test.describe('Daily Lab', () => {
   test('the first screen offers the live parser and distinguishes its recorded inputs', async ({ page }) => {
     await page.goto('/lab')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Put your parser through it.')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Test a scoring parser.')
     await expect(page.getByRole('link', { name: 'Recorded investigations' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeEnabled()
     // What is live and what is replayed, said where a reader starts. The
     // execution is live; the model responses it parses are not.
-    await expect(page.getByText(/The default parser has a known gap/).first()).toBeVisible()
-    await expect(page.getByText(/Daily's news pipeline/).first()).toBeVisible()
+    await expect(page.getByText(/inspect the failure, then edit it/).first()).toBeVisible()
+    await expect(page.getByText(/Daily's scoring responses/).first()).toBeVisible()
   })
 
   test('shows the real offending response, not a description of one', async ({ page }) => {
     await page.goto('/lab')
-    await page.getByText('The response that started it', { exact: true }).click()
+    await page.getByText('Recorded response', { exact: true }).click()
     await expect(page.getByText('Articles sent')).toBeVisible()
     await expect(page.getByText('Verdicts returned')).toBeVisible()
     // The recorded batch: 40 articles in, 254 verdicts back.
@@ -153,7 +153,7 @@ test.describe('the live runner', () => {
     }))
     expect(sizes.every((size) => size >= 20)).toBe(true)
     await expect(page.getByText('Fault-injected · 22')).toBeVisible()
-    await expect(page.getByText(/5 runs an hour from one address, 3 at once/)).toBeVisible()
+    await expect(page.getByText(/5 runs\/hour per address, 3 at once/)).toBeVisible()
   })
 
   test('a refused run says which limit was hit and when it resets', async ({ page }) => {

@@ -20,25 +20,25 @@ const LOSS_STAGES = [
     key: 'lookback',
     label: 'Lookback',
     beforeScorer: true,
-    explanation: 'The retrieval window never loaded these stories. A better scorer cannot recover an article it never receives.',
+    explanation: 'The lookback window excluded these stories.',
   },
   {
     key: 'prefilter:cap',
     label: 'Prefilter cap',
     beforeScorer: true,
-    explanation: 'These stories were cut by the candidate cap before the relevance scorer saw them.',
+    explanation: 'The candidate cap excluded these stories.',
   },
   {
     key: 'blended',
     label: 'Scoring',
     beforeScorer: false,
-    explanation: 'These stories reached scoring and were dropped at the blended-score stage. The recorded rationale is a diagnostic, not proof that the verdict belongs to that article.',
+    explanation: 'Blended scoring dropped these stories. Their recorded verdict-to-article associations are unverified.',
   },
   {
     key: 'rank',
     label: 'Rank cutoff',
     beforeScorer: false,
-    explanation: 'These stories missed the top-12 ranking cutoff. Their trace retains the outcome label written by the historical export.',
+    explanation: 'These stories missed the top-12 cutoff. Traces retain their recorded labels.',
   },
 ] as const
 

@@ -1,22 +1,6 @@
 /**
- * Executing an untrusted candidate.
- *
- * `runner.ts` decides where a candidate runs and fails closed. This file is
- * what `vercel-sandbox` means in practice.
- *
- * The upload is the whole of what the candidate can see:
- *
- *   lab/__init__.py      empty
- *   lab/harness.py       the record producer, stdlib-only
- *   lab/cases/*.json     the frozen suite
- *   lab/candidate.py     the untrusted file
- *
- * No repository, no git history, no evaluator, no labels, no environment. The
- * grader is never uploaded, so the candidate cannot read it.
- *
- * `networkPolicy: 'deny-all'` sets `SANDBOX_LIMITS.network`, and
- * `assertIsolated` checks it per run. Negative controls live in
- * `sandbox-probe.ts`.
+ * Runs candidates in a network-denied microVM. Only the harness, cases, and candidate
+ * are uploaded; the evaluator and labels stay outside. Isolation probes run in the same VM.
  */
 
 import { randomUUID } from 'node:crypto'
@@ -25,7 +9,6 @@ import { Sandbox } from '@vercel/sandbox'
 
 import { SANDBOX_LIMITS, SANDBOX_VCPUS, sha256 } from './runner'
 
-/** Where the harness lives inside the microVM. */
 const CANDIDATE_PATH = 'lab/candidate.py'
 
 export interface SandboxCredentials {
@@ -34,40 +17,12 @@ export interface SandboxCredentials {
   readonly projectId: string
 }
 
-/**
- * Credentials, or an explicit refusal naming what is missing.
- *
- * On a Vercel deployment the SDK authenticates via OIDC and needs none of
- * this; locally it needs all three. Returning the list of missing names
- * rather than a boolean is what lets `/lab` say which credential is absent
- * instead of "unavailable".
- */
+/** The SDK uses OIDC on Vercel. Elsewhere, explicit authentication requires all three variables. */
 export function sandboxCredentials(
   env: Readonly<Record<string, string | undefined>> = process.env,
 ): SandboxCredentials | { readonly missing: readonly string[] } {
-  // OIDC first, and unconditionally.
-  //
-  // This used to accept OIDC only when all three explicit variables were
-  // absent, reasoning that a partial set is a misconfiguration. On a Vercel
-  // deployment that condition can never hold: the platform injects
-  // `VERCEL_PROJECT_ID` itself, so exactly one of the three is always
-  // present, the fallback was unreachable, and every sandboxed run on
-  // production refused with `missing VERCEL_TOKEN, VERCEL_TEAM_ID` on the
-  // one host where OIDC is the intended mechanism.
-  //
-  // The rule it was reaching for is still worth keeping, and now sits where
-  // it applies: with no OIDC token, a partial explicit set is a
-  // misconfiguration rather than something to paper over.
-  //
-  // And on a deployment the token is not in the environment at all. A
-  // deployed function receives it per request, in the `x-vercel-oidc-token`
-  // header, and the SDK reads it from the request context itself. Requiring
-  // `VERCEL_OIDC_TOKEN` in `process.env` therefore refused, on production,
-  // a credential the SDK would have found: the first public runs ended
-  // `missing VERCEL_TOKEN, VERCEL_TEAM_ID` without a microVM. `VERCEL` is set
-  // by the platform at runtime. If OIDC is genuinely unavailable there,
-  // `Sandbox.create` throws and the run is recorded as failed, which is
-  // still never a local execution.
+  // The SDK reads deployment OIDC from request context. Vercel also injects
+  // VERCEL_PROJECT_ID, so a partial explicit set must not override OIDC.
   if ((env.VERCEL_OIDC_TOKEN ?? '').trim() !== '' || env.VERCEL === '1') {
     return { token: '', teamId: '', projectId: '' }
   }
@@ -87,26 +42,12 @@ export interface UploadedFile {
   readonly content: Buffer
 }
 
-/** What a sandboxed execution is willing to claim about itself. */
 export interface SandboxExecution {
   readonly sandbox_id: string
   readonly runtime: string
-  /**
-   * Read back off the sandbox, not the value that was requested.
-   *
-   * Asking for `deny-all` and recording `deny-all` establishes only that the
-   * request was made. This is what the platform says it applied.
-   */
+  /** Policy read back from the platform after creation. */
   readonly network_policy: string
-  /**
-   * Total bytes metered leaving the microVM.
-   *
-   * Read this as an upper bound, not as a measurement of what the candidate
-   * sent. It includes the control-plane traffic this run itself caused --
-   * chiefly the record bundle being read back -- so a non-zero value is
-   * expected and says nothing on its own. The direct evidence that the
-   * candidate reached no network is `isolation`, below.
-   */
+  /** Metered egress includes control-plane traffic. Use the isolation probes to check candidate networking. */
   readonly egress_bytes: number | null
   readonly active_cpu_ms: number | null
   readonly region: string
@@ -127,19 +68,11 @@ export interface IsolationProbe {
   readonly name: string
   readonly command: string
   readonly expectation: string
-  /** True when the sandbox behaved as the limits claim it does. */
   readonly held: boolean
   readonly observed: string
 }
 
-/**
- * Probes that must fail for the boundary to mean anything.
- *
- * Run inside the same microVM as the candidate, in the same session, after it
- * so what they establish is a property of the environment the candidate
- * actually had, not of a separate one configured the same way. A probe that
- * *succeeds* is a failed probe.
- */
+/** Run after the candidate in the same microVM. A successful forbidden operation fails the probe. */
 const PROBES: readonly {
   name: string
   argv: readonly string[]
@@ -184,19 +117,12 @@ export interface RunInSandboxOptions {
   readonly candidateSource: string
   readonly files: readonly UploadedFile[]
   readonly credentials: SandboxCredentials
-  /** Called with progress so a long run is not a silent one. */
   readonly onProgress?: (step: string) => void
-  /** Platform tags for the microVM, so it can be found again by run. */
+  /** Tags used to find the microVM by run. */
   readonly tags?: Readonly<Record<string, string>>
 }
 
-/**
- * Run one candidate over the case suite inside an isolated microVM.
- *
- * Throws rather than degrading. If the sandbox cannot run, the correct
- * outcome is an `incomplete` run recorded as such, never a local execution,
- * and never a fabricated record set.
- */
+/** Sandbox failures propagate to the caller as incomplete runs. */
 export async function runInSandbox(options: RunInSandboxOptions): Promise<SandboxExecution> {
   const { candidateSource, files, credentials, onProgress = () => {}, tags } = options
   const startedAt = Date.now()
@@ -223,7 +149,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
 
     onProgress('running the harness')
     const ranAt = Date.now()
-    // A frame marker, not a secret. See `unframe` below.
+    // The guest can read this framing marker. See unframe.
     const frame = randomUUID()
     const result = await sandbox.runCommand('python3', [
       '-m',
@@ -241,14 +167,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
 
     const [stdout, stderr] = await Promise.all([result.stdout(), result.stderr()])
 
-    // The records come off stdout, never off the guest filesystem.
-    //
-    // This used to read `records.json` back out of the microVM. An audit
-    // showed what that allowed: the harness imports the candidate into its
-    // own process, so module-level candidate code could read `--out` from
-    // argv, write a bundle of its own and exit 0. `parse()` never ran, and
-    // the forged file was what got graded. Nothing the guest writes to disk
-    // is read any more, and `--out` no longer exists on this path.
+    // Read records from stdout. The candidate shares the harness process and can forge guest files.
     const recordsJson = result.exitCode === 0 ? unframe(stdout, frame) : null
 
     onProgress('probing isolation')
@@ -266,18 +185,13 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
       })
     }
 
-    // Stop first, then read the meters. `totalEgressBytes` is not final while
-    // the microVM is alive -- reading it before the stop returns `undefined`,
-    // which would record the strongest available evidence of isolation as
-    // `unknown`.
+    // Egress meters become final after the microVM stops.
     onProgress('stopping the microVM')
     await sandbox.stop()
     stopped = true
 
     return {
-      // `name` is the platform's identifier for this microVM. It is recorded
-      // so the claim "this ran in a sandbox" is checkable against the Vercel
-      // dashboard rather than taken on faith.
+      // Platform ID for looking up this microVM in Vercel.
       sandbox_id: sandbox.name,
       runtime: sandbox.runtime ?? 'python3.13',
       network_policy: describePolicy(sandbox.networkPolicy),
@@ -306,31 +220,21 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
   }
 }
 
-/** The applied policy as a short string, whatever shape it came back in. */
 function describePolicy(policy: unknown): string {
   if (typeof policy === 'string') return policy
   if (policy === undefined || policy === null) return 'not reported by the platform'
   return JSON.stringify(policy).slice(0, 200)
 }
 
-/**
- * Take the bundle out of a stdout stream a candidate is free to print into.
- *
- * The marker is a per-run UUID and is deliberately *not* a security boundary
- * The guest can read it from argv, and a candidate that forges a correctly
- * framed bundle has done exactly what a lying `parse()` does. It is defeated
- * by the same thing: `upload-set.ts` ships no expectations, so nothing inside
- * the microVM knows which answers would pass. What framing buys is that an
- * honest candidate printing diagnostics cannot corrupt an honest run.
- *
- * The *last* frame wins. A candidate that prints a decoy frame before the
- * harness emits the real one should not get the decoy graded.
- */
 /** Keep the operator-facing stdout readable by dropping the framed bundle. */
 function stripFrames(stdout: string): string {
   return stdout.replace(/<<<LAB-RECORDS:[^>]*>>>[\s\S]*?<<<END:[^>]*>>>/g, '[record bundle removed]')
 }
 
+/**
+ * Framing separates diagnostic output from records; the guest can read the marker.
+ * The last frame wins so a preceding decoy cannot replace the harness output.
+ */
 export function unframe(stdout: string, frame: string): string | null {
   const open = `<<<LAB-RECORDS:${frame}>>>\n`
   const close = `<<<END:${frame}>>>`

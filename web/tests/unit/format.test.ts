@@ -64,13 +64,14 @@ describe('computeDelta', () => {
     const delta = computeDelta(null, 0.4, 'recall_at_k')
     expect(delta.verdict).toBe('not-computable')
     expect(delta.raw).toBeNull()
-    expect(delta.reason).toContain('nothing to subtract')
+    expect(delta.reason).toBe('Only the comparison run reported this metric.')
   })
 
   it('applies the fixed materiality cutoff without calling it significance', () => {
     expect(computeDelta(0.2, 0.2 + MATERIALITY_THRESHOLD, 'recall_at_k').material).toBe(true)
     expect(computeDelta(0.2, 0.21, 'recall_at_k').material).toBe(false)
-    expect(describeDelta(0.2, 0.25, 'recall_at_k')).toContain('not a significance test')
+    expect(describeDelta(0.2, 0.25, 'recall_at_k')).toContain('fixed ±0.02 materiality cutoff')
+    expect(describeDelta(0.2, 0.25, 'recall_at_k')).not.toContain('significance')
   })
 
   it('reports an unchanged metric as unchanged rather than better', () => {

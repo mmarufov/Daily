@@ -31,8 +31,8 @@ test.describe('visitor journey', () => {
 
   test('reader shows a dated replay, never today’s news', async ({ page }) => {
     await page.goto('/reader')
-    await expect(page.getByText('This is a replay, not today’s news.')).toBeVisible()
-    await expect(page.getByText(/Every story below was published on or before/)).toBeVisible()
+    await expect(page.getByText('Recorded edition.')).toBeVisible()
+    await expect(page.getByText(/Stories were published on or before/)).toBeVisible()
     // The edition stamp from DESIGN.md.
     await expect(page.getByText(/· [A-Z]+ EDITION/)).toBeVisible()
     // Live mode is explicitly not claimed.

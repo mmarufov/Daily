@@ -191,7 +191,7 @@ test('forced colors preserve result marks and the counted legend', async ({ page
  * so nothing would have reported it broken a second time either.
  */
 test.describe('identity', () => {
-  test('the tab has an icon and links preview with an image', async ({ page }) => {
+  test('the tab has an icon and links preview with an image', async ({ page, baseURL }) => {
     await page.goto('/')
 
     // A vector icon, plus the raster fallback for browsers that ignore it.
@@ -222,14 +222,20 @@ test.describe('identity', () => {
       const res = await page.request.get(href as string)
       expect(res.status(), `${sel} -> ${href}`).toBe(200)
     }
-    // og:image is absolute, pinned to the production origin by metadataBase --
-    // which is what a scraper needs and what makes it useless to fetch here.
-    // Check the path against the site under test, so the assertion is about
-    // this build rather than about whatever is currently deployed.
     const og = await page.locator('meta[property="og:image"]').getAttribute('content')
-    expect(og, 'og:image must be absolute or scrapers drop it').toMatch(/^https:\/\/marufov\.com\//)
-    const { pathname, search } = new URL(og as string)
-    expect((await page.request.get(`${pathname}${search}`)).status()).toBe(200)
+    expect(og, 'og:image must be absolute or scrapers drop it').toMatch(/^https:\/\//)
+    const imageURL = new URL(og as string)
+    const targetURL = new URL(baseURL!)
+    expect(imageURL.protocol).toBe('https:')
+    if (targetURL.hostname === 'marufov.com') {
+      expect(imageURL.origin).toBe('https://marufov.com')
+    } else {
+      const expectedHost = imageURL.hostname === targetURL.hostname
+        || /^daily-web-git-[a-z0-9-]+-mmarufovs-projects\.vercel\.app$/.test(imageURL.hostname)
+      expect(expectedHost, `Unexpected preview image host: ${imageURL.hostname}`).toBe(true)
+    }
+    expect(imageURL.pathname).toBe('/opengraph-image.png')
+    expect((await page.request.get(`${imageURL.pathname}${imageURL.search}`)).status()).toBe(200)
   })
 })
 

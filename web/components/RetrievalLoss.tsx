@@ -28,7 +28,6 @@ export function RetrievalLoss({ data }: { readonly data: RetrievalLossData | nul
           <p className="finding-summary-title">Lost before scoring</p>
           <p className="finding-muted">
             {data.total === 0 ? 'No losses recorded' : `${(data.beforeScorer / data.total * 100).toFixed(1)}% of recorded must-see losses`}.
-            {' '}The scorer never saw them.
           </p>
         </div>
       </div>
@@ -95,8 +94,7 @@ export function RetrievalLoss({ data }: { readonly data: RetrievalLossData | nul
 
       <p className="finding-footnote">
         {data.total} {data.unit} across {data.fixtureCount} fixtures, from the {data.snapshot} corpus.
-        {' '}An article can count for more than one fixture. This denominator is separate from
-        the candidate marks above. Must-see labels are provisional.
+        {' '}Articles can appear in multiple fixtures. These pairs use provisional must-see labels.
       </p>
     </div>
   )

@@ -1,18 +1,5 @@
-# What the daily-web deployment actually needs.
-#
-# The Vercel project's Root Directory is `web`. Without this file the CLI
-# uploads 1.8 GB of virtualenv, Xcode project and local caches to build a
-# static site, which is slow enough to time out.
-#
-# `/backend` used to be excluded outright, under the heading "nothing else in
-# this repository takes part". That stopped being true when the Lab gained
-# functions that read the case suite at runtime, and the way it announced
-# itself was a preview build failing on `cannot stage
-# backend/lab/__init__.py: it does not exist`. The exclusion is now
-# file-by-file rather than wholesale: `scripts/stage-lab-evidence.ts` names
-# exactly what a deployed function reads, and this names the same set. A test
-# asserts the two lists agree, because two hand-maintained lists that must
-# match are two lists that will not.
+# Deployment inputs for daily-web, whose Root Directory is web.
+# Backend inclusions match scripts/stage-lab-evidence.ts; a test checks that set.
 
 /Daily
 /DailyTests
@@ -44,6 +31,6 @@
 !/backend/app/services/openai_service.py
 !/backend/app/services/ranking_contract.py
 
-# Browser acceptance artifacts are local, not deployment inputs.
+# Exclude browser acceptance artifacts.
 /web/test-results
 /web/playwright-report

@@ -181,8 +181,8 @@ test.describe('homepage evidence', () => {
 
   test('the first invitation connects the news product, parser failure and a runnable fix', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByText("Daily builds a news edition around a reader's interests.", { exact: false })).toBeVisible()
-    const invitation = page.getByRole('heading', { name: 'Does the fix actually work?', exact: true })
+    await expect(page.getByText("Daily builds news editions around a reader's interests.", { exact: false })).toBeVisible()
+    const invitation = page.getByRole('heading', { name: 'Does the fix work?', exact: true })
       .locator('xpath=ancestor::section[1]')
     await expect(invitation).toContainText(/parser/i)
     await expect(invitation).toContainText(/40 articles/)
@@ -230,14 +230,14 @@ test.describe('homepage evidence', () => {
       const story = panel.getByTestId('retrieval-story-link')
       await expect(story).toBeVisible()
       const href = await story.getAttribute('href')
-      const url = new URL(href as string, 'https://marufov.com')
+      const url = new URL(href as string, page.url())
       expect(url.pathname).toBe('/evidence')
       expect(url.searchParams.get('run')).toBe(NARRATIVE_RUN)
       expect(url.searchParams.get('view')).toBe('stories')
       expect(url.searchParams.get('persona')).toBeTruthy()
       expect(url.searchParams.get('story')).toBeTruthy()
     }
-    const lastStory = new URL(await panel.getByTestId('retrieval-story-link').getAttribute('href') as string, 'https://marufov.com')
+    const lastStory = new URL(await panel.getByTestId('retrieval-story-link').getAttribute('href') as string, page.url())
     await panel.getByTestId('retrieval-story-link').click()
     await expect(page).toHaveURL(lastStory.href)
     await expect(page.getByRole('complementary', { name: /^Recorded trace for / })).toContainText(lastStory.searchParams.get('story') as string)

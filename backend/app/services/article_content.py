@@ -193,10 +193,8 @@ def _ensure_article_content_schema(conn) -> None:
             )
             """
         )
-        # Early S2 builds used a history-wide hash uniqueness constraint. It
-        # made A -> B -> A impossible: the last A could neither become current
-        # nor receive a new monotonic version. Idempotence belongs to the
-        # current artifact only; historical reacquisition is a new event.
+        # Uniqueness applies to the current artifact so reacquiring A after B
+        # can allocate a new version for A.
         cur.execute(
             """
             ALTER TABLE public.article_content_artifacts
@@ -870,10 +868,8 @@ def serialize_article(row: Mapping[str, Any], *, include_body: bool) -> dict[str
             "fetched_at": _iso(row.get("artifact_fetched_at")),
             "content_hash": row.get("artifact_content_hash"),
             "extractor_version": row.get("artifact_extractor_version"),
-            # These are the current reviewed decision values. The immutable
-            # acquisition-time values remain on the artifact for audit, but a
-            # later grant must not claim "unknown" rights in the app, and a
-            # revocation clears the selected artifact entirely.
+            # Use current reviewed rights; retain acquisition-time values for audit.
+            # Revocation clears the selected artifact.
             "rights_policy": row.get("display_rights_basis"),
             "completeness": (
                 row.get("display_effective_completeness")
@@ -972,9 +968,8 @@ def claim_content_jobs(
     exhausted: list[dict[str, Any]] = []
     claimed: list[dict[str, Any]] = []
     with article_content_transaction(conn):
-        # A worker that dies on its final permitted attempt must not leave an
-        # unreclaimable ``leased`` row forever. Reap all due exhausted states
-        # before claiming fresh work, using the same transaction/row locks.
+        # Reap exhausted leases in this transaction before claiming fresh work.
+        # A worker may die on its final attempt.
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -1104,8 +1099,7 @@ def _load_policy(cur, canonical_url: str) -> dict[str, Any]:
     row = cur.fetchone()
     if row:
         return dict(row)
-    # Default deny is a pure read decision. Do not create a policy row as a
-    # side effect of ingestion; explicit reviewed mutations own that table.
+    # Policy creation requires an explicit reviewed mutation; ingestion only reads it.
     return {
         "source_domain": domain,
         "display_policy": "source_only",
@@ -1188,9 +1182,7 @@ def _validate_policy_input(
 
 def _rematerialize_source_policy(cur, domain: str) -> list[Any]:
     """Apply a policy decision to every already-normalized article from it."""
-    # Every path that needs both records locks article -> job. Ingestion already
-    # owns the article row after its URL upsert, so reversing this order creates
-    # a real deadlock with extraction completion.
+    # Lock article before job, matching ingestion, to prevent deadlocks with completion.
     cur.execute(
         """
         SELECT id, url
@@ -1323,10 +1315,8 @@ def set_source_policy(
                 ),
             )
             article_ids = _rematerialize_source_policy(cur, domain)
-            # A grant can make an existing reviewed artifact displayable without
-            # reacquisition. Revocation fences active workers. A later native
-            # policy that no longer accepts the previously-ready artifact must
-            # requeue the job instead of leaving it permanently wedged at ready.
+            # Grants may reuse reviewed artifacts; revocation fences active workers.
+            # Requeue ready jobs when their artifact no longer meets the native policy.
             if article_ids and action == "revoke":
                 cur.execute(
                     """
@@ -1484,8 +1474,7 @@ def _resolve_materialized_content(cur, article_id: Any, canonical_url: str) -> N
         if eligible and display is None:
             display = artifact
 
-    # Analysis can use explicitly separated cross-source context, but it never
-    # becomes display text or the legacy body. Prefer publisher/origin bodies.
+    # Cross-source context is analysis-only. Prefer publisher or origin bodies.
     analysis = next(
         (a for a in artifacts if a["kind"] in BODY_ARTIFACT_KINDS and a.get("completeness") != "invalid"),
         None,
@@ -1530,9 +1519,7 @@ def _resolve_materialized_content(cur, article_id: Any, canonical_url: str) -> N
     analysis_id = analysis["id"] if analysis else None
     analysis_version = analysis["version"] if analysis else None
     analysis_text = analysis["text"] if analysis else None
-    # The ambiguous legacy field is display-owned, not analysis-owned. Older
-    # clients may receive a body only when the same policy/artifact contract
-    # would permit the native reader. Ranking/chat use ``analysis_text``.
+    # The legacy body follows native-reader display policy. Ranking and chat use analysis_text.
     legacy_content = display["text"] if display else None
     cur.execute(
         """
@@ -1945,9 +1932,8 @@ def register_ingested_article(
         if artifact_id is None:
             raise ValueError("publisher feed artifact failed source validation")
 
-        # A substantial feed entry is still only analysis text until a human-
-        # reviewed source policy declares that this publisher's feed carries
-        # the complete article. Keep the origin job/lease alive in that case.
+        # Feed text needs a reviewed complete-article policy for native display.
+        # Keep origin extraction active until then.
         if not publisher_feed_is_full:
             return
 

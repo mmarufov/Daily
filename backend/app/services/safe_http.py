@@ -122,9 +122,8 @@ def hosts_match(host: str, allowed_host: str, *, allow_subdomains: bool = True) 
     allowed_host = normalize_host(allowed_host)
     if not host or not allowed_host:
         return False
-    # Publishers routinely canonicalize ``www.example.com`` to ``example.com``
-    # (and back). Treat only that conventional alias as the same policy host;
-    # all other sibling or lookalike domains still require explicit approval.
+    # Treat www and apex as the same policy host for publisher redirects.
+    # Other sibling domains require explicit approval.
     policy_host = host[4:] if host.startswith("www.") else host
     policy_allowed = (
         allowed_host[4:] if allowed_host.startswith("www.") else allowed_host
@@ -246,9 +245,8 @@ class _PinnedNetworkBackend(httpcore.AsyncNetworkBackend):
 
     def __init__(self, resolver: Resolver) -> None:
         self._resolver = resolver
-        # AnyIOBackend is part of httpcore's public API. HTTPX 0.27.2 does not
-        # expose a supported hook for replacing DNS resolution, so the small
-        # pool integration below is version-pinned and covered by a smoke test.
+        # HTTPX 0.27.2 lacks a DNS replacement hook. The httpcore pool
+        # integration is version-pinned and covered by a smoke test.
         self._backend = httpcore.AnyIOBackend()
 
     async def connect_tcp(
@@ -292,8 +290,7 @@ class _PinnedHTTPTransport(httpx.AsyncHTTPTransport):
     """HTTPX transport whose connection pool uses the pinned DNS backend."""
 
     def __init__(self, resolver: Resolver) -> None:
-        # The project pins HTTPX; replacing its pool is intentionally localized
-        # here so the rest of the code never relies on transport internals.
+        # Keep the version-pinned pool replacement local to this transport.
         super().__init__(verify=True, trust_env=False, retries=0)
         self._pool = httpcore.AsyncConnectionPool(
             ssl_context=ssl.create_default_context(),

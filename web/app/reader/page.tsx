@@ -9,7 +9,7 @@ import { personaLabel, personaName } from '@/lib/personas'
 export const metadata: Metadata = {
   title: 'The reader',
   description:
-    'A replay of an edition Daily assembled for one reader fixture against a dated, content-hashed corpus. Not today’s news, and not a person.',
+    'A recorded Daily edition for an evaluation fixture, built from a dated, content-hashed corpus.',
 }
 
 export default async function ReaderPage({
@@ -23,9 +23,9 @@ export default async function ReaderPage({
   if (!demo.ok) {
     return (
       <div className="frame flex max-w-2xl flex-col gap-4 py-16">
-        <h1 className="editorial m-0 text-3xl">The reader demo is unavailable</h1>
+        <h1 className="editorial m-0 text-3xl">Reader unavailable</h1>
         <p className="prose m-0">
-          The committed demo bundle could not be read. Run{' '}
+          The demo bundle could not be read. Run{' '}
           <span className="text-ink-60">npm run export:demo</span> in{' '}
           <span className="text-ink-60">web/</span> to rebuild it.
         </p>
@@ -112,8 +112,7 @@ export default async function ReaderPage({
 
           {edition.stories.length === 0 ? (
             <p className="prose m-0">
-              The pipeline assembled no edition for this fixture against this corpus. That is a
-              real recorded outcome, not a loading failure.
+              The recorded pipeline run produced no edition for this fixture.
             </p>
           ) : null}
         </article>
@@ -126,8 +125,7 @@ export default async function ReaderPage({
           note={`${bundle.n_articles_in_corpus?.toLocaleString() ?? 'An unrecorded number of'} articles, one date`}
         />
         <p className="prose measure m-0 text-ink-60">
-          Same corpus, same date, different newspaper. That is the product&rsquo;s whole claim, and the
-          only place on the site you can check it without reading a number.
+          Compare the lead stories for each fixture.
         </p>
         <ul className="m-0 grid list-none gap-px border border-rule bg-rule p-0 sm:grid-cols-2 lg:grid-cols-3">
           {others.map((other) => {
@@ -158,31 +156,26 @@ export default async function ReaderPage({
         <Band index="03" title="Live mode" note="Not implemented" />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
           <p className="prose m-0">
-            Signing in and receiving a feed built from your own words is{' '}
-            <strong>not implemented here</strong>. Three things block it, all access rather than
-            design. This is the honest version of &ldquo;coming soon&rdquo;.
+            Sign-in and personal feeds are <strong>not implemented here</strong>.
+            They need browser access, a web OAuth client, and live delivery identifiers.
           </p>
           <ol className="m-0 flex list-none flex-col gap-4 p-0">
-            <Blocker n="01" term="No browser may call the API">
-              CORS middleware is added only when <span className="text-ink">CORS_ORIGINS</span> is
-              set. It is unset; the documented default is &ldquo;no web clients&rdquo;.
+            <Blocker n="01" term="Browser access">
+              <span className="text-ink">CORS_ORIGINS</span> is unset, so the API allows no web clients.
             </Blocker>
-            <Blocker n="02" term="The sign-in token is the wrong audience">
+            <Blocker n="02" term="Web sign-in">
               <span className="text-ink">POST /auth/google</span> verifies a token issued for the
               iOS client. A browser needs its own OAuth client for this origin.
             </Blocker>
-            <Blocker n="03" term="Feedback needs a delivery that happened">
+            <Blocker n="03" term="Feedback identifiers">
               It must echo the <span className="text-ink">feed_request_id</span>,{' '}
               <span className="text-ink">reader_generation</span> and{' '}
-              <span className="text-ink">delivery_position</span> of the edition shown. Those exist
-              only on a live delivery, so the contract cannot be exercised against frozen fixtures
-              without inventing identifiers.
+              <span className="text-ink">delivery_position</span> of the edition shown. These come from live deliveries.
             </Blocker>
           </ol>
         </div>
         <p className="m-0 max-w-3xl border-t border-signal pt-3 text-sm text-ink-60">
-          Live end-to-end behaviour is therefore <strong className="text-ink">unverified</strong>.
-          These fixture editions are not reader evidence: no sessions, no impressions, no feedback.
+          Live end-to-end behaviour is <strong className="text-ink">unverified</strong>.
         </p>
       </section>
     </div>
@@ -215,7 +208,7 @@ function Publication({ story }: { story: DemoStory }) {
     <p className="label m-0 text-ink-40">
       {story.publication ?? 'Source not recorded'}
       {story.synthetic ? (
-        <span className="ml-2 text-signal">written for the evaluation, not a real publication</span>
+        <span className="ml-2 text-signal">synthetic evaluation story</span>
       ) : null}
       {story.url === null && !story.synthetic ? <span className="ml-2">no link recorded</span> : null}
     </p>
@@ -262,13 +255,12 @@ function ReplayNotice({
     <aside className="grid max-w-4xl gap-x-8 gap-y-4 border-y border-signal py-4 md:grid-cols-[minmax(0,1fr)_14rem]">
       <div>
         <p className="prose m-0 text-base">
-          <strong>This is a replay, not today&rsquo;s news.</strong> Every story below was
-          published on or before <strong>{dateLabel}</strong>, from a frozen corpus of{' '}
+          <strong>Recorded edition.</strong> Stories were published on or before <strong>{dateLabel}</strong>,
+          from a frozen corpus of{' '}
           {bundle.n_articles_in_corpus?.toLocaleString() ?? 'an unrecorded number of'} articles.
         </p>
         <p className="m-0 mt-2 text-xs text-ink-60">
-          The profiles are adversarial evaluation fixtures, not people; reading here creates no
-          reader data.{' '}
+          Profiles are adversarial evaluation fixtures. Reading here records no sessions, impressions, or feedback.{' '}
           <Link href={{ pathname: '/evidence', query: { run: bundle.run_id } }} className="link">
             See how this edition scored
           </Link>

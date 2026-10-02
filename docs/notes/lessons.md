@@ -575,3 +575,10 @@ The owner preferred the original card-based version after the broad composition
 refinement. When feedback says the overall design is liked but a region feels too
 large, start with its padding, scale and spacing. Preserve the existing layout and
 visual character; do not expand a local polish request into sitewide restructuring.
+
+## Public prose and source comments
+
+Use concrete descriptions and delete repeated qualifications before rewriting.
+Put each caveat beside its claim once. Keep source comments for constraints and
+non-obvious reasons; record debugging history in the commit or PR. For copy work,
+preserve the layout and include exact before-to-after text for review.

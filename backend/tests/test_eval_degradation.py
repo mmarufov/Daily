@@ -66,10 +66,10 @@ def test_clean_runs_stayed_offline(matrix):
 
 def test_upstream_fault_now_fails_the_offline_check(matrix):
     gate = matrix["gate_control"]
-    # The old check read only network fetches and saw nothing.
+
     assert gate["cache_misses_total"] == 0
     assert gate["old_offline_check_passes"]
-    # The raised misses the production scorer swallowed are now counted.
+    # Count offline misses even when the scorer catches them.
     assert gate["offline_misses_total"] > 0
     assert gate["new_offline_check_fails"]
     assert gate["offline_violations"]

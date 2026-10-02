@@ -1,32 +1,7 @@
 /**
- * Orchestration, made durable by the platform.
- *
- * `runstate.ts` already models a run as a fold over an append-only event log,
- * and `orchestrate.py` already implements replay-as-recovery. What neither
- * could provide is the part that matters: something outside the process that
- * notices the process died and resumes it. A Python loop that recovers from
- * an interruption only recovers if someone runs it again.
- *
- * The `"use workflow"` directive moves that job to Vercel Workflow. Every
- * `"use step"` boundary below is a journal entry, so a run that is interrupted
- * anywhere resumes from the last entry, and,
- * critically, resumes in a *different process*. `PROCESS_ID` is generated once
- * per module instantiation and recorded by every step, so the transcript shows
- * that directly rather than asserting it.
- *
- * What durability does NOT buy, stated because it is the easiest thing here to
- * overclaim: a journaled step that times out may well have completed its
- * external effect. Creating a microVM, calling a model and writing a blob are
- * not undone by the orchestrator forgetting them. So `unknown-outcome`
- * survives the port unchanged. It is the honest status for an attempt that
- * started and whose completion was never journaled, and no amount of platform
- * durability can turn it into a yes or a no.
- *
- * Note what these workflows do *not* take as arguments: the case suite. Every
- * workflow argument is serialised into the journal, and `observed.json` alone
- * is 1.8 MB, and passing it would write the entire corpus into durable storage
- * on every call, and again on every resume. The steps run in Node and the
- * files are staged beside them, so each loads the suite itself.
+ * Vercel Workflow journals each step for recovery. Steps load the staged case suite
+ * locally to avoid copying it into every workflow journal. An unjournaled completion
+ * remains unknown because its external effects may have finished.
  */
 
 import { getWritable, sleep } from 'workflow'
@@ -39,32 +14,15 @@ import { checkPatchScope } from './scope'
 import { ALLOWED_PATCH_PATHS } from './spec'
 
 /**
- * Identifies the process instance. Different values across two steps of one
- * run is the evidence that the run outlived a process.
- *
- * Global Web Crypto, not `node:crypto`. The workflow bundle is not Node --
- * the orchestrator body runs in a restricted runtime where a `require` of a
- * Node builtin is a `ReferenceError` at the first step boundary. The SDK
- * warns about exactly this at build time, and it was right.
+ * Use global Web Crypto: the workflow runtime cannot import Node builtins.
+ * A module instance ID and per-step uptime identify process reuse across resumes.
  */
 const PROCESS_ID = `${process.env.VERCEL_DEPLOYMENT_ID ?? 'local'}:${crypto.randomUUID().slice(0, 8)}`
 
 export interface StepMark {
   readonly process_id: string
   readonly at: string
-  /**
-   * Seconds this process has been alive.
-   *
-   * `process_id` alone cannot tell "a new instance served the resume" from
-   * "the same instance was still warm". Both leave one id per step, and the
-   * first observed resume on the platform came back with one id across a
-   * 92-second suspension with no way to say which had happened.
-   *
-   * Uptime settles it. Growing by roughly the suspension means the same
-   * instance stayed alive; resetting means a new one took over. Either is a
-   * real answer, and the run is durable in both. What differs is only
-   * whether the platform happened to recycle the instance.
-   */
+  /** Process uptime helps distinguish a warm resume from a new instance. */
   readonly uptime_s: number
 }
 
@@ -81,35 +39,13 @@ export interface WorkflowInput {
   readonly candidate_id: string
   readonly source: string
   readonly spec_hash: string
-  /**
-   * Seconds to suspend between execution and grading.
-   *
-   * Not a delay for its own sake: a `sleep` long enough to exceed the function
-   * lifetime is the one way to demonstrate real durability without pretending
-   * to crash. The platform tears the process down and brings the run back in
-   * another one, which is exactly the failure being claimed survivable. Zero
-   * skips it.
-   */
+  /** Optional durable suspension between execution and grading; zero skips it. */
   readonly suspend_seconds: number
-  /**
-   * The concurrency slot this run holds, and the UTC day its CPU is charged
-   * to. Issued by the public admission gate and handed back by `releaseStep`
-   * when the run ends, however it ends.
-   */
+  /** Admission slot and UTC billing day, returned to releaseStep when the run ends. */
   readonly slot: string
   readonly day: string
 }
 
-/**
- * Which process ran which step.
- *
- * The whole claim of platform durability is that a run survives losing the
- * process executing it. That is either demonstrable or it is marketing, and
- * this is what makes it demonstrable: if `scope`, `execute` and `grade` do
- * not all report the same id, the run outlived at least one process. Nothing
- * in the repository can fake it -- the ids are generated at module
- * instantiation, so a second distinct id means a second instantiation.
- */
 export interface ProcessTrace {
   readonly step: 'scope' | 'execute' | 'grade'
   readonly process_id: string
@@ -120,23 +56,13 @@ export interface ProcessTrace {
 interface Base {
   readonly events: readonly RunEvent[]
   readonly processes: readonly ProcessTrace[]
-  /**
-   * True when more than one process contributed to this run.
-   *
-   * False does **not** mean the run failed to suspend. It means the platform
-   * served the resume from the same instance, which it is free to do. See
-   * `uptime_s` on each step for which of the two happened.
-   */
+  /** True when step IDs show multiple process instances. A suspension may resume on a warm instance. */
   readonly resumed: boolean
 }
 
 /**
- * What a candidate run returns.
- *
- * `grading` is the per-case result joined to the case suite, so a reader can
- * see which fault caught the candidate and not only that something did.
- * `sandbox` is the microVM's own account of itself, read off the platform.
- * Either is null when the run never got far enough to produce it.
+ * Grading contains per-case results; sandbox contains platform measurements.
+ * Either may be null if execution stopped before producing it.
  */
 export type WorkflowOutcome =
   | ({ readonly kind: 'rejected-by-scope'; readonly detail: string } & Base)
@@ -154,14 +80,7 @@ export type WorkflowOutcome =
       readonly sandbox: SandboxSummary | null
     } & Base)
 
-/**
- * Report progress on the run's stream, from inside a step.
- *
- * The events are what actually happened, timestamped when they happened, so
- * a visitor watching a run sees the microVM being created rather than a
- * spinner standing in for it. Never allowed to fail a step: a progress line
- * that cannot be written is a missing line, not a failed run.
- */
+/** Progress writes are best-effort so a stream failure cannot fail the run. */
 function progressWriter(): { say: (stage: string) => void; done: () => Promise<void> } {
   let writer: WritableStreamDefaultWriter<ProgressEvent> | null = null
   try {
@@ -181,15 +100,7 @@ function progressWriter(): { say: (stage: string) => void; done: () => Promise<v
   }
 }
 
-/* --------------------------------------------------------- the steps --- */
-
-/**
- * The scope gate, as a journaled step.
- *
- * First on purpose. A patch that is out of scope must never reach a microVM,
- * so the gate runs before anything is created and its decision is journaled
- * before anything is created, so the ordering in the log is the evidence.
- */
+/** Journal the scope decision before allocating a microVM. */
 export async function scopeStep(input: WorkflowInput): Promise<{
   allowed: boolean
   detail: string
@@ -205,12 +116,7 @@ export async function scopeStep(input: WorkflowInput): Promise<{
   return { allowed: result.allowed, detail, mark: mark() }
 }
 
-/**
- * Execute the candidate in an isolated microVM.
- *
- * Imported inside the step rather than at module scope so the sandbox client
- * is not pulled into every build that merely references this workflow.
- */
+/** Import the sandbox client inside the step to keep it out of the workflow bundle. */
 export async function executeStep(input: WorkflowInput): Promise<{
   ok: boolean
   detail: string
@@ -218,10 +124,8 @@ export async function executeStep(input: WorkflowInput): Promise<{
   records_json: string | null
   sandbox: SandboxSummary | null
   /**
-   * Active CPU to charge against the day's allowance. The platform's meter
-   * when it reported one, zero when no microVM was created, and null when one
-   * may have run and nothing metered it, which the release step charges at
-   * the worst case.
+   * Metered CPU, zero if no microVM was created, or null for an unmetered attempt.
+   * releaseStep charges null at the configured maximum.
    */
   charge_cpu_ms: number | null
   mark: StepMark
@@ -232,9 +136,7 @@ export async function executeStep(input: WorkflowInput): Promise<{
 
   const credentials = sandboxCredentials()
   if ('missing' in credentials) {
-    // Not a fallback to local execution. An unknown candidate running outside
-    // the sandbox is the single outcome `selectRunner` exists to prevent, so
-    // the correct result is an incomplete run.
+
     return {
       ok: false,
       detail: `the sandbox cannot run: missing ${credentials.missing.join(', ')}`,
@@ -254,15 +156,11 @@ export async function executeStep(input: WorkflowInput): Promise<{
       files: await uploadSet(),
       credentials,
       onProgress: progress.say,
-      // The slot is this run's identity in the admission gate. Tagging the
-      // microVM with it means the platform itself can be asked how many
-      // microVMs one run created, which is the check that retries are off.
+      // The admission slot tag lets operators count microVMs per run.
       tags: { lab: 'public-run', slot: input.slot },
     })
   } catch (error) {
-    // Caught, not rethrown. A thrown step is retried, and a retry here runs
-    // the candidate again in a new microVM: on a public route, one bad run
-    // would cost up to four. The failure is journaled as what it is.
+    // Return failures so Workflow cannot retry a billable sandbox execution.
     progress.say('the sandbox run failed')
     await progress.done()
     return {
@@ -281,7 +179,7 @@ export async function executeStep(input: WorkflowInput): Promise<{
   const sandbox = summariseSandbox(execution)
   const failed = execution.isolation.filter((p) => !p.held)
   if (failed.length > 0) {
-    // A microVM that did not actually isolate produces evidence about nothing.
+
     return {
       ok: false,
       detail: `isolation probes failed: ${failed.map((p) => p.name).join(', ')}`,
@@ -305,18 +203,10 @@ export async function executeStep(input: WorkflowInput): Promise<{
     mark: mark(),
   }
 }
-// One attempt. The step catches its own failures above; this covers the ones
-// it cannot, such as the function itself being killed, which the queue would
-// otherwise redeliver into a fresh microVM.
+// Disable retries after unhandled failures, including process termination.
 executeStep.maxRetries = 0
 
-/**
- * Grade the records with the trusted evaluator.
- *
- * A separate step from execution, and the separation is the point: grading
- * reads only the bundle the previous step journaled. It cannot reach the
- * microVM, and the microVM never held this code.
- */
+/** Grade the journaled record bundle after execution, outside the microVM. */
 export async function gradeStep(
   recordsJson: string | null,
   failure: string | null,
@@ -325,18 +215,7 @@ export async function gradeStep(
   const { loadCasesForRun } = await import('./case-loader')
   const cases = await loadCasesForRun()
 
-  // A reported failure ends the run, whether or not records exist.
-  //
-  // This used to consult `failure` only when `recordsJson` was null, so a
-  // step that failed *and* had records, such as a gateway call that timed out
-  // mid-loop after the sandbox had already run, was graded on those records
-  // and could come back `accepted-for-review` while the run itself reported
-  // `refused`. A failure that resolves to acceptance is the one outcome this
-  // repository says must never happen, and it happened in the same file that
-  // gets it right for the candidate workflow.
-  //
-  // Order matters as much as the check: failure is consulted first, so there
-  // is no path from "we could not tell" to a verdict on the merits.
+  // Execution failure takes precedence even when records were produced.
   const graded = (result: Evaluation) => ({
     verdict: result.verdict,
     reason: result.reason,
@@ -354,12 +233,8 @@ export async function gradeStep(
 }
 
 /**
- * Hand the run's slot back and charge its CPU to the day it started on.
- *
- * Never throws. It runs in the workflow's `finally`, and an error there would
- * replace a finished run's verdict with a failure. If the store cannot be
- * reached the slot's lease expires on its own; the CPU charge is then lost,
- * which is the one place this errs open, and only by one run.
+ * Cleanup errors must preserve the verdict. If the store is unavailable, the slot
+ * expires by lease and this run's CPU charge is lost.
  */
 export async function releaseStep(slot: string, day: string, cpuMs: number | null): Promise<{ released: boolean }> {
   'use step'
@@ -374,21 +249,11 @@ export async function releaseStep(slot: string, day: string, cpuMs: number | nul
   }
 }
 
-/* ------------------------------------------------------ the workflow --- */
-
-/**
- * One candidate, from scope gate to verdict, durably.
- *
- * The event log this returns is the same shape `runstate.ts` folds, so the
- * public view of a workflow-driven run and of a Python-driven one are the
- * same view. Replacing the orchestrator did not replace the evidence format,
- * which is what makes the two comparable.
- */
+/** Returns the event format shared with the Python orchestrator and runstate.ts. */
 export async function runCandidateWorkflow(input: WorkflowInput): Promise<WorkflowOutcome> {
   'use workflow'
 
-  // Zero until a microVM may have run. The slot is released however the run
-  // ends, so a candidate that crashes the orchestrator does not keep it.
+  // Charge starts at zero until a microVM may have run.
   let chargeCpuMs: number | null = 0
   try {
     const events: RunEvent[] = []
@@ -413,11 +278,7 @@ export async function runCandidateWorkflow(input: WorkflowInput): Promise<Workfl
       return { kind: 'rejected-by-scope', detail: scope.detail, events, ...summarise() }
     }
 
-    // `new Date()`, not `mark()`. This is the workflow body, which runs in
-    // the SDK's sandbox rather than in Node: `process.uptime` does not exist
-    // here, and calling it killed every candidate run on production right
-    // after the scope step. The SDK fixes `Date` per run, so this is also
-    // the same value on every replay.
+    // The workflow runtime provides replay-stable Date but lacks process.uptime.
     events.push({ type: 'attempt-started', attempt_id: attemptId, runner: 'vercel-sandbox', at: new Date().toISOString() })
     chargeCpuMs = null
     const execution = await executeStep(input)
@@ -427,20 +288,13 @@ export async function runCandidateWorkflow(input: WorkflowInput): Promise<Workfl
       type: 'attempt-ended',
       attempt_id: attemptId,
       at: execution.mark.at,
-      // `failed`, not `unknown-outcome`: this step returned, so its outcome is
-      // known. `unknown-outcome` is reserved for an attempt whose completion was
-      // never journaled at all, which is reconstructed on replay rather than
-      // written here. See `recoverAttempts`.
+      // A returned step has a known outcome. recoverAttempts handles missing completions.
       status: execution.ok ? 'succeeded' : 'failed',
       note: execution.detail,
     })
 
     if (input.suspend_seconds > 0) {
-      // A real suspension, and the SDK's rather than a `setTimeout`. The
-      // difference is the whole claim: `setTimeout` holds a process open for
-      // the duration, which demonstrates nothing. This releases it. The process
-      // that resumes is not the process that slept, and `PROCESS_ID` on the
-      // next step is where a reader can see that rather than take it.
+      // Durable sleep releases the worker while suspended.
       await sleep(`${input.suspend_seconds}s`)
     }
 
@@ -472,15 +326,7 @@ export async function runCandidateWorkflow(input: WorkflowInput): Promise<Workfl
   }
 }
 
-/**
- * Reconstruct attempt statuses from a log that may be missing endings.
- *
- * This is the whole reason `unknown-outcome` exists, and it is deliberately
- * *not* something the workflow writes. An attempt with a start and no end is
- * one nothing observed finishing: the microVM may have run the candidate to
- * completion a millisecond before the orchestrator died. Calling that
- * `failed` would be a claim nobody is in a position to make.
- */
+/** A start without a journaled completion remains unknown: external work may have finished. */
 export function recoverAttempts(events: readonly RunEvent[]): readonly {
   attempt_id: string
   status: 'succeeded' | 'failed' | 'cancelled' | 'unknown-outcome'
@@ -502,27 +348,9 @@ export function recoverAttempts(events: readonly RunEvent[]): readonly {
   })
 }
 
-
-/* ------------------------------------------------ the investigation --- */
-
 /**
- * The paid work runs where the credential is.
- *
- * `AI_GATEWAY_API_KEY` is a Vercel *sensitive* variable: set on the
- * deployment, unreadable by anything that did not set it, including
- * `vercel env pull`. That is not an obstacle to work around -- it is the
- * access model the spec asks for. "Only the authenticated owner starts paid
- * work, enforced server-side" is not satisfied by copying the key onto a
- * laptop and running the loop there, and a repository that audits its own
- * sandbox for leaked credentials should not be exfiltrating one to run an
- * errand.
- *
- * So the investigation is a workflow. The owner starts it, it runs on the
- * deployment, and the evidence comes back in the run's return value to be
- * committed. Nothing about the candidate's path changes: it still faces the
- * scope gate, still executes in a microVM because its bytes match no
- * committed implementation, and is still graded by the evaluator it never
- * sees.
+ * Owner-triggered investigations run on the deployment where AI_GATEWAY_API_KEY
+ * is available. Proposed candidates use the same scope gate, sandbox, and external grader.
  */
 export interface InvestigationWorkflowInput {
   readonly run_id: string
@@ -545,22 +373,12 @@ export type InvestigationWorkflowOutcome = {
   readonly verdict_reason: string | null
   readonly processes: readonly ProcessTrace[]
   readonly resumed: boolean
-  /**
-   * The revision the code that ran was built from.
-   *
-   * `VERCEL_GIT_COMMIT_SHA` on a deployment, which is the honest answer for
-   * work executed there -- local HEAD would name whatever the operator's tree
-   * happened to be at, which is not what ran.
-   */
+  /** Revision supplied by the deployment that executed the code. */
   readonly executed_at_revision: string
   readonly deployment: string
 }
 
-/**
- * Run the agent loop. One step, because the loop is one unit: the model
- * proposes, the scope gate rules, and the sandbox executes inside the tool
- * the model called. Splitting it would journal halves of a decision.
- */
+/** Keep model proposals and their tool executions in one journaled step. */
 export async function investigateStep(input: InvestigationWorkflowInput): Promise<{
   ok: boolean
   detail: string
@@ -605,14 +423,7 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
       void candidate_sha256
       sandbox = evidence
 
-      // Isolation is checked BEFORE the records are kept, not after.
-      //
-      // `recordsJson` is a closure variable read by the caller after this
-      // callback returns, so assigning it and *then* returning early left the
-      // records in place: a microVM that failed every probe still had its
-      // output graded and published. The early return exits the tool, not the
-      // step. Evidence from a boundary that did not hold is evidence about
-      // nothing, and it must not survive being collected.
+      // Check isolation before retaining records in the closure used by the grading step.
       const breached = execution.isolation.filter((probe) => !probe.held)
       if (breached.length > 0) {
         recordsJson = null
@@ -626,9 +437,7 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
       const parsed = parseRecordBundle(JSON.parse(records))
       if (!parsed.ok) return { summary: `the record bundle did not validate: ${parsed.issues.join('; ')}`, evaluation: null }
 
-      // The tally, never the verdict. Returning the verdict would let a
-      // second proposal be tuned against the grader, which is also why there
-      // is no second proposal.
+      // Return outcome counts only, keeping grader feedback out of the proposal loop.
       const tally = parsed.value.records.reduce<Record<string, number>>((acc, r) => {
         acc[r.outcome] = (acc[r.outcome] ?? 0) + 1
         return acc
@@ -644,10 +453,7 @@ export async function investigateStep(input: InvestigationWorkflowInput): Promis
     return {
       ok: false,
       detail: `${result.reason}: ${result.needs.join('; ')}`,
-      // A failed *call* still carries a trace, because tool calls before the
-      // failure were paid for. A refusal before anything ran carries none,
-      // because nothing ran. Collapsing those two into `null` would lose the
-      // record of money already spent.
+      // Preserve traces from failed calls because earlier tool calls may have incurred cost.
       trace: result.reason === 'call-failed' ? result.trace : null,
       sandbox,
       records_json: recordsJson,
@@ -687,9 +493,7 @@ export async function investigationWorkflow(
   processes.push({ step: 'execute', ...investigation.mark })
 
   if (input.suspend_seconds > 0) {
-    // Same suspension as the candidate workflow, and for the same reason:
-    // the process that grades is meant to be a different process from the one
-    // that investigated, and `process_id` is where a reader checks that.
+
     await sleep(`${input.suspend_seconds}s`)
   }
 
@@ -712,7 +516,7 @@ export async function investigationWorkflow(
   }
 }
 
-/** Read inside a step: the workflow bundle has no `process.env` worth trusting. */
+/** Read deployment environment inside a Node step. */
 async function revisionStep(): Promise<string> {
   'use step'
   return process.env.VERCEL_GIT_COMMIT_SHA ?? 'unknown'

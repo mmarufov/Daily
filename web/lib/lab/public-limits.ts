@@ -1,38 +1,7 @@
 /**
- * What a stranger may spend, and how that is counted.
- *
- * The candidate runner used to be owner-only, because it is the one public
- * surface that creates a microVM. It makes no model call, so the only thing a
- * visitor can spend is Sandbox compute, and these limits are what bound it.
- *
- * Four limits, each decided against state shared by every function instance:
- *
- *   per address   5 runs in any rolling hour
- *   at once       3 runs executing across all visitors
- *   per UTC day   50 runs, and 20 minutes of microVM CPU as metered by the
- *                 platform, across all visitors
- *
- * They are constants rather than environment variables for the reason the
- * README gives about `LAB_MAX_USD`: raising a limit should be a commit
- * somebody reads, not a setting somebody changes.
- *
- * `LAB_MAX_USD` itself is not reused. It authorises model spend, in dollars,
- * for one investigation. A sandbox run has no measured dollar cost; it has
- * measured CPU milliseconds. A dollar cap here would enforce price times CPU,
- * which is an estimate, and this site does not act on numbers nobody
- * measured. So the daily cap is in the units the platform meters.
- *
- * The counters live in Upstash Redis, reached over its REST transaction
- * endpoint. Memory would not do: Fluid instances do not share it, so a limit
- * held there is a limit per instance, which is no limit. Every decision is one
- * MULTI transaction that reserves first and is compensated on refusal. Under a
- * burst that can refuse a request that would have fit. It cannot admit one
- * that does not, because every count it reads already includes the request
- * itself and comes out of a serialised transaction.
- *
- * Fails closed. No store configured, or a store that does not answer, means no
- * run starts. A run nobody counted is the one outcome this file exists to
- * prevent.
+ * Shared Redis transactions reserve capacity before admission and refund refusals.
+ * Concurrent reservations can conservatively refuse a request. An unavailable store
+ * closes admission; CPU limits use the platform's metered units.
  */
 
 import { createHash } from 'node:crypto'
@@ -44,21 +13,11 @@ export const PUBLIC_RUN_LIMITS = {
   concurrent_runs: 3,
   runs_per_day: 50,
   cpu_ms_per_day: 20 * 60 * 1000,
-  /**
-   * How long a slot is held if the run never releases it. The microVM lives
-   * at most `SANDBOX_LIMITS.wall_clock_seconds`, so this is generous on
-   * purpose: it only matters when the release step itself never ran.
-   */
+  /** Lease expiry frees a slot when workflow cleanup never runs. */
   lease_seconds: 300,
 } as const
 
-/**
- * What a run is charged when the platform did not meter it.
- *
- * The worst case the sandbox allows: every vCPU busy for the whole lifetime.
- * Unknown is never counted as zero, for the same reason a missing record is
- * never a pass.
- */
+/** Unmetered attempts are charged for every vCPU over the maximum sandbox lifetime. */
 export const UNMETERED_RUN_CPU_MS = SANDBOX_VCPUS * SANDBOX_LIMITS.wall_clock_seconds * 1000
 
 export type LimitId = 'per-address' | 'concurrent' | 'daily-runs' | 'daily-cpu'
@@ -67,21 +26,12 @@ export interface Refusal {
   readonly limit: LimitId
   /** The configured ceiling, in `unit`. */
   readonly allowed: number
-  /**
-   * What has been counted against it, in `unit`.
-   *
-   * For the run limits this is never more than `allowed`. The count it comes
-   * from includes requests being decided in the same instant, some of which
-   * are about to be refused and refunded, and the gate never admits past
-   * `allowed`. Reporting the raw count published `used: 6` against a limit
-   * of 5 on production, after a burst, when 5 runs had started.
-   */
+  /** Count clamped to the run ceiling because concurrent reservations may still be refunded. */
   readonly used: number
   readonly unit: 'runs' | 'cpu-ms'
   /** The earliest moment a retry can succeed against this limit. */
   readonly resets_at: string
   readonly retry_after_seconds: number
-  /** One sentence naming the limit and when it resets. */
   readonly error: string
 }
 
@@ -89,28 +39,13 @@ export type Admission =
   | { readonly ok: true; readonly slot: string; readonly day: string; readonly address_runs_left: number }
   | { readonly ok: false; readonly refusal: Refusal }
 
-/* ------------------------------------------------------- addresses --- */
-
-/**
- * The address a request came from, as the Vercel proxy computed it.
- *
- * `x-real-ip` only. The platform sets it and a client cannot, which is not
- * true of `x-forwarded-for` on every host this code might run on. Absent
- * (local development, tests) means null, and every null shares one bucket:
- * a missing address is the most conservative identity, not a free pass.
- */
+/** Vercel supplies x-real-ip. Requests without it share one conservative bucket. */
 export function clientAddress(headers: Headers): string | null {
   const raw = (headers.get('x-real-ip') ?? '').trim()
   return raw === '' ? null : raw
 }
 
-/**
- * The unit an address is limited in.
- *
- * IPv4 is limited per address. IPv6 is limited per /64, because a single
- * subscriber is routinely handed a whole /64 and could otherwise rotate
- * through 2^64 identities without leaving their connection.
- */
+/** Group IPv6 by /64 to prevent one subscriber rotating through addresses to bypass the limit. */
 export function addressBucket(address: string | null): string {
   if (address === null) return 'unknown'
   const value = address.toLowerCase()
@@ -133,34 +68,19 @@ function expandIpv6(value: string): string[] | null {
   return groups.map((g) => g.replace(/^0+(?=.)/, ''))
 }
 
-/**
- * Pseudonymous, not anonymous. The IPv4 space is small enough to reverse a
- * hash by enumeration, so the protection here is the TTL: a key outlives its
- * window by nothing.
- */
+/** IPv4 hashes can be reversed by enumeration. TTL limits retention to the rate-limit window. */
 export function addressKey(bucket: string): string {
   return createHash('sha256').update(`lab-public-address:${bucket}`).digest('hex').slice(0, 32)
 }
 
-/* --------------------------------------------------------- the store --- */
-
-/** One Redis command, as the REST transaction endpoint takes it. */
 export type Command = readonly (string | number)[]
 
-/**
- * Everything the limiter needs from a store: run these commands as one
- * transaction and return their results in order.
- */
+/** Commands execute atomically and results preserve command order. */
 export interface LimitStore {
   exec(commands: readonly Command[]): Promise<readonly unknown[]>
 }
 
-/**
- * Upstash over REST, or null when it is not configured.
- *
- * Read lazily, never at module scope: CI builds and tests with no environment
- * at all, and an import that throws on a missing variable would break both.
- */
+/** Read credentials lazily so imports work during builds without deployment credentials. */
 export function upstashStore(
   env: Readonly<Record<string, string | undefined>> = process.env,
   fetchImpl: typeof fetch = fetch,
@@ -200,12 +120,10 @@ const KEYS = {
 /** Counters outlive their day by a day, so a late release still lands. */
 const DAY_TTL_SECONDS = 2 * 24 * 60 * 60
 
-/* ------------------------------------------------------- the decision --- */
-
 export interface Counts {
   /** Runs holding a slot, this request included. */
   readonly active: number
-  /** When the earliest-expiring slot frees at the latest, ms. */
+  /** Latest release time of the earliest-expiring slot, in ms. */
   readonly active_earliest_expiry: number | null
   /** Runs from this address in the window, this request included. */
   readonly address: number
@@ -254,14 +172,7 @@ function refusal(
   }
 }
 
-/**
- * Which limit, if any, this request is over.
- *
- * Pure, so the arithmetic is tested without a store. When several limits are
- * exceeded the one reported is the one that resets *last*: telling a visitor a
- * slot frees in ten seconds, when the daily ceiling will refuse them anyway,
- * is a true statement that misleads.
- */
+/** Report the exceeded limit with the latest reset, when all active refusals can clear. */
 export function decide(counts: Counts, now: number, limits = PUBLIC_RUN_LIMITS): Refusal | null {
   const over: Refusal[] = []
   const midnight = nextUtcMidnight(now)
@@ -325,8 +236,6 @@ export function decide(counts: Counts, now: number, limits = PUBLIC_RUN_LIMITS):
   return over.reduce((a, b) => (Date.parse(b.resets_at) > Date.parse(a.resets_at) ? b : a))
 }
 
-/* ------------------------------------------------------- admission --- */
-
 function num(value: unknown): number {
   const n = typeof value === 'number' ? value : Number(value)
   return Number.isFinite(n) ? n : 0
@@ -348,13 +257,7 @@ export interface AdmitOptions {
   readonly limits?: typeof PUBLIC_RUN_LIMITS
 }
 
-/**
- * Reserve a slot and every counter in one transaction, then decide.
- *
- * Reserve-then-compensate rather than check-then-reserve: a check and a
- * reservation in separate round trips is a race between instances, and the
- * loser of that race is the limit.
- */
+/** Reserve all counters atomically, then compensate on refusal to avoid cross-instance races. */
 export async function admitRun(store: LimitStore, options: AdmitOptions): Promise<Admission> {
   const { now, slot } = options
   const limits = options.limits ?? PUBLIC_RUN_LIMITS
@@ -400,10 +303,7 @@ export async function admitRun(store: LimitStore, options: AdmitOptions): Promis
   }
 }
 
-/**
- * Undo a reservation that never became a run: refused, or `start` failed.
- * A refused request consumes nothing.
- */
+/** Refund admission refusals and workflow startup failures. */
 export async function refund(
   store: LimitStore,
   reservation: { readonly slot: string; readonly day: string; readonly address_key: string },
@@ -415,12 +315,7 @@ export async function refund(
   ])
 }
 
-/**
- * A run finished: free its slot and charge its CPU to the day it started on.
- *
- * The address entry and the day's run count stay. A run that ran is a run,
- * however it ended.
- */
+/** Release concurrency and charge CPU to the start day. Address and daily run counts remain. */
 export async function releaseRun(
   store: LimitStore,
   run: { readonly slot: string; readonly day: string; readonly cpu_ms: number | null },
@@ -433,31 +328,12 @@ export async function releaseRun(
   ])
 }
 
-/* ------------------------------------------------------------ gate --- */
-
-/**
- * How long one instance trusts a refusal before asking the store again.
- *
- * Remembering a daily refusal until midnight was exact only while counters
- * never go down, and they can: an operator corrects one, or a test simulates
- * an exhausted day and restores it. Then every instance that had cached the
- * refusal kept refusing everyone until 00:00 UTC. A minute keeps the point,
- * one store transaction per minute per instance however hard a client
- * hammers, and lets a correction take effect within that minute.
- */
+/** Refresh cached refusals within a minute so operator corrections take effect. */
 export const REFUSAL_MEMORY_MS = 60_000
 
 /**
- * Admission with a short memory of refusals that cannot change on their own.
- *
- * An address over its hourly limit stays over it until its oldest run ages
- * out: refusals add nothing, so nothing a visitor does can lower the count. A
- * day over its ceiling stays over until midnight. So those refusals are
- * repeated from memory, until their reset or for `REFUSAL_MEMORY_MS`,
- * whichever is sooner, and a client hammering the route costs one store
- * transaction per instance per minute rather than one per request.
- *
- * The concurrent limit is not remembered. A slot can free at any moment.
+ * Cache address and daily refusals until reset or REFUSAL_MEMORY_MS, whichever comes first.
+ * Concurrent slots can free at any time, so always check them against the store.
  */
 export class PublicRunGate {
   private readonly remembered = new Map<string, { refusal: Refusal; until: number }>()

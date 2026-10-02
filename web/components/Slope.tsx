@@ -51,7 +51,7 @@ export function Slope({
         </span>
         <span className="flex items-center gap-1.5 text-xs text-ink-60">
           <span className="inline-block h-0.5 w-4 bg-signal" aria-hidden="true" />
-          moved the wrong way
+          worse
         </span>
       </div>
 
@@ -118,9 +118,7 @@ export function Slope({
       </ul>
 
       <p className="m-0 max-w-2xl text-xs text-ink-40">
-        One 0–100% scale for every row, ticked at 0, 50 and 100. Fraction metrics only: counts,
-        costs and latencies share no scale with a recall rate. A filled dot marks a difference past
-        the fixed &plusmn;0.02 cutoff, which is a chosen threshold, not a significance test.
+        Fraction metrics share a 0–100% scale, ticked at 0, 50 and 100.
         {note !== undefined ? ` ${note}` : ''}
       </p>
     </div>
