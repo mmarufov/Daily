@@ -47,7 +47,7 @@ jobs:
       # Safe only because of the gate above: for a push to the default branch
       # this sha is a reviewed commit on main, so the code that validates and
       # publishes is the same code that produced the artifacts.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
@@ -62,7 +62,7 @@ jobs:
           fi
           echo "HEAD $(git rev-parse --short HEAD) is reachable from origin/main"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: npm
@@ -71,7 +71,7 @@ jobs:
       - run: npm ci
 
       - name: Download the artifacts built by the triggering run
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: evaluation-artifacts-${{ github.event.workflow_run.head_sha }}
           path: web/public/
