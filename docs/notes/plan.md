@@ -924,17 +924,19 @@ rows. Start from main d1ca5383 in an isolated checkout; preserve Sydney's dirty 
 - [x] Capture production baselines in light/dark themes across all five routes.
 - [x] Recompose homepage Lab evidence, guard comparison and retrieval losses.
 - [x] Refine supporting Lab, Evidence, Findings, Reader and shared spacing.
-- [ ] Verify responsiveness, accessible evidence, motion and runner state preservation.
+- [x] Verify responsiveness, accessible evidence, motion and runner state preservation.
 - [x] Pass types, units, artifact checks/staleness, build and final diff review.
-- [ ] Open PR, pass CI, merge and verify the public deployment.
-- [ ] Pass production Chromium/WebKit suite with mocked Lab endpoints.
-- [ ] Record before/after screenshots and throttled mobile performance.
-- [ ] Read-only verify existing run wrun_01M3X9RYY80MHVRYFT7GWSWCN0; no new execution.
+- [x] Open PR, pass CI, merge and verify the public deployment.
+- [x] Pass production Chromium/WebKit suite with mocked Lab endpoints.
+- [x] Record before/after screenshots and throttled mobile performance.
+- [x] Read-only verify existing run wrun_01M3X9RYY80MHVRYFT7GWSWCN0; no new execution.
 
 Production acceptance follow-up: the first deployed pass exposed a 5px Evidence
 overflow at 320px in WebKit and a Lab selector that assumed faults preceded the
 case field. Correct the narrow-screen sizing without clipping and select the fault
 by its exact case identifier; rerun affected tests and the production suite.
 
-- [ ] Correct the WebKit Evidence overflow and verify the complete width matrix.
-- [ ] Update the Lab fault selector for the intended verdict / case / detail order.
+- [x] Correct the WebKit Evidence overflow and verify the complete width matrix.
+- [x] Update the Lab fault selector for the intended verdict / case / detail order.
+
+Release evidence: [daily-composition-release.md](daily-composition-release.md).
