@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import type { RunStoryData } from '@/lib/run-story'
-import { clamp, storyFrame, storyStage, STORY_DURATION, STORY_MEDIA, STORY_STOPS, STORY_TOP } from '@/lib/run-story-motion'
+import { clamp, storyDuration, storyFrame, storyStage, STORY_DURATION, STORY_MEDIA, STORY_STOPS, STORY_TOP } from '@/lib/run-story-motion'
 import { AnimatedDetails } from './AnimatedDetails'
 import { CaseStatusMark, type CaseStatusTone } from './CaseStatusMark'
 import { RunDiagram } from './RunDiagram'
@@ -74,6 +74,7 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
     let from = visual
     let target = visual
     let startedAt = 0
+    let duration = STORY_DURATION
     let moving = false
 
     const paint = (progress: number) => {
@@ -88,12 +89,13 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
         const travel = Math.max(1, area.offsetHeight - panel.offsetHeight)
         const progress = clamp((STORY_TOP - area.getBoundingClientRect().top) / travel)
         element.dataset.progress = progress.toFixed(3)
-        const next = storyStage(progress)
+        const next = storyStage(progress, resolveImmediately ? -1 : lastStage)
         if (next !== lastStage || resolveImmediately) {
           lastStage = next
           setStage(next)
           from = visual
           target = STORY_STOPS[next]!
+          duration = storyDuration(from, target)
           startedAt = now
           moving = !resolveImmediately && Math.abs(target - from) > 0.0001
           if (!moving) visual = target
@@ -103,9 +105,8 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
         }
       }
       if (moving) {
-        const elapsed = clamp((now - startedAt) / STORY_DURATION)
-        const eased = elapsed * elapsed * (3 - 2 * elapsed)
-        visual = from + (target - from) * eased
+        const elapsed = clamp((now - startedAt) / duration)
+        visual = from + (target - from) * elapsed
         paint(visual)
         if (elapsed === 1) {
           moving = false

@@ -600,3 +600,7 @@ Review stopped scroll at arbitrary positions and sample forward/reverse transiti
 Require outgoing and incoming text layers to be mutually exclusive. Route connectors
 between objects, with clearance from text and case marks. Let a stage transition
 finish without moving the visitor's page position.
+
+## Run stage pacing
+
+A complete transition can still feel abrupt when its visible changes occupy only a small part of the timeline. Give each stage enough scroll distance to read, distribute motion across the transition, and use a reverse buffer around thresholds. Verify intermediate frames and elapsed time as well as the final state.
