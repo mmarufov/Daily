@@ -36,10 +36,12 @@ export default async function HomePage() {
       </section>
 
       <section className="frame lab-invitation" id="daily-lab" aria-labelledby="lab-question">
-        <div className="invitation-inner">
-          <div className="invitation-copy">
+        <div className="section-intro">
+          <div className="section-heading">
             <p className="eyebrow">01 / Daily Lab</p>
             <h2 id="lab-question">Does the fix<br /> actually work?</h2>
+          </div>
+          <div className="section-description">
             <p>{evidence.offendingCase ? <>Daily sent {evidence.offendingCase.articles_sent} articles for scoring and received {evidence.offendingCase.verdicts_returned} verdicts without article IDs, leaving the matches unverifiable. </> : <>Daily&apos;s parser must connect each model score to the right article. </>}The Lab runs proposed parsers in Vercel Sandbox and grades their results independently.</p>
             <Link href="/lab#run" className="button-primary">Run the default parser <span aria-hidden="true">↗</span></Link>
             <div className="invitation-facts">
@@ -48,6 +50,9 @@ export default async function HomePage() {
               <span><b>Independent</b>grading</span>
             </div>
           </div>
+        </div>
+        <div className="lab-evidence">
+          <RecordedRunTimeline />
           {run ? (
             <div className="recorded-result">
               <div className="recorded-result-top"><span>{run.candidate.candidate_id}</span><span className="recorded-status">{run.verdict === 'rejected' ? 'Rejected' : run.verdict}</span></div>
@@ -65,18 +70,21 @@ export default async function HomePage() {
               </ul>
               <p className="recorded-result-summary">The count guard looks like a fix. {applicable - correct} applicable cases still catch it.</p>
               <Link href={evidence.recordedRunHref} className="text-link">Inspect this verdict <span aria-hidden="true">→</span></Link>
-              <RecordedRunTimeline />
             </div>
-          ) : <div className="recorded-result"><p>The published result is unavailable.</p><Link href="/lab" className="text-link">Open the Lab</Link><RecordedRunTimeline /></div>}
+          ) : <div className="recorded-result"><p>The published result is unavailable.</p><Link href="/lab" className="text-link">Open the Lab</Link></div>}
         </div>
       </section>
 
       <section className="finding-section" id="experiment">
-        <div className="frame finding-layout">
-          <div className="finding-copy">
-            <p className="eyebrow">02 / The cost of correctness</p>
-            <h2>A safer guard.<br />A worse score.</h2>
-            <p>An experimental guard refused batches with the wrong number of verdicts, and measured feed quality got worse. The Lab checks parser correctness; this historical experiment measures the effect on news relevance.</p>
+        <div className="frame section-stack">
+          <div className="section-intro">
+            <div className="section-heading">
+              <p className="eyebrow">02 / The cost of correctness</p>
+              <h2>A safer guard.<br />A worse score.</h2>
+            </div>
+            <div className="section-description">
+              <p>An experimental guard refused batches with the wrong number of verdicts, and measured feed quality got worse. The Lab checks parser correctness; this historical experiment measures the effect on news relevance.</p>
+            </div>
           </div>
           <GuardExperiment experiment={evidence.guardExperiment} />
         </div>
@@ -95,12 +103,16 @@ export default async function HomePage() {
       </section>
 
       <section className="finding-section" id="retrieval">
-        <div className="frame finding-layout">
-          <div className="finding-copy">
-            <p className="eyebrow">04 / Before the model</p>
-            <h2>Ranking never got a chance.</h2>
-            <p>{lookback && evidence.losses ? <>{lookback.count} of {evidence.losses.total} missed must-see pairs were lost at the lookback window. Better ranking cannot recover a story retrieval never supplied.</> : 'Trace where the recorded pipeline lost stories before the scorer could see them.'}</p>
-            <Link href="/evidence?run=prod-llm__2026-09-02__47edb50&view=stories&outcome=lost-before-scorer" className="text-link">Inspect the losses <span aria-hidden="true">→</span></Link>
+        <div className="frame section-stack">
+          <div className="section-intro">
+            <div className="section-heading">
+              <p className="eyebrow">04 / Before the model</p>
+              <h2>Ranking never got a chance.</h2>
+            </div>
+            <div className="section-description">
+              <p>{lookback && evidence.losses ? <>{lookback.count} of {evidence.losses.total} missed must-see pairs were lost at the lookback window. Better ranking cannot recover a story retrieval never supplied.</> : 'Trace where the recorded pipeline lost stories before the scorer could see them.'}</p>
+              <Link href="/evidence?run=prod-llm__2026-09-02__47edb50&view=stories&outcome=lost-before-scorer" className="text-link">Inspect the losses <span aria-hidden="true">→</span></Link>
+            </div>
           </div>
           <RetrievalLoss data={evidence.losses} />
         </div>

@@ -1,0 +1,137 @@
+/* Route-scoped composition. The functional controls and recorded content keep
+   their own semantics; these rules organize their surrounding page rhythm. */
+.support-intro {
+  padding-block: 3rem 2rem;
+}
+
+.support-section {
+  min-width: 0;
+  padding-bottom: 4.5rem;
+}
+
+.evidence-page > section,
+.reader-page > section {
+  min-width: 0;
+}
+
+.evidence-filter-section {
+  padding-bottom: 2rem;
+}
+
+.evidence-controls {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--d-rule);
+}
+
+.evidence-filter-form {
+  display: grid;
+  min-width: 0;
+  gap: 1.25rem;
+}
+
+.evidence-filter-group {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.evidence-controls select {
+  min-height: 44px;
+  border-radius: 6px;
+}
+
+.evidence-filter-apply {
+  align-self: end;
+}
+
+.evidence-run-summary {
+  margin-bottom: 2rem;
+}
+
+.evidence-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+}
+
+.findings-page .prose,
+.findings-page .measure,
+.findings-interpretation p {
+  max-width: 68ch;
+}
+
+.findings-page > .support-intro {
+  padding-bottom: 3rem;
+}
+
+.findings-interpretation {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--d-rule);
+}
+
+.finding-trace blockquote {
+  line-height: 1.7;
+}
+
+.finding-trace .link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
+.reader-intro {
+  padding-block: 2rem 1.5rem;
+}
+
+.reader-profile-section {
+  padding-bottom: 1.5rem;
+}
+
+.reader-edition {
+  padding-bottom: 4.5rem;
+}
+
+@media (min-width: 1024px) {
+  .evidence-filter-form {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .evidence-filter-group + .evidence-filter-group {
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--d-rule);
+  }
+}
+
+@media (max-width: 639px) {
+  .support-intro {
+    padding-block: 2rem 1.5rem;
+  }
+
+  .support-section,
+  .reader-edition {
+    padding-bottom: 3rem;
+  }
+
+  .evidence-filter-group {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .evidence-filter-group + .evidence-filter-group {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--d-rule);
+  }
+
+  .findings-page > .support-intro {
+    padding-bottom: 2rem;
+  }
+}

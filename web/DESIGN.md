@@ -64,3 +64,33 @@ runner. Show the named production recording and actual elapsed event timestamps,
 with four isolation checks and untimed independent grading. This spec-v2 execution
 is distinct from the adjacent published spec-v1 count-guard result. Keep that
 provenance visible. Remove the unearned hero eyebrow; keep section numbers.
+
+## Composition refinement
+
+Keep Daily-first hero, local type, palette and restrained motion. Organize content
+in introduction, primary evidence and support rows; borders identify functional
+surfaces, not every paragraph group. Page width remains 1,280px. Default section
+spacing is 72px desktop/48px mobile, with 24-32px from intro to visual. Body copy
+is at least 14px; metadata generally 12px. Two-column evidence begins at 1,024px;
+guard metrics pair at 640px. No clipping or fixed section heights.
+
+Homepage Lab: heading left, description/action right; then timeline left and
+published result right with one separating rule. Both recordings remain labeled
+independently. Mobile order is intro/action/timeline/result. Guard comparison:
+open full-width visual under its intro, shared toolbar, two metrics with ~64px
+numerals and 24px tracks, concise interpretation and compact historical note.
+Keep equal heights between states via overlapping intrinsic grid content, not a
+fixed height. Keep historical caveat visible; details retain disclosure behavior.
+Pipeline retains its dark instrument. Retrieval: 75/97 at lookback is primary,
+84 before scoring is supporting; full-width chart followed by explanation/story.
+
+Supporting routes inherit consistent gutters, spacing and disclosure rhythm.
+Lab keeps the functional editor/status surface and all execution semantics.
+Evidence controls remain grouped, tables full-width with contained overflow.
+Findings prose stays around 60-70ch and reuses the guard comparison. Reader keeps
+its newspaper surface and scoped Fraunces; reduce repeated pre-edition spacing.
+
+Acceptance includes the closed guard section near/below 760px at 1,440px, readable
+320px layouts, both themes, keyboard/forced-color/reduced-motion behavior, actual
+recordings and nullable states, unchanged URLs and no Sandbox submissions from QA.
+No API, artifact schema, evaluator, quota or execution changes.

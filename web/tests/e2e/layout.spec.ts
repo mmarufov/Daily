@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { Response } from '@playwright/test'
+import type { Locator, Response } from '@playwright/test'
 
 import { expect, test } from './fixtures'
 
@@ -35,6 +35,76 @@ test.describe('no page scrolls sideways', () => {
     })
   }
 })
+
+
+/** Measure sibling composition rather than incidental CSS class names or pixels. */
+async function expectColumns(first: Locator, second: Locator, sideBySide: boolean) {
+  const a = await first.boundingBox()
+  const b = await second.boundingBox()
+  expect(a).not.toBeNull()
+  expect(b).not.toBeNull()
+  if (sideBySide) {
+    expect(Math.abs(a!.y - b!.y), 'Evidence columns must share their top edge').toBeLessThanOrEqual(1)
+    expect(b!.x).toBeGreaterThanOrEqual(a!.x + a!.width)
+  } else {
+    expect(b!.y, 'Evidence must follow the reading order on narrow screens').toBeGreaterThanOrEqual(a!.y + a!.height)
+  }
+}
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`${colorScheme} homepage composition preserves evidence order and stable comparison heights`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
+    for (const width of [390, 639, 640, 1023, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 1000 })
+      await page.goto('/')
+      await page.evaluate(() => document.fonts.ready)
+      const invitation = page.locator('#daily-lab')
+      const timeline = invitation.getByTestId('recorded-run-timeline')
+      const result = invitation.locator('.recorded-result')
+      await expectColumns(timeline, result, width >= 1024)
+      const action = invitation.getByRole('link', { name: 'Run the default parser', exact: true })
+      const actionBox = await action.boundingBox()
+      const timelineBox = await timeline.boundingBox()
+      expect(timelineBox!.y).toBeGreaterThanOrEqual(actionBox!.y + actionBox!.height)
+      expect(await timeline.locator('xpath=ancestor::details').count()).toBe(0)
+      await expect(timeline.getByText('graded outside the microVM', { exact: true })).toBeVisible()
+      await expect(result.getByTestId('recorded-case-field')).toBeVisible()
+
+      const panel = page.getByTestId('guard-experiment-panel')
+      const recall = panel.getByTestId('guard-metric-recall')
+      const unwanted = panel.getByTestId('guard-metric-unwanted')
+      await expectColumns(recall, unwanted, width >= 640)
+      const original = panel.getByRole('button', { name: 'Original', exact: true })
+      const experiment = panel.getByRole('button', { name: 'Guard experiment', exact: true })
+      await original.click()
+      const originalHeight = (await panel.boundingBox())!.height
+      await experiment.click()
+      await expect(experiment).toHaveAttribute('aria-pressed', 'true')
+      const experimentHeight = (await panel.boundingBox())!.height
+      expect(Math.abs(originalHeight - experimentHeight), `Comparison shifted at ${width}px`).toBeLessThanOrEqual(1)
+      await expect(panel.getByText(/6 recorded gate failures/)).toBeVisible()
+      await expect(panel.getByText(/historical working-tree experiment/)).toBeVisible()
+      if (width === 1440) {
+        expect((await page.locator('#experiment').boundingBox())!.height).toBeLessThanOrEqual(780)
+      }
+      // Expanded provenance must grow naturally rather than clip the source link.
+      const summary = panel.locator('summary').filter({ hasText: /^Experiment provenance$/ })
+      await summary.click()
+      const source = panel.getByRole('link', { name: /Inspect summary and source hashes/ })
+      await expect(source).toBeVisible()
+      const sourceBox = await source.boundingBox()
+      const panelBox = await panel.boundingBox()
+      expect(sourceBox!.y + sourceBox!.height).toBeLessThanOrEqual(panelBox!.y + panelBox!.height)
+      await summary.click()
+      expect((await panel.boundingBox())!.height).toBeCloseTo(experimentHeight, 0)
+
+      const retrieval = page.getByTestId('retrieval-loss-panel')
+      await expectColumns(retrieval.locator('.retrieval-explanation'), retrieval.locator('.retrieval-story'), width >= 1024)
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
+      expect(overflow, `Homepage overflow at ${width}px`).toBeLessThanOrEqual(0)
+    }
+  })
+}
 
 test('nothing is painted above the header', async ({ page }) => {
   // The overscroll area at the top of a document shows whatever sits above

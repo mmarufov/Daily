@@ -216,6 +216,9 @@ test.describe('homepage evidence', () => {
   test('all 97 retrieval losses have a selectable explanation and a real story trace', async ({ page }) => {
     await page.goto('/')
     const panel = page.getByTestId('retrieval-loss-panel')
+    await expect(panel.locator('.retrieval-total')).toHaveText(/75\s*\/\s*97/)
+    await expect(panel.locator('.retrieval-summary')).toContainText('Lost at the lookback window')
+    await expect(panel.locator('.retrieval-summary')).toContainText('84 were lost before scoring')
     const segments = [
       ['Lookback', 75],
       ['Prefilter cap', 9],
@@ -301,7 +304,8 @@ test.describe('server-rendered opening', () => {
     }
     await expect(probes.getByRole('listitem')).toHaveCount(4)
     await expect(timeline).toContainText('f027762ab4d08b35')
-    await expect(timeline).toContainText('A separate execution from the published spec 1 result above.')
+    await expect(timeline).toContainText(/separate execution from the published spec 1 result/i)
+    await expect(timeline).not.toContainText('result above')
     await expect(timeline.locator(`a[href="/runs/${RECORDED_EXECUTION}.json"]`)).toBeVisible()
   })
 

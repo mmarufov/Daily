@@ -18,17 +18,19 @@ export function RetrievalLoss({ data }: { readonly data: RetrievalLossData | nul
     return <div className="finding-unavailable" role="status">No retrieval-loss stages were recorded.</div>
   }
 
+  const lookback = data.segments.find((segment) => segment.key === 'lookback')
+
   return (
     <div className="finding-panel retrieval-panel" data-testid="retrieval-loss-panel">
       <div className="retrieval-summary">
         <p className="retrieval-total">
-          <span>{data.beforeScorer}</span><span className="retrieval-total-denominator">/ {data.total}</span>
+          <span>{lookback?.count ?? 'N/A'}</span><span className="retrieval-total-denominator">/ {data.total}</span>
         </p>
         <div>
-          <p className="finding-summary-title">Lost before scoring</p>
+          <p className="finding-summary-title">Lost at the lookback window</p>
           <p className="finding-muted">
-            {data.total === 0 ? 'No losses recorded' : `${(data.beforeScorer / data.total * 100).toFixed(1)}% of recorded must-see losses`}.
-            {' '}The scorer never saw them.
+            {lookback === undefined ? 'No lookback count was recorded. ' : ''}
+            {data.beforeScorer} were lost before scoring, including the prefilter cap.
           </p>
         </div>
       </div>
@@ -96,7 +98,7 @@ export function RetrievalLoss({ data }: { readonly data: RetrievalLossData | nul
       <p className="finding-footnote">
         {data.total} {data.unit} across {data.fixtureCount} fixtures, from the {data.snapshot} corpus.
         {' '}An article can count for more than one fixture. This denominator is separate from
-        the candidate marks above. Must-see labels are provisional.
+        Daily's pipeline candidate population. Must-see labels are provisional.
       </p>
     </div>
   )
