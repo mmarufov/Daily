@@ -121,10 +121,8 @@ REGISTRY: dict[str, dict] = {
     },
 }
 
-# Not a matrix fault: an UPSTREAM change on purpose. It removes planted needles
-# before scoring, which changes every scorer request, so the cache misses. The
-# production scorer swallows the miss and falls back to keyword scoring. The
-# gate must now fail it on raised offline misses.
+# This upstream control changes scorer requests and forces cache misses.
+# The gate counts misses even when the scorer falls back to keywords.
 GATE_CONTROL = {
     "name": "drop_plants_prefilter",
     "runner": PROD,
@@ -134,10 +132,7 @@ GATE_CONTROL = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Everything below is implementation. It must not change the declarations
-# above; `PREREGISTERED_SHA256` pins them to the registration commit.
-# ---------------------------------------------------------------------------
+# The declarations above are pinned by PREREGISTERED_SHA256.
 
 import contextlib  # noqa: E402
 import hashlib  # noqa: E402
@@ -427,9 +422,7 @@ def compute_matrix(workers: int = 8) -> dict:
     jobs.append((GATE_CONTROL["name"], GATE_CONTROL["runner"], GATE_CONTROL["snapshot"]))
 
     t0 = time.perf_counter()
-    # One fresh process per replay. A reused worker keeps the process-wide
-    # client, so a second replay would see only the cache keys it touched first
-    # and the per-run offline accounting would be wrong.
+    # Use a fresh process per replay so the cached client and miss accounting reset.
     with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context("spawn"),
                              max_tasks_per_child=1) as pool:
         results = list(pool.map(measure, *zip(*jobs)))
@@ -467,7 +460,7 @@ def compute_matrix(workers: int = 8) -> dict:
         "snapshots": list(SNAPSHOTS), "metrics": list(METRICS), "k": K,
         "provenance": {
             "command": COMMAND, "git_sha": _git("rev-parse", "HEAD"),
-            # Uncommitted code under evals/ or app/ would make git_sha a lie.
+            # The recorded git_sha must identify the code used for replay.
             "git_dirty": bool(_git("status", "--porcelain", "--", "evals", "app", ":(exclude)evals/results")),
             "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "machine": f"{platform.system()} {platform.release()} {platform.machine()}, "

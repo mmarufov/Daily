@@ -150,8 +150,7 @@ async def rank(request, *, provider=None, reserve=None, settle=None, deadline=No
                    started+(request.batch.valid_until-current_time).total_seconds())
     values = {j.article_id: j for j in baseline(request)}
     unresolved = [e for e in request.evidence if values[e.article_id].decision == 'abstain' and e.analysis_allowed]
-    # Fair per-intent opportunities for token-limited semantic work. This is work
-    # scheduling only, never a forced acceptance or an S8 edition quota.
+    # Schedule token-limited work across interests before edition selection.
     groups = {}
     for e in unresolved:
         groups.setdefault(next(iter(e.retrieval_intent_ids), ''), []).append(e)
@@ -280,8 +279,7 @@ def _ordinary(batch, ranked, snapshot, limit=None):
     for identifier in ranked.ordered_ids[:limit]:
         candidate, judgment = candidates[identifier], judgments[identifier]
         item = serialize_article(candidate.article, include_body=False)
-        # Public explanations are safe templates. Model prose stays private until
-        # semantic explanation evaluation can establish stronger guarantees.
+        # Use reviewed explanation templates until model prose passes semantic evaluation.
         item.update(relevant=True, relevance_reason='General news' if judgment.reason == 'generic'
                     else 'Substantive match to your interests',
                     _reader_intent_ids=judgment.confirmed_intent_ids,
@@ -413,8 +411,7 @@ def cached_feed(conn, user_id, *, limit=50, capability=None, ordinary_only=False
             return empty
         envelope = stored['envelope']
         if delivery_version == '1' and limit != envelope['limit']:
-            # A publication sequence identifies one immutable ordered edition,
-            # not differently truncated projections of it.
+            # Each publication sequence identifies one immutable ordered edition.
             return empty
         if assembly.enabled() != ('assembly' in envelope):
             # A switch is a new edition transition, never an in-place downgrade.
@@ -428,8 +425,7 @@ def cached_feed(conn, user_id, *, limit=50, capability=None, ordinary_only=False
         if (not snapshot or identity(snapshot, request.recipe) != stored['identity']
                 or (not ordinary_only and (limit > envelope['limit'] or capability != envelope['capability']))):
             return empty
-        # Internal chat/briefing consumers can reuse ordinary stories from a
-        # capable client's edition, but never expose unsupported S4 priority.
+        # Internal consumers can reuse ordinary stories while S4 priority requires client support.
         composition_capability = envelope['capability'] if ordinary_only else capability
         events = ranking_events.prepare(conn, composition_capability)
         with authorize_candidate_batch(conn, user_id, request.batch, _decisions(request.batch, ranked),

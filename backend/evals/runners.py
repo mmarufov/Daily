@@ -159,8 +159,7 @@ class ProductionRunner:
         from evals.openai_backend import client
         if not os.getenv("OPENAI_API_KEY"):
             os.environ["OPENAI_API_KEY"] = "offline-cache-only"   # constructor only; never used
-        # The constructor builds a real SDK client we immediately replace; skip it
-        # so offline runs (and test suites that stub the SDK) never touch it.
+        # Skip SDK construction because offline runs replace the client.
         with patch.object(osvc, "OpenAI", lambda **kw: None):
             svc = osvc.OpenAIService()
         svc.client = client()

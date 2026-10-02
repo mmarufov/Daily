@@ -1,18 +1,6 @@
 /**
- * `POST /api/lab/run`, as a function of its dependencies.
- *
- * The route file wires the real ones in. Keeping the handler here means the
- * whole admission path, from body parsing to the refusal a visitor reads, is
- * exercised by tests against a store and a clock they control, rather than
- * asserted to exist.
- *
- * The order is the policy:
- *
- *   1. parse and validate        free, and refuses garbage before it costs
- *   2. the scope gate            an out-of-scope patch never reaches a counter
- *   3. the counters              shared across every instance, fail closed
- *   4. start                     a reservation whose run never started is
- *                                refunded, so it costs the visitor nothing
+ * Validate source and scope before reserving shared capacity. Refund reservations
+ * when workflow startup fails. Dependencies let tests control the store and clock.
  */
 
 import { randomUUID } from 'node:crypto'
@@ -23,7 +11,6 @@ import { addressBucket, addressKey, clientAddress, type PublicRunGate } from './
 import { checkPatchScope } from './scope'
 import { ALLOWED_PATCH_PATHS, specHash } from './spec'
 
-/** A candidate larger than this is refused before anything is allocated. */
 export const MAX_SOURCE_BYTES = 64 * 1024
 
 export interface RunRequestDeps {
@@ -60,17 +47,13 @@ export async function handleRunRequest(request: Request, deps: RunRequestDeps): 
     return json({ error: `source must be 1..${MAX_SOURCE_BYTES} bytes` }, 400)
   }
 
-  // The scope gate runs again inside the workflow, where its decision is
-  // journaled. Running it here as well means an out-of-scope patch is refused
-  // before it reaches a counter or a durable run exists.
+  // Reject scope violations before admission; the workflow repeats and journals this check.
   const scope = checkPatchScope([{ path: ALLOWED_PATCH_PATHS[0] as string, content: source }])
   if (!scope.allowed) {
     return json({ error: `${scope.rejection}: ${scope.detail}` }, 422)
   }
 
-  // Suspension is the durability demonstration, and a suspended run holds a
-  // slot for as long as it sleeps. So it is the owner's alone; anyone else's
-  // request for it is ignored rather than refused.
+  // Suspensions hold an admission slot, so only the owner can request them.
   const owner = authoriseOwner(request, deps.env ?? process.env).ok
   const suspend =
     owner && typeof suspendSeconds === 'number' && Number.isFinite(suspendSeconds)

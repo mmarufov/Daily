@@ -89,9 +89,7 @@ def configure(conn, recipe, *, approved=False, serving=False, provider=False,
         raise RankingStoreError("invalid_flag")
     recipe_hash = _identity(recipe)
     if approved:
-        # Approval applies to an executable, bounded rubric, not arbitrary JSON.
-        # Keep this shared with the request contract so CLI and serving cannot
-        # disagree about which recipe was approved.
+        # Share rubric validation with the request contract so CLI and serving agree.
         from app.services.ranking_contract import validate_recipe
         try:
             validate_recipe(recipe)
@@ -210,9 +208,8 @@ def settle(conn, reservation_id, actual_usd):
     """
     reservation_id, actual = _uuid(reservation_id), _money(actual_usd)
     with _transaction(conn):
-        # Resolve ownership without a lock, then follow the same user-first
-        # order as admission. Account deletion cascades reservations and clears
-        # account counters; settlement must not race those writes in reverse.
+        # Follow admission's user-first lock order because account deletion
+        # cascades reservations and clears counters.
         owner = conn.execute("SELECT user_id FROM public.ranking_reservations WHERE reservation_id=%s",
                              (reservation_id,)).fetchone()
         if not owner:
