@@ -9,6 +9,9 @@ type Callbacks = {
 /** The server-rendered chapters remain the fallback until enhancement is ready. */
 export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HTMLElement, callbacks: Callbacks) {
   const noop = { select: (_index: number) => {}, destroy: () => {} }
+  element.dataset.mode = 'static'
+  callbacks.enhanced(false)
+  callbacks.active(false)
   if (typeof window.matchMedia !== 'function' || typeof IntersectionObserver !== 'function' ||
     typeof ResizeObserver !== 'function' || typeof requestAnimationFrame !== 'function' || typeof cancelAnimationFrame !== 'function') return noop
 
@@ -38,7 +41,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
     if (moving) { moving = false; visual = target; paint(visual) }
     element.dataset.transitioning = 'false'
   }
-  const running = () => enhanced && visible && !document.hidden && !suspended && !printing && !print.matches
+  const running = () => !disposed && enhanced && visible && !document.hidden && !suspended && !printing && !print.matches
   const update = (now: number) => {
     frame = 0
     if (!running()) return
@@ -79,6 +82,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
     if (!frame && running()) frame = requestAnimationFrame(update)
   }
   const sync = () => {
+    if (disposed) return
     const active = running()
     callbacks.active(active)
     if (active && !listening) {
@@ -143,6 +147,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
   const show = () => { suspended = false; immediate = true; resize() }
   const beforePrint = () => { printing = true; sync() }
   const afterPrint = () => { printing = false; resize() }
+  const printChange = () => { if (print.matches) sync(); else resize() }
 
   let observer: IntersectionObserver, resizeObserver: ResizeObserver
   try {
@@ -154,6 +159,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
   observer.observe(area)
   for (const target of [area, panel, canvas, ...layers]) resizeObserver.observe(target)
   media.addEventListener('change', resize)
+  print.addEventListener('change', printChange)
   window.addEventListener('resize', resize)
   window.visualViewport?.addEventListener('resize', resize)
   document.fonts?.addEventListener('loadingdone', resize)
@@ -178,6 +184,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
       cancelAnimationFrame(layoutFrame)
       window.removeEventListener('scroll', schedule)
       media.removeEventListener('change', resize)
+      print.removeEventListener('change', printChange)
       window.removeEventListener('resize', resize)
       window.visualViewport?.removeEventListener('resize', resize)
       document.fonts?.removeEventListener('loadingdone', resize)

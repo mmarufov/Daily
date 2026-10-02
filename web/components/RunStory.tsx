@@ -65,7 +65,8 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
   const controller = useRef<ReturnType<typeof mountRunStory> | null>(null)
   useEffect(() => {
     const element = root.current, area = track.current, panel = sticky.current
-    if (!element || !area || !panel || !data) return
+    if (!element || !area || !panel) return
+    if (!data) { setEnhanced(false); setActive(false); return }
     const mounted = mountRunStory(element, area, panel, { stage: setStage, enhanced: setEnhanced, active: setActive })
     controller.current = mounted
     return () => { mounted.destroy(); controller.current = null }
