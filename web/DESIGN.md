@@ -104,3 +104,48 @@ Only refine the guard card: cap its padding at 32px, metric numerals at 64px and
 tracks at 28px; tighten the internal metric/reading/history gaps. Preserve full text,
 44px controls, responsive stacking, provenance disclosure and historical caveats.
 Do not apply the previous full-width evidence-row specification in this pass.
+
+## Homepage run story, October 2
+
+This specification replaces the homepage invitation, full guard card, sieve and
+retrieval-loss sections. The Daily-first hero, preview edition and shared shell
+retain their current rendering. Supporting routes retain their layouts.
+
+Use one continuous SVG/HTML diagram with Parser, Sandbox, Tests and Verdict
+moments. A thin path connects the same candidate.py file, bracketed microVM
+boundary and external grader. No large enclosing card. The caption changes with
+the active moment; heading and Lab action remain readable. Neutral case marks
+become check/cross/dash verdicts only after the Sandbox stops and grading occurs
+outside its boundary. Failure color appears with the verdict and its text label.
+
+Desktop sticky mode starts at 1,024px width and 720px height, with a 240svh story
+region. Stage progress ranges are 0-20%, 20-45%, 45-75% and 75-100%. Use restrained
+line drawing, translation, opacity and small scale changes. The background stays
+still. Native scroll and milestone buttons select the same state. Reverse and
+fast scrolling settle without queuing. A single gated frame scheduler stops when
+idle, offscreen or hidden.
+
+Narrow and short windows show four compact scenes in ordinary vertical flow.
+Reduced motion and no JavaScript render all four moments statically. Keep reading
+text visible initially and preserve a usable Lab action in every presentation.
+Use existing theme tokens, Geist, 1,280px frame, touch targets and focus treatment.
+
+Timeline and verdict both use saved execution
+wrun_01M3WXWPKMF3H8Q66KZA56MZCV, dated October 1, 2026. Display the exact 64-case,
+22-fault, 48-correct, 4-failed and 12-not-applicable totals after validation. Keep
+all four isolation checks visible during testing. The complete seven-event log,
+criteria hash and source link sit in an Inspect this recorded run disclosure.
+Missing data has an explicit unavailable state. The scene performs no live work.
+
+Follow the story with an open historical comparison: exact original and guarded
+recall/unwanted rates, 36px numerals, paired columns from 640px and fine rules.
+Keep the September 21 date, six gate failures, historical working-tree caveat,
+retained baseline and provisional labels in one short note. Preserve the Findings
+and source links. Evidence links retain the old pipeline/retrieval anchors. End
+with the Lab action. No changes to APIs, artifacts, quotas or execution semantics.
+
+Review the HTTPS preview at 320px through 1,440px, Chromium and WebKit, both themes,
+keyboard, touch, forced colors, reduced motion and JavaScript disabled. Verify
+static and missing-data states, same-recording provenance, LCP/CLS and stopped
+work offscreen. Provide screenshots and a short motion recording with the PR.
+Production remains unchanged pending visual review.

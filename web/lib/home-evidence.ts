@@ -10,6 +10,8 @@ import { loadGuardExperimentResult, type GuardExperiment } from './guard-experim
 import type { LabRun } from './lab/artifact'
 import { loadLabIndex, loadLabRun, loadOffendingCase } from './lab/data'
 import { explorerHref, type ExplorerUrl } from './url-state'
+import { deriveRunStory, loadRecordedExecution } from './recorded-execution'
+import type { RunStoryData } from './run-story'
 
 export const HOME_RUN_ID = 'prod-llm__2026-09-02__47edb50' as const
 export const HOME_RECORDED_RUN_FILE = 'count-guard-v1-clean.json' as const
@@ -66,6 +68,7 @@ export interface RetrievalLossData {
 }
 
 export interface HomeEvidence {
+  readonly runStory: RunStoryData | null
   readonly editionPreview: EditionPreviewData | null
   readonly artifact: Artifact | null
   readonly fixtures: readonly SieveFixture[]
@@ -182,6 +185,7 @@ export async function loadHomeEvidence(): Promise<HomeEvidence> {
     loadOffendingCase(),
     loadGuardExperimentResult(),
     loadDemo(),
+    loadRecordedExecution(),
   ])
   const index = settledValue(results[0], 'Evaluation index', issues)
   const labIndex = settledValue(results[1], 'Lab index', issues)
@@ -189,6 +193,8 @@ export async function loadHomeEvidence(): Promise<HomeEvidence> {
   const offendingCase = settledValue(results[3], 'Recorded batch', issues)
   const guardResult = settledValue(results[4], 'Guard experiment', issues)
   const demo = settledValue(results[5], 'Recorded edition', issues)
+  const runStory = deriveRunStory(settledValue(results[6], 'Recorded execution', issues))
+  if (runStory === null) issues.push('The recorded production execution is unavailable or its case results do not reconcile.')
 
   for (const error of index?.errors ?? []) issues.push(`${error.where}: ${error.issues.join('; ')}`)
   issues.push(...(labIndex?.issues ?? []))
@@ -253,6 +259,7 @@ export async function loadHomeEvidence(): Promise<HomeEvidence> {
   if (editionPreview === null) issues.push('The recorded Ray edition is unavailable or does not match the pinned recording.')
 
   return {
+    runStory,
     editionPreview,
     artifact,
     fixtures: artifact?.personas.map((persona) => ({ key: persona.key, steps: persona.funnel })) ?? [],

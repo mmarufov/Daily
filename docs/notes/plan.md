@@ -974,3 +974,90 @@ Keep numeric values, recorded data, URLs, markup structure and execution behavio
 Use existing disclosures/links for detailed provenance. Production stays unchanged.
 
 Verification: [public-copy-verification.md](public-copy-verification.md).
+
+## Homepage run story
+
+Approved October 2, 2026. Base: 97b31eb2. Work in the isolated
+`daily-home-flow` checkout. Preserve the Daily-first hero, recorded edition,
+navigation, typography, themes and public runner.
+
+- [x] Inspect the screenshot, homepage composition and recorded execution.
+- [x] Replace the three-chapter proposal with the approved four-moment design.
+- [x] Validate the saved execution and derive all story data from that recording.
+- [x] Build Parser, Sandbox, Tests and Verdict as one scroll-driven diagram.
+- [x] Shorten the lower homepage to a compact guard finding and evidence links.
+- [x] Review all four moments on an HTTPS preview at desktop and mobile widths.
+- [x] Verify static rendering, reduced motion, keyboard, touch and missing data.
+- [x] Run typecheck, units, artifact checks, build and mocked browser acceptance.
+- [x] Profile mobile LCP/CLS and offscreen animation work.
+- [x] Open one PR with screenshots and a recording of the motion. Leave production unchanged.
+
+### Composition and motion
+
+Keep the existing Daily introduction and edition. Replace the invitation wrapper
+and nested result/log card with a full-width diagram. A thin path connects four
+moments: Parser, Sandbox, Tests and Verdict. Keep the heading and Lab action
+visible before the visitor finishes the story. One file, execution boundary and
+connecting path retain their spatial positions across the sequence.
+
+At widths of at least 1,024px and viewport heights of at least 720px, use one
+sticky scene in a region approximately 240svh tall. Parser occupies 0-20% of
+scroll progress, Sandbox 20-45%, Tests 45-75%, and Verdict 75-100%. Hold the final
+result before leaving the section. The milestone buttons jump to their matching
+positions. Scroll remains native; reverse scrolling reverses the sequence, and
+rapid movement settles at the current state without queued animation.
+
+Mobile and short windows use four compact scenes in ordinary vertical flow.
+Reduced motion and no JavaScript expose the complete explanation as static
+content. Reading text and actions are available from first render. Use one frame
+scheduler with SVG/CSS updates, gated by IntersectionObserver. Stop all work
+while idle, offscreen or in a hidden tab. Add no video or animation dependency.
+
+### One recorded execution
+
+Use saved run `wrun_01M3WXWPKMF3H8Q66KZA56MZCV` for both timeline and verdict.
+Its 64 case results contain 48 correct, 3 wrong-association, 1 should-have-refused
+and 12 not-applicable cases. The page labels it Recorded run, October 1, 2026.
+
+1. Parser: show candidate.py and count-guard-v1 at the start of the path.
+2. Sandbox: move the file into a microVM boundary with its recorded creation
+   timestamp and networking-denied label.
+3. Tests: show 64 cases, 22 fault-injected, with neutral case marks until grading.
+   Name all four isolation checks: DNS blocked, HTTPS blocked, grader absent and
+   credentials absent.
+4. Verdict: stop the Sandbox and move output to an external grader. Show Rejected,
+   48 correct, 4 failed and 12 not applicable. Use the recorded
+   syn-positional-reordered case for the failed count-check example.
+
+Extend the internal homepage data with a nullable compact run-story model.
+Validate and reconcile case counts before rendering. Preserve the seven recorded
+timestamps, criteria identity and source link in an Inspect this recorded run
+disclosure. External grading has no invented timestamp. Missing or invalid data
+shows a short unavailable message and Lab link. Public APIs, artifacts, evaluator,
+quotas and live execution behavior remain unchanged.
+
+### Lower homepage
+
+Use one compact historical guard comparison: capped recall@12, 22.1% to 18.7%;
+unwanted rate, 26.9% to 42.5%. Read values and six recorded failures from the
+artifact. Keep the September 21 historical working-tree qualification, retained
+baseline, provisional labels and investigation/source links. Values use 36px
+numerals, two columns from 640px and fine rules without an enclosing card.
+
+Remove the homepage sieve and retrieval-loss charts. Link to the existing pinned
+Ray funnel and lost-before-scorer Evidence views. Preserve the former #experiment,
+#pipeline and #retrieval destinations. End with a direct Lab action. Supporting
+pages retain their layouts.
+
+### Preview acceptance
+
+Verify Chromium and WebKit at 320px, 390px, 768px, 1,024px and 1,440px in both
+themes. Check milestone controls, reverse and rapid scrolling, resize, hidden tabs,
+keyboard, forced colors, reduced motion, static rendering and unavailable data.
+No layout shifts, clipped text, horizontal overflow or hydration errors. Retain
+mobile LCP <=2.5 seconds and CLS <=0.1 under the existing documented conditions.
+No Sandbox execution from page visits, scrolling or routine browser tests.
+Capture desktop/mobile states and a short motion recording on the HTTPS preview.
+The deliverable is a reviewable PR; production stays unchanged.
+
+Verification: [homepage-run-story.md](homepage-run-story.md).

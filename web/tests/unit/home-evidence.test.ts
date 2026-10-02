@@ -28,6 +28,11 @@ describe('the pinned homepage narrative', () => {
     expect(home.losses?.unit).toBe('fixture/article pairs')
     expect(home.lab).toMatchObject({ caseCount: 64, faultCount: 22, publishedRuns: 39, sandboxRuns: 9 })
     expect(home.recordedRun?.counts).toMatchObject({ correct: 48, 'not-applicable': 12 })
+    expect(home.runStory).toMatchObject({
+      runId: 'wrun_01M3WXWPKMF3H8Q66KZA56MZCV',
+      specVersion: 2,
+      counts: { total: 64, correct: 48, failed: 4, notApplicable: 12, faultInjected: 22 },
+    })
     for (const segment of home.losses!.segments) {
       const example = segment.example!
       const query = example.href.query
