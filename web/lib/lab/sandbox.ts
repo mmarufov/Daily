@@ -1,14 +1,10 @@
 /**
- * Executing an untrusted candidate, for real.
+ * Executing an untrusted candidate.
  *
- * `runner.ts` decides *where* a candidate runs and fails closed; this is the
- * other half — what `vercel-sandbox` actually means. Until now it meant
- * nothing: every candidate in the repository is byte-identical to a committed
- * implementation, so `selectRunner` routed all seven runs to `local-known` and
- * the boundary was never crossed. A security boundary that has never rejected
- * anything is a comment.
+ * `runner.ts` decides where a candidate runs and fails closed. This file is
+ * what `vercel-sandbox` means in practice.
  *
- * What is uploaded is the whole of what the candidate can see:
+ * The upload is the whole of what the candidate can see:
  *
  *   lab/__init__.py      empty
  *   lab/harness.py       the record producer, stdlib-only
@@ -16,12 +12,11 @@
  *   lab/candidate.py     the untrusted file
  *
  * No repository, no git history, no evaluator, no labels, no environment. The
- * candidate cannot read the thing that grades it because the thing that grades
- * it was never sent, which is a stronger statement than a permission check.
+ * grader is never uploaded, so the candidate cannot read it.
  *
- * `networkPolicy: 'deny-all'` is what makes `SANDBOX_LIMITS.network` true
- * rather than aspirational, and `assertIsolated` proves it per run instead of
- * trusting the flag — see the negative controls in `sandbox-probe.ts`.
+ * `networkPolicy: 'deny-all'` sets `SANDBOX_LIMITS.network`, and
+ * `assertIsolated` checks it per run. Negative controls live in
+ * `sandbox-probe.ts`.
  */
 
 import { randomUUID } from 'node:crypto'
@@ -57,7 +52,7 @@ export function sandboxCredentials(
   // deployment that condition can never hold: the platform injects
   // `VERCEL_PROJECT_ID` itself, so exactly one of the three is always
   // present, the fallback was unreachable, and every sandboxed run on
-  // production refused with `missing VERCEL_TOKEN, VERCEL_TEAM_ID` — on the
+  // production refused with `missing VERCEL_TOKEN, VERCEL_TEAM_ID` on the
   // one host where OIDC is the intended mechanism.
   //
   // The rule it was reaching for is still worth keeping, and now sits where
@@ -141,7 +136,7 @@ export interface IsolationProbe {
  * Probes that must fail for the boundary to mean anything.
  *
  * Run inside the same microVM as the candidate, in the same session, after it
- * — so what they establish is a property of the environment the candidate
+ * so what they establish is a property of the environment the candidate
  * actually had, not of a separate one configured the same way. A probe that
  * *succeeds* is a failed probe.
  */
@@ -199,7 +194,7 @@ export interface RunInSandboxOptions {
  * Run one candidate over the case suite inside an isolated microVM.
  *
  * Throws rather than degrading. If the sandbox cannot run, the correct
- * outcome is an `incomplete` run recorded as such — never a local execution,
+ * outcome is an `incomplete` run recorded as such, never a local execution,
  * and never a fabricated record set.
  */
 export async function runInSandbox(options: RunInSandboxOptions): Promise<SandboxExecution> {
@@ -251,7 +246,7 @@ export async function runInSandbox(options: RunInSandboxOptions): Promise<Sandbo
     // This used to read `records.json` back out of the microVM. An audit
     // showed what that allowed: the harness imports the candidate into its
     // own process, so module-level candidate code could read `--out` from
-    // argv, write a bundle of its own and exit 0 — `parse()` never ran, and
+    // argv, write a bundle of its own and exit 0. `parse()` never ran, and
     // the forged file was what got graded. Nothing the guest writes to disk
     // is read any more, and `--out` no longer exists on this path.
     const recordsJson = result.exitCode === 0 ? unframe(stdout, frame) : null
@@ -322,7 +317,7 @@ function describePolicy(policy: unknown): string {
  * Take the bundle out of a stdout stream a candidate is free to print into.
  *
  * The marker is a per-run UUID and is deliberately *not* a security boundary
- * — the guest can read it from argv, and a candidate that forges a correctly
+ * The guest can read it from argv, and a candidate that forges a correctly
  * framed bundle has done exactly what a lying `parse()` does. It is defeated
  * by the same thing: `upload-set.ts` ships no expectations, so nothing inside
  * the microVM knows which answers would pass. What framing buys is that an

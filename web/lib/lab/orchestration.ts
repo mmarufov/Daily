@@ -9,7 +9,7 @@
  *
  * The `"use workflow"` directive moves that job to Vercel Workflow. Every
  * `"use step"` boundary below is a journal entry, so a run that is interrupted
- * anywhere resumes from the last entry rather than from the beginning — and,
+ * anywhere resumes from the last entry, and,
  * critically, resumes in a *different process*. `PROCESS_ID` is generated once
  * per module instantiation and recorded by every step, so the transcript shows
  * that directly rather than asserting it.
@@ -18,13 +18,13 @@
  * overclaim: a journaled step that times out may well have completed its
  * external effect. Creating a microVM, calling a model and writing a blob are
  * not undone by the orchestrator forgetting them. So `unknown-outcome`
- * survives the port unchanged — it is the honest status for an attempt that
+ * survives the port unchanged. It is the honest status for an attempt that
  * started and whose completion was never journaled, and no amount of platform
  * durability can turn it into a yes or a no.
  *
  * Note what these workflows do *not* take as arguments: the case suite. Every
  * workflow argument is serialised into the journal, and `observed.json` alone
- * is 1.8 MB — passing it would write the entire corpus into durable storage
+ * is 1.8 MB, and passing it would write the entire corpus into durable storage
  * on every call, and again on every resume. The steps run in Node and the
  * files are staged beside them, so each loads the suite itself.
  */
@@ -56,13 +56,13 @@ export interface StepMark {
    * Seconds this process has been alive.
    *
    * `process_id` alone cannot tell "a new instance served the resume" from
-   * "the same instance was still warm" — both leave one id per step, and the
+   * "the same instance was still warm". Both leave one id per step, and the
    * first observed resume on the platform came back with one id across a
    * 92-second suspension with no way to say which had happened.
    *
    * Uptime settles it. Growing by roughly the suspension means the same
    * instance stayed alive; resetting means a new one took over. Either is a
-   * real answer, and the run is durable in both — what differs is only
+   * real answer, and the run is durable in both. What differs is only
    * whether the platform happened to recycle the instance.
    */
   readonly uptime_s: number
@@ -124,7 +124,7 @@ interface Base {
    * True when more than one process contributed to this run.
    *
    * False does **not** mean the run failed to suspend. It means the platform
-   * served the resume from the same instance, which it is free to do — see
+   * served the resume from the same instance, which it is free to do. See
    * `uptime_s` on each step for which of the two happened.
    */
   readonly resumed: boolean
@@ -188,7 +188,7 @@ function progressWriter(): { say: (stage: string) => void; done: () => Promise<v
  *
  * First on purpose. A patch that is out of scope must never reach a microVM,
  * so the gate runs before anything is created and its decision is journaled
- * before anything is created — the ordering in the log is the evidence.
+ * before anything is created, so the ordering in the log is the evidence.
  */
 export async function scopeStep(input: WorkflowInput): Promise<{
   allowed: boolean
@@ -328,8 +328,8 @@ export async function gradeStep(
   // A reported failure ends the run, whether or not records exist.
   //
   // This used to consult `failure` only when `recordsJson` was null, so a
-  // step that failed *and* had records — a gateway call that timed out
-  // mid-loop after the sandbox had already run — was graded on those records
+  // step that failed *and* had records, such as a gateway call that timed out
+  // mid-loop after the sandbox had already run, was graded on those records
   // and could come back `accepted-for-review` while the run itself reported
   // `refused`. A failure that resolves to acceptance is the one outcome this
   // repository says must never happen, and it happened in the same file that
@@ -430,7 +430,7 @@ export async function runCandidateWorkflow(input: WorkflowInput): Promise<Workfl
       // `failed`, not `unknown-outcome`: this step returned, so its outcome is
       // known. `unknown-outcome` is reserved for an attempt whose completion was
       // never journaled at all, which is reconstructed on replay rather than
-      // written here — see `recoverAttempts`.
+      // written here. See `recoverAttempts`.
       status: execution.ok ? 'succeeded' : 'failed',
       note: execution.detail,
     })
