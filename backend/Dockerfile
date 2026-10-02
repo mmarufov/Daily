@@ -14,6 +14,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 COPY scripts ./scripts
+# The batch scorer imports the verdict contract the Lab graded, unmodified.
+# Only that file and its package markers: the rest of lab/ is research.
+COPY lab/__init__.py ./lab/__init__.py
+COPY lab/contract/__init__.py ./lab/contract/__init__.py
+COPY lab/contract/versions/__init__.py ./lab/contract/versions/__init__.py
+COPY lab/contract/versions/keyed_v2.py ./lab/contract/versions/keyed_v2.py
 # S4 management validates independently produced quality reports offline.
 COPY evals/events ./evals/events
 

@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "407ff7dbf1270bb38de2e97e777f4860684ebaccff071959c77f344ce8d69aec",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nStructured interests:\n- Topics: Uzbek footbal"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"c3862663-683c-5502-934b-72fb8fd52e73\",\"relevant\":false,\"score\":0.0,\"reason\":\"Article is about cryptocurrency market trends, which does not align with the user's interests in sports and politics.\"},{\"article_id\":\"74ddbb53-b19f-59fa-81c7-dfedb0afdb35\",\"relevant\":false,\"score\":0.0,\"reason\":\"Focuses on a historical figure in Kazakhstan, not relevant to the user's interests in Uzbek football or politics.\"},{\"article_id\":\"64418ffa-5089-523e-9a89-789a789d99c7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Discusses a deportation case in Sweden, which is unrelated to the user's focus on Uzbek sports and politics.\"},{\"article_id\":\"1945c613-5b95-59db-9070-6ae17e40b7ca\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Columbia products, irrelevant to the user's interests.\"},{\"article_id\":\"c30e1de6-c7f7-5a62-bfb3-cafd9b39cd62\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Booking.com, not related to the user's interests.\"},{\"article_id\":\"a241f239-3c63-58fa-8d13-8773d839b61d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Priceline, irrelevant to the user's interests.\"},{\"article_id\":\"7d8118a6-524d-5df9-98e5-d33c0f9dd3b9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for NordVPN, not related to the user's interests.\"},{\"article_id\":\"5196c95b-07c5-52f5-87e2-636a03cdb6a7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for B&H Photo, irrelevant to the user's interests.\"},{\"article_id\":\"b0632c50-945d-5a26-b082-5afad39ae974\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Canon, not related to the user's interests.\"},{\"article_id\":\"0a9a56e4-9d1f-5f92-b215-761098f1e87c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Hoka, irrelevant to the user's interests.\"},{\"article_id\":\"0f9867a9-8f73-5413-bcd7-c66298293f56\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Whoop, not related to the user's interests.\"},{\"article_id\":\"f61cee90-a29e-5867-b3b5-884af5eff1ca\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Uplift, irrelevant to the user's interests.\"},{\"article_id\":\"bf69030b-621f-544f-aef9-69ea47d7a6f6\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Verizon, not related to the user's interests.\"},{\"article_id\":\"d492cda7-6f16-52a2-b5dd-40b22e5592cd\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for Altra Running, irrelevant to the user's interests.\"},{\"article_id\":\"7324ec1d-4122-5256-9c11-db8158aaa18b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Promotional content for eBay, not related to the user's interests.\"},{\"article_id\":\"a15c36a9-74b0-5a0e-9333-d14a72449b87\",\"relevant\":false,\"score\":0.0,\"reason\":\"Article discusses health-related issues, which do not align with the user's interests in sports and politics.\"},{\"article_id\":\"486f2246-58d2-5eed-887c-5abf28926295\",\"relevant\":false,\"score\":0.0,\"reason\":\"Article covers a legal case unrelated to the user's focus on Uzbek sports and politics.\"},{\"article_id\":\"e38f877b-aba8-5794-8889-bff5df14a42b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Discusses UK political dynamics, which are not relevant to the user's interests in Uzbek affairs.\"},{\"article_id\":\"3eff4829-3acd-55b1a2-09f26d3f2bfa\",\"relevant\":false,\"score\":0.0,\"reason\":\"Focuses on a court case involving a broadcaster, unrelated to the user's interests.\"},{\"article_id\":\"ed36b7e1-148f-55ab-a9ad-082d8af5c09e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Discusses cryptocurrency market trends, which do not align with the user's interests in sports and politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2722,
+  "completion_tokens": 1138
+ }
+}

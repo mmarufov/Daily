@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "aaa2f192ea495724255e0cef8650fc04b10269ff3c8069a8c849312c27a47434",
+  "preview": "User Profile:\nFree-form profile:\nSenior backend engineer at a Singapore fintech. I want deep technical news: distributed systems, cloud infrastructure, databases, developer tooling, and how AI is actu"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"96bf702b-4be8-53dc-9a9d-2d35f0c9485d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"de180d2e-43b4-5f5f-a37f-271bd9503a42\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"db1544c6-3433-5e89-b9ed-fbf0f4b1d80f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"9522edcc-6d10-5dfa-992b-c6958d5f2586\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"1a66f586-d4f1-5b2a-90e7-81fe0d9d3d3e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"36a7dbae-4cd0-5894-be03-964c4cc89db6\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"bbabed1d-45eb-509f-87f4-3ed14ba0f5c7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"243f2a43-5404-54a3-9967-35d59ad19ea9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"82b07979-1504-5777-999f-73d27b55b53d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"e3a27c76-f76f-5053-b8a0-67ab8ac35775\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"bf00d120-aad1-5028-8fb0-5ef54b0f5c74\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"d2a90237-1286-5b78-8791-2bc6bf3e2ce4\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"74ddbb53-b19f-59fa-81c7-dfedb0afdb35\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"d8d2b292-51f7-5d6c-a3f4-590612485320\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"61d50299-41de-5c06-8656-c29b078cfb3b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: US domestic politics.\"},{\"article_id\":\"14285ae2-e78d-5dbf-9144-e5319b23cfc7\",\"relevant\":true,\"score\":0.8,\"reason\":\"Relevant to cybersecurity; discusses disruption of a long-standing botnet, which may interest a backend engineer.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3166,
+  "completion_tokens": 794
+ }
+}

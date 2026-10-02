@@ -50,7 +50,8 @@ class _UniformScorer:
     scoring_model = "s10-replay-uniform"
 
     async def score_articles_batch(self, articles, user_profile, interests=None, user_profile_v2=None):
-        return [{"relevant": True, "score": 0.6, "reason": "replay: uniform baseline"} for _ in articles]
+        return [{"article_id": str(a["id"]), "relevant": True, "score": 0.6, "reason": "replay: uniform baseline"}
+                for a in articles]
 
 
 @dataclass(frozen=True)

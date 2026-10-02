@@ -143,7 +143,8 @@ class _FallbackService:
     scoring_model = "deterministic-fallback"
 
     async def score_articles_batch(self, articles, user_profile, interests=None, user_profile_v2=None):
-        return [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"} for _ in articles]
+        return [{"article_id": str(a["id"]), "relevant": False, "score": 0.0, "reason": "scoring unavailable"}
+                for a in articles]
 
 
 class ProductionRunner:
@@ -213,7 +214,13 @@ class ProductionRunner:
 
         async def w_score(batch, *a, **kw):
             res = await o_score(batch, *a, **kw)
-            for c, r in zip(batch, res):
+            # Record each verdict against the article it names, the same join
+            # feed_service makes.
+            by_id = {str(r.get("article_id")): r for r in res}
+            for c in batch:
+                r = by_id.get(str(c["id"]))
+                if r is None:
+                    continue
                 i = sid.get(c["id"], c["id"])
                 tr.reach(i, "scored", score=float(r.get("score", 0.0)), reason=str(r.get("reason", "")))
                 tr.t[i]["model"] = {"relevant": bool(r.get("relevant")), "score": r.get("score"),

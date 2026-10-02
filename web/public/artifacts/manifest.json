@@ -1,7 +1,7 @@
 {
  "manifest_version": 1,
- "artifact_revision": "3b11a3c",
- "built_at": "2026-09-14T21:21:05-07:00",
+ "artifact_revision": "a69bb8b",
+ "built_at": "2026-09-30T15:40:25-07:00",
  "complete": true,
  "entries": [
   {
@@ -15,7 +15,7 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "618bb33ad1c13dfffb256cb2f1b7598c852ffaad0392a03d4d7deb9535a7a3f8",
+   "sha256": "0336946133f676bb74054597f75b93aff45ed836efb9a0702e700096e913c4b4",
    "bytes": 116687
   },
   {
@@ -29,22 +29,36 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "6b056737d410e1526b71d30fdabd5874f6b9bb0a9e60b5a0fb5f2751f4b12a8d",
+   "sha256": "043c64a178788fc7cc98b0f9f3b6c4434d92f81934a1e187de7fd96d7fc8fefe",
    "bytes": 117334
   },
   {
-   "run_id": "prod-llm__2026-08-31__47edb50__baseline",
-   "file": "prod-llm__2026-08-31__47edb50__baseline.json",
+   "run_id": "prod-llm__2026-08-31__934fa6e",
+   "file": "prod-llm__2026-08-31__934fa6e.json",
    "runner": "prod-llm",
    "snapshot": "2026-08-31",
-   "protocol": "unknown",
+   "protocol": "production-feed-v1",
    "k": 12,
    "origin": "imported-historical",
-   "eval_revision": "47edb50",
+   "eval_revision": "934fa6e",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "2804853a855513fb421c66f92c9c64f3179cf1d7d66e6df21dbf974159e8c2bc",
+   "bytes": 117542
+  },
+  {
+   "run_id": "prod-llm__2026-08-31__934fa6e__baseline",
+   "file": "prod-llm__2026-08-31__934fa6e__baseline.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31",
+   "protocol": "production-feed-v1",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "934fa6e",
    "is_baseline": true,
    "personas": 10,
-   "sha256": "69ef9da5ac90e7d73c0ddcc3ea81bbae7654a1e6a6179e3fb02df657ae3e1296",
-   "bytes": 117798
+   "sha256": "144eb19a43cb135992df7b5cfab537f97ce182d3bef220fa443b5c39dccd8756",
+   "bytes": 117590
   },
   {
    "run_id": "prod-llm__2026-08-31-quiet__47edb50",
@@ -57,8 +71,22 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "ce87fa083355f40712b3426db28301996e3884c37544653d52ac4cd976469072",
+   "sha256": "fb95fc87b4ae796578616d8a16bede66a85e9b0d847fa640b4de7c7e283ddf05",
    "bytes": 111931
+  },
+  {
+   "run_id": "prod-llm__2026-08-31-quiet__934fa6e",
+   "file": "prod-llm__2026-08-31-quiet__934fa6e.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-08-31-quiet",
+   "protocol": "production-feed-v1",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "934fa6e",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "54b10fd3d7d65c09e6c3a1e609b9b2d28b05d82cf8d4f22370f22326d6f6aa72",
+   "bytes": 113615
   },
   {
    "run_id": "prod-llm__2026-09-02__47edb50",
@@ -71,8 +99,22 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "4115e1943ad53a299f46d86a70b9f1c9a170fd3865f54978e5c1d38bbd3bf4f2",
+   "sha256": "b3fdc4a84554c6ba806aff6ffc749d64158885fc050a7dae3dec728784b63d3e",
    "bytes": 122419
+  },
+  {
+   "run_id": "prod-llm__2026-09-02__934fa6e",
+   "file": "prod-llm__2026-09-02__934fa6e.json",
+   "runner": "prod-llm",
+   "snapshot": "2026-09-02",
+   "protocol": "production-feed-v1",
+   "k": 12,
+   "origin": "imported-historical",
+   "eval_revision": "934fa6e",
+   "is_baseline": false,
+   "personas": 10,
+   "sha256": "aefa0d49295a9365afbb2345bf61c8715e0ff514ac615e2cd28e5a15093bedef",
+   "bytes": 121183
   },
   {
    "run_id": "proto-hybrid-judge-events__2026-08-31__47edb50",
@@ -85,7 +127,7 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "5508449d5563bca76f7317e69fdcffd4666d6686f62031d61e2deb3ca1dcdd18",
+   "sha256": "9cc38addfb13847116d6d057085a839eb76a0426d3d2c9cf632abdefd1666b26",
    "bytes": 94495
   },
   {
@@ -99,7 +141,7 @@
    "eval_revision": "47edb50",
    "is_baseline": true,
    "personas": 10,
-   "sha256": "04b46ec3468dde0784b84e9efd6835bcbd88647a9a2ba2a359439b017820f7e5",
+   "sha256": "14052e31e9eaddb798b003f56f0452229e0af100d23d849167c9653156d3599c",
    "bytes": 94503
   },
   {
@@ -113,7 +155,7 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "f8a850e7d211f440f0330b61915d70d5781c706e026b5f640ebb3c4f899ea555",
+   "sha256": "30cc647c7879d9595ed273578eb43bcfcff9761d6d9b1fef27f11c0479c6453c",
    "bytes": 89208
   },
   {
@@ -127,7 +169,7 @@
    "eval_revision": "47edb50",
    "is_baseline": false,
    "personas": 10,
-   "sha256": "e66be0562d1ecbc1b3226758adbce148bd1425a2a9f4a14c0b2d4060e126537c",
+   "sha256": "1b7ee54a35fca3c63db4c1e0db50a5a3bb3bdbf60f99b1c06f7861e0f8f737d8",
    "bytes": 100263
   }
  ],
@@ -175,7 +217,7 @@
  "notes": [
   {
    "severity": "info",
-   "message": "Exported 9 artifacts from backend/evals/results/ at revision 3b11a3c. Every entry is an import of a historical scorecard, not a run executed by this export.",
+   "message": "Exported 12 artifacts from backend/evals/results/ at revision a69bb8b. Every entry is an import of a historical scorecard, not a run executed by this export.",
    "source": "web/scripts/export-artifacts.ts"
   }
  ]

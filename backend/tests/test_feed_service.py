@@ -49,8 +49,8 @@ class _FakeConn:
 class _FakeOpenAIService:
     async def score_articles_batch(self, articles, user_profile, interests=None, user_profile_v2=None):
         return [
-            {"relevant": False, "score": 0.0, "reason": "scoring error"}
-            for _ in articles
+            {"article_id": str(a["id"]), "relevant": False, "score": 0.0, "reason": "scoring error"}
+            for a in articles
         ]
 
 
@@ -456,8 +456,10 @@ class FeedServiceTests(unittest.IsolatedAsyncioTestCase):
 
         fake_service = AsyncMock()
         fake_service.score_articles_batch.return_value = [
-            {"relevant": True, "score": 0.92, "reason": "Strong match for AI and OpenAI interests."},
-            {"relevant": False, "score": 0.03, "reason": "Not related to the user's interests."},
+            {"article_id": matching_article["id"], "relevant": True, "score": 0.92,
+             "reason": "Strong match for AI and OpenAI interests."},
+            {"article_id": off_topic_article["id"], "relevant": False, "score": 0.03,
+             "reason": "Not related to the user's interests."},
         ]
 
         with patch.object(

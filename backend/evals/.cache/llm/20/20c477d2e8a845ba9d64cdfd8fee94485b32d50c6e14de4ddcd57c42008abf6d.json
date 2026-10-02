@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "6920028d8e9539ccde89917fe968e5b61ee29bcbaacb06170c9e6b8070b8290a",
+  "preview": "User Profile:\nFree-form profile:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nStructured interests:\n- Topi"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"deb0984e-10c3-54ca-8df5-316fcad0194b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"051bc28a-8814-50c6-9e88-cfa42f25737f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"c9f0089c-c160-5686-a4fd-8b171a33b398\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"dab8e340-f76b-5064-8271-d8a040e181f0\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"3bbe9819-2cdf-50d6-8261-ecc7c8942a3e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: international relations.\"},{\"article_id\":\"6d354a22-f270-56dd-8547-976aa8385998\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"b5e1c827-a178-5de0-aeb3-14ee9eaf401f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"294774a2-a726-509e-923a-ca6230a2cdae\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"b55847e5-e75c-51c5-897d-5ede2fd03eee\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: international relations.\"},{\"article_id\":\"30079797-3092-591b-93d0-703fe02175ca\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"d7c2d0f0-d1a2-5d23-803c-45adca1f07ca\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: foodborne illness in the US.\"},{\"article_id\":\"f19dbe96-5aac-5c37-8c3f-0e0d521dddc5\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"13cf2981-7244-578a-956e-6fcdbab3aa87\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: international news.\"},{\"article_id\":\"14272475-7958-5b00-a914-c0aa2a3c66e6\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"103ccb47-e755-57fa-b367-6b988f454bb1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: psychedelics.\"},{\"article_id\":\"6bcd796f-2618-578f-8810-6fec83fdf7a7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: international news.\"},{\"article_id\":\"a0f06192-409b-574e-a014-9183bf8b8253\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: tech industry news.\"},{\"article_id\":\"5b7136fe-96e8-5838-aefb-5395bff0a7d1\",\"relevant\":true,\"score\":0.8,\"reason\":\"Relevant local news about a new hospital addressing healthcare needs in Singapore.\"},{\"article_id\":\"f101b004-da8d-5e13-9437-23f545f837b1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to primary interests.\"},{\"article_id\":\"3ffe68e9-992f-528c-b2d1-d9a50168ce8e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to primary interests.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2577,
+  "completion_tokens": 933
+ }
+}

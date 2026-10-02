@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "4a53d866b251170fcf7b000a66ddad1cd21e34f10e9cc428415b47ed353aae8f",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"de180d2e-43b4-5f5f-a37f-271bd9503a42\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"8bd4ced5-fd42-5fc2-9644-eee1b69998e6\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"db1544c6-3433-5e89-b9ed-fbf0f4b1d80f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"9522edcc-6d10-5dfa-992b-c6958d5f2586\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"af1fb5a9-b095-5882-aed7-8c1875d9a84f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"1a66f586-d4f1-5b2a-90e7-81fe0d9d3d3e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"3ce6be80-9bc6-59ba-9ffe-6fac9d520d48\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"36a7dbae-4cd0-5894-be03-964c4cc89db6\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"bbabed1d-45eb-509f-87f4-3ed14ba0f5c7\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"e3a27c76-f76f-505b-8b0a-67ab8ac35775\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"8316eadf-1f27-5671-a691-ba4749b16047\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"e07bb775-6b11-5988-9824-e382eab23194\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"bf00d120-aad1-5028-8fb0-5ef54b0f5c74\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"737b054b-45c8-5218-a5b1-55ecdb6c9193\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"48bdeefb-54bc-5212-900d-93b1930d14ca\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"1c75d342-96e9-5ede-b82b-e5ed3cb717da\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"d2a90237-1286-5b78-8791-2bc6bf3e2ce4\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"guardian-world-1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"2faae623-0165-57db-a044-505430b73c9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"0680d8ef-6bed-5007-8ffb-3c5e1d1cfffa\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"da285b46-0ef8-5ccb-b1f9-c105540a23ce\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"b28949ea-199b-5211-9b3a-6a2cb2bd703a\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"169e41cc-df3d-5852-a578-deca7fa62b85\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"4cd6a334-d605-5c99-8586-6b5ed3c2c384\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"80e62fad-79b0-562c-9558-4d3b8488addc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"6afd77c3-3c2e-5fe2-8549-3d4ab8dc8f15\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"ad7bc9d9-ed30-5f0f-a315-21ba2e71193c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"9e981c47-1854-5dcd-bed1-ce4d7ce0044b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"dc93e5c5-fbd2-5dd5-8065-b6e511065ea3\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"0bb5bad5-91a2-507d-8f04-45e894ba9a12\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 5681,
+  "completion_tokens": 1371
+ }
+}

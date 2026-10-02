@@ -17,6 +17,11 @@ import httpx
 from bs4 import BeautifulSoup
 from openai import OpenAI
 from dotenv import load_dotenv
+# The batch verdict contract. Imported, not transcribed: this is the file the
+# Lab graded 60/60 (web/public/lab-artifacts/keyed-v2-clean.json records its
+# sha256), so what ships is byte for byte what was graded.
+# tests/test_keyed_batch_scoring.py pins the hash.
+from lab.contract.versions import keyed_v2
 from app.services.profile_model import (
     build_source_selection_brief,
     derive_profile_v2_from_preferences,
@@ -27,6 +32,8 @@ load_dotenv()
 
 
 INTEREST_KEYS = ("topics", "people", "locations", "industries", "excluded_topics")
+# Output ceiling for one 40-article scoring batch. See score_articles_batch.
+BATCH_SCORING_MAX_OUTPUT_TOKENS = 4096
 _PHRASE_SPLIT_RE = re.compile(r",|/|\band\b|\bor\b|\bbut not\b", re.IGNORECASE)
 _POSITIVE_PATTERNS = [
     re.compile(r"(?:interested in|care about|follow|focus on|prefer|show me|cover|about|around)\s+([^.;\n]+)", re.IGNORECASE),
@@ -514,14 +521,31 @@ Optimization goals:
         Score articles for relevance to a user profile in a SINGLE API call.
         The LLM acts as sole gatekeeper — it decides relevant yes/no, score, and reason.
 
-        Returns a list of dicts: {"relevant": bool, "score": float, "reason": str}
+        Returns one dict per article, in request order:
+        {"article_id": str, "relevant": bool, "score": float, "reason": str}.
+
+        Every verdict names its article. The response is parsed by id with
+        `keyed_v2.parse`, and a batch with a duplicate, missing or extra id, or
+        a truncated completion, is refused whole and retried. Verdicts used to
+        be joined to articles by list position, so one dropped entry shifted
+        every later verdict onto the wrong article.
         """
         if not articles:
             return []
 
-        # Build numbered article list with enough context for accurate decisions
+        ids = [str(article.get("id")) for article in articles]
+        fallback = [
+            {"article_id": article_id, "relevant": False, "score": 0.0, "reason": "scoring unavailable"}
+            for article_id in ids
+        ]
+        if len(set(ids)) != len(ids):
+            # An id that appears twice cannot say which copy a verdict is for.
+            logger.warning("Batch scoring received duplicate article ids; not scoring the batch")
+            return fallback
+
+        # Build the article list with enough context for accurate decisions
         article_lines = []
-        for i, article in enumerate(articles):
+        for article_id, article in zip(ids, articles):
             title = article.get("title", "Untitled")
             summary = (
                 article.get("summary")
@@ -533,7 +557,7 @@ Optimization goals:
                 article.get("_analysis_text") or article.get("content") or ""
             )[:500]
             source = article.get("source") or article.get("source_name") or ""
-            parts = [f"{i}. [{source}] {title}", f"   {summary}"]
+            parts = [f"article_id: {article_id}", f"   [{source}] {title}", f"   {summary}"]
             if content_snippet:
                 parts.append(f"   Content: {content_snippet}")
             article_lines.append("\n".join(parts))
@@ -598,17 +622,19 @@ Optimization goals:
             "- When in doubt, lean toward EXCLUDING. A focused feed beats a noisy one.\n"
             + adjacency_rule +
             "\n"
-            'Return ONLY a JSON object: {"results": [{"relevant": bool, "score": float, "reason": "..."}, ...]}\n'
-            "One entry per article, same order."
+            'Return ONLY a JSON object: {"results": [{"article_id": "...", "relevant": bool, '
+            '"score": float, "reason": "..."}, ...]}\n'
+            "Exactly one entry per article. Copy each article_id exactly as given; "
+            "never repeat, invent or omit one."
         )
 
         user_prompt = (
             f"User Profile:\n{profile_text}\n\n"
             f"Articles to score:\n{articles_text}\n\n"
-            f"Return JSON with \"results\" array ({len(articles)} entries, one per article)."
+            f"Return JSON with \"results\" array ({len(articles)} entries, one per article_id)."
         )
 
-        fallback = [{"relevant": False, "score": 0.0, "reason": "scoring unavailable"} for _ in articles]
+        contract_articles = [{"id": article_id} for article_id in ids]
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -630,43 +656,42 @@ Optimization goals:
                         messages=messages,
                         response_format={"type": "json_object"},
                         temperature=0.2,
+                        # About 60 tokens per verdict at 40 articles is ~2,400.
+                        # The cap bounds the looping failure (one response
+                        # carried 201 verdicts for 40 articles), and a capped
+                        # response ends with finish_reason "length", which the
+                        # contract refuses rather than reading as a short answer.
+                        max_tokens=BATCH_SCORING_MAX_OUTPUT_TOKENS,
                     ),
                     timeout=45.0,
                 )
 
-                result = json.loads(response.choices[0].message.content)
-                results_list = result.get("results", [])
+                choice = response.choices[0]
+                parsed = keyed_v2.parse(contract_articles, {
+                    "content": choice.message.content,
+                    "finish_reason": getattr(choice, "finish_reason", None),
+                })
+                if parsed["ok"]:
+                    return parsed["verdicts"]
 
-                # Backward compat: if LLM returns old {"scores": [...]} format
-                if not results_list and "scores" in result:
-                    results_list = [
-                        {"relevant": float(s) >= 0.5, "score": float(s), "reason": ""}
-                        for s in result["scores"]
-                    ]
-
-                if len(results_list) != len(articles):
-                    logger.warning(
-                        "Batch scoring returned %d results for %d articles; normalizing",
-                        len(results_list),
-                        len(articles),
-                    )
-
-                normalized = []
-                for i in range(len(articles)):
-                    if i < len(results_list):
-                        entry = results_list[i]
-                        score = max(0.0, min(1.0, float(entry.get("score", 0.5))))
-                        relevant = bool(entry.get("relevant", score >= 0.5))
-                        reason = str(entry.get("reason", ""))
-                        normalized.append({"relevant": relevant, "score": score, "reason": reason})
-                    else:
-                        normalized.append({"relevant": False, "score": 0.0, "reason": "scoring incomplete"})
-
-                return normalized
+                refusal = parsed["refusal"]
+                logger.warning(
+                    "Batch scoring refused a response for %d articles (%s: %s); not applying it",
+                    len(articles),
+                    refusal["kind"],
+                    refusal["detail"],
+                )
 
             except asyncio.TimeoutError:
                 logger.warning("Batch scoring timed out (attempt %d) for %d articles", attempt + 1, len(articles))
-            except Exception:
+            except Exception as exc:
+                # The eval harness's caching client raises CacheMiss and
+                # BudgetExceeded as stop signals. Both subclass RuntimeError, so
+                # without this a replay that should fail closed degrades to
+                # all-fallback scores and still reports zero cache misses.
+                # Matched by name so the product does not import the harness.
+                if type(exc).__name__ in {"CacheMiss", "BudgetExceeded"}:
+                    raise
                 logger.exception("Error in batch scoring (attempt %d)", attempt + 1)
 
         return fallback

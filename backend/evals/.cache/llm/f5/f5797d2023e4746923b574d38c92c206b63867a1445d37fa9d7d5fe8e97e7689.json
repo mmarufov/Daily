@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "ef033ebca6364b1ea322c5688bc41334e927747313748c881a1cb24b78b3ccd0",
+  "preview": "User Profile:\nFree-form profile:\nI run an import-export business in Dushanbe, trading with Russia, China and Kazakhstan. I need news on Central Asian economies and politics, Russia's relations with th"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"ac3e2f8f-c90b-508b-8311-f75533ee9bf4\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"d5e99d1c-c0ea-5cf2-b60d-31d25176d246\",\"relevant\":true,\"score\":0.7,\"reason\":\"Discusses the political situation in Afghanistan, relevant to Central Asian politics.\"},{\"article_id\":\"4309a1f3-294a-5611-9523-2261be9f927b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"e8075e2f-4e1b-55e5-9a49-d14c47f1c421\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"b9406cb9-9546-536d-829b-dc4896df8259\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"b7b7b840-93b5-5c67-95bf-f4b2e1b137b1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"2e5a590f-4d91-55f5-86a3-4fada7f58f58\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"ec8c2c6c-c96c-59d3-a1b0-45f9346bc0bc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"6485d1ff-3519-5d02-99a6-4e423e1f588b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"59c4c288-6419-5312-8dbb-3e91d5bc1472\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"8d6909c1-a510-53f5-af5a-4cb25f1dc016\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"f7e80d82-e51a-526b-96bd-1ee633905784\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"41427da5-aebe-52d2-b73e-b2b7e8d2730d\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"cab3767a-b43e-5de6-b826-7326fa8cc2cc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"4cec20a5-339d-5e85-b7bd-8ad59c51532a\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"0190face-9dbd-5a5d-9b65-f03d8cb2af80\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"5963874c-50ad-5648-81c3-9fd5407d8519\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"8d6909c1-a510-53f5-af5a-4cb25f1dc016\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"},{\"article_id\":\"cab3767a-b43e-5de6-b826-7326fa8cc2cc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not relevant to Central Asian economies or politics.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3709,
+  "completion_tokens": 940
+ }
+}

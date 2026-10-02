@@ -125,6 +125,8 @@ REGISTRY: dict[str, dict] = {
 # before scoring, which changes every scorer request, so the cache misses. The
 # production scorer swallows the miss and falls back to keyword scoring. The
 # gate must now fail it on raised offline misses.
+# (Since the id-keyed scorer, the scorer re-raises CacheMiss instead, so this
+# replay aborts at the first miss; `measure` records it as aborted.)
 GATE_CONTROL = {
     "name": "drop_plants_prefilter",
     "runner": PROD,
@@ -310,8 +312,17 @@ def measure(fault: str, runner: str, snapshot: str) -> dict:
     os.environ.pop("OPENAI_API_KEY", None)
     from evals.run import evaluate
     t0 = time.perf_counter()
-    with _fault(fault):
-        doc = evaluate(runner, snapshot, k=K, verbose=False, write=False)
+    try:
+        with _fault(fault):
+            doc = evaluate(runner, snapshot, k=K, verbose=False, write=False)
+    except Exception as exc:
+        # The id-keyed production scorer re-raises CacheMiss rather than
+        # falling back, so an upstream fault now aborts the replay at its first
+        # miss. Record that, with the raised-miss count taken before the raise,
+        # instead of letting the unpicklable exception break the process pool.
+        if type(exc).__name__ != "CacheMiss":
+            raise
+        return _aborted(fault, runner, snapshot, type(exc).__name__, time.perf_counter() - t0)
     s = doc["summary"]
     return {
         "fault": fault, "runner": runner, "snapshot": snapshot,
@@ -325,6 +336,26 @@ def measure(fault: str, runner: str, snapshot: str) -> dict:
         "per_persona": {p: {m: v.get(m) for m in METRICS} for p, v in sorted(doc["per_persona"].items())},
         "_summary": s,
         "_wall_s": round(time.perf_counter() - t0, 1),
+    }
+
+
+def _aborted(fault: str, runner: str, snapshot: str, reason: str, wall_s: float) -> dict:
+    from evals.openai_backend import METER, client
+    c = client()
+    s = {"calls_total": METER.calls, "cache_misses_total": c.misses,
+         "offline_misses_total": c.offline_misses, "cost_usd_total": round(METER.usd, 8)}
+    return {
+        "fault": fault, "runner": runner, "snapshot": snapshot, "aborted_by": reason,
+        "calls_total": s["calls_total"],
+        "cache_misses_total": s["cache_misses_total"],
+        "offline_misses_total": s["offline_misses_total"],
+        "n_cache_keys": len(c.touched),
+        "cache_keys_sha256": hashlib.sha256("\n".join(sorted(c.touched)).encode()).hexdigest(),
+        "notional_cost_usd": s["cost_usd_total"],
+        "means": {m: None for m in METRICS},
+        "per_persona": {},
+        "_summary": s,
+        "_wall_s": round(wall_s, 1),
     }
 
 

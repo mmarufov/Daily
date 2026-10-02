@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "d3114bb9fb035fc2796cac11bef6bb9cbac1eecffc5e313dd4c946909583f0ef",
+  "preview": "User Profile:\nFree-form profile:\nNew mother in Singapore focused on local news impacting daily life, particularly related to parenting, healthcare, and living conditions.\n\nStructured interests:\n- Topi"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"4309a1f3-294a-5611-9523-2261be9f927b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"aa708c0f-252c-5811-8499-622dfe524d62\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"012f0cb4-d305-55c1-b917-09f4ee3fa430\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"b9406cb9-9546-536d-829b-dc4896df8259\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"6aa59de6-f02e-5d79-b439-0a54153c95ca\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"f22a2f37-914b-51b2-89a7-055e655b3c84\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"b7b7b840-93b5-5c67-95bf-f4b2e1b137b1\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"1ef0c720-b8f1-521f-b842-ed0ede7498d0\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"e207a8b5-38bf-53ed-9f97-0838f7a34872\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"6059599d-6ad8-57dc-810a-1313dc1ba752\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"fb63271e-212b-5a5e-8bf8-6229196f7109\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"99eb2445-fa66-5987-8c71-f79636d6bb83\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"59c4c288-6419-5312-8dbb-3e91d5bc1472\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"f3f4e5fb-59ec-5fdf-a592-5798d4401475\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"453adfd8-3b1e-553a-a754-feea5fd54d7e\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"f474aeb3-9633-516e-9d76-0b281d8d98e3\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"},{\"article_id\":\"23234e9b-ad9d-5d71-a8ad-adef1b7cf03f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"6ad32341-e393-5cba-afbe-fcae6151744c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Not related to the user's primary interests.\"},{\"article_id\":\"ce36b21a-f4e2-5032-ba9d-829b838faddc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: sports.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 3507,
+  "completion_tokens": 916
+ }
+}

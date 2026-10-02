@@ -1,0 +1,917 @@
+{
+ "base": {
+  "meter": {
+   "by_model": {
+    "gpt-4o-mini": 0.6754259999999999
+   },
+   "cache_hits": 126,
+   "cache_misses": 0,
+   "calls": 126,
+   "usd": 0.675426
+  },
+  "ref": "origin/main",
+  "sha": "94a25809"
+ },
+ "command": "python -m evals.replay_diff --base origin/main --head HEAD",
+ "head": {
+  "budget_usd": null,
+  "live": false,
+  "meter": {
+   "by_model": {
+    "gpt-4o-mini": 0.44670584999999957
+   },
+   "cache_hits": 242,
+   "cache_misses": 0,
+   "calls": 242,
+   "usd": 0.446706
+  },
+  "ref": "HEAD",
+  "sha": "934fa6e0"
+ },
+ "machine": "Darwin 27.0.0 arm64, Python 3.12.13",
+ "per_snapshot": {
+  "2026-08-31": {
+   "batches": {
+    "base": {
+     "calls": 30,
+     "calls_applied_by_position_after_count_mismatch": 20,
+     "calls_keyed": 0,
+     "calls_refused": 0,
+     "refusals_by_kind": {},
+     "unparseable_attempts": 6,
+     "verdicts_applied_from_mismatched_batches": 720,
+     "verdicts_applied_to_another_article": 0
+    },
+    "head": {
+     "calls": 30,
+     "calls_applied_by_position_after_count_mismatch": 0,
+     "calls_keyed": 30,
+     "calls_refused": 25,
+     "refusals_by_kind": {
+      "duplicate_id": 6,
+      "missing_id": 33,
+      "unknown_id": 36
+     },
+     "unparseable_attempts": 0,
+     "verdicts_applied_from_mismatched_batches": 0,
+     "verdicts_applied_to_another_article": 0
+    }
+   },
+   "feeds": {
+    "articles_entered": 71,
+    "per_persona": {
+     "aisha": {
+      "entered": [
+       "a00736",
+       "n-aisha-91",
+       "a00694",
+       "a00695",
+       "a00737",
+       "a00748",
+       "a00009",
+       "n-aisha-02",
+       "a00738",
+       "a00788"
+      ],
+      "left": []
+     },
+     "cold": {
+      "entered": [
+       "a00032",
+       "a01251",
+       "a01252",
+       "a00944",
+       "a00396"
+      ],
+      "left": [
+       "a00346",
+       "a00337",
+       "a00788",
+       "a00001",
+       "a01248",
+       "a00454"
+      ]
+     },
+     "dilshod": {
+      "entered": [],
+      "left": []
+     },
+     "farrukh": {
+      "entered": [
+       "a00788",
+       "a00071",
+       "a01264",
+       "a01190",
+       "a00066",
+       "a00067",
+       "a00074",
+       "a01250",
+       "a01233",
+       "a00167",
+       "a00147"
+      ],
+      "left": [
+       "a01239",
+       "a01241",
+       "a01245",
+       "a01187",
+       "a01247",
+       "a01248",
+       "a01249",
+       "a01188",
+       "a01251",
+       "n-far-01",
+       "n-far-02"
+      ]
+     },
+     "lena": {
+      "entered": [
+       "a00006",
+       "a00147",
+       "a01269",
+       "a00426",
+       "a00168",
+       "a00171"
+      ],
+      "left": [
+       "a00169",
+       "a00001",
+       "a00010",
+       "a01261",
+       "n-lena-91",
+       "a01258"
+      ]
+     },
+     "maya": {
+      "entered": [
+       "a01021",
+       "a00991",
+       "a01011",
+       "a01012",
+       "a01022",
+       "a01023",
+       "a01041"
+      ],
+      "left": [
+       "a00694",
+       "n-maya-02",
+       "a00003",
+       "a01245",
+       "a00002",
+       "a00011",
+       "a00005"
+      ]
+     },
+     "priya": {
+      "entered": [
+       "a00385",
+       "a00414",
+       "n-priya-92",
+       "a00790",
+       "a01091",
+       "a00942",
+       "a00839",
+       "a00945",
+       "a00223",
+       "a00906"
+      ],
+      "left": [
+       "a00334"
+      ]
+     },
+     "ray": {
+      "entered": [
+       "n-ray-91",
+       "n-ray-92",
+       "a00424",
+       "a00426",
+       "a00946",
+       "a00453",
+       "a00349",
+       "a00399",
+       "a00275",
+       "a00944"
+      ],
+      "left": [
+       "a00031",
+       "a00892"
+      ]
+     },
+     "tom": {
+      "entered": [
+       "a00789",
+       "a00038",
+       "a00070",
+       "a01041",
+       "a01021",
+       "a01013",
+       "a01024"
+      ],
+      "left": [
+       "a01023",
+       "a00736",
+       "a00056"
+      ]
+     },
+     "wei": {
+      "entered": [
+       "a00699",
+       "a00265",
+       "n-wei-01",
+       "n-wei-91",
+       "a00736"
+      ],
+      "left": [
+       "a00059",
+       "a00343"
+      ]
+     }
+    },
+    "personas_whose_top12_changed": 9
+   },
+   "loss_by_stage": {
+    "blended": {
+     "base": 11,
+     "head": 7
+    },
+    "lookback": {
+     "base": 63,
+     "head": 63
+    },
+    "prefilter:cap": {
+     "base": 7,
+     "head": 7
+    },
+    "rank": {
+     "base": 5,
+     "head": 9
+    }
+   },
+   "metrics": {
+    "event_delivery": {
+     "base": 0.2,
+     "delta": 0.05,
+     "head": 0.25
+    },
+    "judge_precision": {
+     "base": 0.6235,
+     "delta": 0.3765,
+     "head": 1.0
+    },
+    "judge_recall": {
+     "base": 0.6238,
+     "delta": -0.6095,
+     "head": 0.0143
+    },
+    "lookalike_rate": {
+     "base": 0.05,
+     "delta": 0.2,
+     "head": 0.25
+    },
+    "needle_recall": {
+     "base": 0.6,
+     "delta": -0.05,
+     "head": 0.55
+    },
+    "never_rate": {
+     "base": 0.2097,
+     "delta": 0.1486,
+     "head": 0.3583
+    },
+    "recall_at_k": {
+     "base": 0.2397,
+     "delta": 0.0025,
+     "head": 0.2422
+    },
+    "recall_at_retrieval": {
+     "base": 0.3889,
+     "delta": 0.0,
+     "head": 0.3889
+    }
+   },
+   "verdicts": {
+    "articles_compared": 1000,
+    "moved": 157,
+    "relevant_flipped": 157,
+    "score_changed": 160,
+    "scored_in_one_build_only": 0,
+    "unscored_base": 188,
+    "unscored_head": 900
+   }
+  },
+  "2026-08-31-quiet": {
+   "batches": {
+    "base": {
+     "calls": 30,
+     "calls_applied_by_position_after_count_mismatch": 16,
+     "calls_keyed": 0,
+     "calls_refused": 0,
+     "refusals_by_kind": {},
+     "unparseable_attempts": 30,
+     "verdicts_applied_from_mismatched_batches": 520,
+     "verdicts_applied_to_another_article": 0
+    },
+    "head": {
+     "calls": 30,
+     "calls_applied_by_position_after_count_mismatch": 0,
+     "calls_keyed": 30,
+     "calls_refused": 24,
+     "refusals_by_kind": {
+      "duplicate_id": 12,
+      "missing_id": 27,
+      "truncated_response": 6,
+      "unknown_id": 27
+     },
+     "unparseable_attempts": 0,
+     "verdicts_applied_from_mismatched_batches": 0,
+     "verdicts_applied_to_another_article": 0
+    }
+   },
+   "feeds": {
+    "articles_entered": 54,
+    "per_persona": {
+     "aisha": {
+      "entered": [
+       "a00736",
+       "n-aisha-91",
+       "a00694",
+       "a00695",
+       "a00737",
+       "a00748",
+       "a00009",
+       "n-aisha-02",
+       "a00738",
+       "a00788"
+      ],
+      "left": [
+       "a01091"
+      ]
+     },
+     "cold": {
+      "entered": [
+       "a00788",
+       "a01223",
+       "n-cold-01",
+       "a00056",
+       "a00332",
+       "a00694",
+       "a00695",
+       "a00167",
+       "a00405",
+       "a00748"
+      ],
+      "left": [
+       "a00337",
+       "a00009",
+       "a00346",
+       "a00454",
+       "a00338",
+       "a00342",
+       "a00031",
+       "a01141",
+       "a00404",
+       "a00905"
+      ]
+     },
+     "dilshod": {
+      "entered": [],
+      "left": []
+     },
+     "farrukh": {
+      "entered": [
+       "a00788",
+       "a00377",
+       "a01190",
+       "a00066",
+       "a00067",
+       "a00074",
+       "a01255",
+       "a00167",
+       "a00147"
+      ],
+      "left": [
+       "a01228",
+       "a01243",
+       "a01245",
+       "a01230",
+       "a01251",
+       "a01252",
+       "a01253",
+       "n-far-01",
+       "n-far-02"
+      ]
+     },
+     "lena": {
+      "entered": [],
+      "left": []
+     },
+     "maya": {
+      "entered": [
+       "a01021",
+       "a00991",
+       "a01011",
+       "a01022",
+       "a01023",
+       "a01024",
+       "a01224",
+       "a01225"
+      ],
+      "left": [
+       "n-maya-02",
+       "a01245",
+       "a00639",
+       "a00011",
+       "a00010",
+       "a00638",
+       "a00231",
+       "a01223"
+      ]
+     },
+     "priya": {
+      "entered": [
+       "n-priya-92",
+       "a00385",
+       "a00414",
+       "a01091",
+       "a00942",
+       "a00948",
+       "a00949",
+       "a00950",
+       "a01231",
+       "a00945"
+      ],
+      "left": [
+       "a00790",
+       "a00902",
+       "a01225",
+       "a00908",
+       "a00935",
+       "a00934"
+      ]
+     },
+     "ray": {
+      "entered": [],
+      "left": []
+     },
+     "tom": {
+      "entered": [
+       "a00789",
+       "a00038",
+       "a00070",
+       "a01041",
+       "a01025",
+       "a01021",
+       "a01024"
+      ],
+      "left": [
+       "a01014"
+      ]
+     },
+     "wei": {
+      "entered": [],
+      "left": []
+     }
+    },
+    "personas_whose_top12_changed": 6
+   },
+   "loss_by_stage": {
+    "blended": {
+     "base": 6,
+     "head": 1
+    },
+    "lookback": {
+     "base": 59,
+     "head": 59
+    },
+    "prefilter:cap": {
+     "base": 4,
+     "head": 4
+    },
+    "rank": {
+     "base": 3,
+     "head": 9
+    }
+   },
+   "metrics": {
+    "event_delivery": {
+     "base": null,
+     "delta": null,
+     "head": null
+    },
+    "judge_precision": {
+     "base": 0.6667,
+     "delta": -0.0667,
+     "head": 0.6
+    },
+    "judge_recall": {
+     "base": 0.3833,
+     "delta": -0.25,
+     "head": 0.1333
+    },
+    "lookalike_rate": {
+     "base": 0.15,
+     "delta": 0.1,
+     "head": 0.25
+    },
+    "needle_recall": {
+     "base": 0.65,
+     "delta": 0.0,
+     "head": 0.65
+    },
+    "never_rate": {
+     "base": 0.2917,
+     "delta": 0.0583,
+     "head": 0.35
+    },
+    "recall_at_k": {
+     "base": 0.225,
+     "delta": 0.0833,
+     "head": 0.3083
+    },
+    "recall_at_retrieval": {
+     "base": 0.4195,
+     "delta": 0.0,
+     "head": 0.4195
+    }
+   },
+   "verdicts": {
+    "articles_compared": 1000,
+    "moved": 119,
+    "relevant_flipped": 119,
+    "score_changed": 122,
+    "scored_in_one_build_only": 0,
+    "unscored_base": 471,
+    "unscored_head": 860
+   }
+  },
+  "2026-09-02": {
+   "batches": {
+    "base": {
+     "calls": 30,
+     "calls_applied_by_position_after_count_mismatch": 21,
+     "calls_keyed": 0,
+     "calls_refused": 0,
+     "refusals_by_kind": {},
+     "unparseable_attempts": 18,
+     "verdicts_applied_from_mismatched_batches": 700,
+     "verdicts_applied_to_another_article": 0
+    },
+    "head": {
+     "calls": 30,
+     "calls_applied_by_position_after_count_mismatch": 0,
+     "calls_keyed": 30,
+     "calls_refused": 27,
+     "refusals_by_kind": {
+      "duplicate_id": 18,
+      "missing_id": 33,
+      "unknown_id": 30
+     },
+     "unparseable_attempts": 0,
+     "verdicts_applied_from_mismatched_batches": 0,
+     "verdicts_applied_to_another_article": 0
+    }
+   },
+   "feeds": {
+    "articles_entered": 78,
+    "per_persona": {
+     "aisha": {
+      "entered": [
+       "n-aisha-91",
+       "a00772",
+       "a00751",
+       "a00706",
+       "a00227",
+       "a00770",
+       "n-aisha-92",
+       "a01282"
+      ],
+      "left": [
+       "a00340"
+      ]
+     },
+     "cold": {
+      "entered": [
+       "a00810",
+       "a00752",
+       "a00369",
+       "a00343"
+      ],
+      "left": [
+       "a01249",
+       "a00174",
+       "a00175",
+       "a01253",
+       "a00242",
+       "a01278",
+       "a00335",
+       "a00342",
+       "a01085"
+      ]
+     },
+     "dilshod": {
+      "entered": [
+       "a00965",
+       "a00961",
+       "a00962",
+       "a00963",
+       "a00964",
+       "a00966",
+       "a00967",
+       "a00953",
+       "a00976",
+       "a00912"
+      ],
+      "left": [
+       "a00001",
+       "a00923",
+       "a00981",
+       "a00983",
+       "a00812",
+       "a00373",
+       "n-dil-02",
+       "a00770",
+       "a00005",
+       "a00011"
+      ]
+     },
+     "farrukh": {
+      "entered": [
+       "a01305",
+       "a01276",
+       "a01259",
+       "a01284",
+       "a01294",
+       "a01304",
+       "a00613",
+       "a00614",
+       "a01256",
+       "a01253",
+       "a00144",
+       "a00165"
+      ],
+      "left": [
+       "a01254",
+       "a01258",
+       "a01277",
+       "a01278",
+       "a01272",
+       "a01250",
+       "a01279",
+       "a01280",
+       "a01281",
+       "a01282",
+       "n-far-01",
+       "n-far-02"
+      ]
+     },
+     "lena": {
+      "entered": [
+       "a01249",
+       "a01259",
+       "a01295",
+       "a00808",
+       "a00165",
+       "a00770",
+       "a00001",
+       "a01256"
+      ],
+      "left": [
+       "a00010",
+       "a00009",
+       "a00771",
+       "a00772",
+       "a00012",
+       "a01282",
+       "a01288",
+       "n-lena-91"
+      ]
+     },
+     "maya": {
+      "entered": [
+       "a01080",
+       "a01076",
+       "a01077",
+       "a01078",
+       "a01079",
+       "a01081",
+       "a01082",
+       "a01083",
+       "a01084",
+       "a01085"
+      ],
+      "left": [
+       "a01292",
+       "a00241",
+       "a00812",
+       "n-maya-02",
+       "a01086",
+       "a01056",
+       "a00009",
+       "a00772",
+       "a01288",
+       "a01058"
+      ]
+     },
+     "priya": {
+      "entered": [
+       "a00948"
+      ],
+      "left": [
+       "a00166"
+      ]
+     },
+     "ray": {
+      "entered": [
+       "a00976",
+       "a00979",
+       "n-ray-91",
+       "a00461",
+       "a00411",
+       "a00422",
+       "a00615",
+       "a00915"
+      ],
+      "left": []
+     },
+     "tom": {
+      "entered": [
+       "a00809",
+       "a00810",
+       "a00813",
+       "a00815",
+       "a00055",
+       "a01182",
+       "a01056",
+       "a01087"
+      ],
+      "left": [
+       "n-tom-01",
+       "a01047",
+       "a00772",
+       "a01026",
+       "a01057",
+       "a00769",
+       "a01085",
+       "a01086"
+      ]
+     },
+     "wei": {
+      "entered": [
+       "a00812",
+       "a00056",
+       "n-wei-01",
+       "n-wei-91",
+       "a01047",
+       "a00706",
+       "a00753",
+       "a00227",
+       "a00754"
+      ],
+      "left": [
+       "a00813",
+       "a01127",
+       "a00769",
+       "a00010",
+       "a01085",
+       "a01086",
+       "a01087",
+       "a01282",
+       "a00770"
+      ]
+     }
+    },
+    "personas_whose_top12_changed": 10
+   },
+   "loss_by_stage": {
+    "after:roles": {
+     "base": 0,
+     "head": 1
+    },
+    "blended": {
+     "base": 13,
+     "head": 6
+    },
+    "lookback": {
+     "base": 75,
+     "head": 75
+    },
+    "prefilter:cap": {
+     "base": 9,
+     "head": 9
+    },
+    "rank": {
+     "base": 2,
+     "head": 10
+    }
+   },
+   "metrics": {
+    "event_delivery": {
+     "base": 0.15,
+     "delta": -0.05,
+     "head": 0.1
+    },
+    "judge_precision": {
+     "base": 0.6402,
+     "delta": null,
+     "head": null
+    },
+    "judge_recall": {
+     "base": 0.55,
+     "delta": -0.55,
+     "head": 0.0
+    },
+    "lookalike_rate": {
+     "base": 0.1,
+     "delta": 0.15,
+     "head": 0.25
+    },
+    "needle_recall": {
+     "base": 0.65,
+     "delta": -0.2,
+     "head": 0.45
+    },
+    "never_rate": {
+     "base": 0.395,
+     "delta": 0.03,
+     "head": 0.425
+    },
+    "recall_at_k": {
+     "base": 0.2098,
+     "delta": -0.0232,
+     "head": 0.1866
+    },
+    "recall_at_retrieval": {
+     "base": 0.3211,
+     "delta": 0.0,
+     "head": 0.3211
+    }
+   },
+   "verdicts": {
+    "articles_compared": 1000,
+    "moved": 101,
+    "relevant_flipped": 101,
+    "score_changed": 104,
+    "scored_in_one_build_only": 0,
+    "unscored_base": 330,
+    "unscored_head": 940
+   }
+  }
+ },
+ "personas": [
+  "aisha",
+  "cold",
+  "dilshod",
+  "farrukh",
+  "lena",
+  "maya",
+  "priya",
+  "ray",
+  "tom",
+  "wei"
+ ],
+ "ran_at": "2026-09-30T20:23:29+00:00",
+ "replay_diff_version": 1,
+ "snapshots": [
+  "2026-08-31",
+  "2026-08-31-quiet",
+  "2026-09-02"
+ ],
+ "total": {
+  "batches": {
+   "base": {
+    "calls": 90,
+    "calls_applied_by_position_after_count_mismatch": 57,
+    "calls_keyed": 0,
+    "calls_refused": 0,
+    "refusals_by_kind": {},
+    "unparseable_attempts": 54,
+    "verdicts_applied_from_mismatched_batches": 1940,
+    "verdicts_applied_to_another_article": 0
+   },
+   "head": {
+    "calls": 90,
+    "calls_applied_by_position_after_count_mismatch": 0,
+    "calls_keyed": 90,
+    "calls_refused": 76,
+    "refusals_by_kind": {
+     "duplicate_id": 36,
+     "missing_id": 93,
+     "truncated_response": 6,
+     "unknown_id": 93
+    },
+    "unparseable_attempts": 0,
+    "verdicts_applied_from_mismatched_batches": 0,
+    "verdicts_applied_to_another_article": 0
+   }
+  },
+  "verdicts": {
+   "articles_compared": 3000,
+   "moved": 377,
+   "relevant_flipped": 377,
+   "score_changed": 386,
+   "scored_in_one_build_only": 0,
+   "unscored_base": 989,
+   "unscored_head": 2700
+  }
+ }
+}

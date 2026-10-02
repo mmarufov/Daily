@@ -1,0 +1,26 @@
+{
+ "request": {
+  "model": "gpt-4o-mini",
+  "response_format": {
+   "type": "json_object"
+  },
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "messages_sha256": "75dc77b353ab423e4b76a7da9476507ee9f27272365edf20adf821272d71a135",
+  "preview": "User Profile:\nFree-form profile:\nUser is a sports and politics enthusiast from Tashkent, Uzbekistan, with a focus on local football and national affairs.\n\nStructured interests:\n- Topics: Uzbek footbal"
+ },
+ "model": "gpt-4o-mini",
+ "choices": [
+  {
+   "message": {
+    "role": "assistant",
+    "content": "{\"results\":[{\"article_id\":\"e594a0b5-7152-55d9-a78e-efaf82236a2c\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"224ea8c3-dc9f-5133-9e27-7fd98b9fcc81\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"be6bf2b3-785f-50f7-9457-ca7b18cf3432\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"f80c7a06-6051-5a3b-92a3-939de374b40f\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"0a89736d-dcc9-5d7f-a4ca-95661983e11a\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"58a4e9d6-e41a-5f6c-862e-86e8e119daac\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"8dee8ec6-aadb-5bd5-a535-5f04fefc9827\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"3f8695d1-6498-5ed6-a67a-f4d999d2b8f8\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"a7d769a4-5edd-5ec0-abe5-5dc7758e77f5\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"e38f877b-aba8-5794-8889-bff5df14a42b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"285a9984-97f5-5e90-9400-aba51f75d8fb\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"46bdfd5b-9d70-5478-9f18-c8cf9584fd44\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"416fe26a-13d0-58fc-ab72-029f759ffade\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"bd18d3f5-c768-5a05-b018-cbce1e7ad4dc\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"f3e9db88-9cab-545b-9377-177aa4fb9c40\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"00b645ae-2c81-547d-9d07-a59c4ca7c8b9\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"},{\"article_id\":\"de234674-cd88-5eb2-ac23-d87513734d2b\",\"relevant\":false,\"score\":0.0,\"reason\":\"Excluded topic: entertainment.\"}]}"
+   },
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 2928,
+  "completion_tokens": 793
+ }
+}
