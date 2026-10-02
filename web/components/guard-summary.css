@@ -1,7 +1,6 @@
 .guard-summary { padding-block: 72px 48px; }
 .guard-summary-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
 .guard-summary-heading h2 { margin: 16px 0 0; font-size: clamp(28px, 3vw, 38px); font-weight: 500; line-height: 1.16; letter-spacing: -.045em; text-wrap: balance; }
-.guard-summary-date { margin: 0 0 3px; color: var(--d-ink-38); font-size: 12px; line-height: 1.6; }
 .guard-summary-metrics { display: grid; grid-template-columns: 1fr 1fr; margin: 32px 0 24px; border-block: 1px solid var(--d-rule); }
 .guard-summary-metric { min-width: 0; padding-block: 24px 28px; }
 .guard-summary-metric:first-child { padding-right: 32px; }
@@ -14,7 +13,7 @@
 .guard-summary-value > span { color: var(--d-ink-38); font-size: 12px; }
 .guard-summary-value[data-guard='true'] strong { color: var(--d-signal); }
 .guard-summary-arrow { color: var(--d-ink-38); font-size: 24px; line-height: 36px; }
-.guard-summary-history, .guard-summary-unavailable { max-width: 75ch; margin: 0; color: var(--d-ink-58); font-size: 14px; line-height: 1.7; }
+.guard-summary-unavailable { max-width: 75ch; margin: 0; color: var(--d-ink-58); font-size: 14px; line-height: 1.7; }
 .guard-summary-unavailable { margin-block: 28px 8px; }
 .guard-summary-links { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 12px; }
 .home-story-footer { padding-bottom: 72px; }

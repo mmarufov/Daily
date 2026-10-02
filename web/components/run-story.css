@@ -4,9 +4,6 @@
 .run-story-heading h2 { margin: 0; font-weight: 500; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -.045em; }
 .run-story-heading .button-primary { flex: none; }
 .run-story-animation { display: none; }
-.run-recording-label { display: flex; justify-content: space-between; gap: 16px; color: var(--d-ink-38); font-family: var(--font-mono); font-size: 11px; }
-.run-recording-label > span { display: flex; align-items: center; gap: 7px; }
-.run-recording-label i { width: 5px; height: 5px; border: 1px solid currentColor; border-radius: 50%; }
 .run-rail { position: relative; display: flex; flex-direction: column; align-self: center; padding-block: 2px; }
 .run-rail button { display: grid; grid-template-columns: 20px 1fr 7px; gap: 10px; align-items: center; position: relative; min-height: 66px; padding: 0 0 0 1px; font-size: 13px; text-align: left; color: var(--d-ink-38); border: 0; background: var(--d-paper); cursor: pointer; }
 .run-rail-number { font-family: var(--font-mono); font-size: 10px; }
@@ -81,7 +78,6 @@
 .run-failure-example > span { font-size: 10px; color: var(--d-ink-38); }
 .run-failure-example p { margin: 4px 0; font-size: 12px; line-height: 1.55; }
 .run-failure-example code { font-size: 9px; color: var(--d-ink-38); overflow-wrap: anywhere; }
-.run-static-recording { margin: 0 0 12px; font-size: 11px; color: var(--d-ink-38); font-family: var(--font-mono); }
 .run-story-chapter { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 48px; padding: 36px 0; border-top: 1px solid var(--d-rule); }
 .run-static-visual { min-width: 0; }
 .run-static-visual .run-diagram { max-height: 300px; overflow: hidden; }

@@ -5,7 +5,7 @@ import type { EditionPreviewData } from '@/lib/home-evidence'
 export function EditionPreview({ edition }: { readonly edition: EditionPreviewData | null }) {
   if (edition === null) return (
     <aside className="edition-preview edition-unavailable" data-testid="edition-preview">
-      <p className="eyebrow">Recorded edition</p>
+      <p className="eyebrow">Ray's edition</p>
       <p>The recorded Ray edition is unavailable.</p>
       <Link href="/reader" prefetch={false} className="text-link">Open the Reader <span aria-hidden="true">→</span></Link>
     </aside>
@@ -17,9 +17,9 @@ export function EditionPreview({ edition }: { readonly edition: EditionPreviewDa
     <aside className="edition-preview" data-testid="edition-preview" aria-label="A recorded edition from Daily">
       <div className="edition-preview-top">
         <span className="edition-wordmark" aria-hidden="true">Daily</span>
-        <span className="edition-fixture">Reader fixture: Ray</span>
+        <span className="edition-fixture">For Ray</span>
       </div>
-      <p className="edition-date">Recorded edition · {date}</p>
+      <p className="edition-date">{date}</p>
       <ol className="edition-stories">
         {edition.stories.map((story) => (
           <li key={story.id}>

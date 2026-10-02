@@ -40,14 +40,15 @@ function Verdict({ data, identified }: { data: RunStoryData; identified: boolean
 }
 
 function RecordingDetails({ data }: { data: RunStoryData }) {
+  const date = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(data.date))
   return <AnimatedDetails className="run-inspect">
-    <summary>Inspect this recorded run <span>Events, criteria and source</span></summary>
+    <summary>Inspect run details <span>Events, criteria and source</span></summary>
     <div className="run-inspect-content recorded-execution" data-testid="recorded-run-timeline" data-run-id={data.runId}>
       <ol className="recorded-timeline" aria-label="Recorded production execution timeline">{data.events.map(event => <li key={event.stage} className="recorded-timeline-row">
         <span className="recorded-timeline-time" aria-label={`${event.elapsed} seconds`}>{event.elapsed}</span><span className="recorded-timeline-dot" aria-hidden="true" />
         <div className="recorded-timeline-step">{event.stage}{event.stage === 'probing isolation' ? <Probes data={data} /> : null}</div>
       </li>)}<li className="recorded-timeline-row"><span /><span className="recorded-timeline-dot" aria-hidden="true" /><span>graded outside the microVM</span></li></ol>
-      <div className="run-source"><p>Criteria generation {data.specVersion}<br /><code>{data.specHash}</code></p><p>Times are recorded elapsed seconds.</p><a className="text-link" href={data.sourceHref}>Inspect the source record <span aria-hidden="true">↗</span></a></div>
+      <div className="run-source"><p>Run date: <time dateTime={data.date}>{date}</time></p><p>Criteria generation {data.specVersion}<br /><code>{data.specHash}</code></p><p>Times are recorded elapsed seconds.</p><a className="text-link" href={data.sourceHref}>Inspect the source record <span aria-hidden="true">↗</span></a></div>
     </div>
   </AnimatedDetails>
 }
@@ -167,7 +168,6 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
     window.scrollTo({ top: top + (STORY_STOPS[index] ?? 0) * Math.max(0, area.offsetHeight - panel.offsetHeight), behavior: 'smooth' })
   }
 
-  const date = data ? new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(data.date)) : ''
   const timestamp = data ? [data.events[0]!.elapsed, data.events[1]!.elapsed, data.events[3]!.elapsed, data.events[6]!.elapsed][stage] : ''
   const chapter = CHAPTERS[stage] ?? CHAPTERS[0]
   return <section className="frame run-story" id="daily-lab" ref={root} data-testid="run-story" data-mode={enhanced ? 'scroll' : 'static'} data-stage={stage} data-active={active} data-run-id={data?.runId} style={storyFrame(0) as CSSProperties} aria-labelledby="run-story-title">
@@ -178,7 +178,6 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
         {data ? <div className="run-story-animation">
           <nav className="run-rail" aria-label="Recorded run stages"><span className="run-rail-line" aria-hidden="true"><i /></span>{CHAPTERS.map((chapter, i) => <button key={chapter.id} type="button" aria-current={stage === i ? 'step' : undefined} onClick={() => select(i)}><span className="run-rail-number" aria-hidden="true">0{i + 1}</span><span>{chapter.name}</span><i aria-hidden="true" /></button>)}<span className="run-scroll-hint">Scroll to follow <span aria-hidden="true">↓</span></span></nav>
           <div className="run-story-scene">
-            <div className="run-recording-label"><span><i aria-hidden="true" /> Recorded run</span><time dateTime={data.date}>{date}</time></div>
             <div className="run-scene-canvas">
               <RunDiagram data={data} />
               <div className="run-scene-checks" aria-hidden={stage !== 2}><p>Isolation checks <span>{data.events[4]!.elapsed}s</span></p><Probes data={data} /></div>
@@ -188,7 +187,7 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
           </div>
         </div> : <div className="run-story-unavailable" role="status"><p>The recorded run is unavailable.</p><p>Open the Lab to inspect or run a parser.</p></div>}
       </div>
-      {data ? <div className="run-story-chapters"><p className="run-static-recording">Recorded run · {date}</p>{CHAPTERS.map((chapter, i) => <article key={chapter.id} className="run-story-chapter" data-chapter={chapter.id} data-testid="run-story-stage" data-index={i}>
+      {data ? <div className="run-story-chapters">{CHAPTERS.map((chapter, i) => <article key={chapter.id} className="run-story-chapter" data-chapter={chapter.id} data-testid="run-story-stage" data-index={i}>
         <div className="run-chapter-copy"><span className="run-chapter-index">0{i + 1} / {chapter.name}</span><h3>{chapter.title}</h3><p>{chapter.copy}</p></div>
         <div className="run-static-visual">{i < 3 ? <><RunDiagram data={data} chapter={i} /><p className="run-static-caption">{i === 0 ? <><code>candidate.py</code><span>{data.preset}</span></> : i === 1 ? <><span>Vercel Sandbox</span><span>Networking denied</span></> : <><span>{data.counts.total} cases</span><span>{data.counts.faultInjected} fault-injected</span></>}</p></> : <Verdict data={data} identified={!enhanced} />}{i === 2 ? <Probes data={data} /> : null}{i === 3 ? <Link className="text-link run-static-action" href="/lab#run">Try your parser <span aria-hidden="true">↗</span></Link> : null}</div>
       </article>)}</div> : null}

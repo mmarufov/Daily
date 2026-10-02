@@ -80,7 +80,6 @@
 .guard-toggle button[aria-pressed="true"] { color: var(--d-paper); }
 .guard-toggle button:active { transform: scale(.97); transition-duration: 90ms; }
 .guard-toggle button:hover:not([aria-pressed="true"]) { color: var(--d-ink); }
-.guard-date { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--d-ink-38); }
 .guard-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 3vw, 3rem); margin-top: 1.75rem; }
 .guard-metric { margin: 0; min-width: 0; }
 .guard-metric figcaption { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: baseline; justify-content: space-between; }
@@ -98,11 +97,10 @@
 .guard-axis { display: flex; justify-content: space-between; margin-top: 0.5rem; color: var(--d-ink-38); font-family: var(--font-mono); font-size: 0.625rem; }
 .guard-reading { margin: 1.5rem 0; max-width: 43rem; }
 .guard-reading > p:last-child { margin-top: 0.5rem; color: var(--d-ink-38); font-size: 0.875rem; line-height: 1.75; }
-.guard-history { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 1.5rem; align-items: center; padding: 1.25rem 0; border-block: 1px solid var(--d-rule); }
+.guard-history { display: flex; gap: 1.5rem; align-items: center; padding: 1.25rem 0; border-block: 1px solid var(--d-rule); }
 .guard-failure-count { display: flex; align-items: center; gap: 1rem; }
 .guard-failure-count > span { font-family: var(--font-mono); font-size: 2.75rem; color: var(--d-signal); line-height: 1; letter-spacing: -0.07em; }
 .guard-failure-count p { font-size: 0.875rem; font-weight: 550; }
-.guard-failure-count p span { display: block; margin-top: 0.25rem; color: var(--d-ink-38); font-size: 0.6875rem; font-weight: 400; }
 .finding-provenance { margin-top: 0.5rem; }
 .finding-provenance summary { display: list-item; min-height: 44px; padding: 0.85rem 0; cursor: pointer; color: var(--d-ink-38); font-size: 0.75rem; }
 .finding-provenance-body { display: grid; gap: 0.75rem; padding-bottom: 1rem; max-width: 52rem; color: var(--d-ink-38); font-size: 0.8125rem; line-height: 1.7; }
