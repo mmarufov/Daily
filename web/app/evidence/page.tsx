@@ -28,9 +28,9 @@ import { personaLabel, personaName } from '@/lib/personas'
 import { explorerHref, readState, type RawSearchParams } from '@/lib/url-state'
 
 export const metadata: Metadata = {
-  title: 'Evaluation evidence',
+  title: 'Evidence · Daily Lab',
   description:
-    'Interactive results from Daily’s offline evaluation harness: per-fixture metrics, the candidate funnel drawn at 1:1 with the corpus, and the recorded trace for individual stories.',
+    'Interactive results from the Daily Lab evaluation harness: per-fixture metrics, the candidate funnel drawn at 1:1 with the corpus, and the recorded trace for individual stories.',
 }
 
 export default async function EvidencePage({
@@ -79,6 +79,17 @@ export default async function EvidencePage({
     else comparisonFailed = load.error.issues.join('; ')
   }
 
+  // Count each snapshot's label set once, even when multiple pipelines used it.
+  const snapshots = index.manifest?.snapshots ?? []
+  const labelSets = await Promise.all(snapshots.map(async (snapshot) => {
+    const entry = index.entries.find(e => e.snapshot === snapshot.name && !e.is_baseline)
+    if (!entry) return null
+    const loaded = await loadArtifact(entry)
+    return loaded.ok ? loaded.artifact.provenance.labels : null
+  }))
+  const labelRows = labelSets.length > 0 && labelSets.every(labels => labels !== null)
+    ? labelSets.reduce((total, labels) => total + (labels?.rows ?? 0), 0) : null
+
   const state = { ...requested, run: primaryEntry.run_id, compare: comparisonEntry?.run_id }
 
   const compatibility = comparison === null ? null : assessCompatibility(primary, comparison)
@@ -99,7 +110,7 @@ export default async function EvidencePage({
         </p>
         <h1 className="display m-0 text-[clamp(2.25rem,6vw,4.5rem)]">Evaluation evidence</h1>
         <p className="lede measure m-0 text-ink-60">
-          Ten adversarial fixtures, three frozen corpora, and a recorded trace for every article.
+          Ten adversarial fixtures, three frozen corpora, and recorded traces for inspected stories.
           Pick a run, then follow a story that should have reached a reader and did not.
         </p>
         {index.errors.length > 0 ? (
@@ -154,7 +165,7 @@ export default async function EvidencePage({
             {/* The metric table's intrinsic width exceeds a 375px viewport,
                 so it gets its own scroll port rather than pushing the page
                 sideways. */}
-            <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+            <div className="relative overflow-x-auto">
               <MetricTable
                 primary={primary}
                 comparison={comparison}
@@ -275,6 +286,18 @@ export default async function EvidencePage({
           )}
         </section>
       ) : null}
+
+      <section className="frame pb-12">
+        <details className="border-t border-rule pt-4 text-sm">
+          <summary className="disclosure min-h-11 cursor-pointer">Published scorecards and corpus inventory</summary>
+          <p className="max-w-2xl text-ink-60">{index.entries.length} published scorecards, including retained baselines. Snapshots overlap; their article counts are not unique articles across the collection. {labelRows === null ? 'Label totals are unavailable.' : `${labelRows.toLocaleString()} provisional model and agent label rows across these snapshots.`}</p>
+          <ul className="m-0 grid list-none gap-5 p-0 md:grid-cols-3">{index.manifest?.snapshots.map(snapshot => <li key={snapshot.name} className="min-w-0 border border-rule p-4">
+            <p className="m-0 font-medium">{snapshot.name}</p>
+            <p className="mt-2 text-ink-60">{snapshot.n_articles?.toLocaleString() ?? 'Unknown'} corpus articles</p>
+            <p className="break-all font-mono text-xs text-ink-40">SHA-256 {snapshot.sha256}</p>
+          </li>)}</ul>
+        </details>
+      </section>
 
       <section className="frame flex flex-col gap-4 pb-8">
         <Band index="" title="Provenance" note="What can and cannot be established" as="h2" />

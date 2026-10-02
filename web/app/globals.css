@@ -1365,3 +1365,14 @@ details[open] > .disclosure::before {
   *, *::before, *::after { scroll-behavior: auto !important; }
   .button-primary, .button-secondary { transition: none; }
 }
+
+/* Native disclosures share the same target size and hierarchy as controls. */
+.reveal { border-top: 1px solid var(--d-rule); }
+.reveal-summary { display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; list-style: none; }
+.reveal-summary::-webkit-details-marker { display: none; }
+.reveal-count { color: var(--d-ink-38); font-family: var(--font-mono); font-size: 11px; }
+.reveal-mark { margin-left: auto; color: var(--d-ink-38); }
+.reveal-mark::after { content: '+'; }
+.reveal[open] .reveal-mark::after { content: '−'; }
+.reveal-list { margin: 0; padding: 0 0 20px 20px; color: var(--d-ink-58); font-size: 13px; line-height: 1.7; }
+.reveal-list li + li { margin-top: 8px; }

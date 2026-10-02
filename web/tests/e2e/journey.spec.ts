@@ -189,6 +189,7 @@ test.describe('accessibility basics', () => {
     for (const path of ['/', '/reader?profile=ray', '/evidence?persona=ray&view=stories', '/engineering']) {
       await page.goto(path)
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+      await page.waitForLoadState('networkidle')
     }
     expect(errors).toEqual([])
   })

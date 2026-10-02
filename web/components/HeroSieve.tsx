@@ -141,7 +141,7 @@ export function HeroSieve({ fixtures, runId, snapshot }: {
           {playing ? 'Pause' : atEnd ? 'Replay' : 'Play'}
         </button>
         <div className="stage-slider">
-          <input aria-label="Pipeline stage" aria-valuetext={`${index + 1} of ${last + 1}: ${current.label}, ${current.survivors} remaining`} type="range" min={0} max={last} step={1} value={index} onPointerDown={pause} onChange={(event) => selectStage(Number(event.target.value))} />
+          <input onFocus={pause} onKeyDown={pause} aria-label="Pipeline stage" aria-valuetext={`${index + 1} of ${last + 1}: ${current.label}, ${current.survivors} remaining`} type="range" min={0} max={last} step={1} value={index} onPointerDown={pause} onChange={(event) => selectStage(Number(event.target.value))} />
           <div className="stage-ticks" aria-hidden="true">{data.stages.map((stage, step) => <i key={stage.stage} data-active={step <= index} />)}</div>
         </div>
       </div>

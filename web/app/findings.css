@@ -81,7 +81,7 @@
 .guard-metric figcaption { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: baseline; justify-content: space-between; }
 .guard-metric-name { font-size: 0.9375rem; font-weight: 550; }
 .guard-metric-direction { font-size: 0.6875rem; color: var(--d-ink-38); }
-.guard-metric-value { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: baseline; margin: 1rem 0 1.25rem; }
+.guard-metric-value { min-height: 74px; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: baseline; margin: 1rem 0 1.25rem; }
 .guard-metric-value > span:first-child { font-family: var(--font-mono); font-size: clamp(2.6rem, 4.5vw, 4.4rem); letter-spacing: -0.085em; line-height: 1.15; font-variant-numeric: tabular-nums; }
 .guard-percent { font-size: 0.6em; margin-left: 0.12em; }
 .guard-delta { color: var(--d-signal); font-family: var(--font-mono); font-size: 0.8125rem; }
@@ -108,9 +108,9 @@
 
 @media (max-width: 760px) {
   .retrieval-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .retrieval-detail, .guard-metrics, .guard-history { grid-template-columns: 1fr; }
+  .retrieval-detail, .guard-history { grid-template-columns: 1fr; }
   .retrieval-story { border-left: 0; border-top: 1px solid var(--d-rule); padding: 1.5rem 0 0; }
-  .guard-metrics { gap: 2rem; }
+  .guard-metrics { gap: 1rem; }
   .guard-history { gap: 1rem; }
 }
 

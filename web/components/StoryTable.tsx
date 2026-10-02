@@ -65,7 +65,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
   }
 
   return (
-    <table className="w-full border-collapse text-xs">
+    <div className="overflow-x-auto"><table className="w-full border-collapse text-xs">
       <caption className="sr-only">
         Stories for reader fixture {personaName(persona.key)}, filtered to {state.outcome}. Select a row to see
         its recorded trace.
@@ -136,7 +136,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
           )
         })}
       </tbody>
-    </table>
+    </table></div>
   )
 }
 

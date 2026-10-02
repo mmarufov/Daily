@@ -44,10 +44,8 @@ function rng(seed: number): () => number {
 }
 
 function ogHtml(): string {
-  const fontPath = join(WEB, 'app/fonts/GeistSans-latin.woff2')
+  const fontPath = join(WEB, 'app/fonts/GeistSans-variable.woff2')
   const monoPath = join(WEB, 'app/fonts/GeistMono-latin.woff2')
-  const cols = 62
-  const rows = 22
   const total = POOL
 
   // Which cells survived. Spread rather than clustered: the real figure is a
@@ -72,7 +70,7 @@ function ogHtml(): string {
   p{font:400 22px/1.45 F;color:#626262;max-width:25ch}
   .instrument{background:#111315;border-radius:12px;padding:30px;color:#fafaf9}
   .label{font:400 13px M;color:#bfc3c6}
-  .plate{display:grid;grid-template-columns:repeat(38,1fr);gap:3px;margin:32px 0}
+  .plate{display:grid;grid-template-columns:repeat(48,1fr);gap:3px;margin:32px 0}
   .plate i{aspect-ratio:1;background:#303436;border-radius:1px}
   .plate i.on{background:#fafaf9}
   .n{font:400 18px M;color:#a4a8aa}

@@ -284,7 +284,7 @@ function Recorded({ grading }: { grading: LiveGrading }) {
 
 function Criteria({ grading }: { grading: LiveGrading }) {
   return (
-    <section className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+    <section className="relative overflow-x-auto">
       <table className="w-full min-w-md border-collapse text-xs">
         <caption className="label pb-2 text-left text-ink-40">
           The {grading.criteria.length} acceptance criteria

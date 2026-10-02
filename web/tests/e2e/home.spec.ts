@@ -62,7 +62,7 @@ test.describe('recorded hero instrument', () => {
       && url.searchParams.get('run') === NARRATIVE_RUN
       && url.searchParams.get('persona') === 'tom'
       && url.searchParams.get('view') === 'funnel')
-    await expect(page.getByLabel('Reader fixture')).toHaveValue('tom')
+    await expect(page.getByRole('combobox', { name: 'Reader fixture', exact: true })).toHaveValue('tom')
   })
 
   test('autoplay settles once, while pause and manual scrubbing take control', async ({ page }) => {
@@ -110,6 +110,29 @@ test.describe('recorded hero instrument', () => {
     await expect(hero).toHaveAttribute('data-playing', 'false')
     await expect(hero).toHaveAttribute('data-stage', stoppedAt as string)
   })
+  test('hiding the document stops playback without restarting when visible', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const hero = page.getByTestId('hero-sieve')
+    await hero.scrollIntoViewIfNeeded()
+    await hero.getByRole('slider').press('Home')
+    await hero.getByRole('button', { name: 'Play', exact: true }).click()
+    await expect(hero).toHaveAttribute('data-playing', 'true')
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => true })
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    await expect(hero).toHaveAttribute('data-playing', 'false')
+    const stopped = await hero.getAttribute('data-stage')
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => false })
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+    await page.waitForTimeout(1700)
+    await expect(hero).toHaveAttribute('data-stage', stopped!)
+    await expect(hero).toHaveAttribute('data-playing', 'false')
+  })
+
 })
 
 test.describe('homepage evidence', () => {

@@ -207,7 +207,7 @@ cd ../web && npm run export:lab -- --check`}
           <Figure term="Wrong" value={String(wrong.length)} note="see the table" signal={wrong.length > 0} />
         </dl>
         {wrong.length > 0 ? (
-          <div className="relative -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-md border-collapse text-xs">
               <caption className="sr-only">Every case this candidate got wrong</caption>
               <thead>
