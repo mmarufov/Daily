@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 import { decide, PUBLIC_RUN_LIMITS } from '../../lib/lab/public-limits'
 import { handleRunRequest } from '../../lib/lab/public-run'
@@ -16,18 +18,19 @@ import { finishedRunBody } from '../fixtures/live-outcome'
  */
 
 test.describe('Daily Lab', () => {
-  test('the first screen states the failure and offers the replay', async ({ page }) => {
+  test('the first screen offers the live parser and distinguishes its recorded inputs', async ({ page }) => {
     await page.goto('/lab')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('never said which verdict')
-    await expect(page.getByRole('link', { name: 'Replay the investigation' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Run a parser yourself' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Put your parser through it.')
+    await expect(page.getByRole('link', { name: 'Recorded investigations' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeEnabled()
     // What is live and what is replayed, said where a reader starts. The
     // execution is live; the model responses it parses are not.
-    await expect(page.getByText(/live parser runs against recorded responses/i).first()).toBeVisible()
+    await expect(page.getByText(/The default parser has a known gap/).first()).toBeVisible()
   })
 
   test('shows the real offending response, not a description of one', async ({ page }) => {
     await page.goto('/lab')
+    await page.getByText('The response that started it', { exact: true }).click()
     await expect(page.getByText('Articles sent')).toBeVisible()
     await expect(page.getByText('Verdicts returned')).toBeVisible()
     // The recorded batch: 40 articles in, 254 verdicts back.
@@ -67,24 +70,13 @@ test.describe('Daily Lab', () => {
     await expect(page.getByText('succeeded').first()).toBeVisible()
   })
 
-  test('never claims more agent work than the manifest records', async ({ page }) => {
-    // This asserted "No agent has run" while that was true. Agents have run
-    // since, so the page rightly stopped saying it and the old assertion
-    // stopped matching. The claim is now counted from the manifest, and so is
-    // what this test expects: how many investigations were published, and how
-    // many of them actually proposed a candidate.
-    const manifest = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'lab-artifacts', 'manifest.json'), 'utf8')) as {
-      entries: { investigated: boolean; runner: string }[]
-    }
-    const investigated = manifest.entries.filter((e) => e.investigated)
-    const proposed = investigated.filter((e) => e.runner !== 'none')
-    expect(investigated.length).toBeGreaterThan(0)
+  test('published records are distinguished from Sandbox executions', async ({ page }) => {
+    const manifest = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'lab-artifacts', 'manifest.json'), 'utf8')) as { entries: { runner: string }[] }
     await page.goto('/lab')
-    await expect(page.getByText('Agent proposals, graded like any other').first()).toBeVisible()
-    await expect(
-      page.getByText(new RegExp(`${investigated.length} investigator runs are published\\. ${proposed.length} of them proposed a candidate`)).first(),
-    ).toBeAttached()
-    await expect(page.getByText(/ended without a proposal and are published\s+anyway/).first()).toBeAttached()
+    const records = page.locator('div').filter({ has: page.locator('dt', { hasText: 'Published records' }) }).last()
+    await expect(records.locator('dd')).toContainText(String(manifest.entries.length))
+    const executions = page.locator('div').filter({ has: page.locator('dt', { hasText: 'Sandbox executions' }) }).last()
+    await expect(executions.locator('dd')).toContainText(String(manifest.entries.filter(e => e.runner === 'vercel-sandbox').length))
   })
 
   test('reports zero spend and zero model calls for every published run', async ({ page }) => {
@@ -148,7 +140,7 @@ test.describe('the live runner', () => {
     await page.goto('/lab')
     const editor = page.locator('#candidate-source')
     await expect(editor).toHaveValue(/VERSION_ID = "count-guard-v1"/)
-    await expect(page.getByRole('button', { name: 'Run it in a microVM' })).toBeEnabled()
+    await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeEnabled()
     // All 64 cases, before anything has run: hollow, and split as the suite is.
     await expect(page.locator('[data-case]')).toHaveCount(64)
     await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
@@ -164,7 +156,7 @@ test.describe('the live runner', () => {
     expect(refusal?.limit).toBe('per-address')
     await refuseWith(page, refusal)
     await page.goto('/lab')
-    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await page.getByRole('button', { name: 'Run in Sandbox' }).click()
     await expect(page.getByText('Not started: the hourly limit for one address')).toBeVisible()
     await expect(page.getByText(/has started 5 runs in the last hour/)).toBeVisible()
     await expect(page.getByText(/Resets at 10:50 UTC/)).toBeVisible()
@@ -179,7 +171,7 @@ test.describe('the live runner', () => {
     expect(refusal?.limit).toBe('daily-runs')
     await refuseWith(page, refusal)
     await page.goto('/lab')
-    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await page.getByRole('button', { name: 'Run in Sandbox' }).click()
     await expect(page.getByText('Not started: the daily run ceiling')).toBeVisible()
     await expect(page.getByText(/50 runs have started today across every visitor/)).toBeVisible()
     await expect(page.getByText(/Resets at 00:00 UTC/)).toBeVisible()
@@ -196,7 +188,7 @@ test.describe('the live runner', () => {
     expect(closed.status).toBe(503)
     await refuseWith(page, await closed.json(), 503)
     await page.goto('/lab')
-    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await page.getByRole('button', { name: 'Run in Sandbox' }).click()
     await expect(page.getByText(/public runner is closed on this deployment/)).toBeVisible()
   })
 
@@ -216,7 +208,7 @@ test.describe('the live runner', () => {
     })
 
     await page.goto('/lab')
-    await page.getByRole('button', { name: 'Run it in a microVM' }).click()
+    await page.getByRole('button', { name: 'Run in Sandbox' }).click()
     await expect(page.getByText('Caught by a fault-injected case')).toBeVisible()
     const fault = page.locator('li').filter({ hasText: 'syn-positional-reordered' }).first()
     await expect(fault).toContainText('equal length, internally reordered')
@@ -259,3 +251,48 @@ test.describe('the live runner', () => {
   })
 })
 
+test.describe('runner boundary states', () => {
+  test('empty source is disabled and Tab can leave the Python editor', async ({ page, isMobile }) => {
+    await page.goto('/lab')
+    const editor = page.getByRole('textbox', { name: 'Python parser source' })
+    await editor.fill('')
+    await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeDisabled()
+    await editor.fill('def parse(a, r):\n    pass')
+    if (!isMobile) {
+      await editor.press('Home')
+      await editor.press('Tab')
+      await expect(editor).toBeFocused()
+      await editor.press('Escape')
+      await editor.press('Tab')
+      await expect(editor).not.toBeFocused()
+    }
+  })
+  for (const [status, message] of [[400, 'Candidate source exceeds the allowed size.'], [422, 'Scope gate rejected this candidate.']] as const) {
+    test(`server validation ${status} reports its actual refusal without case grades`, async ({ page }) => {
+      await page.route('**/api/lab/run', route => route.fulfill({ status, json: { error: message } }))
+      await page.goto('/lab')
+      await page.getByRole('button', { name: 'Run in Sandbox' }).click()
+      await expect(page.getByText(message, { exact: true })).toBeVisible()
+      await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+    })
+  }
+  test('an expired run stays unknown after reload', async ({ page }) => {
+    await page.route('**/api/lab/run/wrun_expired', route => route.fulfill({ status: 404, json: { error: 'not found' } }))
+    await page.goto('/lab?run=wrun_expired#run')
+    await expect(page.getByText('There is no run with that id.')).toBeVisible()
+    await page.reload()
+    await expect(page.getByText('There is no run with that id.')).toBeVisible()
+    await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+  })
+  test('interrupted execution reports no verdict and only real supplied events', async ({ page }) => {
+    await page.route('**/api/lab/run/wrun_interrupted', route => route.fulfill({ json: {
+      run_id: 'wrun_interrupted', status: 'failed', finished: true, outcome: null,
+      progress: [{ at: '2026-10-01T10:30:00Z', stage: 'scope checked' }],
+    } }))
+    await page.goto('/lab?run=wrun_interrupted#run')
+    await expect(page.getByText('Ended failed', { exact: true })).toBeVisible()
+    await expect(page.getByText('The run ended without a verdict. Nothing about the parser was established.')).toBeVisible()
+    await expect(page.locator('[data-run-stage]')).toHaveCount(1)
+    await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+  })
+})

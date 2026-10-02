@@ -1,293 +1,99 @@
 import Link from 'next/link'
 
-import { Band } from '@/components/Band'
-import { CellTicker } from '@/components/CellTicker'
-import { Claim } from '@/components/Claim'
-import { FixtureStrip, toFixtureRows } from '@/components/FixtureStrip'
-import { OffendingBatch } from '@/components/OffendingBatch'
-import { Sieve, type SieveFixture } from '@/components/Sieve'
-import { defaultEntry, loadArtifact, loadIndex } from '@/lib/data'
-import { loadOffendingCase } from '@/lib/lab/data'
-import { explorerHref } from '@/lib/url-state'
+import { HeroSieve } from '@/components/HeroSieve'
+import { RetrievalLoss } from '@/components/RetrievalLoss'
+import { GuardExperiment } from '@/components/GuardExperiment'
+import { HOME_RUN_ID, loadHomeEvidence } from '@/lib/home-evidence'
+import './lab-home.css'
+import './findings.css'
 
 export default async function HomePage() {
-  const index = await loadIndex()
-  const offending = await loadOffendingCase()
-  const runs = index.entries.filter((e) => !e.is_baseline).length
-  const snapshots = index.manifest?.snapshots ?? []
-  const corpusTotal = snapshots.reduce((sum, s) => sum + (s.n_articles ?? 0), 0)
-
-  const entry = defaultEntry(index.entries)
-  const load = entry === undefined ? null : await loadArtifact(entry)
-  const artifact = load?.ok === true ? load.artifact : null
-
-  const fixtures: readonly SieveFixture[] =
-    artifact?.personas.map((p) => ({ key: p.key, steps: p.funnel })) ?? []
-  const lead = fixtures.find((f) => f.key === 'ray') ?? fixtures[0]
-  const leadSteps = lead?.steps ?? []
-  const pool = leadSteps[0]?.survivors ?? null
-  const delivered = leadSteps[leadSteps.length - 1]?.survivors ?? null
+  const evidence = await loadHomeEvidence()
+  const run = evidence.recordedRun
+  const correct = run?.counts.correct ?? 0
+  const excluded = run?.counts['not-applicable'] ?? 0
+  const applicable = (run?.outcomes.length ?? 0) - excluded
+  const lookback = evidence.losses?.segments.find((s) => s.key === 'lookback')
 
   return (
-    <div className="flex flex-col">
-      <section className="landing hero rise relative">
-        <div className="frame flex w-full flex-col justify-center">
-        {/* Asymmetric on purpose. The old hero put the headline, the lede and
-            four boxes all at the same left edge and left the right 40% empty,
-            which is not generous whitespace, it is an unbalanced column. The
-            figures now occupy that space and they are the argument: 1,362
-            went in, 50 came out. */}
-        <div className="grid items-end gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="flex flex-col gap-6">
-            <p className="label m-0 flex items-center gap-2.5 text-ink-40">
-              <span className="pip" aria-hidden="true" />
-              News that knows you · never shipped
-            </p>
-            <h1 className="display m-0 text-[clamp(2.5rem,6.2vw,4.75rem)]">
-              A daily edition is mostly{' '}
-              <span className="struck">the stories you never see.</span>
-            </h1>
-            <p className="lede measure m-0 text-ink-60">
-              Other feeds show you the survivors.
-              <span className="block text-ink-40">
-                This one shows what was thrown away, and where.
-              </span>
-            </p>
+    <div className="lab-landing">
+      <section className="frame lab-hero">
+        <div className="lab-hero-grid">
+          <div className="hero-copy">
+            <p className="eyebrow">An evaluation instrument</p>
+            <h1 className="lab-headline">Does the fix<br /> actually work?</h1>
+            <p className="hero-description">Run untrusted Python parsers in Vercel Sandbox against recorded and injected failures. Inspect the verdict.</p>
+            <div className="hero-actions">
+              <Link href="/lab#run" className="button-primary">Run a parser <span aria-hidden="true">↗</span></Link>
+              <Link href="/evidence" className="text-link">Explore the evidence <span aria-hidden="true">→</span></Link>
+            </div>
+            <p className="hero-footnote">Independent grading. Versioned, hashed criteria.</p>
           </div>
-
-          {pool !== null && delivered !== null ? (
-            <dl className="funnel m-0" aria-label="Candidates entering and leaving the pipeline">
-              <div className="funnel-row">
-                <dt className="funnel-label">Candidates</dt>
-                <dd className="funnel-n">{pool.toLocaleString()}</dd>
-              </div>
-              <div className="funnel-drop" aria-hidden="true">
-                <span className="funnel-line" />
-                <span className="funnel-loss">
-                  &minus;{(pool - delivered).toLocaleString()}
-                </span>
-              </div>
-              <div className="funnel-row">
-                <dt className="funnel-label">Delivered</dt>
-                <dd className="funnel-n funnel-n-out">{delivered.toLocaleString()}</dd>
-              </div>
-            </dl>
-          ) : null}
+          <HeroSieve fixtures={evidence.fixtures} runId={HOME_RUN_ID} snapshot={evidence.artifact?.provenance.snapshot.name ?? 'unavailable'} />
         </div>
-
-        <nav
-          aria-label="Main"
-          className="mt-14 grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4"
-        >
-          <Entry n="01" href="/reader" term="Reader" note="One edition, replayed from a frozen corpus" />
-          <Entry n="02" href="/evidence" term="Evidence" note="Every metric, fixture and story trace" />
-          <Entry n="03" href="/lab" term="Lab" note="A controlled experiment on the scorer" />
-          <Entry n="04" href="/engineering" term="Defect report" note="One bug, followed end to end" />
-        </nav>
-        </div>
-
-        {/* The seam. One candidate removed per beat, in the same grammar as
-            the band below, so the idiom is already familiar by the time the
-            reader gets there. */}
-        <div className="landing-foot">
-          <a href="#sieve" className="scroll-cue">
-            <span className="label">The sieve</span>
-            <span className="scroll-cue-arrow" aria-hidden="true" />
-          </a>
-          <CellTicker />
+        <div className="hero-context">
+          <p>The subject: a personalized news pipeline.<br />The instrument: everything it failed to catch.</p>
+          <a href="#retrieval" className="text-link">Follow the evidence <span aria-hidden="true">↓</span></a>
         </div>
       </section>
 
-      {fixtures.length > 0 && lead !== undefined ? (
-        <section className="zone-dark" id="sieve">
-          <div className="frame flex flex-col gap-7">
-          <Band index="01" title="The sieve" note="One cell per candidate article" />
-          <Sieve
-            fixtures={fixtures}
-            initialFixture={lead.key}
-            snapshot={artifact?.provenance.snapshot.name ?? 'unknown'}
-          />
+      <section className="finding-section" id="retrieval">
+        <div className="frame finding-layout">
+          <div className="finding-copy">
+            <p className="eyebrow">01 / Before the model</p>
+            <h2>Ranking never got a chance.</h2>
+            <p>{lookback && evidence.losses ? <>{lookback.count} of {evidence.losses.total} missed must-see pairs were lost at the lookback window. Better ranking cannot recover a story retrieval never supplied.</> : 'Trace where the recorded pipeline lost stories before the scorer could see them.'}</p>
+            <Link href="/evidence?run=prod-llm__2026-09-02__47edb50&view=stories&outcome=lost-before-scorer" className="text-link">Inspect the losses <span aria-hidden="true">→</span></Link>
           </div>
-        </section>
-      ) : null}
-
-      <section className="frame flex flex-col gap-7 pb-20">
-        <Band index="02" title="Why a ruler exists" />
-        <p className="prose measure m-0 text-balance">
-          &ldquo;The feed looks better to me&rdquo; is not evidence.
-          <span className="mt-2 block text-ink-60">
-            Same corpus, same fixtures, network off, so two runs are comparable and a fix that
-            made things worse cannot hide.
-          </span>
-        </p>
-        {/* A full-width row rather than a 2x2 floating beside the prose. Four
-            figures in a block of their own read as one measurement; the same
-            four wedged into the right-hand column read as leftovers, and the
-            2x2 left a hole where the prose ran out. */}
-        <dl className="statbar m-0">
-            <Readout term="Stored runs" value={String(runs)} note="imported, not re-executed" />
-            <Readout
-              term="Frozen corpora"
-              value={String(snapshots.length)}
-              note={corpusTotal > 0 ? `${corpusTotal.toLocaleString()} articles` : 'content-hashed'}
-            />
-            <Readout term="Reader fixtures" value="10" note="adversarial, not users" />
-          <Readout term="Replay spend" value="$0" note="cached, network off" />
-        </dl>
+          <RetrievalLoss data={evidence.losses} />
+        </div>
       </section>
 
-      {artifact !== null ? (
-        <section className="frame flex flex-col gap-7 pb-20">
-          <Band
-            index="03"
-            title="Every fixture, no averaging"
-            note={`${artifact.provenance.runner} · ${artifact.provenance.snapshot.name}`}
-          />
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
-            <FixtureStrip
-              rows={toFixtureRows(
-                artifact.personas,
-                (key) => explorerHref({ run: artifact.run_id }, { persona: key }),
-                undefined,
-              )}
-            />
-            <div className="flex flex-col gap-4 self-start border-t border-rule pt-4 lg:border-0 lg:pt-0">
-              <p className="prose m-0 text-base">
-                An average is a way of not looking at the worst case.
-                <span className="mt-2 block text-ink-60">
-                  The mean is 22.1%. Two fixtures are at zero.
-                </span>
-              </p>
-              <Link href="/evidence" className="link label self-start">
-                Open the explorer
-              </Link>
+      <section className="finding-section" id="experiment">
+        <div className="frame finding-layout">
+          <div className="finding-copy">
+            <p className="eyebrow">02 / The cost of correctness</p>
+            <h2>A safer guard.<br />A worse score.</h2>
+            <p>A recorded response returned more verdicts than articles, without IDs to join them. An experimental guard refused to guess.</p>
+            {evidence.offendingCase ? <>
+              <div className="defect-strip" aria-label={`${evidence.offendingCase.articles_sent} articles sent, ${evidence.offendingCase.verdicts_returned} verdicts returned`}>
+                <div className="defect-quantity"><strong>{evidence.offendingCase.articles_sent}</strong><span>articles sent</span></div>
+                <span aria-hidden="true">→</span>
+                <div className="defect-quantity"><strong>{evidence.offendingCase.verdicts_returned}</strong><span>verdicts returned</span></div>
+              </div>
+              <p className="defect-caption">One recorded batch. No article IDs in either direction.</p>
+            </> : null}
+          </div>
+          <GuardExperiment experiment={evidence.guardExperiment} />
+        </div>
+      </section>
+
+      <section className="frame lab-invitation">
+        <div className="invitation-inner">
+          <div className="invitation-copy">
+            <p className="eyebrow">03 / Your turn</p>
+            <h2>Put your parser through it.</h2>
+            <p>The count guard looks like a fix. Four applicable cases still catch it. Start there, or submit your own.</p>
+            <Link href="/lab#run" className="button-primary">Run the default parser <span aria-hidden="true">↗</span></Link>
+            <div className="invitation-facts">
+              <span><b>{evidence.lab.caseCount ?? 'Unavailable'}</b>cases</span>
+              <span><b>{evidence.lab.faultCount ?? 'Unavailable'}</b>fault-injected</span>
+              <span><b>Independent</b>grading</span>
             </div>
           </div>
-        </section>
-      ) : null}
-
-      <section className="frame flex flex-col gap-7 pb-20">
-        <Band
-          index="04"
-          title="One recorded batch"
-          note={
-            offending !== null
-              ? `${offending.articles_sent} sent · ${offending.verdicts_returned} returned`
-              : undefined
-          }
-        />
-        {offending !== null ? (
-          <OffendingBatch
-            sent={offending.articles_sent}
-            returned={offending.verdicts_returned}
-            pairs={offending.articles.slice(0, 6).map((article, i) => ({
-              position: article.position,
-              title: article.title,
-              reason: offending.verdicts[i]?.reason ?? 'No verdict was recorded at this position.',
-            }))}
-          />
-        ) : null}
-        <div className="flex flex-wrap items-baseline justify-between gap-x-10 gap-y-3">
-          <p className="prose measure m-0">
-            Fixing it made the measured numbers <em>worse</em>. The baseline was not re-recorded.
-          </p>
-          <Link href="/engineering" className="link label shrink-0">
-            Read the defect report
-          </Link>
-        </div>
-        <dl className="statbar m-0">
-            <Readout term="Guard fires" value="63" note="one run, ten fixtures" signal />
-            <Readout
-              term="Worst response"
-              value={offending !== null ? String(offending.verdicts_returned) : '254'}
-              note={`verdicts for ${offending !== null ? offending.articles_sent : 40} articles`}
-              signal
-            />
-            <Readout term="Unwanted rate" value="+15.6" note="points, after the fix" signal />
-          <Readout term="Re-baselined" value="No" note="the gate still reports red" />
-        </dl>
-      </section>
-
-      <section className="frame pb-8">
-        <Band index="05" title="What this site never claims" />
-        <div className="mt-7 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-          <Claim term="No readers">
-            Never shipped. The ten profiles are evaluation fixtures, not people, and reading here
-            creates no data.
-          </Claim>
-          <Claim term="Provisional ground truth">
-            Labels are model-written with an agent pass. Human review is outstanding, so absolute
-            values are provisional.
-          </Claim>
-          <Claim term="No significance">
-            No confidence intervals; none were computed. &ldquo;Material&rdquo; is a fixed
-            &plusmn;0.02 the harness&rsquo;s author chose.
-          </Claim>
-          <Claim term="Live mode unbuilt">
-            Signing in is not implemented. Live end-to-end behaviour is unverified.
-          </Claim>
-          <Claim term="Unknown stays unknown">
-            What the evidence cannot establish is recorded as{' '}
-            <span className="text-unknown">unknown</span>, never null and never zero.
-          </Claim>
-          <Claim term="$0 of model spend">
-            Costs shown are reconstructed token-equivalents. Actual provider spend is zero.
-          </Claim>
+          {run ? (
+            <div className="recorded-result">
+              <div className="recorded-result-top"><span>{run.candidate.candidate_id}</span><span className="recorded-status">{run.verdict === 'rejected' ? 'Rejected' : run.verdict}</span></div>
+              <p className="recorded-result-note">Recorded Lab result · not a live execution</p>
+              <div className="recorded-case-field" role="img" aria-label={`${correct} correct, ${applicable - correct} failed, ${excluded} not applicable, out of ${run.outcomes.length} cases`}>
+                {run.outcomes.map((outcome) => <span key={outcome.case_id} data-status={outcome.status} aria-hidden="true" />)}
+              </div>
+              <p className="recorded-result-summary">{correct}/{applicable} applicable cases correct. {excluded} not applicable.</p>
+              <Link href="/lab/count-guard-v1-clean" className="text-link">Inspect this verdict <span aria-hidden="true">→</span></Link>
+            </div>
+          ) : <div className="recorded-result"><p>The recorded result is unavailable.</p><Link href="/lab" className="text-link">Open the Lab</Link></div>}
         </div>
       </section>
     </div>
   )
 }
-
-function Entry({
-  n,
-  href,
-  term,
-  note,
-}: {
-  n: string
-  href: '/reader' | '/evidence' | '/lab' | '/engineering'
-  term: string
-  note: string
-}) {
-  return (
-    <Link href={href} className="entry group">
-      <span className="flex items-baseline justify-between gap-3">
-        <span className="label text-ink">{term}</span>
-        <span className="band-index transition-colors duration-200 group-hover:text-ink">{n}</span>
-      </span>
-      <span className="mt-1.5 block text-xs text-ink-60">{note}</span>
-      {/* The rule fills left-to-right on hover. A colour change says "this is
-          a link"; a rule that draws itself says "this one, now", and it is
-          the same gesture the sieve makes, which is the page's own idiom. */}
-      <span className="entry-rule" aria-hidden="true" />
-    </Link>
-  )
-}
-
-function Readout({
-  term,
-  value,
-  note,
-  signal,
-}: {
-  term: string
-  value: string
-  note: string
-  signal?: boolean
-}) {
-  return (
-    <div>
-      <dt className="label m-0 text-ink-40">{term}</dt>
-      <dd className={`readout-sm m-0 mt-1.5 text-3xl ${signal === true ? 'text-signal' : ''}`}>
-        {value}
-        {/* Inside the <dd>, not beside it: a <div> within a <dl> may contain
-            only <dt> and <dd>, and the note describes the value anyway. */}
-        <span className="block font-sans text-xs font-normal tracking-normal text-ink-40">
-          {note}
-        </span>
-      </dd>
-    </div>
-  )
-}
-

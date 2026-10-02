@@ -187,77 +187,123 @@ export function LabRunner({
   }
 
   const watching = phase.kind === 'watching' ? phase : null
+  const complete = watching?.finished === true && watching.status === 'completed'
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
-        <div className="flex min-w-0 flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <p className="label m-0 shrink-0 text-ink-40">Start from</p>
-            <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+    <div className="lab-runner">
+      <div className="lab-workspace">
+        <div className="lab-workspace-toolbar">
+          <div className="lab-presets">
+            <p className="eyebrow">Start from a parser</p>
+            <ul className="lab-preset-list">
               {presets.map((p) => (
                 <li key={p.id}>
                   <button
                     type="button"
                     onClick={() => choose(p)}
                     aria-pressed={p.id === presetId && !edited}
-                    className={`chip ${p.id === presetId && !edited ? 'chip-on' : ''}`}
+                    className="lab-preset"
                   >
-                    {p.id}
-                    <span className="ml-1.5 opacity-60">{p.note}</span>
+                    <span>{p.id}</span>
+                    <span className="lab-preset-note">{p.note}</span>
                   </button>
                 </li>
               ))}
             </ul>
           </div>
-          <label htmlFor="candidate-source" className="flex items-baseline justify-between gap-3 text-xs text-ink-40">
-            <span>
-              <span className="font-mono text-ink-60">candidate.py</span>, the only file a candidate may write
-              {edited ? <span className="text-signal"> · edited</span> : null}
-            </span>
-            <span className={bytes > maxBytes ? 'text-signal' : ''}>
-              {bytes.toLocaleString('en-US')} of {maxBytes.toLocaleString('en-US')} bytes
-            </span>
-          </label>
-          {/* `data-verbatim`: the editor opens on committed source, byte for
-              byte, and then holds whatever the visitor types. Neither is the
-              site's own copy, and rewriting a parser's docstring to suit the
-              house style would change the thing under test. */}
-          <textarea
-            id="candidate-source"
-            data-verbatim
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            onKeyDown={onKeyDown}
-            spellCheck={false}
-            autoCapitalize="off"
-            autoCorrect="off"
-            wrap="off"
-            className="h-[26rem] w-full resize-y border border-rule bg-paper-secondary p-3 font-mono text-[12px] leading-relaxed text-ink outline-none focus-visible:border-ink"
-          />
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <button
-              type="button"
-              onClick={() => void run()}
-              disabled={busy || bytes === 0 || bytes > maxBytes}
-              className="chip chip-on px-4 py-2.5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {phase.kind === 'starting' ? 'Starting' : busy ? 'Running' : 'Run it in a microVM'}
-            </button>
-            <p className="m-0 text-xs text-ink-40">Tab indents. Press Esc, then Tab, to leave the editor.</p>
-          </div>
-          <p className="m-0 max-w-2xl text-xs text-ink-40">{limits}</p>
+          <button
+            type="button"
+            onClick={() => void run()}
+            disabled={busy || bytes === 0 || bytes > maxBytes}
+            className="button-primary lab-run-button"
+          >
+            <span aria-hidden="true">{busy ? '◌' : '↗'}</span>
+            {phase.kind === 'starting' ? 'Starting' : busy ? 'Running' : 'Run in Sandbox'}
+          </button>
         </div>
 
-        <aside className="flex min-w-0 flex-col gap-4 border-t border-rule-strong pt-4 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-6" aria-live="polite">
-          <Status phase={phase} />
-        </aside>
+        <div className="lab-workspace-panels">
+          <div className="lab-editor-panel">
+            <label htmlFor="candidate-source" className="lab-panel-heading">
+              <span>
+                <span className="lab-filename">candidate.py</span>
+                {edited ? <span className="lab-edited"> · edited</span> : null}
+              </span>
+              <span id="source-byte-count" className={`lab-byte-count ${bytes > maxBytes ? 'lab-byte-limit' : ''}`}>
+                {bytes.toLocaleString('en-US')} / {maxBytes.toLocaleString('en-US')} bytes
+              </span>
+            </label>
+            {/* The editor holds committed source or the visitor's own bytes. */}
+            <textarea
+              id="candidate-source"
+              aria-label="Python parser source"
+              aria-describedby="source-byte-count source-keyboard-help"
+              data-verbatim
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              onKeyDown={onKeyDown}
+              spellCheck={false}
+              autoCapitalize="off"
+              autoCorrect="off"
+              wrap="off"
+              className="lab-source-editor"
+            />
+            <p id="source-keyboard-help" className="lab-editor-help">
+              Python · Tab indents. Press Esc, then Tab, to leave the editor.
+            </p>
+          </div>
+
+          <aside
+            className="lab-console"
+            aria-label="Run event console"
+            aria-live="polite"
+            aria-atomic="false"
+            data-run-state={phase.kind === 'watching' ? phase.status : phase.kind}
+          >
+            <div className="lab-panel-heading">
+              <h2>Event console</h2>
+              <span className="lab-console-source">From the backend</span>
+            </div>
+            <div className="lab-console-body">
+              <Status phase={phase} />
+            </div>
+            <p className="lab-console-footnote">Case grades appear after the run completes.</p>
+          </aside>
+        </div>
       </div>
 
-      {watching !== null && watching.outcome !== null ? (
-        <LiveResult runId={watching.runId} outcome={watching.outcome} catalog={catalog} />
+      <div className="lab-runner-meta">
+        <p>{limits}</p>
+        <details className="lab-run-explainer">
+          <summary className="disclosure">How a run works</summary>
+          <ol>
+            <li>The scope gate checks that only candidate.py is written.</li>
+            <li>
+              A fresh microVM boots with networking denied and no credentials. It receives the
+              harness, the {catalog.length} responses with their answers stripped out, and your file.
+            </li>
+            <li>The harness calls your parse() on every case and records what it returns.</li>
+            <li>
+              Four probes check that DNS and HTTPS fail and that neither the evaluator nor a
+              credential is present.
+            </li>
+            <li>The records are graded outside the microVM by the independent evaluator.</li>
+          </ol>
+        </details>
+      </div>
+
+      {complete && watching.outcome !== null ? (
+        <div className="lab-completed-result" aria-label="Completed run result">
+          <LiveResult runId={watching.runId} outcome={watching.outcome} catalog={catalog} />
+        </div>
       ) : (
-        <CaseGrid catalog={catalog} grading={null} />
+        <div className="lab-case-preview">
+          <div className="lab-case-preview-heading">
+            <h3>The case suite</h3>
+            <p>{busy ? 'Awaiting completed grading' : 'Ready to test'} · {catalog.length} cases</p>
+          </div>
+          <CaseGrid catalog={catalog} grading={null} />
+        </div>
       )}
     </div>
   )
@@ -266,31 +312,28 @@ export function LabRunner({
 function Status({ phase }: { phase: Phase }) {
   if (phase.kind === 'idle') {
     return (
+      <div className="lab-console-idle">
+        <span className="lab-console-prompt" aria-hidden="true">&gt;_</span>
+        <p className="lab-status-title">Ready when you are.</p>
+        <p>Choose a parser or write your own, then press Run in Sandbox.</p>
+        <p className="lab-console-muted">This console will show the actual stages reported by your run.</p>
+      </div>
+    )
+  }
+  if (phase.kind === 'starting') {
+    return (
       <>
-        <p className="label m-0 text-ink">What happens when you press run</p>
-        <ol className="m-0 flex list-decimal flex-col gap-2 pl-4 text-sm text-ink-60">
-          <li>The scope gate checks that only candidate.py is written.</li>
-          <li>
-            A fresh microVM boots with networking denied and no credentials. It receives the harness,
-            the 64 responses with their answers stripped out, and your file.
-          </li>
-          <li>The harness calls your parse() on every case and prints what it returned.</li>
-          <li>
-            Four probes, run inside the same microVM, check that DNS and HTTPS fail and that neither
-            the evaluator nor a credential is present.
-          </li>
-          <li>The records are graded here, by code the microVM never held.</li>
-        </ol>
+        <p className="lab-status-title">Starting</p>
+        <p className="lab-console-muted">Waiting for the server to accept this request.</p>
       </>
     )
   }
-  if (phase.kind === 'starting') return <p className="label m-0 text-ink">Starting</p>
   if (phase.kind === 'refused') return <Refused refusal={phase.refusal} />
   if (phase.kind === 'unavailable') {
     return (
       <>
-        <p className="label m-0 text-unknown">Not started</p>
-        <p className="m-0 text-sm text-ink-60">{phase.message}</p>
+        <p className="lab-status-title lab-console-warning">Not started</p>
+        <p>{phase.message}</p>
       </>
     )
   }
@@ -302,9 +345,9 @@ function Refused({ refusal }: { refusal: Refusal }) {
   const minutes = Math.max(1, Math.round(refusal.retry_after_seconds / 60))
   return (
     <>
-      <p className="label m-0 text-signal">Not started: {LIMIT_NAME[refusal.limit] ?? refusal.limit}</p>
-      <p className="m-0 text-sm text-ink">{refusal.error}</p>
-      <p className="m-0 text-xs text-ink-40">
+      <p className="lab-status-title lab-console-warning">Not started: {LIMIT_NAME[refusal.limit] ?? refusal.limit}</p>
+      <p>{refusal.error}</p>
+      <p className="lab-console-muted">
         Resets at {resets.toISOString().slice(11, 16)} UTC, in about {minutes} minute{minutes === 1 ? '' : 's'}.
         A refused request is not counted against you.
       </p>
@@ -325,7 +368,7 @@ function Watching({ phase }: { phase: Extract<Phase, { kind: 'watching' }> }) {
   const elapsed = phase.sentAt !== null && !phase.finished ? (now - phase.sentAt) / 1000 : null
   const label =
     phase.lost !== null
-      ? 'Not found'
+      ? phase.lost.startsWith('Stopped watching') ? 'Watching paused' : 'Not found'
       : phase.finished
         ? phase.status === 'completed'
           ? 'Finished'
@@ -336,39 +379,41 @@ function Watching({ phase }: { phase: Extract<Phase, { kind: 'watching' }> }) {
 
   return (
     <>
-      <p className="label m-0 text-ink">
+      <p className="lab-status-title">
         {label}
         {elapsed !== null ? (
-          <span className="ml-2 font-mono text-ink-40" aria-hidden="true">
+          <span className="lab-elapsed" aria-hidden="true">
             {elapsed.toFixed(1)} s
           </span>
         ) : null}
       </p>
-      {phase.lost !== null ? <p className="m-0 text-sm text-ink-60">{phase.lost}</p> : null}
+      {phase.lost !== null ? <p className="lab-console-warning">{phase.lost}</p> : null}
       {events.length > 0 ? (
-        <ol className="m-0 flex list-none flex-col gap-1 p-0 text-xs">
+        <ol className="lab-event-list" aria-label="Events from this run">
           {events.map((e, i) => (
-            <li key={`${e.at}-${i}`} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-2">
-              <span className="text-right font-mono text-ink-40">
+            <li key={`${e.at}-${i}`} data-run-stage={e.stage}>
+              <span className="lab-event-time">
                 {origin === null ? '' : `${((Date.parse(e.at) - origin) / 1000).toFixed(1)} s`}
               </span>
-              <span className="text-ink-60">{e.stage}</span>
+              <span>{e.stage}</span>
             </li>
           ))}
         </ol>
-      ) : phase.progress === null && !phase.finished ? (
-        <p className="m-0 text-xs text-ink-40">Waiting for the first event from the run.</p>
+      ) : !phase.finished ? (
+        <p className="lab-console-muted">
+          {phase.progress === null ? 'Waiting for the first event from the run.' : 'No stage events reported yet.'}
+        </p>
       ) : null}
       {phase.finished && phase.status === 'completed' && phase.outcome === null ? (
-        <p className="m-0 text-sm text-unknown">The run finished but its result could not be read.</p>
+        <p className="lab-console-warning">The run finished but its result could not be read.</p>
       ) : null}
       {phase.finished && phase.status !== 'completed' && phase.lost === null ? (
-        <p className="m-0 text-sm text-unknown">The run ended without a verdict. Nothing about the parser was established.</p>
+        <p className="lab-console-warning">The run ended without a verdict. Nothing about the parser was established.</p>
       ) : null}
-      <p className="m-0 break-all text-[11px] text-ink-40">
-        run {phase.runId}
+      <p className="lab-run-reference">
+        <a href={`?run=${phase.runId}#run`} className="lab-run-link">run {phase.runId}</a>
         {phase.left !== null ? (
-          <span className="block pt-0.5">
+          <span>
             This address can start {phase.left} more {phase.left === 1 ? 'run' : 'runs'} this hour.
           </span>
         ) : null}

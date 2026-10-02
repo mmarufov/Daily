@@ -44,11 +44,11 @@ function rng(seed: number): () => number {
 }
 
 function ogHtml(): string {
-  const fontPath = join(WEB, 'app/fonts/Fraunces-latin.woff2')
+  const fontPath = join(WEB, 'app/fonts/GeistSans-latin.woff2')
   const monoPath = join(WEB, 'app/fonts/GeistMono-latin.woff2')
   const cols = 62
   const rows = 22
-  const total = cols * rows
+  const total = POOL
 
   // Which cells survived. Spread rather than clustered: the real figure is a
   // corpus in recency order, not a blob.
@@ -62,28 +62,24 @@ function ogHtml(): string {
 
   return `<!doctype html><meta charset="utf-8">
 <style>
-  @font-face{font-family:F;src:url("file://${fontPath}") format("woff2");font-weight:400 700}
+  @font-face{font-family:F;src:url("file://${fontPath}") format("woff2");font-weight:100 900}
   @font-face{font-family:M;src:url("file://${monoPath}") format("woff2")}
   *{margin:0;box-sizing:border-box}
-  body{width:1200px;height:630px;background:#161513;color:#f4f1ea;
-       display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
-  .plate{display:grid;grid-template-columns:repeat(${cols},1fr);gap:5px;padding:54px 64px 0}
-  .plate i{aspect-ratio:1;background:#2b2825;border-radius:1px}
-  .plate i.on{background:#f4f1ea}
-  .foot{padding:0 64px 58px;display:flex;align-items:flex-end;justify-content:space-between;gap:48px}
-  h1{font:400 92px/0.95 F;letter-spacing:-0.022em}
-  p{font:400 27px/1.42 F;color:#b9b5ac;margin-top:18px;max-width:30ch}
-  .n{font:400 21px/1.5 M;color:#7e786f;text-align:right;white-space:nowrap}
-  .n b{display:block;font:400 54px/1.1 M;color:#f4f1ea;font-weight:400}
+  body{width:1200px;height:630px;background:#fafaf9;color:#171717;padding:54px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;font-family:F;overflow:hidden}
+  .copy{display:flex;flex-direction:column;gap:28px}
+  .brand{font-size:26px;font-weight:600;letter-spacing:-1px}
+  h1{font:600 74px/1.02 F;letter-spacing:-4px}
+  p{font:400 22px/1.45 F;color:#626262;max-width:25ch}
+  .instrument{background:#111315;border-radius:12px;padding:30px;color:#fafaf9}
+  .label{font:400 13px M;color:#bfc3c6}
+  .plate{display:grid;grid-template-columns:repeat(38,1fr);gap:3px;margin:32px 0}
+  .plate i{aspect-ratio:1;background:#303436;border-radius:1px}
+  .plate i.on{background:#fafaf9}
+  .n{font:400 18px M;color:#a4a8aa}
+  .n b{font:400 48px/1.1 M;color:#fafaf9;font-weight:400}
 </style>
-<div class="plate">${cells}</div>
-<div class="foot">
-  <div>
-    <h1>Daily</h1>
-    <p>A daily edition is mostly the stories you never see.</p>
-  </div>
-  <div class="n"><b>${POOL.toLocaleString()} in</b>${DELIVERED} out</div>
-</div>`
+<div class="copy"><div class="brand">Daily Lab</div><h1>Does the fix<br>actually work?</h1><p>Run a parser in Vercel Sandbox. Inspect the verdict.</p></div>
+<div class="instrument"><div class="label">RECORDED PIPELINE REPLAY</div><div class="plate">${cells}</div><div class="n"><b>${DELIVERED}</b> / ${POOL.toLocaleString()} delivered</div></div>`
 }
 
 async function main(): Promise<void> {

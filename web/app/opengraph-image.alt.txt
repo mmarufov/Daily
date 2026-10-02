@@ -1,1 +1,1 @@
-The Daily wordmark over a field of 1,362 cells, one per candidate article. Fifty are lit: the stories that reached the reader.
+Daily Lab: Does the fix actually work? A recorded pipeline of 1,362 candidates, with 50 delivered. Run a parser in Vercel Sandbox.

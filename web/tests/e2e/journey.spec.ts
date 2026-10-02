@@ -1,24 +1,20 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 /**
- * The main visitor journey: understand the product, read an edition, then
- * follow one story from a summary metric down to its recorded trace.
+ * The main visitor journey: understand the Lab, then follow its recorded
+ * findings into the preserved evidence explorer and reader replay.
  */
 test.describe('visitor journey', () => {
-  test('home explains the product and routes to all three surfaces', async ({ page }) => {
+  test('home leads to the parser, evidence and findings, with the reader in the footer', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('daily edition')
-    // The three entry points are labelled and described, not three bare buttons.
-    const entries = page.getByRole('navigation', { name: 'Main' })
-    for (const name of ['Reader', 'Evidence', 'Defect report']) {
-      await expect(entries.getByRole('link', { name: new RegExp(name, 'i') })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Does the fix actually work?')
+    const entries = page.getByRole('banner').getByRole('navigation')
+    for (const [name, href] of [['Lab', '/lab'], ['Evidence', '/evidence'], ['Findings', '/engineering']] as const) {
+      await expect(entries.getByRole('link', { name, exact: true })).toHaveAttribute('href', href)
     }
-    // The demo must never be presented as real readership. The wording moved
-    // when the page was rewritten ("adversarial test fixtures, not users" ->
-    // "adversarial, not users"); the invariant is that the disclaimer is on
-    // screen without a click, so match on the part that carries the meaning.
-    await expect(page.getByText(/adversarial,? (test )?fixtures?[^.]*not users/i).first())
-      .toBeVisible()
+    await expect(page.getByRole('link', { name: 'Run a parser', exact: true }).first()).toHaveAttribute('href', '/lab#run')
+    await expect(page.getByRole('link', { name: 'Explore the evidence', exact: true })).toHaveAttribute('href', '/evidence')
+    await expect(page.getByRole('contentinfo').locator('a[href="/reader"]')).toBeVisible()
   })
 
   test('reader shows a dated replay, never today’s news', async ({ page }) => {
@@ -80,18 +76,39 @@ test.describe('visitor journey', () => {
     await expect(page.getByRole('complementary')).toContainText('music EP')
   })
 
+  test('explorer view and outcome changes preserve the selected run, comparison and story', async ({ page }) => {
+    const run = 'prod-llm__2026-08-31__47edb50'
+    const compare = 'proto-hybrid-judge-events__2026-08-31__47edb50'
+    await page.goto(`/evidence?run=${run}&compare=${compare}&persona=ray&view=stories&story=a00407`)
+    await page.getByRole('navigation', { name: 'Explorer view' }).getByRole('link', { name: 'Funnel', exact: true }).click()
+    await expect(page).toHaveURL((url) => url.searchParams.get('view') === 'funnel'
+      && url.searchParams.get('run') === run
+      && url.searchParams.get('compare') === compare
+      && url.searchParams.get('persona') === 'ray'
+      && url.searchParams.get('story') === 'a00407')
+    await page.getByRole('navigation', { name: 'Explorer view' }).getByRole('link', { name: 'Stories', exact: true }).click()
+    await page.getByLabel('Outcome', { exact: true }).selectOption('lost-at-or-after-scorer')
+    await expect(page).toHaveURL((url) => url.searchParams.get('outcome') === 'lost-at-or-after-scorer'
+      && url.searchParams.get('run') === run
+      && url.searchParams.get('compare') === compare
+      && url.searchParams.get('story') === 'a00407')
+    await page.reload()
+    await expect(page.getByLabel('Outcome', { exact: true })).toHaveValue('lost-at-or-after-scorer')
+    await expect(page.getByRole('complementary', { name: /^Recorded trace for / })).toContainText('music EP')
+  })
+
   test('the funnel decreases monotonically and explains why', async ({ page }) => {
     await page.goto('/evidence?persona=ray&view=funnel')
     await expect(page.getByText(/furthest stage it reached/)).toBeVisible()
     const cells = await page
-      .getByRole('row')
-      .filter({ hasNotText: 'Stage' })
-      .locator('td')
-      .nth(0)
+      .getByRole('table', { name: 'Candidate funnel: survivors, articles lost entering each stage, and pass rate' })
+      .locator('tbody tr')
+      .locator('td:first-of-type')
       .allInnerTexts()
     const numbers = cells
       .map((t) => Number(t.replace(/[^0-9]/g, '')))
       .filter((n) => Number.isFinite(n) && n > 0)
+    expect(numbers.length).toBeGreaterThan(1)
     for (let i = 1; i < numbers.length; i += 1) {
       expect(numbers[i]).toBeLessThanOrEqual(numbers[i - 1] as number)
     }
@@ -106,7 +123,7 @@ test.describe('visitor journey', () => {
 
   test('engineering links back into the exact explorer state', async ({ page }) => {
     await page.goto('/engineering')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('rejected for discussing')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('A safer guard.')
     const link = page.getByRole('link', { name: /open this story’s recorded trace/ }).first()
     await link.click()
     await expect(page).toHaveURL(/story=a00407/)
@@ -124,11 +141,12 @@ test.describe('visitor journey', () => {
 
 test.describe('failure and edge states', () => {
   test('an outcome filter with no matches offers a way back', async ({ page }) => {
-    await page.goto('/evidence?persona=cold&view=stories&outcome=delivered-unwanted')
-    const empty = page.getByText(/No stories for/)
-    if (await empty.isVisible()) {
-      await expect(page.getByRole('link', { name: 'Show every story' })).toBeVisible()
-    }
+    // Maya has no delivered-unwanted stories in this pinned artifact.
+    await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50&persona=maya&view=stories&outcome=delivered-unwanted')
+    await expect(page.getByText(/No stories for/)).toBeVisible()
+    await page.getByRole('link', { name: 'Show every story' }).click()
+    await expect(page).toHaveURL((url) => url.searchParams.get('persona') === 'maya' && !url.searchParams.has('outcome'))
+    await expect(page.getByRole('table', { name: /Stories for/ })).toBeVisible()
   })
 
   test('404 route renders', async ({ page }) => {
@@ -139,18 +157,18 @@ test.describe('failure and edge states', () => {
 
 test.describe('accessibility basics', () => {
   test('every page exposes a skip link and one h1', async ({ page }) => {
-    for (const path of ['/', '/reader', '/evidence', '/engineering']) {
+    for (const path of ['/', '/lab', '/reader', '/evidence', '/engineering']) {
       await page.goto(path)
       await expect(page.getByRole('link', { name: 'Skip to content' })).toBeAttached()
       expect(await page.getByRole('heading', { level: 1 }).count()).toBe(1)
     }
   })
 
-  test('the explorer is keyboard operable to the first control', async ({ page }, testInfo) => {
+  test('the explorer is keyboard operable to the first control', async ({ page, isMobile }) => {
     // WebKit under a touch device profile does not move focus to links on Tab
     // unless full keyboard access is enabled, which is a platform behaviour
     // rather than a property of this page. Asserted on desktop only.
-    test.skip(testInfo.project.name === 'mobile', 'Tab focus is not meaningful on a touch profile')
+    test.skip(isMobile, 'Tab focus is not meaningful on a touch profile')
     await page.goto('/evidence')
     await page.keyboard.press('Tab')
     await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused()
@@ -170,7 +188,7 @@ test.describe('accessibility basics', () => {
     page.on('pageerror', (error) => errors.push(error.message))
     for (const path of ['/', '/reader?profile=ray', '/evidence?persona=ray&view=stories', '/engineering']) {
       await page.goto(path)
-      await page.waitForLoadState('networkidle')
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     }
     expect(errors).toEqual([])
   })

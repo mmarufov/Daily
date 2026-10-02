@@ -1,39 +1,7 @@
 @import "tailwindcss";
 
-/*
- * Daily — web companion.
- *
- * One rule governs the whole visual system: COLOUR MEANS LOSS. In any chart,
- * table or diagram, ink is what survived, vermilion is what the pipeline threw
- * away, and slate is what cannot be verified.
- *
- * The vermilion is deliberately *quiet*. It began at #bd3418 -- 77% saturation
- * -- and on a page where loss is the most common outcome, the most common
- * outcome was also the loudest thing on screen. Every readout, every bar, every
- * discarded cell and six section rules in a row all shouting at once is not
- * emphasis, it is noise, and a rule that says "colour means loss" stops meaning
- * anything when most of the page is coloured. It is now 52%, which is still
- * unmistakably the alarm colour against this paper and no longer the first
- * thing the eye lands on. Contrast was re-measured rather than assumed: 5.10:1
- * on paper, and the dark scheme's 3.19:1 against ink, which is the pair the
- * sieve depends on. Nothing that worked is ever
- * coloured, so a glance at a figure tells you where the system failed before
- * you have read a label. The one exception is chrome — links, focus, selection
- * — which borrows the same vermilion because there it carries the same meaning
- * the eye already learned: look here.
- *
- * Two typefaces, no sans between them. Prose is an editorial serif; every
- * number, identifier, stage name and micro-label is monospaced. The site is a
- * newspaper assembled by a measuring instrument and it is meant to look like
- * both objects at once.
- *
- * Note on docs/DESIGN.md: that document governs the iOS app and is written as
- * an iOS-first source of truth. This tier is a different medium with a
- * different job — an evidence explorer, not a reading app — so it does not
- * inherit those tokens. The reader replay is the one surface that stays close
- * to the app's paper-and-serif register, because there it is showing the
- * product rather than measuring it.
- */
+/* Daily Lab: shared evidence surfaces. The interactive landing is in lab-home.css.
+   Neutral surfaces keep attention on the evidence; status color always has a text label. */
 
 @theme {
   /* --- palette ------------------------------------------------------- */
@@ -66,7 +34,8 @@
   --color-ochre: var(--d-signal);
   --color-ink-blue: var(--d-signal);
   --color-danger: var(--d-signal);
-  --color-success: var(--d-ink);
+  --color-success: var(--d-success);
+  --color-caution: var(--d-caution);
 
   /* --- type ---------------------------------------------------------- */
   --font-editorial: var(--font-editorial-var), Charter, Georgia, serif;
@@ -95,165 +64,74 @@
 
 :root {
   color-scheme: light dark;
-
-  /* Paper: uncoated newsprint, low chroma, so vermilion stays the only
-     saturated thing on the page. */
-  --d-paper: #f9f7f3;
-  --d-paper-2: #f3f1ea;
-  --d-paper-3: #e9e6dd;
-  --d-ink: #161513;
-  /* Two muted levels, both computed to clear 4.5:1 against paper, the recessed
-     panel AND the reader's sheet -- the site sets a lot of 11px monospace, and
-     none of it qualifies as large text. 0.62/0.40 measured 4.7:1 and 2.5:1. */
-  --d-ink-58: rgb(22 21 19 / 0.8);
-  --d-ink-38: rgb(22 21 19 / 0.64);
-  --d-rule: #ddd8cc;
-  --d-rule-strong: #b5ae9c;
-  /* Control boundaries, which carry which-thing-is-a-button on their own and
-     so answer to 1.4.11's 3:1 rather than to the hairline rules' job. */
-  --d-control: #858480;
-  --d-signal: #ab4d36;
-  --d-signal-wash: rgb(171 77 54 / 0.09);
-  --d-loss-2: #b8806f;
-  --d-loss-3: #cbb4aa;
-  --d-unknown: #5a6b74;
-
-  /* The sieve's discarded candidates: present, legible as a mass, never
-     competing with the survivors. The ceiling is set by the pair that has to
-     stay readable -- removed-here (signal) against removed-earlier (ghost) --
-     which needs 3:1, so this is as heavy as the ghost can get. */
-  --d-ghost: rgb(22 21 19 / 0.2);
-  --d-sheet: #fdfcf9;
-
-  /* The inverted band. Warm near-black rather than neutral -- a cool black
-     against cream paper reads as two unrelated designs.
-
-     That comment was here before the values were. #17161a is hue 255 and
-     #211f26 is 257: violet, in the one block on the site anyone has singled
-     out as good, while every other token in the light scheme sits at 12-40.
-     Same bug as the dark page had, found while fixing that one. Hue 40 now,
-     and every ratio came out equal or better (zone-ink 15.96 -> 16.60). */
-  --d-zone: #131210;
-  --d-zone-plate: #1f1d19;
-  --d-zone-ink: #f4f1ea;
-  --d-zone-mid: rgb(244 241 234 / 0.72);
-  --d-zone-dim: rgb(244 241 234 / 0.48);
-  --d-zone-rule: rgb(244 241 234 / 0.16);
-  /* The band is a dark surface in both schemes, so the signal on it is the
-     dark scheme's in both. The page signal was being used here and lands at
-     3.43:1 on the band -- fine for a cell fill, not for the "-1,062 removed"
-     line, which is text. 5.29:1 light, 5.78:1 dark. Same for the slate: the
-     page value is 3.38:1 on the band, and it carries the reconstructed-count
-     caveat. 6.18:1 light, 6.77:1 dark. */
+  --d-paper: #fafaf9;
+  --d-paper-2: #f2f2f0;
+  --d-paper-3: #e8e8e5;
+  --d-ink: #171717;
+  --d-ink-58: #525252;
+  --d-ink-38: #626262;
+  --d-rule: #dededa;
+  --d-rule-strong: #a4a4a0;
+  --d-control: #858580;
+  --d-signal: #ae3d2d;
+  --d-signal-wash: rgb(174 61 45 / 0.07);
+  --d-loss-2: #a96859;
+  --d-loss-3: #b9a39c;
+  --d-unknown: #59646a;
+  --d-success: #21724b;
+  --d-caution: #815c13;
+  --d-ghost: rgb(23 23 23 / 0.18);
+  --d-sheet: #fffefa;
+  --d-zone: #111315;
+  --d-zone-plate: #1c1e20;
+  --d-zone-ink: #fafaf9;
+  --d-zone-mid: #c0c2c3;
+  --d-zone-dim: #9a9ea1;
+  --d-zone-rule: #383c40;
   --d-zone-signal: #d36a4a;
-  --d-zone-unknown: #8a969e;
-
-  /* --- elevation -----------------------------------------------------
-     Every element sat on one plane, which is what made the page read flat
-     regardless of how the type was set. Three steps is enough: a resting
-     surface, a raised one, and a lifted one under the pointer. The shadows
-     are warm rather than neutral grey -- a cool shadow on cream paper looks
-     like a rendering mistake. */
-  --shadow-1: 0 1px 2px rgb(38 30 22 / 0.05), 0 1px 1px rgb(38 30 22 / 0.03);
-  --shadow-2:
-    0 1px 2px rgb(38 30 22 / 0.05),
-    0 4px 12px -2px rgb(38 30 22 / 0.07);
-  --shadow-3:
-    0 1px 2px rgb(38 30 22 / 0.06),
-    0 12px 28px -6px rgb(38 30 22 / 0.12);
-
-  /* Every corner was 0, which reads as austere rather than crafted. Small
-     and consistent: a radius you notice is a radius that is too big. */
-  --r-sm: 4px;
+  --d-zone-unknown: #a2adb3;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-2: 0 4px 20px rgb(0 0 0 / 0.06);
+  --shadow-3: 0 16px 48px rgb(0 0 0 / 0.09);
+  --r-sm: 6px;
   --r-md: 8px;
-  --r-lg: 14px;
-
-  /* --- motion, consolidated ------------------------------------------
-     There were six durations and four near-identical easing curves, written
-     at different times. Nobody can perceive the difference between
-     cubic-bezier(.16,1,.3,1) and (.22,1,.36,1); the cumulative effect is a
-     page that reads as assembled rather than designed. */
+  --r-lg: 10px;
   --t-fast: 150ms;
-  --t-slow: 260ms;
+  --t-slow: 250ms;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-
   --frame: 80rem;
-  --measure: 36rem;
-  /* Wider than the old flat 1.25rem, and it breathes with the viewport --
-     the page was pinned to its gutter at every width. */
-  --gutter: clamp(1.25rem, 4vw, 3.5rem);
-  --grain-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  --measure: 38rem;
+  --gutter: clamp(1rem, 4vw, 2rem);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /*
-     * Dark mode is the same paper under less light, so every ground, rule and
-     * loss value sits on the warm hue the light scheme already uses (33-44).
-     *
-     * Two earlier attempts got this wrong in the same way, from opposite
-     * directions. The first lifted the page to #232229 -- hue 249, violet --
-     * while every other token in the system was 40-44, and warm cream type on
-     * a cool ground is what read as muddy. The second fixed the hue but left
-     * the signal at S48 L56, which on a dark ground is not brick, it is
-     * dusty salmon: a light scheme's red, dimmed rather than restruck.
-     *
-     * A dark ground eats chroma. The light scheme's #ab4d36 is S52 at L44;
-     * to carry the same weight up at L56 the saturation has to go up with it,
-     * not down. Hence S61.
-     */
-    --d-paper: #24211e;
-    --d-paper-2: #35312c;
-    --d-paper-3: #3d3933;
-    --d-ink: #f0ece2;
-    --d-ink-58: rgb(240 236 226 / 0.76);
-    --d-ink-38: rgb(240 236 226 / 0.55);
-    --d-rule: #3f3b36;
-    --d-rule-strong: #5b554d;
-    --d-control: #746c63;
-
-    /* Hue 14, S 61, L 56. Bound on three sides: 4.52:1 on the page, 5.78:1 on
-       the band, and exactly 3.00:1 from ink -- which is the sieve's
-       alive-vs-dying pair. Below that a removed cell stops being
-       distinguishable from a survivor, so this is the floor, not a target. */
-    --d-signal: #d36a4a;
-    --d-signal-wash: rgb(211 106 74 / 0.15);
-    /* The loss ramp separates from the signal by chroma, not luminance:
-       S61 -> S30 -> S22 at falling lightness. There is not enough luminance
-       room on a dark page to do it any other way, and chroma is the right
-       axis anyway -- saturation here means "how recently this was lost". */
-    --d-loss-2: #9c6754;
-    --d-loss-3: #5d473c;
-    /* The only non-warm value in the system, and deliberately so: its meaning
-       is "we could not establish this", and the absence of warmth is the
-       point. But it has to read as grey with a cool lean, not as blue. At
-       S15 on a warm near-black page it was the loudest thing on screen --
-       an unlabelled story shouting over a measured loss. S9. */
-    --d-unknown: #8a969e;
-
-    --d-ghost: rgb(240 236 226 / 0.17);
-    --d-sheet: #35312c;
-
-    /*
-     * The band goes deeper than the page, never lighter -- but in dark mode
-     * that buys almost nothing. Light paper against the band is 18.5:1; the
-     * most a dark page can give the same black is about 1.3:1, and pushing
-     * the page high enough to beat that would stop it being a dark page.
-     *
-     * So the band earns its edges instead of its depth: true black rather
-     * than near-black, a lit hairline top and bottom, and an inner shadow at
-     * the seam. See the `.zone-dark` dark-mode block. Luminance is the wrong
-     * tool here and no amount of tuning these two values fixes it.
-     */
-    --d-zone: #050403;
-    --d-zone-plate: #141210;
-    --d-zone-ink: #f0ece2;
-    --d-zone-mid: rgb(240 236 226 / 0.72);
-    --d-zone-dim: rgb(240 236 226 / 0.46);
-    --d-zone-rule: rgb(240 236 226 / 0.13);
+    --d-paper: #17191b;
+    --d-paper-2: #202325;
+    --d-paper-3: #2a2e31;
+    --d-ink: #f5f5f3;
+    --d-ink-58: #c4c7c8;
+    --d-ink-38: #a4a8aa;
+    --d-rule: #3c4042;
+    --d-rule-strong: #707577;
+    --d-control: #858a8c;
+    --d-signal: #ed927b;
+    --d-signal-wash: rgb(237 146 123 / 0.10);
+    --d-loss-2: #bd9085;
+    --d-loss-3: #827571;
+    --d-unknown: #a6b2b9;
+    --d-success: #89c8a5;
+    --d-caution: #ddb76f;
+    --d-ghost: rgb(245 245 243 / 0.16);
+    --d-sheet: #242523;
+    --d-zone: #111315;
+    --d-zone-plate: #1c1e20;
+    --d-zone-ink: #fafaf9;
+    --d-zone-mid: #c0c2c3;
+    --d-zone-dim: #9a9ea1;
+    --d-zone-rule: #383c40;
     --d-zone-signal: #d36a4a;
-    --d-zone-unknown: #8a969e;
-
+    --d-zone-unknown: #a2adb3;
   }
 }
 
@@ -291,11 +169,10 @@ body {
  */
 
 @utility display {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
-  font-weight: 500;
-  letter-spacing: -0.028em;
-  line-height: 0.94;
+  font-family: var(--font-sans);
+  font-weight: 550;
+  letter-spacing: -0.052em;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
@@ -309,27 +186,24 @@ body {
 }
 
 @utility headline {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 20, "SOFT" 20, "WONK" 0;
+  font-family: var(--font-sans);
   font-weight: 600;
   letter-spacing: -0.006em;
   line-height: 1.25;
 }
 
 @utility prose {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 14, "SOFT" 40, "WONK" 0;
+  font-family: var(--font-sans);
   font-weight: 400;
-  font-size: 1.1875rem;
+  font-size: 1rem;
   line-height: 1.58;
   letter-spacing: 0.002em;
 }
 
 @utility lede {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 24, "SOFT" 40, "WONK" 0;
+  font-family: var(--font-sans);
   font-weight: 400;
-  font-size: 1.3125rem;
+  font-size: 1.125rem;
   line-height: 1.42;
   letter-spacing: -0.004em;
   text-wrap: pretty;
@@ -377,8 +251,7 @@ body {
 
 /* Legacy utility names, mapped into the new system. */
 @utility brand-wordmark {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
+  font-family: var(--font-sans);
   font-weight: 600;
   font-size: 1.5rem;
   letter-spacing: -0.03em;
@@ -400,23 +273,20 @@ body {
   text-transform: uppercase;
 }
 @utility hero-headline {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 48, "SOFT" 12, "WONK" 1;
+  font-family: var(--font-sans);
   font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.12;
   text-wrap: balance;
 }
 @utility row-headline {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 20, "SOFT" 20, "WONK" 0;
+  font-family: var(--font-sans);
   font-weight: 600;
   letter-spacing: -0.006em;
   line-height: 1.25;
 }
 @utility dek {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 24, "SOFT" 40, "WONK" 0;
+  font-family: var(--font-sans);
   font-weight: 400;
   font-size: 1.3125rem;
   line-height: 1.42;
@@ -458,24 +328,7 @@ body {
  * start. It is a *ground*, not a gradient effect -- if you can point at it and
  * call it a gradient, it is too strong.
  */
-.hero::before {
-  content: '';
-  position: absolute;
-  /* Was `-18%` / `-10%`, which put the glow 122px above the hero and 120px
-     past each edge. Two visible bugs from one declaration: the page scrolled
-     sideways by exactly that 120px, and pulling down at the top revealed a
-     band of warm colour sitting above the header. An ellipse does not need
-     to leave the box to look soft -- the gradient stops do that. */
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: 115%;
-  background: radial-gradient(
-    75% 60% at 28% 34%,
-    color-mix(in oklab, var(--d-signal) 8%, transparent),
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: -1;
+.hero::before { display: none;
 }
 
 /*
@@ -949,15 +802,7 @@ body {
  * stops being paper and starts being a texture overlay, and dropped entirely
  * for anyone who asked for less motion-adjacent decoration.
  */
-.grain::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: var(--grain-src);
-  background-size: 180px 180px;
+.grain::after { display: none;
 }
 
 /* Down in dark mode, not up. Grain on near-white is paper; the same white
@@ -1479,4 +1324,44 @@ details[open] > .disclosure::before {
 
 @utility rise {
   animation: rise-in 560ms var(--ease-out-expo) both;
+}
+
+/* Product shell and shared actions. */
+.site-header { border-bottom: 1px solid var(--d-rule); position: relative; z-index: 10; background: var(--d-paper); }
+.site-header-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.site-brand { display: inline-flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 600; letter-spacing: -.045em; text-decoration: none; white-space: nowrap; min-height: 44px; }
+.brand-symbol { display: grid; grid-template-columns: repeat(2, 6px); gap: 3px; transform: rotate(-10deg); }
+.brand-symbol i { width: 6px; height: 6px; background: currentColor; }
+.brand-symbol i:last-child { opacity: .25; }
+.site-nav { display: flex; list-style: none; margin: 0; padding: 0; gap: 28px; }
+.site-nav a { min-height: 44px; display: inline-flex; align-items: center; font-size: 13px; text-decoration: none; color: var(--d-ink-38); transition: color 150ms; }
+.site-nav a:hover, .site-nav a[aria-current] { color: var(--d-ink); }
+.site-nav a[aria-current] { text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 1px; }
+.site-footer { border-top: 1px solid var(--d-rule); margin-top: 80px; }
+.site-footer-inner { padding-block: 36px; display: flex; justify-content: space-between; gap: 32px; }
+.site-footer p { margin: 12px 0 0; color: var(--d-ink-38); font-size: 12px; max-width: 48ch; }
+.footer-links { display: flex; align-items: start; flex-wrap: wrap; gap: 12px 24px; }
+.footer-links a { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; text-decoration: none; }
+.button-primary, .button-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 20px; min-height: 46px; padding: 12px 18px; border: 1px solid var(--d-ink); border-radius: 7px; font-size: 14px; font-weight: 500; text-decoration: none; line-height: 1.4; transition: background-color 180ms, color 180ms, transform 180ms; cursor: pointer; }
+.button-primary { background: var(--d-ink); color: var(--d-paper); }
+.button-secondary { background: transparent; color: var(--d-ink); border-color: var(--d-rule-strong); }
+.button-primary:active, .button-secondary:active { transform: scale(.98); }
+.text-link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; font-weight: 500; text-underline-offset: 5px; text-decoration-color: var(--d-rule-strong); }
+.eyebrow { margin: 0; font-size: 11px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; color: var(--d-ink-38); }
+:where(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.sheet .headline { font-family: var(--font-editorial); }
+@media (hover: hover) and (pointer: fine) {
+  .button-primary:hover { background: var(--d-ink-58); }
+  .button-secondary:hover { background: var(--d-paper-2); }
+}
+@media (max-width: 40rem) {
+  .site-header-inner { min-height: 64px; gap: 10px; }
+  .site-brand { font-size: 17px; gap: 8px; }
+  .site-nav { gap: 16px; }
+  .site-nav a { font-size: 12px; }
+  .site-footer-inner { flex-direction: column; gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+  .button-primary, .button-secondary { transition: none; }
 }

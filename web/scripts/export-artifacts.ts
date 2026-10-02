@@ -136,7 +136,7 @@ function isAncestor(sha: string): boolean | typeof UNKNOWN {
 
 /** The commit that last touched a path, i.e. where the file is stored. */
 function storageRevision(relPath: string): string | typeof UNKNOWN {
-  return git('log', '-1', '--format=%h', '--', relPath) ?? UNKNOWN
+  return git('log', '-1', '--format=%h', '--abbrev=7', '--', relPath) ?? UNKNOWN
 }
 
 /* ------------------------------------------------------- runner metadata --- */
@@ -568,7 +568,7 @@ function main(): void {
   // matches the commit -- CI's staleness check would fail forever. Anchoring to
   // the evidence is stable under every commit that does not add new scorecards,
   // and says the more useful thing anyway: which evidence this was built from.
-  const artifactRevision = git('log', '-1', '--format=%h', '--', ...EVIDENCE_PATHSPECS) ?? UNKNOWN
+  const artifactRevision = git('log', '-1', '--format=%h', '--abbrev=7', '--', ...EVIDENCE_PATHSPECS) ?? UNKNOWN
   const builtAt =
     git('log', '-1', '--format=%cI', '--', ...EVIDENCE_PATHSPECS) ?? new Date().toISOString()
   const snapshotManifest = loadSnapshotManifest()

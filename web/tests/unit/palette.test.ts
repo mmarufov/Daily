@@ -3,18 +3,7 @@ import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-/**
- * The palette has now shipped a cool-hued ground twice: the dark page at
- * #232229 (hue 249) and the light band at #17161a (hue 255), both while every
- * other token in the system sat at 12-44. Warm cream type on a violet ground
- * is what reads as muddy, and neither was caught by a contrast check, because
- * both passed contrast -- contrast is blind to hue.
- *
- * So the hue is asserted, alongside the ratios that were being tuned by eye.
- * These parse the real stylesheet rather than a copy of it; a duplicated
- * palette would just be a second thing to forget to update.
- */
-
+// Verify the actual shared tokens, including secondary text and semantic states.
 const CSS = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
 
 /** Everything inside `:root { ... }` up to the dark-scheme media query. */
@@ -57,29 +46,6 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-/** Hue in degrees, and saturation as a percentage. */
-function hue(hex: string): { h: number; s: number } {
-  const [r, g, b] = channels(hex)
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const d = max - min
-  if (d === 0) return { h: 0, s: 0 }
-  const h =
-    60 *
-    (max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4)
-  const l = (max + min) / 2
-  return { h, s: (d / (1 - Math.abs(2 * l - 1))) * 100 }
-}
-
-/**
- * Every ground, rule, ink and loss value is the same paper under more or less
- * light, so they all sit in the warm quadrant. `unknown` is the single
- * exception and is asserted separately: its meaning is "we could not
- * establish this", and the absence of warmth is the point.
- */
-const WARM_MIN = 5
-const WARM_MAX = 50
-
 describe.each([
   ['light', lightTokens()],
   ['dark', darkTokens()],
@@ -94,31 +60,13 @@ describe.each([
     expect(tokens.size).toBeGreaterThan(15)
   })
 
-  it('keeps every ground, ink, rule and loss value warm', () => {
-    const warm = [...tokens].filter(
-      ([name]) => !name.includes('unknown') && !name.includes('grain'),
-    )
-    // A near-neutral has no meaningful hue to police; the failure mode being
-    // guarded against is a *saturated* cool cast, not an incidental one.
-    const offenders = warm
-      .map(([name, value]) => ({ name, value, ...hue(value) }))
-      .filter(({ h, s }) => s > 3 && (h < WARM_MIN || h > WARM_MAX))
-    expect(offenders, `cool-hued tokens: ${JSON.stringify(offenders)}`).toEqual([])
-  })
-
-  it('leans the slate cool, but not far enough to shout', () => {
-    const { h, s } = hue(get('--d-unknown'))
-    expect(h).toBeGreaterThan(180)
-    expect(h).toBeLessThan(240)
-    // At S15 on a dark page it was the loudest thing on screen.
-    expect(s).toBeLessThan(13)
-  })
-
   it('holds text contrast on the page', () => {
     const page = get('--d-paper')
     expect(contrast(get('--d-ink'), page)).toBeGreaterThanOrEqual(7)
     expect(contrast(get('--d-signal'), page)).toBeGreaterThanOrEqual(4.5)
-    expect(contrast(get('--d-unknown'), page)).toBeGreaterThanOrEqual(4.5)
+    for (const token of ['--d-unknown', '--d-ink-58', '--d-ink-38', '--d-success', '--d-caution']) {
+      expect(contrast(get(token), page), token).toBeGreaterThanOrEqual(4.5)
+    }
   })
 
   it('holds text contrast inside the band, which is dark in both schemes', () => {
@@ -134,9 +82,4 @@ describe.each([
     expect(contrast(get('--d-zone-signal'), get('--d-zone-ink'))).toBeGreaterThanOrEqual(3)
   })
 
-  it('separates the loss ramp by chroma, since luminance has no room', () => {
-    const s = [get('--d-signal'), get('--d-loss-2'), get('--d-loss-3')].map((v) => hue(v).s)
-    expect(s[0]).toBeGreaterThan(s[1] as number)
-    expect(s[1]).toBeGreaterThan(s[2] as number)
-  })
 })
