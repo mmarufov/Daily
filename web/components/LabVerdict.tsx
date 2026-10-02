@@ -19,7 +19,9 @@ export function VerdictBadge({ verdict, small }: { verdict: LabRun['verdict']; s
   const tone = TONE[verdict]
   return (
     <span
-      className={`label inline-block ${tone.fill} ${tone.text} ${small === true ? 'px-1.5 py-0.5' : 'px-2.5 py-1.5'}`}
+      className={`inline-flex items-center rounded-full font-medium whitespace-nowrap ${tone.fill} ${tone.text} ${
+        small === true ? 'h-5 px-2 text-[0.6875rem]' : 'h-7 px-3 text-[0.8125rem]'
+      }`}
     >
       {tone.label}
     </span>
@@ -30,7 +32,7 @@ export function Counterexample({ run }: { run: LabRun }) {
   const x = run.smallest_counterexample
   if (x === null) return null
   return (
-    <div className="border border-signal bg-paper-secondary p-4">
+    <div className="rounded-lg bg-signal-wash p-4">
       <p className="label m-0 text-signal">Smallest counterexample</p>
       <p className="headline m-0 mt-2 text-base" data-verbatim>
         {x.article_title}

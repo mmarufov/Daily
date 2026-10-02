@@ -59,9 +59,9 @@ export function PageIndex({ sections }: { readonly sections: readonly Section[] 
           <li key={s.slug}>
             <a
               href={`#${s.slug}`}
-              className="label text-ink-60 no-underline transition-colors duration-150 hover:text-signal"
+              className="label text-ink-60 no-underline transition-colors duration-150 hover:text-ink"
             >
-              <span className="text-ink-40">{s.index}</span> {s.title}
+              {s.title}
             </a>
           </li>
         ))}

@@ -16,14 +16,14 @@ import { finishedRunBody } from '../fixtures/live-outcome'
  */
 
 test.describe('Daily Lab', () => {
-  test('the first screen states the failure and offers the replay', async ({ page }) => {
+  test('the first screen offers a run and says what is live', async ({ page }) => {
     await page.goto('/lab')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('never said which verdict')
-    await expect(page.getByRole('link', { name: 'Replay the investigation' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Run a parser yourself' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Put a parser through the Lab')
+    await expect(page.getByRole('button', { name: 'Run it in a microVM' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Replay the investigation/ })).toBeVisible()
     // What is live and what is replayed, said where a reader starts. The
     // execution is live; the model responses it parses are not.
-    await expect(page.getByText(/live parser runs against recorded responses/i).first()).toBeVisible()
+    await expect(page.getByText(/The responses are replayed\. The execution and the grading are not\./).first()).toBeVisible()
   })
 
   test('shows the real offending response, not a description of one', async ({ page }) => {
@@ -218,7 +218,7 @@ test.describe('the live runner', () => {
     await page.goto('/lab')
     await page.getByRole('button', { name: 'Run it in a microVM' }).click()
     await expect(page.getByText('Caught by a fault-injected case')).toBeVisible()
-    const fault = page.locator('li').filter({ hasText: 'syn-positional-reordered' }).first()
+    const fault = page.locator('section[aria-label="Verdict"] li').filter({ hasText: 'syn-positional-reordered' }).first()
     await expect(fault).toContainText('equal length, internally reordered')
     await expect(fault).toContainText('instead of refusing')
     await expect(page.locator('[data-case="syn-positional-reordered"]')).toHaveAttribute('data-tone', 'wrong')

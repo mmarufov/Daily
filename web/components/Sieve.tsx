@@ -153,7 +153,7 @@ export function Sieve({
             Stage {String(index + 1).padStart(2, '0')} / {String(last + 1).padStart(2, '0')} ·{' '}
             {current.stage}
           </p>
-          <p className="headline m-0 mt-1 text-lg">{current.label}</p>
+          <p className="m-0 mt-1 text-lg font-semibold tracking-[-0.015em]">{current.label}</p>
           {current.lost > 0 ? (
             <p className="m-0 mt-1.5 text-xs text-ink-60">
               <span className="text-signal">−{current.lost.toLocaleString()}</span> removed

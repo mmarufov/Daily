@@ -95,7 +95,7 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
           </p>
         </div>
         {control ? (
-          <p className="m-0 max-w-3xl border-l-2 border-signal pl-3 text-sm text-ink-60">
+          <p className="note m-0 max-w-3xl text-sm text-ink-60">
             <strong className="text-ink">This is a seeded control.</strong> It carries a deliberate
             defect and exists so the checks can be shown to catch something. {run.candidate.description}
           </p>
@@ -122,7 +122,7 @@ export default async function LabRunPage({ params }: { params: Promise<{ run: st
           )}
         />
         <Gradings run={run} />
-        <p className="m-0 max-w-3xl border-t border-signal pt-3 text-sm text-ink-60">
+        <p className="m-0 max-w-3xl border-t border-rule-strong pt-3 text-sm text-ink-60">
           {run.verdict_scope}
         </p>
       </section>
@@ -261,7 +261,7 @@ cd ../web && npm run export:lab -- --check`}
                   </span>
                 </dt>
                 <dd className="m-0 flex min-w-0 flex-col gap-1.5">
-                  <p className="headline m-0 text-base">{d.question}</p>
+                  <p className="m-0 text-base font-medium">{d.question}</p>
                   <p className="m-0 text-sm text-ink-60">{d.detail}</p>
                   {d.case_ids.length > 0 ? (
                     <p className="m-0 break-words text-xs text-ink-40">{d.case_ids.join(', ')}</p>
@@ -336,7 +336,7 @@ cd ../web && npm run export:lab -- --check`}
           {run.provenance.notes.map((n, i) => (
             <li
               key={i}
-              className={`border-l-2 pl-3 text-xs ${n.severity === 'warning' ? 'border-signal text-ink' : n.severity === 'caution' ? 'border-unknown text-ink-60' : 'border-rule text-ink-60'}`}
+              className={`note text-xs ${n.severity === 'warning' ? 'text-ink' : 'text-ink-60'}`}
             >
               <strong className="text-ink">
                 {n.severity === 'warning' ? 'Warning.' : n.severity === 'caution' ? 'Caution.' : 'Note.'}

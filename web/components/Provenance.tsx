@@ -2,9 +2,9 @@ import { UNKNOWN, type Artifact, type ProvenanceNote } from '@/lib/artifact'
 import type { Compatibility } from '@/lib/compare'
 
 const SEVERITY_TONE: Record<ProvenanceNote['severity'], string> = {
-  info: 'border-rule text-ink-60',
-  caution: 'border-unknown text-ink-60',
-  warning: 'border-signal text-ink',
+  info: 'text-ink-60',
+  caution: 'text-ink-60',
+  warning: 'text-ink',
 }
 
 const SEVERITY_WORD: Record<ProvenanceNote['severity'], string> = {
@@ -22,7 +22,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
       <summary className="disclosure label px-4 py-3 text-ink">
         Provenance · {p.runner} · {p.snapshot.name}
         {warnings.length > 0 ? (
-          <span className="ml-2 text-signal">
+          <span className="ml-2 text-ink-60">
             {warnings.length} caveat{warnings.length === 1 ? '' : 's'} on this run
           </span>
         ) : null}
@@ -142,7 +142,7 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
               {p.notes.map((note, index) => (
                 <li
                   key={`${note.severity}-${index}`}
-                  className={`border-l-2 pl-3 text-xs ${SEVERITY_TONE[note.severity]}`}
+                  className={`note text-xs ${SEVERITY_TONE[note.severity]}`}
                 >
                   <strong>{SEVERITY_WORD[note.severity]}.</strong> {note.message}
                   <span className="block pt-1 text-[11px] text-ink-40">
@@ -184,7 +184,7 @@ export function CompatibilityNotice({ compatibility }: { compatibility: Compatib
   return (
     <div
       role={blocking ? 'alert' : undefined}
-      className={`border-l-2 pl-3 ${blocking ? 'border-signal' : 'border-unknown'}`}
+      className={`note ${blocking ? 'text-ink' : 'text-ink-60'}`}
     >
       <p className="m-0 text-sm text-ink">{compatibility.headline}</p>
       {compatibility.issues.length > 0 ? (

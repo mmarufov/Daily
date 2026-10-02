@@ -1,45 +1,35 @@
 @import "tailwindcss";
 
 /*
- * Daily — web companion.
+ * Daily Lab. The visual system in one rule:
  *
- * One rule governs the whole visual system: COLOUR MEANS LOSS. In any chart,
- * table or diagram, ink is what survived, vermilion is what the pipeline threw
- * away, and slate is what cannot be verified.
+ *   AN INSTRUMENT IS GREY. ONLY ITS READINGS HAVE COLOUR.
  *
- * The vermilion is deliberately *quiet*. It began at #bd3418 -- 77% saturation
- * -- and on a page where loss is the most common outcome, the most common
- * outcome was also the loudest thing on screen. Every readout, every bar, every
- * discarded cell and six section rules in a row all shouting at once is not
- * emphasis, it is noise, and a rule that says "colour means loss" stops meaning
- * anything when most of the page is coloured. It is now 52%, which is still
- * unmistakably the alarm colour against this paper and no longer the first
- * thing the eye lands on. Contrast was re-measured rather than assumed: 5.10:1
- * on paper, and the dark scheme's 3.19:1 against ink, which is the pair the
- * sieve depends on. Nothing that worked is ever
- * coloured, so a glance at a figure tells you where the system failed before
- * you have read a label. The one exception is chrome — links, focus, selection
- * — which borrows the same vermilion because there it carries the same meaning
- * the eye already learned: look here.
+ * Every surface, rule, control and piece of navigation is achromatic. The
+ * only chromatic pixels on the site are measurements: red is a measured
+ * failure or loss (an article removed, a case the parser got wrong, a miss),
+ * and slate is a measurement that could not be made. Nothing that worked is
+ * coloured, so a glance at any figure says where the system failed before a
+ * label is read. Chrome that wants attention gets it from contrast and
+ * weight, never from hue; the moment a button is red, red stops meaning loss.
  *
- * Two typefaces, no sans between them. Prose is an editorial serif; every
- * number, identifier, stage name and micro-label is monospaced. The site is a
- * newspaper assembled by a measuring instrument and it is meant to look like
- * both objects at once.
+ * Three typefaces with three jobs:
+ *   Geist        the product: interface, headings, prose
+ *   Geist Mono   data you might copy: ids, hashes, code, timestamps
+ *   Fraunces     article text from the frozen corpus, and nothing else
  *
- * Note on docs/DESIGN.md: that document governs the iOS app and is written as
- * an iOS-first source of truth. This tier is a different medium with a
- * different job — an evidence explorer, not a reading app — so it does not
- * inherit those tokens. The reader replay is the one surface that stays close
- * to the app's paper-and-serif register, because there it is showing the
- * product rather than measuring it.
+ * One unit everywhere: the cell. An article, a test case, a miss and a
+ * verdict are all drawn as a square, so the figures read as one instrument
+ * at four scales rather than four illustrations.
+ *
+ * tests/unit/palette.test.ts parses this file and enforces the rule above.
  */
 
 @theme {
-  /* --- palette ------------------------------------------------------- */
   --color-paper: var(--d-paper);
   --color-paper-secondary: var(--d-paper-2);
   --color-paper-sunk: var(--d-paper-3);
+  --color-sheet: var(--d-sheet);
   --color-ink: var(--d-ink);
   --color-ink-60: var(--d-ink-58);
   --color-ink-40: var(--d-ink-38);
@@ -47,390 +37,289 @@
   --color-rule-strong: var(--d-rule-strong);
   --color-control: var(--d-control);
 
-  /* Loss. Never used for anything that worked. */
+  /* Readings. Text-safe red, and the brighter red for marks. */
   --color-signal: var(--d-signal);
+  --color-loss: var(--d-loss);
   --color-signal-wash: var(--d-signal-wash);
-  /* Two further steps down the same hue, for charts that distinguish *where*
-     something was lost. These were `bg-signal/55` and `bg-signal/25`, and
-     alpha over paper produced washed pinks that read as a rendering artefact
-     rather than a category -- the strip looked like confectionery. Mixed
-     against paper as real colours instead, so each step is a decision. */
   --color-loss-2: var(--d-loss-2);
   --color-loss-3: var(--d-loss-3);
-  /* Unverifiable: absent protocol, unknown execution mode, missing metric. */
   --color-unknown: var(--d-unknown);
 
-  /* Legacy token names kept as aliases so any surface not yet rewritten
-     still renders inside the new system rather than half-outside it. */
+  /* Older names, kept so a surface not yet rewritten stays inside the
+     system rather than half outside it. */
   --color-sepia: var(--d-rule);
   --color-ochre: var(--d-signal);
   --color-ink-blue: var(--d-signal);
   --color-danger: var(--d-signal);
   --color-success: var(--d-ink);
 
-  /* --- type ---------------------------------------------------------- */
   --font-editorial: var(--font-editorial-var), Charter, Georgia, serif;
-  --font-mono: var(--font-mono-var), ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-serif: var(--font-editorial);
-  /* Was an alias for the monospace, which is why every caption, note and
-     label on the site read as terminal output. */
   --font-sans: var(--font-sans-var), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-var), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Added to Tailwind's scale rather than replacing it, so the sizes that
-     already work keep working and these read as deliberate choices. */
-  --text-micro: 0.6875rem;
-  --text-micro--line-height: 1.2;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.35;
 
-  /* --- structure ------------------------------------------------------ */
   --spacing-hair: 1px;
-  --radius-thumb: 2px;
-  --radius-button: 2px;
-  --radius-sheet: 2px;
+  --radius-thumb: 4px;
+  --radius-button: 8px;
+  --radius-sheet: 12px;
 
-  /* --- motion --------------------------------------------------------- */
+  /* Strong ease-out for anything that responds to the pointer; the in-out
+     is for things that move across the screen on their own. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 :root {
   color-scheme: light dark;
 
-  /* Paper: uncoated newsprint, low chroma, so vermilion stays the only
-     saturated thing on the page. */
-  --d-paper: #f9f7f3;
-  --d-paper-2: #f3f1ea;
-  --d-paper-3: #e9e6dd;
-  --d-ink: #161513;
-  /* Two muted levels, both computed to clear 4.5:1 against paper, the recessed
-     panel AND the reader's sheet -- the site sets a lot of 11px monospace, and
-     none of it qualifies as large text. 0.62/0.40 measured 4.7:1 and 2.5:1. */
-  --d-ink-58: rgb(22 21 19 / 0.8);
-  --d-ink-38: rgb(22 21 19 / 0.64);
-  --d-rule: #ddd8cc;
-  --d-rule-strong: #b5ae9c;
-  /* Control boundaries, which carry which-thing-is-a-button on their own and
-     so answer to 1.4.11's 3:1 rather than to the hairline rules' job. */
-  --d-control: #858480;
-  --d-signal: #ab4d36;
-  --d-signal-wash: rgb(171 77 54 / 0.09);
-  --d-loss-2: #b8806f;
-  --d-loss-3: #cbb4aa;
-  --d-unknown: #5a6b74;
+  /* Ground and surfaces. Pure neutral: R = G = B in every one. */
+  --d-paper: #fafafa;
+  --d-sheet: #ffffff;
+  --d-paper-2: #f4f4f4;
+  --d-paper-3: #ebebeb;
 
-  /* The sieve's discarded candidates: present, legible as a mass, never
-     competing with the survivors. The ceiling is set by the pair that has to
-     stay readable -- removed-here (signal) against removed-earlier (ghost) --
-     which needs 3:1, so this is as heavy as the ghost can get. */
-  --d-ghost: rgb(22 21 19 / 0.2);
-  --d-sheet: #fdfcf9;
+  /* Ink, then two muted steps. Both clear 4.5:1 on every surface above,
+     including the recessed one, because a lot of 12px text sits there. */
+  --d-ink: #171717;
+  --d-ink-58: #4d4d4d;
+  --d-ink-38: #6b6b6b;
 
-  /* The inverted band. Warm near-black rather than neutral -- a cool black
-     against cream paper reads as two unrelated designs.
+  --d-rule: #e6e6e6;
+  --d-rule-strong: #d0d0d0;
+  /* Boundaries that alone say "this is a control": 3:1 on white. */
+  --d-control: #8a8a8a;
 
-     That comment was here before the values were. #17161a is hue 255 and
-     #211f26 is 257: violet, in the one block on the site anyone has singled
-     out as good, while every other token in the light scheme sits at 12-40.
-     Same bug as the dark page had, found while fixing that one. Hue 40 now,
-     and every ratio came out equal or better (zone-ink 15.96 -> 16.60). */
-  --d-zone: #131210;
-  --d-zone-plate: #1f1d19;
-  --d-zone-ink: #f4f1ea;
-  --d-zone-mid: rgb(244 241 234 / 0.72);
-  --d-zone-dim: rgb(244 241 234 / 0.48);
-  --d-zone-rule: rgb(244 241 234 / 0.16);
-  /* The band is a dark surface in both schemes, so the signal on it is the
-     dark scheme's in both. The page signal was being used here and lands at
-     3.43:1 on the band -- fine for a cell fill, not for the "-1,062 removed"
-     line, which is text. 5.29:1 light, 5.78:1 dark. Same for the slate: the
-     page value is 3.38:1 on the band, and it carries the reconstructed-count
-     caveat. 6.18:1 light, 6.77:1 dark. */
-  --d-zone-signal: #d36a4a;
-  --d-zone-unknown: #8a969e;
+  /* A removed cell: present and countable, never competing with survivors. */
+  --d-ghost: #e2e2e2;
 
-  /* --- elevation -----------------------------------------------------
-     Every element sat on one plane, which is what made the page read flat
-     regardless of how the type was set. Three steps is enough: a resting
-     surface, a raised one, and a lifted one under the pointer. The shadows
-     are warm rather than neutral grey -- a cool shadow on cream paper looks
-     like a rendering mistake. */
-  --shadow-1: 0 1px 2px rgb(38 30 22 / 0.05), 0 1px 1px rgb(38 30 22 / 0.03);
-  --shadow-2:
-    0 1px 2px rgb(38 30 22 / 0.05),
-    0 4px 12px -2px rgb(38 30 22 / 0.07);
-  --shadow-3:
-    0 1px 2px rgb(38 30 22 / 0.06),
-    0 12px 28px -6px rgb(38 30 22 / 0.12);
+  /* Readings. --d-signal is the text red (5:1 on paper); --d-loss is the
+     mark red, brighter, for cells and bars where it fills an area. */
+  --d-signal: #ce2c31;
+  --d-loss: #e5484d;
+  --d-loss-2: #ef8c8f;
+  --d-loss-3: #f6c3c4;
+  --d-signal-wash: #fdeced;
+  /* Could not be established. Cool and quiet on purpose: the absence of a
+     measurement must not shout over a measured loss. */
+  --d-unknown: #5d6a76;
 
-  /* Every corner was 0, which reads as austere rather than crafted. Small
-     and consistent: a radius you notice is a radius that is too big. */
-  --r-sm: 4px;
-  --r-md: 8px;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-2: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.08);
+  --shadow-3: 0 1px 2px rgb(0 0 0 / 0.05), 0 24px 48px -16px rgb(0 0 0 / 0.14);
+
+  --r-sm: 6px;
+  --r-md: 10px;
   --r-lg: 14px;
 
-  /* --- motion, consolidated ------------------------------------------
-     There were six durations and four near-identical easing curves, written
-     at different times. Nobody can perceive the difference between
-     cubic-bezier(.16,1,.3,1) and (.22,1,.36,1); the cumulative effect is a
-     page that reads as assembled rather than designed. */
   --t-fast: 150ms;
   --t-slow: 260ms;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
 
-  --frame: 80rem;
+  --frame: 76rem;
   --measure: 36rem;
-  /* Wider than the old flat 1.25rem, and it breathes with the viewport --
-     the page was pinned to its gutter at every width. */
-  --gutter: clamp(1.25rem, 4vw, 3.5rem);
-  --grain-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --header-h: 3.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /*
-     * Dark mode is the same paper under less light, so every ground, rule and
-     * loss value sits on the warm hue the light scheme already uses (33-44).
-     *
-     * Two earlier attempts got this wrong in the same way, from opposite
-     * directions. The first lifted the page to #232229 -- hue 249, violet --
-     * while every other token in the system was 40-44, and warm cream type on
-     * a cool ground is what read as muddy. The second fixed the hue but left
-     * the signal at S48 L56, which on a dark ground is not brick, it is
-     * dusty salmon: a light scheme's red, dimmed rather than restruck.
-     *
-     * A dark ground eats chroma. The light scheme's #ab4d36 is S52 at L44;
-     * to carry the same weight up at L56 the saturation has to go up with it,
-     * not down. Hence S61.
-     */
-    --d-paper: #24211e;
-    --d-paper-2: #35312c;
-    --d-paper-3: #3d3933;
-    --d-ink: #f0ece2;
-    --d-ink-58: rgb(240 236 226 / 0.76);
-    --d-ink-38: rgb(240 236 226 / 0.55);
-    --d-rule: #3f3b36;
-    --d-rule-strong: #5b554d;
-    --d-control: #746c63;
+    --d-paper: #0a0a0a;
+    --d-sheet: #111111;
+    --d-paper-2: #161616;
+    --d-paper-3: #1f1f1f;
 
-    /* Hue 14, S 61, L 56. Bound on three sides: 4.52:1 on the page, 5.78:1 on
-       the band, and exactly 3.00:1 from ink -- which is the sieve's
-       alive-vs-dying pair. Below that a removed cell stops being
-       distinguishable from a survivor, so this is the floor, not a target. */
-    --d-signal: #d36a4a;
-    --d-signal-wash: rgb(211 106 74 / 0.15);
-    /* The loss ramp separates from the signal by chroma, not luminance:
-       S61 -> S30 -> S22 at falling lightness. There is not enough luminance
-       room on a dark page to do it any other way, and chroma is the right
-       axis anyway -- saturation here means "how recently this was lost". */
-    --d-loss-2: #9c6754;
-    --d-loss-3: #5d473c;
-    /* The only non-warm value in the system, and deliberately so: its meaning
-       is "we could not establish this", and the absence of warmth is the
-       point. But it has to read as grey with a cool lean, not as blue. At
-       S15 on a warm near-black page it was the loudest thing on screen --
-       an unlabelled story shouting over a measured loss. S9. */
-    --d-unknown: #8a969e;
+    --d-ink: #ededed;
+    --d-ink-58: #a8a8a8;
+    --d-ink-38: #8c8c8c;
 
-    --d-ghost: rgb(240 236 226 / 0.17);
-    --d-sheet: #35312c;
+    --d-rule: #232323;
+    --d-rule-strong: #363636;
+    --d-control: #737373;
 
-    /*
-     * The band goes deeper than the page, never lighter -- but in dark mode
-     * that buys almost nothing. Light paper against the band is 18.5:1; the
-     * most a dark page can give the same black is about 1.3:1, and pushing
-     * the page high enough to beat that would stop it being a dark page.
-     *
-     * So the band earns its edges instead of its depth: true black rather
-     * than near-black, a lit hairline top and bottom, and an inner shadow at
-     * the seam. See the `.zone-dark` dark-mode block. Luminance is the wrong
-     * tool here and no amount of tuning these two values fixes it.
-     */
-    --d-zone: #050403;
-    --d-zone-plate: #141210;
-    --d-zone-ink: #f0ece2;
-    --d-zone-mid: rgb(240 236 226 / 0.72);
-    --d-zone-dim: rgb(240 236 226 / 0.46);
-    --d-zone-rule: rgb(240 236 226 / 0.13);
-    --d-zone-signal: #d36a4a;
-    --d-zone-unknown: #8a969e;
+    --d-ghost: #262626;
 
+    --d-signal: #ff6369;
+    --d-loss: #e5484d;
+    --d-loss-2: #93393c;
+    --d-loss-3: #4c2324;
+    --d-signal-wash: #2a1415;
+    --d-unknown: #8e9aa5;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.5);
+    --shadow-2: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+    --shadow-3: 0 1px 2px rgb(0 0 0 / 0.6), 0 24px 48px -16px rgb(0 0 0 / 0.7);
   }
 }
+
+/* ------------------------------------------------------------- base --- */
 
 html {
   background: var(--d-paper);
   color: var(--d-ink);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  /* The site's default was the *monospace*, so every caption, note, list item
-     and stray sentence inherited it. That single declaration is most of why
-     the page read as a terminal dump rather than a product: monospace at
-     small sizes is uniform, thin and tiring, and it was carrying the majority
-     of the words on screen. Data keeps it; prose never should have had it. */
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01" 0;
 }
 
 ::selection {
-  background: var(--d-signal);
+  background: var(--d-ink);
   color: var(--d-paper);
 }
 
-/* ------------------------------------------------------------ type ------ */
+:focus-visible {
+  outline: 2px solid var(--d-ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
 
-/*
- * Fraunces is variable on four axes. WONK swaps in the flared, angled
- * terminals that give the display sizes a voice; at reading sizes it is turned
- * off and SOFT is raised, because the same letterforms that make a masthead
- * memorable make a paragraph tiring.
- */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  clip-path: inset(50%);
+  z-index: 100;
+  background: var(--d-sheet);
+  color: var(--d-ink);
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--d-rule-strong);
+  border-radius: var(--r-sm);
+}
+.skip-link:focus { clip-path: none; }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------- type --- */
+
+/* The product voice: Geist, heavy and tight at size. */
 @utility display {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
-  font-weight: 500;
-  letter-spacing: -0.028em;
-  line-height: 0.94;
-  text-wrap: balance;
-}
-
-@utility editorial {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 48, "SOFT" 12, "WONK" 1;
+  font-family: var(--font-sans);
   font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.12;
+  letter-spacing: -0.045em;
+  line-height: 1;
   text-wrap: balance;
 }
 
+/* Section headings. */
+@utility title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+/* Was the serif display; now the same voice one step down. */
+@utility editorial {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* Article text from the corpus. The only serif on the site. */
 @utility headline {
   font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 20, "SOFT" 20, "WONK" 0;
-  font-weight: 600;
-  letter-spacing: -0.006em;
-  line-height: 1.25;
+  font-variation-settings: "opsz" 20, "SOFT" 0, "WONK" 0;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  line-height: 1.28;
 }
 
 @utility prose {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 14, "SOFT" 40, "WONK" 0;
+  font-family: var(--font-sans);
   font-weight: 400;
-  font-size: 1.1875rem;
-  line-height: 1.58;
-  letter-spacing: 0.002em;
-}
-
-@utility lede {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 24, "SOFT" 40, "WONK" 0;
-  font-weight: 400;
-  font-size: 1.3125rem;
-  line-height: 1.42;
-  letter-spacing: -0.004em;
+  font-size: 1rem;
+  line-height: 1.65;
   text-wrap: pretty;
 }
 
-/* Every micro-label on the site. Monospace caps, widely tracked, so labels
-   read as instrument nomenclature rather than as small headings. */
+@utility lede {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+  line-height: 1.55;
+  letter-spacing: -0.008em;
+  text-wrap: pretty;
+}
+
+/* Small labels are sentence case at reading size. The tracked capitals that
+   used to open every section were the loudest tell on the old site. */
 @utility label {
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: var(--text-micro);
-  line-height: 1.2;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  letter-spacing: -0.003em;
 }
 
 @utility label-lg {
   font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 0.8125rem;
-  line-height: 1.2;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
-/* Readouts. The subject of most of this site is a number, so numbers get the
-   display treatment that headlines get elsewhere. */
-@utility readout {
+/* Data you might copy. */
+@utility data {
   font-family: var(--font-mono);
-  font-weight: 300;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.04em;
-  line-height: 0.92;
+}
+
+/* Big quantities. Geist with tabular figures reads as a reading; the mono
+   at this size read as a terminal. */
+@utility readout {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
   font-size: 2.75rem;
 }
 
 @utility readout-sm {
-  font-family: var(--font-mono);
-  font-weight: 400;
+  font-family: var(--font-sans);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  font-size: 1.375rem;
-}
-
-/* Legacy utility names, mapped into the new system. */
-@utility brand-wordmark {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1;
-  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
   font-size: 1.5rem;
-  letter-spacing: -0.03em;
-}
-@utility signature-caps {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: var(--text-micro);
-  line-height: 1.2;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-@utility meta-caps {
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: var(--text-micro);
-  line-height: 1.2;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-@utility hero-headline {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 48, "SOFT" 12, "WONK" 1;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.12;
-  text-wrap: balance;
-}
-@utility row-headline {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 20, "SOFT" 20, "WONK" 0;
-  font-weight: 600;
-  letter-spacing: -0.006em;
-  line-height: 1.25;
-}
-@utility dek {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 24, "SOFT" 40, "WONK" 0;
-  font-weight: 400;
-  font-size: 1.3125rem;
-  line-height: 1.42;
-  letter-spacing: -0.004em;
-}
-@utility body-reading {
-  font-family: var(--font-editorial);
-  font-variation-settings: "opsz" 14, "SOFT" 40, "WONK" 0;
-  font-weight: 400;
-  font-size: 1.1875rem;
-  line-height: 1.58;
 }
 
-/* ------------------------------------------------------- structure ------ */
+@utility brand-wordmark {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.02em;
+}
+
+/* ----------------------------------------------------------- layout --- */
 
 @utility frame {
   width: 100%;
@@ -439,241 +328,243 @@ body {
   padding-inline: var(--gutter);
 }
 
-/*
- * The measuring column, removed.
- *
- * Two hairlines at the edges of the content column. The idea was sound and
- * the execution was not: at 1440px and above the frame leaves ~80px of margin
- * outside them, so the rules sat in dead space and read as a browser artefact
- * rather than a margin. A device that needs the viewport to be exactly the
- * right width is not a device, it is a coincidence.
- */
-
-/*
- * The hero's ground.
- *
- * A single very wide, very faint warm ellipse behind the headline. Flat
- * near-white across a whole viewport is the condition under which a page
- * looks unlit; this gives the top of the document somewhere for the eye to
- * start. It is a *ground*, not a gradient effect -- if you can point at it and
- * call it a gradient, it is too strong.
- */
-.hero::before {
-  content: '';
-  position: absolute;
-  /* Was `-18%` / `-10%`, which put the glow 122px above the hero and 120px
-     past each edge. Two visible bugs from one declaration: the page scrolled
-     sideways by exactly that 120px, and pulling down at the top revealed a
-     band of warm colour sitting above the header. An ellipse does not need
-     to leave the box to look soft -- the gradient stops do that. */
-  inset-block-start: 0;
-  inset-inline: 0;
-  block-size: 115%;
-  background: radial-gradient(
-    75% 60% at 28% 34%,
-    color-mix(in oklab, var(--d-signal) 8%, transparent),
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: -1;
+@utility measure {
+  max-width: var(--measure);
 }
 
-/*
- * The emphasised clause in a display line.
- *
- * A rule in the descender space rather than a colour change. The one colour
- * this site has means loss, and the headline's subject is not a loss -- it is
- * the thing the site is *about*. Spending vermilion here would have made the
- * most prominent sentence on the page read as an error state.
- *
- * `text-decoration` and not a pseudo-element: an abs-positioned ::after on a
- * wrapped inline anchors to the last line fragment, so on a phone the mark
- * sat under the final three words while the clause ran over three lines.
- */
-.struck {
-  text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, var(--d-signal) 62%, transparent);
-  text-decoration-thickness: 0.05em;
-  text-underline-offset: 0.12em;
-  text-decoration-skip-ink: none;
+/* A section opener on the inner pages: a hairline and a title. The index
+   numbers that used to sit beside it numbered things that were not a
+   sequence, so they are no longer drawn. */
+@utility band {
+  border-top: 1px solid var(--d-rule);
+  padding-top: 0.875rem;
+  scroll-margin-top: calc(var(--header-h) + 1rem);
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
 }
 
-/*
- * A small mark that says "this page is instrumented".
- *
- * Borrowed from the sieve, which is the page's strongest idea: a single cell,
- * alive.
- */
-.pip {
-  inline-size: 0.5rem;
-  block-size: 0.5rem;
-  background: var(--d-signal);
-  flex: none;
+@utility band-index {
+  display: none;
 }
 
-/* --- the entry cards ------------------------------------------------- */
+/* ---------------------------------------------------------- controls --- */
 
-.entry {
-  position: relative;
-  display: block;
-  background: var(--d-paper);
-  padding: 1.3rem 1.3rem 1.5rem;
-  text-decoration: none;
-  transition:
-    background-color var(--t-fast) var(--ease),
-    box-shadow var(--t-slow) var(--ease),
-    transform var(--t-slow) var(--ease);
-}
-
-/* Lifts rather than merely tinting. A card that only changes colour on hover
-   is a table row; one that rises is an object you can pick up. */
-.entry:hover {
+/* A segmented choice or a small action. */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  border: 1px solid var(--d-rule-strong);
   background: var(--d-sheet);
-  box-shadow: var(--shadow-2);
-  transform: translateY(-2px);
-  z-index: 1;
+  color: var(--d-ink);
+  padding: 0.4375rem 0.75rem;
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 150ms var(--ease-out-quart),
+    background-color 150ms var(--ease-out-quart),
+    color 150ms var(--ease-out-quart),
+    transform 120ms var(--ease-out-quart);
+  &:hover {
+    border-color: var(--d-control);
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
 }
 
-.entry-rule {
+@utility chip-on {
+  border-color: var(--d-ink);
+  background: var(--d-ink);
+  color: var(--d-paper);
+  &:hover {
+    border-color: var(--d-ink);
+  }
+}
+
+/* Primary and secondary actions. */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding-inline: 1rem;
+  border-radius: var(--r-sm);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.006em;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  transition:
+    background-color 150ms var(--ease-out-quart),
+    border-color 150ms var(--ease-out-quart),
+    color 150ms var(--ease-out-quart),
+    transform 120ms var(--ease-out-quart),
+    opacity 150ms var(--ease-out-quart);
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+@utility btn-primary {
+  background: var(--d-ink);
+  color: var(--d-paper);
+  &:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--d-ink) 86%, var(--d-paper));
+  }
+}
+
+@utility btn-secondary {
+  background: var(--d-sheet);
+  color: var(--d-ink);
+  border-color: var(--d-rule-strong);
+  &:hover:not(:disabled) {
+    border-color: var(--d-control);
+  }
+}
+
+/* A link inside text. The underline is quiet and darkens on hover. */
+@utility link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--d-rule-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 150ms var(--ease-out-quart);
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+/* A standalone "go somewhere" link, with an arrow that moves. */
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--d-ink);
+  text-decoration: none;
+}
+.go::after {
+  content: "\2192";
+  transition: transform 200ms var(--ease-out-quart);
+}
+.go:hover::after {
+  transform: translateX(3px);
+}
+
+/* ----------------------------------------------------------- surfaces --- */
+
+.panel {
+  background: var(--d-sheet);
+  border: 1px solid var(--d-rule);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.sheet {
+  background: var(--d-sheet);
+  border: 1px solid var(--d-rule);
+  border-radius: var(--r-md);
+}
+
+/* A note that qualifies what is next to it. Neutral on purpose: a caveat is
+   not a loss, so it does not get the loss colour or a coloured edge. */
+.note {
+  background: var(--d-paper-2);
+  border-radius: var(--r-sm);
+  padding: 0.75rem 0.875rem;
+}
+
+/* ------------------------------------------------- inner-page pieces --- */
+
+.disclosure {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  transition: color 150ms var(--ease-out-quart);
+}
+.disclosure::-webkit-details-marker { display: none; }
+.disclosure::before {
+  content: "+";
+  display: inline-block;
+  width: 0.75em;
+  color: var(--d-ink-38);
+  font-weight: 500;
+}
+details[open] > .disclosure::before { content: "\2013"; }
+.disclosure:hover { color: var(--d-ink); }
+
+.claim {
+  position: relative;
+  border-top: 1px solid var(--d-rule);
+  padding-top: 0.85rem;
+}
+.claim-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+  padding-block: 0.1rem;
+}
+.claim-summary::-webkit-details-marker { display: none; }
+.claim-more {
+  position: relative;
+  inline-size: 9px;
+  block-size: 9px;
+  flex: none;
+  opacity: 0.5;
+  transition: opacity 160ms ease;
+}
+.claim-summary:hover .claim-more { opacity: 1; }
+.claim-more::before,
+.claim-more::after {
+  content: "";
   position: absolute;
-  inset-block-end: 0;
-  inset-inline-start: 0;
-  block-size: 2px;
-  inline-size: 100%;
-  background: var(--d-signal);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  inset-inline: 0;
+  inset-block-start: 4px;
+  block-size: 1px;
+  background: var(--d-ink);
+  transition: transform 220ms var(--ease-out-quart);
 }
+.claim-more::after { transform: rotate(90deg); }
+.claim[open] .claim-more::after { transform: rotate(0deg); }
 
-.entry:hover .entry-rule,
-.entry:focus-visible .entry-rule {
-  transform: scaleX(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .entry,
-  .entry-rule { transition: none; }
-  .entry:hover .entry-rule { transform: scaleX(1); }
-}
-
-/*
- * A row of measurements.
- *
- * Replaces a 2x2 grid that sat in the right-hand column beside a paragraph.
- * Four figures in a block of their own read as one reading taken together;
- * the same four wedged beside prose read as leftovers, and the 2x2 always
- * left a hole wherever the paragraph stopped short.
- *
- * Divided by rules rather than spacing, because these are readings off one
- * instrument and the rules say so.
- */
 .statbar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   border-block-start: 1px solid var(--d-rule);
 }
-
 .statbar > * {
   padding: 1.1rem 1.25rem 1.2rem;
   border-inline-start: 1px solid var(--d-rule);
   border-block-end: 1px solid var(--d-rule);
 }
-
-/* The leading edge of each row would otherwise carry a rule into the margin. */
 .statbar > *:first-child { border-inline-start: 0; padding-inline-start: 0; }
-
 @media (max-width: 40rem) {
-  .statbar > * {
-    border-inline-start: 0;
-    padding-inline: 0;
-  }
+  .statbar > * { border-inline-start: 0; padding-inline: 0; }
 }
-
-/* --- the landing ------------------------------------------------------
- *
- * A first screen with a job of its own. Previously the hero was a block of
- * padding that the next section began under, so nothing on the page was ever
- * *arrived at* -- you scrolled through a document. Giving the landing the
- * viewport makes the dark band below it a destination rather than the next
- * paragraph.
- *
- * `100svh` rather than `100vh`: on mobile Safari `vh` is the *largest*
- * viewport, so a full-height hero is cropped by the address bar until you
- * scroll. `svh` is the smallest, which is the one that is always visible.
- */
-.landing {
-  overflow-x: clip;
-  min-block-size: calc(100svh - var(--nav-h, 4rem));
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-block: clamp(3rem, 8vh, 7rem) 0;
-}
-
-.landing-foot {
-  margin-block-start: auto;
-  padding-block-start: clamp(2rem, 6vh, 4.5rem);
-}
-
-/* The cue is a link, not an icon. It says where it goes, which a chevron
-   never does, and it works as a skip for anyone on a keyboard. */
-.scroll-cue {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 0;
-  margin-inline: var(--gutter);
-  color: var(--d-ink-38);
-  text-decoration: none;
-  transition: color var(--t-fast) var(--ease);
-}
-
-.scroll-cue:hover { color: var(--d-ink); }
-
-.scroll-cue-arrow {
-  inline-size: 1px;
-  block-size: 1.5rem;
-  background: currentColor;
-  transform-origin: top;
-  animation: cue 2.4s var(--ease) infinite;
-}
-
-@keyframes cue {
-  0%, 100% { transform: scaleY(0.45); opacity: 0.4; }
-  50%      { transform: scaleY(1);    opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scroll-cue-arrow { animation: none; transform: scaleY(1); opacity: 0.7; }
-}
-
-/* --- the seam --------------------------------------------------------- */
-
-.ticker {
-  display: flex;
-  gap: 2px;
-  inline-size: 100%;
-  margin-block-start: 1rem;
-  block-size: 18px;
-  /* The seam sits directly above the dark band, so it fades into it -- the
-     strip should look like the page darkening rather than a bar stuck on. */
-  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.55), rgb(0 0 0 / 1));
-}
-
-.ticker-cell {
-  flex: 1;
-  transition: background-color 520ms var(--ease);
-}
-
-/* At 3.5% the strip was effectively invisible and the motion was wasted.
-   These are the sieve's own values: ink survives, vermilion is the one being
-   removed now, and the discarded keep a trace. */
-.ticker-cell[data-state='alive'] { background: color-mix(in oklab, var(--d-ink) 38%, transparent); }
-.ticker-cell[data-state='dying'] { background: var(--d-signal); }
-.ticker-cell[data-state='gone']  { background: color-mix(in oklab, var(--d-ink) 9%, transparent); }
-
-/* --- the recorded batch ---------------------------------------------- */
 
 .tally {
   display: flex;
@@ -681,27 +572,17 @@ body {
   gap: 1.35rem;
   flex-wrap: wrap;
 }
-
 .tally-item { display: flex; align-items: baseline; gap: 0.6rem; }
-
 .tally-n {
-  font-family: var(--font-mono);
-  font-size: clamp(2.6rem, 7vw, 4.25rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
+  font-family: var(--font-sans);
+  font-size: clamp(2.6rem, 7vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
   line-height: 0.9;
   font-variant-numeric: tabular-nums;
 }
-
-.tally-label {
-  font-family: var(--font-sans);
-  font-size: var(--text-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--d-ink-38);
-}
-
-.tally-arrow { font-family: var(--font-mono); font-size: 1.5rem; color: var(--d-ink-38); }
+.tally-label { font-size: 0.8125rem; color: var(--d-ink-38); }
+.tally-arrow { font-size: 1.5rem; color: var(--d-ink-38); }
 
 .pairs {
   margin: 0;
@@ -709,11 +590,6 @@ body {
   list-style: none;
   border-block-start: 1px solid var(--d-rule);
 }
-
-/*
- * One recorded pair. A button rather than a div: the row is the interactive
- * element, so it must be keyboard-reachable and announce its expanded state.
- */
 .pair {
   display: grid;
   grid-template-columns: 2.4rem minmax(0, 1fr) 3.5rem minmax(0, 1fr);
@@ -726,757 +602,317 @@ body {
   background: transparent;
   text-align: left;
   cursor: pointer;
-  border-radius: var(--r-sm);
-  transition:
-    background-color var(--t-fast) var(--ease),
-    box-shadow var(--t-fast) var(--ease);
+  transition: background-color var(--t-fast) var(--ease);
 }
-
 .pair:hover,
-.pair-on {
-  background: var(--d-sheet);
-  box-shadow: var(--shadow-1);
-}
-
+.pair-on { background: var(--d-paper-2); }
 .pair-pos {
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
+  font-size: 0.75rem;
   color: var(--d-ink-38);
   font-variant-numeric: tabular-nums;
 }
-
 .pair-title {
   font-family: var(--font-editorial);
   font-size: 0.95rem;
   color: var(--d-ink);
   line-height: 1.3;
 }
-
-/*
- * The join: dashed and slate because that is what it is -- an association
- * asserted by array position, which the recorded note says is the only thing
- * joining these two columns. Solid ink would claim the pairing is
- * established; vermilion would claim it is wrong. Neither is knowable.
- */
 .pair-link {
   block-size: 1px;
-  background: repeating-linear-gradient(to right, var(--d-unknown) 0 4px, transparent 4px 8px);
-  opacity: 0.55;
-  transition: opacity var(--t-fast) var(--ease);
+  background: repeating-linear-gradient(to right, var(--d-control) 0 4px, transparent 4px 8px);
+  opacity: 0.6;
 }
-
-.pair:hover .pair-link,
-.pair-on .pair-link { opacity: 1; }
-
 .pair-reason {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
-  color: var(--d-ink-60);
+  color: var(--d-ink-58);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .pair-on .pair-reason { -webkit-line-clamp: 6; }
-
 @media (max-width: 52rem) {
   .pair { grid-template-columns: 2.4rem minmax(0, 1fr); gap: 0.35rem 0.75rem; }
   .pair-link { display: none; }
   .pair-reason { grid-column: 2; }
 }
 
-/* --- a dark zone ------------------------------------------------------
- *
- * One cream value ran the whole page, so the scroll had no rhythm and
- * nothing to land on. This inverts a single band -- the sieve -- which is
- * also the one element that gains from it: 1,362 pale cells on cream is a
- * texture, and the same cells on near-black is a readout. The survivors stop
- * being dark marks on a light field and start being lit.
- *
- * Exactly one inverted section, deliberately. Two would be a stripe pattern.
- */
-.zone-dark {
-  position: relative;
-  background: var(--d-zone);
-  color: var(--d-zone-ink);
-  padding-block: 4.5rem;
-  margin-block: 1rem;
-}
-
-.zone-dark :is(.label, .band-index) { color: var(--d-zone-dim); }
-.zone-dark .label-lg { color: var(--d-zone-ink); }
-.zone-dark .band { border-image: linear-gradient(to right, var(--d-zone-ink) 0, var(--d-zone-ink) 2.25rem, var(--d-zone-rule) 2.25rem, var(--d-zone-rule) 100%) 1; }
-.zone-dark .chip {
-  border-color: var(--d-zone-rule);
-  color: var(--d-zone-ink);
-  background: transparent;
-}
-.zone-dark .chip:hover { border-color: var(--d-zone-ink); }
-.zone-dark .chip-on { background: var(--d-zone-ink); color: var(--d-zone); border-color: var(--d-zone-ink); }
-.zone-dark .readout-sm,
-.zone-dark .readout { color: var(--d-zone-ink); }
-.zone-dark .text-ink-40 { color: var(--d-zone-dim); }
-.zone-dark .text-ink-60 { color: var(--d-zone-mid); }
-/* The stage list is built from `bg-paper` cells on a `bg-rule` grid, both of
-   which are cream. Inside the band they have to invert or the figure ends in
-   a slab of daylight. */
-.zone-dark :is(.bg-paper, .bg-paper-secondary) { background: var(--d-zone-plate); }
-.zone-dark .bg-rule { background: var(--d-zone-rule); }
-.zone-dark .border-rule { border-color: var(--d-zone-rule); }
-.zone-dark .text-ink { color: var(--d-zone-ink); }
-.zone-dark .text-signal { color: var(--d-zone-signal); }
-.zone-dark .text-unknown { color: var(--d-zone-unknown); }
-.zone-dark .bg-ink { background: var(--d-zone-ink); }
-.zone-dark .bg-ink .text-paper,
-.zone-dark .bg-ink.text-paper { color: var(--d-zone); }
-
-.zone-dark .sieve-plate {
-  background: var(--d-zone-plate);
-  border-color: var(--d-zone-rule);
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.4);
-}
-
-/*
- * In light mode the band needs no help: it is black against 18.5:1 of paper
- * and it reads as a hole cut in the page. In dark mode that gap collapses to
- * 1.3:1 and the band quietly stops being an object -- which is a shame,
- * because it is the one part of this site anyone has ever called good.
- *
- * Luminance cannot carry it, so the edges do. A lit hairline above and below
- * (brighter than any other rule on the page, because nothing else is a room
- * boundary) and an inner shadow raking down from the top seam, so the page
- * appears to sit slightly proud of the band rather than flush with it.
- */
-@media (prefers-color-scheme: dark) {
-  .zone-dark {
-    border-block: 1px solid var(--d-rule-strong);
-    box-shadow:
-      inset 0 1px 0 rgb(240 236 226 / 0.07),
-      inset 0 26px 42px -26px rgb(0 0 0 / 0.95);
-  }
-}
-
-/* --- the funnel figures ---------------------------------------------- */
-
-/*
- * 1,362 in, 50 out.
- *
- * The site's whole argument, and it was a clause in a sentence. It is the
- * only fact a first-time visitor needs and it belongs at the largest size on
- * the page, in the space the old hero left empty.
- *
- * Tabular figures and a fixed character width so the two numbers share a
- * right edge without a table: 1,362 and 50 are different lengths, and a
- * ragged right on two stacked numerals reads as an accident.
- */
-.funnel {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-}
-
-.funnel-row {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-}
-
-.funnel-label {
-  font-family: var(--font-sans);
-  font-size: var(--text-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--d-ink-38);
-  inline-size: 6.5rem;
-}
-
+.funnel { display: flex; flex-direction: column; align-items: flex-start; }
+.funnel-row { display: flex; align-items: baseline; gap: 1rem; }
+.funnel-label { font-size: 0.8125rem; color: var(--d-ink-38); inline-size: 6.5rem; }
 .funnel-n {
-  font-family: var(--font-mono);
-  font-size: clamp(3rem, 7vw, 4.75rem);
-  font-weight: 500;
+  font-weight: 600;
+  font-size: clamp(3rem, 7vw, 4.5rem);
   line-height: 0.95;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.05em;
   font-variant-numeric: tabular-nums;
-  color: var(--d-ink);
   margin: 0;
   min-inline-size: 5.5ch;
   text-align: right;
 }
+.funnel-drop { display: flex; align-items: center; gap: 0.75rem; padding-block: 0.55rem; padding-inline-start: 7.5rem; }
+.funnel-line { inline-size: 1px; block-size: 2.1rem; background: var(--d-rule-strong); }
+.funnel-loss { font-family: var(--font-mono); font-size: 0.78rem; color: var(--d-signal); font-variant-numeric: tabular-nums; }
 
-/* The survivor is the only figure that is not ink. Everything this site
-   colours is loss -- so the one that made it through stays ink, and the
-   *drop* between them carries the vermilion. */
-.funnel-n-out {
-  color: var(--d-ink);
+/* The engineering page's alignment diagram. */
+.fig-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.04em; fill: var(--d-ink-38); }
+.fig-num { font-family: var(--font-mono); font-size: 10px; fill: var(--d-ink-58); }
+.fig-num-wrong { font-family: var(--font-mono); font-size: 10px; fill: var(--d-signal); }
+.fig-tick { fill: var(--d-ink); }
+.fig-tick-wrong { fill: var(--d-loss); }
+.fig-wire { stroke: var(--d-ink); stroke-width: 1; }
+.fig-wire-wrong { stroke: var(--d-loss); stroke-width: 1.5; }
+.fig-wire-absent { stroke: var(--d-loss); stroke-width: 1; stroke-dasharray: 2 3; }
+.fig-cut { stroke: var(--d-loss); stroke-width: 1; stroke-dasharray: 4 3; }
+.fig-cut-idle { stroke: var(--d-rule-strong); stroke-width: 1; stroke-dasharray: 4 3; }
+.fig-cut-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.04em; fill: var(--d-signal); }
+
+/* --------------------------------------------------------- the sieve --- */
+
+/* One cell per candidate article: the field is 1:1 with the corpus. */
+.sieve {
+  --cell: 7px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));
+  gap: 2px;
+}
+@media (width >= 40rem) { .sieve { --cell: 10px; } }
+@media (width >= 64rem) { .sieve { --cell: 13px; } }
+
+.sieve-cell {
+  aspect-ratio: 1;
+  border-radius: 1.5px;
+  background: var(--d-ghost);
+  transition: background-color 320ms var(--ease-out-quart);
+}
+.sieve-cell[data-state="alive"] { background: color-mix(in oklab, var(--d-ink) 72%, var(--d-sheet)); }
+.sieve-cell[data-state="dying"] { background: var(--d-loss); }
+.sieve-cell[data-state="gone"] { background: var(--d-ghost); }
+.sieve-cell[data-state="delivered"] { background: var(--d-ink); }
+/* A sweep, so a stage reads as one gesture rather than a flicker. */
+.sieve-cell[data-b="1"] { transition-delay: 12ms; }
+.sieve-cell[data-b="2"] { transition-delay: 24ms; }
+.sieve-cell[data-b="3"] { transition-delay: 36ms; }
+.sieve-cell[data-b="4"] { transition-delay: 48ms; }
+.sieve-cell[data-b="5"] { transition-delay: 60ms; }
+.sieve-cell[data-b="6"] { transition-delay: 72ms; }
+.sieve-cell[data-b="7"] { transition-delay: 84ms; }
+.sieve-cell[data-b="8"] { transition-delay: 96ms; }
+.sieve-cell[data-b="9"] { transition-delay: 108ms; }
+.sieve-cell[data-b="10"] { transition-delay: 120ms; }
+.sieve-cell[data-b="11"] { transition-delay: 132ms; }
+.sieve-cell[data-b="12"] { transition-delay: 144ms; }
+.sieve-cell[data-b="13"] { transition-delay: 156ms; }
+.sieve-cell[data-b="14"] { transition-delay: 168ms; }
+.sieve-cell[data-b="15"] { transition-delay: 180ms; }
+
+.sieve-plate {
+  background: var(--d-sheet);
+  border: 1px solid var(--d-rule);
+  border-radius: var(--r-lg);
+  padding: clamp(0.75rem, 2vw, 1.25rem);
 }
 
-.funnel-drop {
+/* --------------------------------------------------------------- cells --- */
+
+/* The site's one mark. Size comes from the figure that uses it. */
+.cell {
+  display: block;
+  inline-size: var(--c, 10px);
+  block-size: var(--c, 10px);
+  border-radius: 2px;
+  background: var(--d-ghost);
+  flex: none;
+}
+.cell[data-tone="ink"] { background: var(--d-ink); }
+.cell[data-tone="mid"] { background: color-mix(in oklab, var(--d-ink) 72%, var(--d-sheet)); }
+.cell[data-tone="loss"] { background: var(--d-loss); }
+.cell[data-tone="ghost"] { background: var(--d-ghost); }
+.cell[data-tone="open"] { background: transparent; box-shadow: inset 0 0 0 1px var(--d-rule-strong); }
+.cell[data-tone="unknown"] {
+  background: repeating-linear-gradient(135deg, var(--d-unknown) 0 1px, transparent 1px 3px);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--d-unknown) 60%, transparent);
+}
+
+/* ---------------------------------------------------------- motion --- */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@utility rise {
+  animation: rise-in 420ms var(--ease-out-quart) both;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--d-loss) 55%, transparent); }
+  100% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--d-loss) 0%, transparent); }
+}
+
+@keyframes blink {
+  50% { opacity: 0.25; }
+}
+
+/* ---------------------------------------------------------- console --- */
+
+.timeline {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-block: 0.55rem;
-  padding-inline-start: 7.5rem;
+  flex-direction: column;
+  gap: 0.55rem;
 }
-
-.funnel-line {
-  inline-size: 1px;
-  block-size: 2.1rem;
-  background: linear-gradient(to bottom, var(--d-rule-strong), var(--d-signal));
-}
-
-.funnel-loss {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
-  color: var(--d-signal);
-  font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 52rem) {
-  .funnel-label { inline-size: 5rem; }
-  .funnel-drop { padding-inline-start: 6rem; }
-}
-
-/*
- * Grain.
- *
- * A single tiled SVG turbulence at very low opacity. The page is large flat
- * fields of near-white, which is exactly the condition under which a screen
- * looks like a screen; a little noise gives it a surface. Kept under 4% or it
- * stops being paper and starts being a texture overlay, and dropped entirely
- * for anyone who asked for less motion-adjacent decoration.
- */
-.grain::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: var(--grain-src);
-  background-size: 180px 180px;
-}
-
-/* Down in dark mode, not up. Grain on near-white is paper; the same white
-   noise over a near-black band is a grey veil laid across the one region that
-   depends on being black, and it was flattening the sieve. */
-@media (prefers-color-scheme: dark) {
-  .grain::after { opacity: 0.022; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .grain::after { opacity: 0.02; }
-}
-@media (width >= 48rem) {
-  .frame {
-    padding-inline: 2rem;
-  }
-}
-
-@utility measure {
-  max-width: var(--measure);
-}
-
-/*
- * Numbered band. Every major section on the site is introduced by a full-width
- * hairline carrying an index and a name, which gives the pages the rhythm of a
- * plate series and works identically at every width — unlike a desktop-only
- * rail, which leaves half the traffic with no organising idea at all.
- */
-@utility band {
-  /* The rule is drawn twice: a heavier ink segment over the index and title,
-     fading into the hairline that crosses the rest of the measure. A section
-     opener should say where it *starts*, and a uniform hairline says only
-     that something changed. */
-  border-top: 1px solid transparent;
-  border-image: linear-gradient(
-      to right,
-      var(--d-ink) 0,
-      var(--d-ink) 2.25rem,
-      var(--d-rule) 2.25rem,
-      var(--d-rule) 100%
-    )
-    1;
-  padding-top: 0.7rem;
-  scroll-margin-top: 1.5rem;
-  display: flex;
-  align-items: baseline;
-  gap: 0.875rem;
-}
-
-@utility band-index {
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--d-ink-38);
-  font-variant-numeric: tabular-nums;
-}
-
-/*
- * The claims grid.
- *
- * Each of these used to open with `border-t border-signal`. Six vermilion
- * rules stacked in one viewport made the section that exists to be *sober*
- * the loudest on the page, and turned the colour that means loss into
- * decoration. The rule is now ink, and the vermilion is spent once, on a
- * short mark at the start of it -- which is where the eye enters anyway.
- */
-.claim {
+.timeline-row {
   position: relative;
-  border-top: 1px solid var(--d-rule-strong);
-  padding-top: 0.85rem;
+  display: grid;
+  grid-template-columns: 2.5rem 0.5rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: start;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+/* The rail between dots. */
+.timeline-row:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(2.5rem + 0.75rem + 0.25rem - 0.5px);
+  top: 0.95rem;
+  bottom: -0.55rem;
+  width: 1px;
+  background: var(--d-rule-strong);
+}
+.timeline-t {
+  text-align: right;
+  color: var(--d-ink-38);
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+.timeline-dot {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  inline-size: 7px;
+  block-size: 7px;
+  margin-top: 0.36rem;
+  border-radius: 50%;
+  background: var(--d-ink);
+  box-shadow: 0 0 0 3px var(--d-sheet);
+}
+.timeline-row[data-state="planned"] .timeline-dot {
+  background: var(--d-sheet);
+  box-shadow: inset 0 0 0 1px var(--d-rule-strong), 0 0 0 3px var(--d-sheet);
+}
+.timeline-row[data-state="waiting"] .timeline-dot {
+  background: var(--d-ink-38);
+  animation: blink 1.1s ease-in-out infinite;
 }
 
-.claim-summary {
+.case-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  /* Twenty-two to a row: the fault injections are exactly one row. */
+  max-inline-size: calc(22 * 16px + 21 * 5px);
+}
+.case-cell {
+  display: block;
+  inline-size: 16px;
+  block-size: 16px;
+  border-radius: 4px;
+  flex: none;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--d-rule-strong);
+  transition:
+    background-color 300ms var(--ease-out-quart),
+    box-shadow 300ms var(--ease-out-quart);
+}
+@media (max-width: 30rem) {
+  .case-cell { inline-size: 11px; block-size: 11px; border-radius: 2.5px; }
+  .case-field { gap: 3px; max-inline-size: calc(22 * 11px + 21 * 3px); }
+}
+/* `data-legend` styles the key's swatches identically without counting as
+   a case: tests and readers both count `[data-tone]` as the 64. */
+.case-cell:is([data-tone="correct"], [data-legend="correct"]) { background: var(--d-ink); box-shadow: none; }
+.case-cell:is([data-tone="wrong"], [data-legend="wrong"]) { background: var(--d-loss); box-shadow: none; }
+.case-cell:is([data-tone="unscored"], [data-legend="unscored"]) { background: var(--d-paper-3); box-shadow: none; }
+.case-cell:is([data-tone="outside"], [data-legend="outside"]) { background: var(--d-sheet); box-shadow: inset 0 0 0 2px var(--d-loss); }
+.case-cell[data-caught] {
+  box-shadow: 0 0 0 2px var(--d-sheet), 0 0 0 3.5px var(--d-loss);
+  animation: pulse-ring 1.4s var(--ease-out-quart) 600ms 2;
+}
+
+/* ----------------------------------------------------------- defect --- */
+
+.defect-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 3px;
+}
+@media (max-width: 40rem) { .defect-grid { gap: 2px; } }
+.defect-cell {
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  transition:
+    background-color 320ms var(--ease-out-quart),
+    box-shadow 320ms var(--ease-out-quart),
+    opacity 320ms var(--ease-out-quart);
+}
+.defect-cell[data-dim] { opacity: 0.32; }
+.defect-wire {
+  justify-self: center;
+  inline-size: 1px;
+  block-size: 12px;
+  background: var(--d-control);
+  transform-origin: top;
+  transform: scaleY(0);
+  transition: transform 260ms var(--ease-out-quart);
+}
+.defect-wire[data-on] { transform: scaleY(1); }
+
+/* ----------------------------------------------------------- reveal --- */
+
+.reveal { border-top: 1px solid var(--d-rule); }
+.reveal:last-child { border-bottom: 1px solid var(--d-rule); }
+.reveal-summary {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  padding-block: 0.75rem;
   cursor: pointer;
   list-style: none;
-  padding-block: 0.1rem;
 }
-
-.claim-summary::-webkit-details-marker { display: none; }
-
-/* A plus that becomes a minus. Two rules, no icon font, no JavaScript. */
-.claim-more {
+.reveal-summary::-webkit-details-marker { display: none; }
+.reveal-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--d-ink-38);
+}
+.reveal-mark {
   position: relative;
+  margin-inline-start: auto;
   inline-size: 9px;
   block-size: 9px;
-  flex: none;
-  opacity: 0.5;
-  transition: opacity 160ms ease;
 }
-
-.claim-summary:hover .claim-more { opacity: 1; }
-
-.claim-more::before,
-.claim-more::after {
-  content: '';
+.reveal-mark::before,
+.reveal-mark::after {
+  content: "";
   position: absolute;
   inset-inline: 0;
   inset-block-start: 4px;
   block-size: 1px;
-  background: var(--d-ink);
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--d-ink-38);
+  transition: transform 220ms var(--ease-out-quart);
 }
-
-.claim-more::after { transform: rotate(90deg); }
-.claim[open] .claim-more::after { transform: rotate(0deg); }
-
-.claim::before {
-  content: '';
-  position: absolute;
-  inset-block-start: -1px;
-  inset-inline-start: 0;
-  inline-size: 1.75rem;
-  block-size: 1px;
-  background: var(--d-signal);
-}
-
-/* --------------------------------------------------------- controls ----- */
-
-@utility chip {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-  border: 1px solid var(--d-control);
-  background: transparent;
-  color: var(--d-ink);
-  padding: 0.3125rem 0.625rem;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    border-color 140ms var(--ease-out-quart),
-    color 140ms var(--ease-out-quart),
-    background-color 140ms var(--ease-out-quart);
-
-  &:hover {
-    border-color: var(--d-signal);
-    color: var(--d-signal);
-  }
-}
-
-@utility chip-on {
-  border-color: var(--d-ink);
-  background: var(--d-ink);
-  color: var(--d-paper);
-
-  &:hover {
-    border-color: var(--d-ink);
-    background: var(--d-ink);
-    color: var(--d-paper);
-  }
-}
-
-/* Inline links: ink text, vermilion rule underneath, vermilion on hover. */
-@utility link {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px solid var(--d-signal);
-  padding-bottom: 0.05em;
-  transition: color 140ms var(--ease-out-quart);
-
-  &:hover {
-    color: var(--d-signal);
-  }
-}
-
-/* --------------------------------------------------------- figures ------ */
-
-/*
- * The sieve. One cell per candidate article in the frozen corpus, so the field
- * is the corpus at 1:1 rather than a summary of it. Cells only ever change
- * colour and opacity — no layout property animates, so stepping a stage costs
- * no reflow even with 1,362 of them on screen.
- */
-/*
- * The sieve's plate.
- *
- * The grid used to sit directly on the page, which made 1,362 cells read as a
- * texture that happened to be there. It is the strongest thing on this site,
- * so it gets treated as an instrument: recessed a step below the paper,
- * ruled, and with register marks at the corners.
- *
- * The marks are the point of the whole device — they say "this is a reading,
- * taken from something" rather than "this is a decoration". They cost four
- * pseudo-elements and no JavaScript.
- */
-.sieve-plate {
-  border-radius: var(--r-md);
-  position: relative;
-  /* Deeper than `paper-2`, which sat too close to the ghost cells for the
-     frame to read at all -- the plate has to be visibly *under* the grid or
-     it is just a margin. */
-  background: var(--d-paper-3);
-  border: 1px solid var(--d-rule-strong);
-  padding: 0.9rem;
-  box-shadow: inset 0 1px 2px rgb(22 21 19 / 0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-  .sieve-plate {
-    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.35);
-  }
-}
-
-.sieve-plate::before,
-.sieve-plate::after {
-  content: '';
-  position: absolute;
-  inline-size: 10px;
-  block-size: 10px;
-  border: 1px solid var(--d-ink);
-  opacity: 0.55;
-  pointer-events: none;
-}
-
-/* Top-left and bottom-right; the other two corners are drawn by the inset
-   rule alone, which keeps the frame from reading as a sticker. */
-.sieve-plate::before {
-  inset-block-start: -1px;
-  inset-inline-start: -1px;
-  border-inline-end: 0;
-  border-block-end: 0;
-}
-
-.sieve-plate::after {
-  inset-block-end: -1px;
-  inset-inline-end: -1px;
-  border-inline-start: 0;
-  border-block-start: 0;
-}
-
-.sieve {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));
-  gap: 1px;
-  --cell: 7px;
-}
-
-@media (width >= 40rem) {
-  .sieve {
-    --cell: 11px;
-  }
-}
-
-@media (width >= 64rem) {
-  .sieve {
-    --cell: 16px;
-  }
-}
-
-@media (width >= 90rem) {
-  .sieve {
-    --cell: 19px;
-  }
-}
-
-.sieve-cell {
-  aspect-ratio: 1;
-  background: var(--d-ghost);
-  transition: background-color 300ms var(--ease-out-quart);
-}
-
-/*
- * The sweep. Cells are dealt into 16 buckets by index, and each bucket's
- * transition is offset, so a stage change crosses the field instead of
- * flipping it. Only background-color animates, so 1,362 cells cost no layout
- * work at all -- which is the whole reason the corpus can be drawn 1:1.
- *
- * The longest bucket delay plus the transition (150ms + 300ms) must stay under
- * the autoplay dwell in Sieve.tsx, or the previous stage's losses are still
- * fading red while the caption already reads "nothing was removed here".
- */
-.sieve-cell[data-b="0"] { transition-delay: 0ms; }
-.sieve-cell[data-b="1"] { transition-delay: 10ms; }
-.sieve-cell[data-b="2"] { transition-delay: 20ms; }
-.sieve-cell[data-b="3"] { transition-delay: 30ms; }
-.sieve-cell[data-b="4"] { transition-delay: 40ms; }
-.sieve-cell[data-b="5"] { transition-delay: 50ms; }
-.sieve-cell[data-b="6"] { transition-delay: 60ms; }
-.sieve-cell[data-b="7"] { transition-delay: 70ms; }
-.sieve-cell[data-b="8"] { transition-delay: 80ms; }
-.sieve-cell[data-b="9"] { transition-delay: 90ms; }
-.sieve-cell[data-b="10"] { transition-delay: 100ms; }
-.sieve-cell[data-b="11"] { transition-delay: 110ms; }
-.sieve-cell[data-b="12"] { transition-delay: 120ms; }
-.sieve-cell[data-b="13"] { transition-delay: 130ms; }
-.sieve-cell[data-b="14"] { transition-delay: 140ms; }
-.sieve-cell[data-b="15"] { transition-delay: 150ms; }
-
-@media (prefers-reduced-motion: reduce) {
-  .sieve-cell {
-    transition-delay: 0ms !important;
-  }
-}
-
-/* Still in the pipeline at the selected stage. */
-.sieve-cell[data-state="alive"] {
-  background: var(--d-ink);
-}
-
-/* Removed at exactly the selected stage: the answer to "which ones went here". */
-.sieve-cell[data-state="dying"] {
-  background: var(--d-signal);
-}
-
-/* Removed earlier. Kept visible so the discarded mass stays part of the
-   picture; a funnel that erases what it dropped is a funnel you cannot audit. */
-.sieve-cell[data-state="gone"] {
-  background: var(--d-ghost);
-}
-
-/* Delivered to the reader. */
-.sieve-cell[data-state="delivered"] {
-  background: var(--d-ink);
-}
-
-/*
- * The same four states, inverted for the dark band.
- *
- * These have to sit *after* the base rules rather than beside `.zone-dark`:
- * the selectors are equal specificity, so source order decides, and an
- * earlier override silently loses. The first attempt did exactly that and
- * also invented a state name -- `ghost` -- that `cellState` never returns,
- * so the survivors rendered as near-black squares on a near-black plate.
- *
- * Survivors are the light here. On cream they are ink marks on paper; on
- * near-black they are the only thing lit, which is the whole reason the band
- * is worth having.
- */
-.zone-dark .sieve-cell[data-state="alive"],
-.zone-dark .sieve-cell[data-state="delivered"] {
-  background: var(--d-zone-ink);
-}
-
-.zone-dark .sieve-cell[data-state="dying"] {
-  background: var(--d-zone-signal);
-}
-
-.zone-dark .sieve-cell[data-state="gone"] {
-  background: rgb(244 241 234 / 0.1);
-}
-
-/*
- * The reader's sheet. The rest of the site is the instrument; this is the
- * thing the instrument measures, so the edition sits on its own stock with a
- * hairline edge — a printed page laid on a workbench.
- */
-.sheet {
-  background: var(--d-sheet);
-  border: 1px solid var(--d-rule);
-}
-
-/* Proportion bars, used wherever a count needs a length. */
-.bar-track {
-  position: relative;
-  background: var(--d-rule);
-  height: 100%;
-}
-
-.bar-fill {
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  background: var(--d-ink);
-  transition: width 520ms var(--ease-out-expo);
-}
-
-/* Figure primitives, shared by the SVG diagrams. Same colour rule: ink is
-   what worked, vermilion is what went wrong. */
-.fig-label {
-  font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  fill: var(--d-ink-38);
-}
-
-.fig-num {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  fill: var(--d-ink-58);
-}
-
-.fig-num-wrong {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  fill: var(--d-signal);
-}
-
-.fig-tick {
-  fill: var(--d-ink);
-}
-
-.fig-tick-wrong {
-  fill: var(--d-signal);
-}
-
-.fig-wire {
-  stroke: var(--d-ink);
-  stroke-width: 1;
-}
-
-.fig-wire-wrong {
-  stroke: var(--d-signal);
-  stroke-width: 1.5;
-}
-
-.fig-wire-absent {
-  stroke: var(--d-signal);
-  stroke-width: 1;
-  stroke-dasharray: 2 3;
-}
-
-.fig-cut {
-  stroke: var(--d-signal);
-  stroke-width: 1;
-  stroke-dasharray: 4 3;
-}
-
-/* The gutter is reserved in both states so the figure does not jump height;
-   this keeps it explained when nothing has actually been merged. */
-.fig-cut-idle {
-  stroke: var(--d-rule);
-  stroke-width: 1;
-  stroke-dasharray: 4 3;
-}
-
-.fig-cut-label {
-  font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  fill: var(--d-signal);
-}
-
-/*
- * Disclosures. Several blocks on this site are "the full argument, one click
- * away" -- the metric glossary, the sieve's provenance, the backend boundary.
- * Without a marker a <summary> styled as a label is indistinguishable from a
- * heading, so nobody opens it and the depth may as well not be there.
- */
-.disclosure {
-  cursor: pointer;
-  list-style: none;
+.reveal-mark::after { transform: rotate(90deg); }
+.reveal[open] .reveal-mark::after { transform: rotate(0deg); }
+.reveal-list {
+  margin: 0 0 0.9rem;
+  padding: 0 0 0 1.1rem;
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  transition: color 140ms var(--ease-out-quart);
-}
-
-.disclosure::-webkit-details-marker {
-  display: none;
-}
-
-.disclosure::before {
-  content: "+";
-  display: inline-block;
-  width: 0.75em;
-  color: var(--d-signal);
-  font-weight: 500;
-}
-
-details[open] > .disclosure::before {
-  content: "\2013";
-}
-
-.disclosure:hover {
-  color: var(--d-signal);
-}
-
-/* --------------------------------------------------- accessibility ------ */
-
-:focus-visible {
-  outline: 2px solid var(--d-signal);
-  outline-offset: 2px;
-  border-radius: 1px;
-}
-
-.skip-link {
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-  clip-path: inset(50%);
-  z-index: 100;
-  background: var(--d-paper);
-  color: var(--d-ink);
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--d-ink);
-}
-
-.skip-link:focus {
-  clip-path: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* One entrance, on the home hero only, and only for readers who accept
-   motion. Everything else earns its movement by responding to a click. */
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 0.75rem, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@utility rise {
-  animation: rise-in 560ms var(--ease-out-expo) both;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--d-ink-58);
 }

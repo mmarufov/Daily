@@ -109,7 +109,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
                   />
                   <Link
                     href={explorerHref(state, { story: story.id })}
-                    className="headline text-sm text-ink no-underline hover:text-signal"
+                    className="headline text-sm text-ink no-underline hover:underline hover:decoration-rule-strong hover:underline-offset-4"
                     data-verbatim
                   >
                     {story.title ?? story.id}
@@ -168,7 +168,7 @@ export function StoryDetail({
       </dl>
 
       {story.reason !== null ? (
-        <div className="flex flex-col gap-1.5 border-t border-signal pt-3">
+        <div className="flex flex-col gap-1.5 border-t border-rule-strong pt-3">
           <h4 className="label m-0 text-ink-40">Recorded reason</h4>
           <p className="lede m-0 text-base">
             {story.reason}

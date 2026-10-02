@@ -4,20 +4,19 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 /**
- * The palette has now shipped a cool-hued ground twice: the dark page at
- * #232229 (hue 249) and the light band at #17161a (hue 255), both while every
- * other token in the system sat at 12-44. Warm cream type on a violet ground
- * is what reads as muddy, and neither was caught by a contrast check, because
- * both passed contrast -- contrast is blind to hue.
+ * The palette's rule, enforced: an instrument is grey, only its readings have
+ * colour.
  *
- * So the hue is asserted, alongside the ratios that were being tuned by eye.
- * These parse the real stylesheet rather than a copy of it; a duplicated
- * palette would just be a second thing to forget to update.
+ * Contrast checks are blind to hue, so the old warm palette shipped a violet
+ * ground twice with every ratio passing. The same blindness would let a tint
+ * creep back into the chrome now. So this parses the real stylesheet and
+ * asserts two things a contrast check cannot see: every chrome token is
+ * exactly neutral, and every reading token sits in its own hue family.
  */
 
 const CSS = readFileSync(join(process.cwd(), 'app/globals.css'), 'utf8')
 
-/** Everything inside `:root { ... }` up to the dark-scheme media query. */
+/** Everything inside the first `:root { ... }`, up to the dark-scheme media query. */
 function lightTokens(): Map<string, string> {
   const start = CSS.indexOf(':root {')
   const end = CSS.indexOf('@media (prefers-color-scheme: dark)')
@@ -28,8 +27,6 @@ function lightTokens(): Map<string, string> {
 function darkTokens(): Map<string, string> {
   const at = CSS.indexOf('@media (prefers-color-scheme: dark)')
   const open = CSS.indexOf(':root {', at)
-  // The token block ends at the first line that closes `:root` at two spaces
-  // of indentation -- the media query's own brace follows on the next line.
   const end = CSS.indexOf('\n  }', open)
   return parse(CSS.slice(open, end))
 }
@@ -64,21 +61,18 @@ function hue(hex: string): { h: number; s: number } {
   const min = Math.min(r, g, b)
   const d = max - min
   if (d === 0) return { h: 0, s: 0 }
-  const h =
-    60 *
-    (max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4)
+  const h = 60 * (max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4)
   const l = (max + min) / 2
   return { h, s: (d / (1 - Math.abs(2 * l - 1))) * 100 }
 }
 
-/**
- * Every ground, rule, ink and loss value is the same paper under more or less
- * light, so they all sit in the warm quadrant. `unknown` is the single
- * exception and is asserted separately: its meaning is "we could not
- * establish this", and the absence of warmth is the point.
- */
-const WARM_MIN = 5
-const WARM_MAX = 50
+/** The only tokens allowed a hue: a measured loss, and a measurement that could not be made. */
+const READINGS = ['--d-signal', '--d-loss', '--d-loss-2', '--d-loss-3', '--d-signal-wash', '--d-unknown']
+
+/** Red, either side of zero. */
+function isRed(h: number): boolean {
+  return h >= 350 || h <= 8
+}
 
 describe.each([
   ['light', lightTokens()],
@@ -91,52 +85,64 @@ describe.each([
   }
 
   it('parses a palette at all', () => {
-    expect(tokens.size).toBeGreaterThan(15)
+    expect(tokens.size).toBeGreaterThan(14)
   })
 
-  it('keeps every ground, ink, rule and loss value warm', () => {
-    const warm = [...tokens].filter(
-      ([name]) => !name.includes('unknown') && !name.includes('grain'),
-    )
-    // A near-neutral has no meaningful hue to police; the failure mode being
-    // guarded against is a *saturated* cool cast, not an incidental one.
-    const offenders = warm
-      .map(([name, value]) => ({ name, value, ...hue(value) }))
-      .filter(({ h, s }) => s > 3 && (h < WARM_MIN || h > WARM_MAX))
-    expect(offenders, `cool-hued tokens: ${JSON.stringify(offenders)}`).toEqual([])
+  it('keeps every chrome token exactly neutral', () => {
+    const chrome = [...tokens].filter(([name]) => !READINGS.includes(name))
+    expect(chrome.length).toBeGreaterThan(8)
+    const tinted = chrome.filter(([, value]) => {
+      const [r, g, b] = channels(value)
+      return r !== g || g !== b
+    })
+    expect(tinted, `chrome tokens with a hue: ${JSON.stringify(tinted)}`).toEqual([])
   })
 
-  it('leans the slate cool, but not far enough to shout', () => {
+  it('keeps every loss reading in one red family', () => {
+    const off = ['--d-signal', '--d-loss', '--d-loss-2', '--d-loss-3', '--d-signal-wash']
+      .map((name) => ({ name, ...hue(get(name)) }))
+      .filter(({ h }) => !isRed(h))
+    expect(off).toEqual([])
+  })
+
+  it('leans the unknown slate cool, but not far enough to shout', () => {
     const { h, s } = hue(get('--d-unknown'))
     expect(h).toBeGreaterThan(180)
     expect(h).toBeLessThan(240)
-    // At S15 on a dark page it was the loudest thing on screen.
     expect(s).toBeLessThan(13)
   })
 
-  it('holds text contrast on the page', () => {
+  it('holds text contrast on every surface text sits on', () => {
+    for (const surface of ['--d-paper', '--d-sheet', '--d-paper-2']) {
+      const bg = get(surface)
+      expect(contrast(get('--d-ink'), bg), `ink on ${surface}`).toBeGreaterThanOrEqual(7)
+      expect(contrast(get('--d-ink-58'), bg), `ink-58 on ${surface}`).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(get('--d-ink-38'), bg), `ink-38 on ${surface}`).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(get('--d-signal'), bg), `signal on ${surface}`).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(get('--d-unknown'), bg), `unknown on ${surface}`).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
+  it('keeps loss text readable on its own wash', () => {
+    expect(contrast(get('--d-signal'), get('--d-signal-wash'))).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it('keeps a removed cell distinguishable from a survivor and from the ground', () => {
+    const ghost = get('--d-ghost')
+    // Dying (loss) against removed (ghost) is the pair the sieve depends on.
+    expect(contrast(get('--d-loss'), ghost)).toBeGreaterThanOrEqual(3)
+    expect(contrast(get('--d-ink'), ghost)).toBeGreaterThanOrEqual(3)
+    expect(contrast(get('--d-loss'), get('--d-sheet'))).toBeGreaterThanOrEqual(3)
+  })
+
+  it('marks a control boundary at 3:1', () => {
+    expect(contrast(get('--d-control'), get('--d-sheet'))).toBeGreaterThanOrEqual(3)
+  })
+
+  it('steps the loss ramp away from the mark red', () => {
     const page = get('--d-paper')
-    expect(contrast(get('--d-ink'), page)).toBeGreaterThanOrEqual(7)
-    expect(contrast(get('--d-signal'), page)).toBeGreaterThanOrEqual(4.5)
-    expect(contrast(get('--d-unknown'), page)).toBeGreaterThanOrEqual(4.5)
-  })
-
-  it('holds text contrast inside the band, which is dark in both schemes', () => {
-    const zone = get('--d-zone')
-    expect(contrast(get('--d-zone-ink'), zone)).toBeGreaterThanOrEqual(7)
-    // These two exist because the page values land at 3.43:1 and 3.38:1 here.
-    expect(contrast(get('--d-zone-signal'), zone)).toBeGreaterThanOrEqual(4.5)
-    expect(contrast(get('--d-zone-unknown'), zone)).toBeGreaterThanOrEqual(4.5)
-  })
-
-  it('keeps a removed cell distinguishable from a survivor', () => {
-    // The sieve's alive-vs-dying pair. Below 3:1 the figure stops working.
-    expect(contrast(get('--d-zone-signal'), get('--d-zone-ink'))).toBeGreaterThanOrEqual(3)
-  })
-
-  it('separates the loss ramp by chroma, since luminance has no room', () => {
-    const s = [get('--d-signal'), get('--d-loss-2'), get('--d-loss-3')].map((v) => hue(v).s)
-    expect(s[0]).toBeGreaterThan(s[1] as number)
-    expect(s[1]).toBeGreaterThan(s[2] as number)
+    const c = [get('--d-loss'), get('--d-loss-2'), get('--d-loss-3')].map((v) => contrast(v, page))
+    expect(c[0]).toBeGreaterThan(c[1] as number)
+    expect(c[1]).toBeGreaterThan(c[2] as number)
   })
 })

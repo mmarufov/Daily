@@ -87,7 +87,7 @@ export default async function ReaderPage({
         <article className="sheet flex flex-col gap-8 p-6 sm:p-10">
           {hero !== undefined ? (
             <div className="flex flex-col gap-3">
-              <Headline story={hero} className="editorial max-w-4xl text-[clamp(1.75rem,4.5vw,3.25rem)]" />
+              <Headline story={hero} className="headline max-w-4xl text-[clamp(1.75rem,4.5vw,3.25rem)] !leading-[1.08] !tracking-[-0.02em]" />
               <Publication story={hero} />
             </div>
           ) : null}
@@ -180,7 +180,7 @@ export default async function ReaderPage({
             </Blocker>
           </ol>
         </div>
-        <p className="m-0 max-w-3xl border-t border-signal pt-3 text-sm text-ink-60">
+        <p className="m-0 max-w-3xl border-t border-rule-strong pt-3 text-sm text-ink-60">
           Live end-to-end behaviour is therefore <strong className="text-ink">unverified</strong>.
           These fixture editions are not reader evidence: no sessions, no impressions, no feedback.
         </p>
@@ -201,7 +201,7 @@ function Headline({ story, className }: { story: DemoStory; className: string })
   return (
     <a
       href={story.url}
-      className={`${className} text-ink no-underline hover:text-signal`}
+      className={`${className} text-ink no-underline hover:underline hover:decoration-rule-strong hover:underline-offset-4`}
       rel="noreferrer"
       data-verbatim
     >
@@ -215,7 +215,7 @@ function Publication({ story }: { story: DemoStory }) {
     <p className="label m-0 text-ink-40">
       {story.publication ?? 'Source not recorded'}
       {story.synthetic ? (
-        <span className="ml-2 text-signal">written for the evaluation, not a real publication</span>
+        <span className="ml-2 text-unknown">written for the evaluation, not a real publication</span>
       ) : null}
       {story.url === null && !story.synthetic ? <span className="ml-2">no link recorded</span> : null}
     </p>
@@ -259,7 +259,7 @@ function ReplayNotice({
   bundle: Pick<DemoBundle, 'snapshot' | 'snapshot_sha256' | 'n_articles_in_corpus' | 'runner' | 'run_id'>
 }) {
   return (
-    <aside className="grid max-w-4xl gap-x-8 gap-y-4 border-y border-signal py-4 md:grid-cols-[minmax(0,1fr)_14rem]">
+    <aside className="grid max-w-4xl gap-x-8 gap-y-4 border-y border-rule-strong py-4 md:grid-cols-[minmax(0,1fr)_14rem]">
       <div>
         <p className="prose m-0 text-base">
           <strong>This is a replay, not today&rsquo;s news.</strong> Every story below was

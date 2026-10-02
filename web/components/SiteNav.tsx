@@ -3,37 +3,29 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const NAV = [
-  { href: '/reader', label: 'Reader' },
-  { href: '/evidence', label: 'Evidence' },
-  { href: '/lab', label: 'Lab' },
-  { href: '/engineering', label: 'Engineering' },
-] as const
+import { NAV } from '@/lib/nav'
 
 export function SiteNav() {
   const pathname = usePathname()
 
   return (
-    // Scrolls rather than wraps below 360px. Four labels at this size cannot
-    // fit a 320px screen, and wrapping them pushes the wordmark onto its own
-    // line and doubles the header height on the smallest device -- where
-    // vertical space is scarcest. A scroll keeps the header one row tall and
-    // the overflow stays inside the nav instead of tipping the whole page
-    // sideways, which is what it was doing.
-    <nav aria-label="Sections" className="-mx-2 min-w-0 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <ul className="m-0 flex list-none items-center gap-3 whitespace-nowrap p-0 sm:gap-5">
+    // Scrolls rather than wraps on the narrowest screens, so the header stays
+    // one row tall and the overflow stays inside the nav.
+    <nav
+      aria-label="Sections"
+      className="-mx-2 min-w-0 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      <ul className="m-0 flex list-none items-center gap-1 whitespace-nowrap p-0">
         {NAV.map((item) => {
-          const active = pathname === item.href
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
           return (
             <li key={item.href}>
               <Link
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'label -my-1 inline-block py-2 no-underline transition-colors duration-150',
-                  active
-                    ? 'text-ink underline decoration-signal decoration-1 underline-offset-[6px]'
-                    : 'text-ink-60 hover:text-ink',
+                  'inline-flex h-8 items-center rounded-md px-2.5 text-[0.8125rem] font-medium no-underline transition-colors duration-150',
+                  active ? 'bg-paper-secondary text-ink' : 'text-ink-60 hover:text-ink',
                 ].join(' ')}
               >
                 {item.label}
@@ -41,6 +33,18 @@ export function SiteNav() {
             </li>
           )
         })}
+        <li className="ml-1 hidden sm:block">
+          <a
+            href="https://github.com/mmarufov/Daily"
+            rel="noreferrer"
+            aria-label="Source on GitHub"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-60 transition-colors duration-150 hover:text-ink"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+          </a>
+        </li>
       </ul>
     </nav>
   )

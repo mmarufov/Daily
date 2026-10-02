@@ -56,21 +56,27 @@ test('nothing is painted above the header', async ({ page }) => {
   expect(strays).toEqual([])
 })
 
-test('the hero ground stays inside the hero', async ({ page }) => {
-  // The specific regression, asserted on the computed value rather than the
-  // source, so it still fails if the inset moves to a variable.
+test('no decorative layer in the hero bleeds past its box', async ({ page }) => {
+  // The specific regression was a hero ::before inset to negative values.
+  // The hero no longer has a painted ground, so this checks every positioned
+  // pseudo-element in it, on the computed value rather than the source.
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto('/')
-  const inset = await page.evaluate(() => {
-    const hero = document.querySelector('.hero')
-    if (hero === null) return null
-    const cs = getComputedStyle(hero, '::before')
-    return { top: parseFloat(cs.top), left: parseFloat(cs.left), right: parseFloat(cs.right) }
+  const bleeding = await page.evaluate(() => {
+    const hero = document.querySelector('main section')
+    if (hero === null) return ['no hero']
+    const found: string[] = []
+    for (const el of [hero, ...hero.querySelectorAll('*')]) {
+      for (const pseudo of ['::before', '::after']) {
+        const cs = getComputedStyle(el, pseudo)
+        if (cs.content === 'none' || cs.content === 'normal' || cs.position !== 'absolute') continue
+        const insets = [cs.top, cs.left, cs.right].map(parseFloat).filter((v) => !Number.isNaN(v))
+        if (insets.some((v) => v < 0)) found.push(`${el.tagName.toLowerCase()}${pseudo}`)
+      }
+    }
+    return found
   })
-  expect(inset).not.toBeNull()
-  expect(inset!.top).toBeGreaterThanOrEqual(0)
-  expect(inset!.left).toBeGreaterThanOrEqual(0)
-  expect(inset!.right).toBeGreaterThanOrEqual(0)
+  expect(bleeding).toEqual([])
 })
 
 /**

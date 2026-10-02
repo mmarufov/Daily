@@ -1,0 +1,1186 @@
+{
+  "captured_from": "https://marufov.com/api/lab/run/wrun_01M3WXWPKMF3H8Q66KZA56MZCV",
+  "captured_at": "2026-10-02",
+  "note": "The status route's response for one public run on production, stored byte-for-byte below so the homepage can show a real run without starting one. The run was started from /lab with the default preset, count-guard-v1.",
+  "preset": "count-guard-v1",
+  "response": {
+    "run_id": "wrun_01M3WXWPKMF3H8Q66KZA56MZCV",
+    "status": "completed",
+    "finished": true,
+    "outcome": {
+      "kind": "graded",
+      "verdict": "rejected",
+      "reason": "association-exact: 0/3 cases satisfied, threshold 1",
+      "grading": {
+        "verdict": "rejected",
+        "reason": "association-exact: 0/3 cases satisfied, threshold 1",
+        "spec_version": 2,
+        "spec_hash": "f027762ab4d08b35",
+        "declared_protocol": "positional-v0",
+        "criteria": [
+          {
+            "id": "universal-refusal",
+            "question": "Does it refuse every response from which no association can be recovered?",
+            "applicable": 48,
+            "satisfied": 48,
+            "passed": true
+          },
+          {
+            "id": "association-exact",
+            "question": "On its own protocol, does every article receive exactly the verdict it was given?",
+            "applicable": 3,
+            "satisfied": 0,
+            "passed": false
+          },
+          {
+            "id": "protocol-violation-refusal",
+            "question": "Does it refuse duplicate, unknown, missing ids and unusable scores?",
+            "applicable": 1,
+            "satisfied": 0,
+            "passed": false
+          },
+          {
+            "id": "no-crash",
+            "question": "Does it terminate on every case without crashing or hanging?",
+            "applicable": 52,
+            "satisfied": 52,
+            "passed": true
+          },
+          {
+            "id": "complete-evidence",
+            "question": "Is there a prediction record for every applicable case?",
+            "applicable": 52,
+            "satisfied": 52,
+            "passed": true
+          },
+          {
+            "id": "protocol-exclusivity",
+            "question": "On cases outside its declared protocol, does it refuse rather than associate anyway?",
+            "applicable": 12,
+            "satisfied": 5,
+            "passed": false
+          }
+        ],
+        "counts": {
+          "correct": 48,
+          "wrong-association": 3,
+          "should-have-refused": 1,
+          "should-have-parsed": 0,
+          "crashed": 0,
+          "timeout": 0,
+          "missing-record": 0,
+          "not-applicable": 12
+        },
+        "out_of_protocol_case_ids": [
+          "syn-keyed-in-order",
+          "syn-keyed-reversed",
+          "syn-keyed-rotated",
+          "syn-unknown-id",
+          "syn-score-nan",
+          "syn-score-out-of-range",
+          "syn-relevant-not-bool"
+        ],
+        "cases": [
+          {
+            "case_id": "observed-2026-09-02-000",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "27 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-001",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-002",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "18 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-003",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-004",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-005",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "protocol-association",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "wrong-association",
+            "detail": "no ground truth recorded",
+            "why": "entry count matches the batch; association is parseable but unverified",
+            "expected_refusal_kinds": [],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "observed-2026-09-02-006",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "201 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-007",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "33 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-008",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "37 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-009",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-010",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "19 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-011",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-012",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-013",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "25 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-014",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-015",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "19 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-016",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-017",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-018",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "59 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-019",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-020",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "19 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-021",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-022",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-023",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "36 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-024",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "21 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-025",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "31 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-026",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-027",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "19 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-028",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "38 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-029",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-030",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-031",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "31 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-032",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "53 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-033",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "19 verdicts recorded for 20 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-034",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "34 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-035",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "protocol-association",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "wrong-association",
+            "detail": "no ground truth recorded",
+            "why": "entry count matches the batch; association is parseable but unverified",
+            "expected_refusal_kinds": [],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "observed-2026-09-02-036",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-037",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-038",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "completion stopped for 'length'",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "observed-2026-09-02-039",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "25 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-040",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "254 verdicts recorded for 40 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "observed-2026-09-02-041",
+            "group": "observed",
+            "origin": "recorded-replay",
+            "family": "protocol-association",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "wrong-association",
+            "detail": "no ground truth recorded",
+            "why": "entry count matches the batch; association is parseable but unverified",
+            "expected_refusal_kinds": [],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-keyed-in-order",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "a well-formed keyed response in request order",
+            "expected_refusal_kinds": [],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-keyed-reversed",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "the same verdicts, reversed; association must not move",
+            "expected_refusal_kinds": [],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-keyed-rotated",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "the same verdicts, rotated; association must not move",
+            "expected_refusal_kinds": [],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-duplicate-id",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "the same article is judged twice; no winner may be picked",
+            "expected_refusal_kinds": [
+              "duplicate_id"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "syn-unknown-id",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "a verdict for an article that was never sent",
+            "expected_refusal_kinds": [
+              "unknown_id"
+            ],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-missing-id",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "one article receives no verdict; partial salvage is not allowed",
+            "expected_refusal_kinds": [
+              "missing_id",
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "syn-score-nan",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "score is nan; production clamps it into a real verdict",
+            "expected_refusal_kinds": [
+              "score_not_finite",
+              "invalid_type",
+              "malformed_json"
+            ],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-score-out-of-range",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "score is out-of-range; production clamps it into a real verdict",
+            "expected_refusal_kinds": [
+              "score_out_of_range",
+              "invalid_type"
+            ],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-score-string",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "score is string; production clamps it into a real verdict",
+            "expected_refusal_kinds": [
+              "invalid_type"
+            ],
+            "observed_refusal_kind": "invalid_type"
+          },
+          {
+            "case_id": "syn-score-null",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "score is null; production clamps it into a real verdict",
+            "expected_refusal_kinds": [
+              "invalid_type"
+            ],
+            "observed_refusal_kind": "invalid_type"
+          },
+          {
+            "case_id": "syn-relevant-not-bool",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "relevant is a string",
+            "expected_refusal_kinds": [
+              "invalid_type"
+            ],
+            "observed_refusal_kind": null
+          },
+          {
+            "case_id": "syn-malformed-json",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (malformed_json)",
+            "why": "the response is cut mid-object",
+            "expected_refusal_kinds": [
+              "malformed_json"
+            ],
+            "observed_refusal_kind": "malformed_json"
+          },
+          {
+            "case_id": "syn-truncated-finish-reason",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "the completion stopped at the output ceiling",
+            "expected_refusal_kinds": [
+              "truncated_response",
+              "count_mismatch",
+              "missing_id"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "syn-not-an-object",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (unexpected_shape)",
+            "why": "top level is an array, not an object",
+            "expected_refusal_kinds": [
+              "unexpected_shape"
+            ],
+            "observed_refusal_kind": "unexpected_shape"
+          },
+          {
+            "case_id": "syn-empty-results",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "keyed-v2",
+            "applicability": "not-applicable",
+            "status": "not-applicable",
+            "detail": "case is keyed-v2; candidate declares positional-v0",
+            "why": "no verdicts at all",
+            "expected_refusal_kinds": [
+              "missing_id",
+              "count_mismatch"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "syn-exec-no-recording",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (no_recording)",
+            "why": "execution ended as no_recording; an unavailable answer is not an answer",
+            "expected_refusal_kinds": [
+              "no_recording"
+            ],
+            "observed_refusal_kind": "no_recording"
+          },
+          {
+            "case_id": "syn-exec-timeout",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (timeout)",
+            "why": "execution ended as timeout; an unavailable answer is not an answer",
+            "expected_refusal_kinds": [
+              "timeout"
+            ],
+            "observed_refusal_kind": "timeout"
+          },
+          {
+            "case_id": "syn-exec-cancelled",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (cancelled)",
+            "why": "execution ended as cancelled; an unavailable answer is not an answer",
+            "expected_refusal_kinds": [
+              "cancelled"
+            ],
+            "observed_refusal_kind": "cancelled"
+          },
+          {
+            "case_id": "syn-exec-budget",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "keyed-v2",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (retries_exhausted)",
+            "why": "execution ended as budget_exceeded; an unavailable answer is not an answer",
+            "expected_refusal_kinds": [
+              "retries_exhausted",
+              "no_recording"
+            ],
+            "observed_refusal_kind": "retries_exhausted"
+          },
+          {
+            "case_id": "syn-positional-short",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "4 verdicts for 6 articles: which belongs to which is unrecorded",
+            "expected_refusal_kinds": [
+              "count_mismatch",
+              "missing_id"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "syn-positional-long",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "universal-refusal",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "correct",
+            "detail": "refused (count_mismatch)",
+            "why": "7 verdicts for 6 articles",
+            "expected_refusal_kinds": [
+              "count_mismatch",
+              "duplicate_id"
+            ],
+            "observed_refusal_kind": "count_mismatch"
+          },
+          {
+            "case_id": "syn-positional-reordered",
+            "group": "synthetic",
+            "origin": "fault-injection",
+            "family": "protocol-association",
+            "protocol": "positional-v0",
+            "applicability": "scored",
+            "status": "should-have-refused",
+            "detail": "equal length, internally reordered — a length check cannot detect this",
+            "why": "equal length, internally reordered — a length check cannot detect this",
+            "expected_refusal_kinds": [
+              "count_mismatch",
+              "unexpected_shape",
+              "unsupported_protocol",
+              "invalid_type",
+              "missing_id"
+            ],
+            "observed_refusal_kind": null
+          }
+        ]
+      },
+      "sandbox": {
+        "sandbox_id": "azure-sympathetic-flyingfish-Wap4Q6",
+        "region": "iad1",
+        "runtime": "python3.13",
+        "network_policy": "deny-all",
+        "boot_ms": 230,
+        "wall_clock_ms": 546,
+        "active_cpu_ms": 3223,
+        "egress_bytes": 34949,
+        "exit_code": 0,
+        "isolation": [
+          {
+            "name": "egress-dns",
+            "expectation": "DNS resolution of an external host fails",
+            "held": true
+          },
+          {
+            "name": "egress-https",
+            "expectation": "an outbound HTTPS request fails",
+            "held": true
+          },
+          {
+            "name": "no-evaluator-present",
+            "expectation": "the code that grades the candidate is nowhere on the filesystem",
+            "held": true
+          },
+          {
+            "name": "no-secrets-in-env",
+            "expectation": "no production credential is present in the environment",
+            "held": true
+          }
+        ]
+      },
+      "events": [
+        {
+          "type": "created",
+          "run_id": "visitor__muq6q1w3",
+          "candidate_id": "visitor",
+          "at": "2026-10-01T23:48:16.578Z",
+          "spec_hash": "f027762ab4d08b35"
+        },
+        {
+          "type": "scope-checked",
+          "at": "2026-10-01T23:48:16.578Z",
+          "allowed": true,
+          "detail": "backend/lab/contract/candidate.py is within the allowed patch scope"
+        },
+        {
+          "type": "attempt-started",
+          "attempt_id": "visitor__muq6q1w3#01",
+          "runner": "vercel-sandbox",
+          "at": "2026-10-01T23:48:16.613Z"
+        },
+        {
+          "type": "attempt-ended",
+          "attempt_id": "visitor__muq6q1w3#01",
+          "at": "2026-10-01T23:48:23.338Z",
+          "status": "succeeded",
+          "note": "sandbox azure-sympathetic-flyingfish-Wap4Q6 in iad1, 34949 bytes egress"
+        },
+        {
+          "type": "evaluated",
+          "at": "2026-10-01T23:48:24.155Z",
+          "verdict": "rejected",
+          "reason": "association-exact: 0/3 cases satisfied, threshold 1"
+        }
+      ],
+      "processes": [
+        {
+          "step": "scope",
+          "process_id": "dpl_6A5Z7rXB16iYQb8vk4BsAupvssDe:68bbaf1e",
+          "at": "2026-10-01T23:48:16.578Z",
+          "uptime_s": 15
+        },
+        {
+          "step": "execute",
+          "process_id": "dpl_6A5Z7rXB16iYQb8vk4BsAupvssDe:68bbaf1e",
+          "at": "2026-10-01T23:48:23.338Z",
+          "uptime_s": 21.8
+        },
+        {
+          "step": "grade",
+          "process_id": "dpl_6A5Z7rXB16iYQb8vk4BsAupvssDe:68bbaf1e",
+          "at": "2026-10-01T23:48:24.155Z",
+          "uptime_s": 22.6
+        }
+      ],
+      "resumed": false
+    },
+    "progress": [
+      {
+        "at": "2026-10-01T23:48:16.571Z",
+        "stage": "scope checked: only candidate.py is written"
+      },
+      {
+        "at": "2026-10-01T23:48:17.410Z",
+        "stage": "creating microVM"
+      },
+      {
+        "at": "2026-10-01T23:48:17.640Z",
+        "stage": "uploading 5 files"
+      },
+      {
+        "at": "2026-10-01T23:48:17.767Z",
+        "stage": "running the harness"
+      },
+      {
+        "at": "2026-10-01T23:48:18.313Z",
+        "stage": "probing isolation"
+      },
+      {
+        "at": "2026-10-01T23:48:19.177Z",
+        "stage": "stopping the microVM"
+      },
+      {
+        "at": "2026-10-01T23:48:23.337Z",
+        "stage": "microVM stopped"
+      }
+    ]
+  }
+}

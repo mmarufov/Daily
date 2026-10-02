@@ -103,7 +103,7 @@ export default async function EvidencePage({
           Pick a run, then follow a story that should have reached a reader and did not.
         </p>
         {index.errors.length > 0 ? (
-          <p className="m-0 max-w-2xl border-l-2 border-signal pl-3 text-xs text-ink-60">
+          <p className="note m-0 max-w-2xl text-xs text-ink-60">
             The published artifact set was unreachable, so the committed export is shown instead.
             Nothing is hidden, but the run ids may lag the latest publication.
           </p>
@@ -112,7 +112,7 @@ export default async function EvidencePage({
 
       <section className="frame flex flex-col gap-5 pb-10">
         {requestedButMissing ? (
-          <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
+          <p role="alert" className="note m-0 text-xs">
             The run <span className="text-ink">{requested.run}</span> is not in the current
             manifest, so the default is shown instead, rather than silently showing different
             numbers.
@@ -123,7 +123,7 @@ export default async function EvidencePage({
 
         {compatibility !== null ? <CompatibilityNotice compatibility={compatibility} /> : null}
         {comparisonFailed !== null ? (
-          <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs text-ink-60">
+          <p role="alert" className="note m-0 text-xs text-ink-60">
             The comparison run failed to load: {comparisonFailed}
           </p>
         ) : null}
@@ -342,7 +342,7 @@ function RunHeadline({
   return (
     <section className="frame flex flex-col gap-6 border-y border-rule py-7">
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <h2 className="headline m-0 text-lg">{describeEntryTitle(primary)}</h2>
+        <h2 className="m-0 text-lg font-semibold tracking-[-0.015em]">{describeEntryTitle(primary)}</h2>
         {comparison !== null ? (
           <p className="m-0 text-xs text-ink-40">
             compared with {describeEntryTitle(comparison)}
@@ -415,7 +415,7 @@ function NoArtifacts({
           <h2 className="label m-0 text-ink-40">Load errors</h2>
           <ul className="m-0 mt-2 flex list-none flex-col gap-2 p-0 text-xs">
             {errors.map((error) => (
-              <li key={error.where} className="border-l-2 border-signal pl-3">
+              <li key={error.where} className="note">
                 <span className="text-ink">{error.where}</span>
                 <span className="block text-ink-60">{error.issues.join('; ')}</span>
               </li>

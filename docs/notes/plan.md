@@ -845,3 +845,34 @@ Lab/evidence public URLs returned HTTP 200; documentation diff whitespace check 
 Web unit suite: 286 passed, 2 failed due to active uncommitted Lab run artifacts.
 Lab export validation also fails on an incomplete run descriptor from that concurrent
 work. No new iOS build, deployment, or signed-in product E2E claim was made.
+
+## marufov.com redesign: the instrument, 2026-10-01
+
+Brief: position Daily Lab as the product and the news pipeline as what it measures. A VP of
+Engineering decides in thirty seconds. Earlier versions were too dense. Every visual is made of
+the product itself, and every figure traces to stored run data.
+
+Direction (already agreed with the user, see the palette memory): an instrument is grey; only its
+readings have colour. Chrome is achromatic. Red appears only on a measurement of failure or loss.
+Geist for the product, Geist Mono for ids, code and timestamps, the serif only on real article text.
+One visual unit everywhere: the cell (an article, a case, a miss, a verdict).
+
+Homepage, one idea per screen:
+1. Hero: what the Lab is, plus the console showing a real recorded production run
+   (`wrun_01M3WXWPKMF3H8Q66KZA56MZCV`, 14.95 s), with a button that runs it again live.
+2. The subject: the sieve, 1,362 candidates to 50.
+3. Retrieval had already lost: 97 misses placed where they died, plus a "perfect ranking" switch
+   that brings back at most the 22 that died after ranking began.
+4. The fix made the numbers worse: 40 articles against 254 verdicts, positional against guard,
+   with the measured cost and PR #59's gate still failing.
+5. The method: hashed criteria, 64 cases, every run published.
+
+- [ ] Map data loaders and test constraints; capture the recorded run as committed evidence.
+- [ ] Tokens, type, header and footer (achromatic system, dark scheme by preference only).
+- [ ] Console component shared by the hero and /lab (idle, running, refused, finished states).
+- [ ] Homepage sections 2 to 5.
+- [ ] /lab and /lab/[run] on the same components.
+- [ ] /evidence, /engineering, /reader inherit the system; fix anything that breaks.
+- [ ] Palette test rewritten for the achromatic rule; e2e specs updated; em-dash rule kept.
+- [ ] Typecheck, unit, e2e, build; screenshots desktop and mobile, light and dark.
+- [ ] Review, PR, merge, verify on marufov.com with one real run.

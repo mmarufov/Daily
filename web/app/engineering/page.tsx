@@ -117,7 +117,7 @@ export default function EngineeringPage() {
               <strong>sends no article identifier</strong>. The parse is positional. A count
               mismatch was logged and then ignored.
             </p>
-            <p className="m-0 border-t border-signal pt-3 text-sm text-ink-60">
+            <p className="m-0 border-t border-rule-strong pt-3 text-sm text-ink-60">
               Misattributed relevance is worse than absent relevance. A missing score is visible
               downstream and can be retried; a shifted one silently drops a story and files a
               plausible rationale about a different one.
@@ -159,7 +159,7 @@ export default function EngineeringPage() {
             </ul>
           </div>
           <div className="flex flex-col gap-4">
-            <p className="label m-0 text-signal">What was deliberately left broken</p>
+            <p className="label m-0 text-ink">What was deliberately left broken</p>
             <p className="prose m-0 text-base">
               The complete fix is id-keyed output, which changes the scoring prompt, and the
               regression gate replays responses keyed by a hash of the request. Changing the prompt
@@ -224,7 +224,7 @@ export default function EngineeringPage() {
               </Code>
               . Five fail against the unfixed code; four are non-regression guards.
             </p>
-            <p className="m-0 border-t border-signal pt-3 text-sm text-ink-60">
+            <p className="m-0 border-t border-rule-strong pt-3 text-sm text-ink-60">
               The gate goes from <span className="text-ink">42 passed</span> to{' '}
               <span className="text-ink">6 failed</span>, and{' '}
               <strong className="text-ink">the baseline was not re-recorded</strong>. It is
@@ -295,7 +295,7 @@ function Offset({
   return (
     <li className="flex flex-col gap-3 bg-paper p-4">
       <p className="headline m-0 text-base">{title}</p>
-      <p className="m-0 border-l border-signal pl-3 text-sm text-signal">&ldquo;{reason}&rdquo;</p>
+      <p className="m-0 rounded-md bg-signal-wash px-3 py-2 text-sm text-signal">&ldquo;{reason}&rdquo;</p>
       <p className="m-0 mt-auto text-xs text-ink-40">
         fixture {personaName(persona)} · dropped at {stage}
         {needle === true ? ' · planted needle' : ''}
@@ -328,7 +328,7 @@ function Item({
   signal?: boolean
 }) {
   return (
-    <li className={`list-none border-t pt-3 ${signal === true ? 'border-signal' : 'border-rule'}`}>
+    <li className="list-none border-t border-rule-strong pt-3">
       <p className="label m-0 text-ink">{term}</p>
       <p className="m-0 mt-2 max-w-md text-sm text-ink-60">{children}</p>
     </li>

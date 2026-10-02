@@ -40,13 +40,13 @@ export function OffendingCase({ data }: { data: OffendingCase }) {
         <Stat term="Article ids sent" value="0" note="position is the only link" signal />
       </dl>
 
-      <div className="grid gap-px border border-rule bg-rule md:grid-cols-2">
-        <div className="min-w-0 bg-paper p-4">
+      <div className="grid gap-px overflow-hidden rounded-lg border border-rule bg-rule md:grid-cols-2">
+        <div className="min-w-0 bg-sheet p-4">
           <p className="label m-0 text-ink-40">What was sent · first 6 of {data.articles_sent}</p>
           <ol className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
             {data.articles.map((a) => (
               <li key={a.id} className="grid grid-cols-[2rem_1fr] gap-2 border-t border-rule pt-2">
-                <span className="band-index">{String(a.position).padStart(2, '0')}</span>
+                <span className="data text-ink-40">{a.position}</span>
                 <span className="text-xs text-ink">
                   <span data-verbatim>{a.title}</span>
                   <span className="block pt-0.5 text-ink-40">{a.source}</span>
@@ -55,14 +55,14 @@ export function OffendingCase({ data }: { data: OffendingCase }) {
             ))}
           </ol>
         </div>
-        <div className="min-w-0 bg-paper p-4">
-          <p className="label m-0 text-signal">
+        <div className="min-w-0 bg-sheet p-4">
+          <p className="label m-0 text-ink-40">
             What came back · first 6 of {data.verdicts_returned}
           </p>
           <ol className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
             {data.verdicts.map((v) => (
               <li key={v.position} className="grid grid-cols-[2rem_1fr] gap-2 border-t border-rule pt-2">
-                <span className="band-index">{String(v.position).padStart(2, '0')}</span>
+                <span className="data text-ink-40">{v.position}</span>
                 <span className="text-xs text-ink-60">&ldquo;{v.reason}&rdquo;</span>
               </li>
             ))}
@@ -72,7 +72,7 @@ export function OffendingCase({ data }: { data: OffendingCase }) {
 
       <p className="m-0 max-w-3xl text-xs text-ink-60">{data.note}</p>
 
-      <details className="border border-rule bg-paper-secondary">
+      <details className="overflow-hidden rounded-lg border border-rule bg-paper-secondary">
         <summary className="disclosure label px-4 py-3 text-ink">
           The recorded response · {data.response_bytes.toLocaleString()} bytes, first 600 shown
         </summary>

@@ -74,7 +74,7 @@ export function Gradings({ run }: { run: LabRun }) {
  */
 function Moved({ gradings }: { gradings: readonly Grading[] }) {
   return (
-    <div className="border-y border-signal py-3">
+    <div className="border-y border-rule-strong py-3">
       <p className="m-0 max-w-3xl text-sm text-ink-60">
         <strong className="text-ink">This verdict moved between generations.</strong> The candidate
         satisfied every criterion it faced; the criteria were the thing that was incomplete. Nothing

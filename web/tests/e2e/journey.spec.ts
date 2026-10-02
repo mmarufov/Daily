@@ -5,13 +5,13 @@ import { expect, test } from '@playwright/test'
  * follow one story from a summary metric down to its recorded trace.
  */
 test.describe('visitor journey', () => {
-  test('home explains the product and routes to all three surfaces', async ({ page }) => {
+  test('home explains the product and routes to every surface', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('daily edition')
-    // The three entry points are labelled and described, not three bare buttons.
-    const entries = page.getByRole('navigation', { name: 'Main' })
-    for (const name of ['Reader', 'Evidence', 'Defect report']) {
-      await expect(entries.getByRole('link', { name: new RegExp(name, 'i') })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('fixes anything')
+    // Every section is one click from the header, on every page.
+    const sections = page.getByRole('navigation', { name: 'Sections' })
+    for (const name of ['Lab', 'Evidence', 'Defect report', 'Reader']) {
+      await expect(sections.getByRole('link', { name, exact: true })).toBeAttached()
     }
     // The demo must never be presented as real readership. The wording moved
     // when the page was rewritten ("adversarial test fixtures, not users" ->
