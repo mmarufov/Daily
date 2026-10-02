@@ -986,11 +986,11 @@ navigation, typography, themes and public runner.
 - [x] Validate the saved execution and derive all story data from that recording.
 - [x] Build Parser, Sandbox, Tests and Verdict as one scroll-driven diagram.
 - [x] Shorten the lower homepage to a compact guard finding and evidence links.
-- [ ] Review all four moments on an HTTPS preview at desktop and mobile widths.
-- [ ] Verify static rendering, reduced motion, keyboard, touch and missing data.
-- [ ] Run typecheck, units, artifact checks, build and mocked browser acceptance.
-- [ ] Profile mobile LCP/CLS and offscreen animation work.
-- [ ] Open one PR with screenshots and a recording of the motion. Leave production unchanged.
+- [x] Review all four moments on an HTTPS preview at desktop and mobile widths.
+- [x] Verify static rendering, reduced motion, keyboard, touch and missing data.
+- [x] Run typecheck, units, artifact checks, build and mocked browser acceptance.
+- [x] Profile mobile LCP/CLS and offscreen animation work.
+- [x] Open one PR with screenshots and a recording of the motion. Leave production unchanged.
 
 ### Composition and motion
 
@@ -1059,3 +1059,5 @@ mobile LCP <=2.5 seconds and CLS <=0.1 under the existing documented conditions.
 No Sandbox execution from page visits, scrolling or routine browser tests.
 Capture desktop/mobile states and a short motion recording on the HTTPS preview.
 The deliverable is a reviewable PR; production stays unchanged.
+
+Verification: [homepage-run-story.md](homepage-run-story.md).
