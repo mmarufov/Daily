@@ -1104,3 +1104,7 @@ Native page scrolling remains continuous. The diagram waits for the next thresho
 - [ ] Commit, merge through CI, deploy and verify marufov.com with screenshots.
 
 Scope: presentation copy and unused styles only. Preserve motion, metrics, run controls, missing-data states, source artifacts and routes.
+
+## Motion resilience, October 2
+
+See [motion-hardening.md](motion-hardening.md) for the scope, sources, edge-case matrix and checklist. Implement in an isolated checkout from bda6b69c. Leave the review branch unmerged and production unchanged.

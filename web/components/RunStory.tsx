@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import type { RunStoryData } from '@/lib/run-story'
-import { clamp, storyDuration, storyFrame, storyStage, STORY_DURATION, STORY_MEDIA, STORY_STOPS, STORY_TOP } from '@/lib/run-story-motion'
+import { storyFrame } from '@/lib/run-story-motion'
+import { mountRunStory } from '@/lib/run-story-controller'
 import { AnimatedDetails } from './AnimatedDetails'
 import { CaseStatusMark, type CaseStatusTone } from './CaseStatusMark'
 import { RunDiagram } from './RunDiagram'
@@ -61,112 +62,16 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
   const [enhanced, setEnhanced] = useState(false)
   const [active, setActive] = useState(false)
 
+  const controller = useRef<ReturnType<typeof mountRunStory> | null>(null)
   useEffect(() => {
     const element = root.current, area = track.current, panel = sticky.current
     if (!element || !area || !panel || !data) return
-    const media = window.matchMedia(STORY_MEDIA)
-    let visible = false
-    let frame = 0
-    let lastStage = -1
-    let observingScroll = false
-    let needsRead = true
-    let resolveImmediately = true
-    let visual: number = STORY_STOPS[0]
-    let from = visual
-    let target = visual
-    let startedAt = 0
-    let duration = STORY_DURATION
-    let moving = false
-
-    const paint = (progress: number) => {
-      for (const [key, value] of Object.entries(storyFrame(progress))) element.style.setProperty(key, value)
-      element.dataset.visualProgress = progress.toFixed(3)
-    }
-    const update = (now: number) => {
-      frame = 0
-      if (!media.matches || !visible || document.hidden) return
-      if (needsRead) {
-        needsRead = false
-        const travel = Math.max(1, area.offsetHeight - panel.offsetHeight)
-        const progress = clamp((STORY_TOP - area.getBoundingClientRect().top) / travel)
-        element.dataset.progress = progress.toFixed(3)
-        const next = storyStage(progress, resolveImmediately ? -1 : lastStage)
-        if (next !== lastStage || resolveImmediately) {
-          lastStage = next
-          setStage(next)
-          from = visual
-          target = STORY_STOPS[next]!
-          duration = storyDuration(from, target)
-          startedAt = now
-          moving = !resolveImmediately && Math.abs(target - from) > 0.0001
-          if (!moving) visual = target
-          element.dataset.transitioning = String(moving)
-          resolveImmediately = false
-          paint(visual)
-        }
-      }
-      if (moving) {
-        const elapsed = clamp((now - startedAt) / duration)
-        visual = from + (target - from) * elapsed
-        paint(visual)
-        if (elapsed === 1) {
-          moving = false
-          element.dataset.transitioning = 'false'
-        } else frame = window.requestAnimationFrame(update)
-      }
-    }
-    const schedule = () => {
-      needsRead = true
-      if (!frame) frame = window.requestAnimationFrame(update)
-    }
-    const sync = () => {
-      const running = visible && media.matches && !document.hidden
-      setActive(running)
-      setEnhanced(media.matches)
-      if (running && !observingScroll) {
-        resolveImmediately = true
-        window.addEventListener('scroll', schedule, { passive: true })
-        observingScroll = true
-      } else if (!running && observingScroll) {
-        window.removeEventListener('scroll', schedule)
-        observingScroll = false
-      }
-      if (running) schedule()
-      else {
-        window.cancelAnimationFrame(frame)
-        frame = 0
-        if (moving) {
-          moving = false
-          visual = target
-          paint(visual)
-        }
-        element.dataset.transitioning = 'false'
-      }
-    }
-    const observer = new IntersectionObserver(([entry]) => { visible = entry?.isIntersecting === true; sync() })
-    observer.observe(area)
-    const resize = new ResizeObserver(sync)
-    resize.observe(area)
-    resize.observe(panel)
-    media.addEventListener('change', sync)
-    document.addEventListener('visibilitychange', sync)
-    sync()
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', schedule)
-      document.removeEventListener('visibilitychange', sync)
-      media.removeEventListener('change', sync)
-      observer.disconnect()
-      resize.disconnect()
-    }
+    const mounted = mountRunStory(element, area, panel, { stage: setStage, enhanced: setEnhanced, active: setActive })
+    controller.current = mounted
+    return () => { mounted.destroy(); controller.current = null }
   }, [data])
 
-  const select = (index: number) => {
-    const area = track.current, panel = sticky.current
-    if (!area || !panel) return
-    const top = window.scrollY + area.getBoundingClientRect().top - STORY_TOP
-    window.scrollTo({ top: top + (STORY_STOPS[index] ?? 0) * Math.max(0, area.offsetHeight - panel.offsetHeight), behavior: 'smooth' })
-  }
+  const select = (index: number) => controller.current?.select(index)
 
   const timestamp = data ? [data.events[0]!.elapsed, data.events[1]!.elapsed, data.events[3]!.elapsed, data.events[6]!.elapsed][stage] : ''
   const chapter = CHAPTERS[stage] ?? CHAPTERS[0]
@@ -188,11 +93,10 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
         </div> : <div className="run-story-unavailable" role="status"><p>The recorded run is unavailable.</p><p>Open the Lab to inspect or run a parser.</p></div>}
       </div>
       {data ? <div className="run-story-chapters">{CHAPTERS.map((chapter, i) => <article key={chapter.id} className="run-story-chapter" data-chapter={chapter.id} data-testid="run-story-stage" data-index={i}>
-        <div className="run-chapter-copy"><span className="run-chapter-index">0{i + 1} / {chapter.name}</span><h3>{chapter.title}</h3><p>{chapter.copy}</p></div>
+        <div className="run-chapter-copy"><span className="run-chapter-index">0{i + 1} / {chapter.name}</span><h3 tabIndex={-1}>{chapter.title}</h3><p>{chapter.copy}</p></div>
         <div className="run-static-visual">{i < 3 ? <><RunDiagram data={data} chapter={i} /><p className="run-static-caption">{i === 0 ? <><code>candidate.py</code><span>{data.preset}</span></> : i === 1 ? <><span>Vercel Sandbox</span><span>Networking denied</span></> : <><span>{data.counts.total} cases</span><span>{data.counts.faultInjected} fault-injected</span></>}</p></> : <Verdict data={data} identified={!enhanced} />}{i === 2 ? <Probes data={data} /> : null}{i === 3 ? <Link className="text-link run-static-action" href="/lab#run">Try your parser <span aria-hidden="true">↗</span></Link> : null}</div>
       </article>)}</div> : null}
     </div>
     {data ? <RecordingDetails data={data} /> : null}
-    <noscript><style>{'.run-story-track{height:auto!important}.run-story-sticky{position:static!important}.run-story-animation{display:none!important}.run-story-chapters{display:block!important}'}</style></noscript>
   </section>
 }

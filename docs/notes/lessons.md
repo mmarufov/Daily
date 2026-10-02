@@ -608,3 +608,7 @@ A complete transition can still feel abrupt when its visible changes occupy only
 ## Provenance placement
 
 Keep the primary presentation focused on the product and its results. Put recording dates and detailed qualifications in Inspect views instead of repeating them as banners above the same visual. Use ordinary reader-facing labels in the edition preview.
+
+## Motion enhancement failures
+
+A no-JavaScript test does not cover failed or delayed scripts when scripting remains enabled. Gate cinematic CSS on successful enhancement and verify the static content before hydration. Test actual content fit with text enlargement and spacing overrides, preserve focus across layout changes, and check landscape print separately from portrait.
