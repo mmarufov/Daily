@@ -1108,3 +1108,7 @@ Scope: presentation copy and unused styles only. Preserve motion, metrics, run c
 ## Motion resilience, October 2
 
 See [motion-hardening.md](motion-hardening.md) for the scope, sources, edge-case matrix and checklist. Implement in an isolated checkout from bda6b69c. Leave the review branch unmerged and production unchanged.
+
+- [x] Implement graceful motion fallback and lifecycle/focus fixes.
+- [x] Verify preview in Chromium/WebKit, inspect responsive/print screenshots and measure throttled performance.
+- [x] Publish draft PR #107; leave merge and production release pending user review.

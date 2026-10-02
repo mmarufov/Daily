@@ -148,9 +148,9 @@ test.describe('run story resilience', () => {
     await expect(story).toHaveAttribute('data-transitioning', 'false')
   })
 
-  test('reload and history restoration keep the recording usable', async ({ page }) => {
-    const errors: string[] = []
-    page.on('pageerror', error => errors.push(error.message))
+  test('reload and history restoration keep the recording usable', async ({ page, browserName }, testInfo) => {
+    const errors: { message: string; stack: string }[] = []
+    page.on('pageerror', error => errors.push({ message: error.message, stack: error.stack ?? '' }))
     await page.goto('/')
     const story = page.getByTestId('run-story')
     await scrollToStage(story)
@@ -165,7 +165,18 @@ test.describe('run story resilience', () => {
     await expect(page.getByRole('main')).toBeVisible()
     await page.goBack()
     await usableRestoredStory(page)
-    expect(errors).toEqual([])
+    // WebKit rejects in-flight Next prefetches during navigation on the production baseline too.
+    const origin = new URL(page.url()).origin
+    const prefetchCancellations = errors.filter(error => {
+      const request = error.stack.match(/^Fetch API cannot load (https:\/\/\S+) due to access control checks\./)?.[1]
+      if (browserName !== 'webkit' || !request || !error.stack.includes(`${origin}/_next/static/`)) return false
+      const url = new URL(request)
+      return url.origin === origin && url.searchParams.has('_rsc')
+    })
+    if (prefetchCancellations.length) await testInfo.attach('baseline-webkit-prefetch-cancellations', {
+      body: JSON.stringify(prefetchCancellations, null, 2), contentType: 'application/json',
+    })
+    expect(errors.filter(error => !prefetchCancellations.includes(error))).toEqual([])
   })
 
   test('text spacing at the smallest cinematic viewport uses readable chapters', async ({ page }) => {
@@ -228,6 +239,8 @@ test.describe('run story resilience', () => {
     const story = page.getByTestId('run-story')
     await expect(story).toHaveAttribute('data-mode', 'scroll')
     await scrollToStage(story, 0.1)
+    await expect(story).toHaveAttribute('data-active', 'true')
+    await expect(story).toHaveAttribute('data-progress', '0.100')
     await expect(story).toHaveAttribute('data-transitioning', 'false')
     await scrollToStage(story, 0.25)
     await expect(story).toHaveAttribute('data-transitioning', 'true')
