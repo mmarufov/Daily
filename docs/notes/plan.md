@@ -877,8 +877,8 @@ Release verification: [daily-lab-release.md](daily-lab-release.md). Full browser
 ## Motion polish, October 1
 
 - [x] Inspect shipped revision and preserve the original workspace.
-- [ ] Add shared interruptible native disclosure animation across the site.
-- [ ] Add restrained press feedback, sliding selection and finding transitions.
-- [ ] Verify keyboard, rapid reversal, reduced motion and no-JavaScript behavior.
-- [ ] Run unit/type/build checks, deploy and test the public domain.
-- [ ] Record final screenshots and performance observations.
+- [x] Add shared interruptible native disclosure animation across the site.
+- [x] Add restrained press feedback, sliding selection and finding transitions.
+- [x] Verify keyboard, rapid reversal, reduced motion and no-JavaScript behavior.
+- [x] Run unit/type/build checks, deploy and test the public domain.
+- [x] Record final screenshots and performance observations.
