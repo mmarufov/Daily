@@ -951,7 +951,9 @@ original Sydney checkout untouched. Historical release notes remain as records.
 - [x] Restore the prior web layout and its matching acceptance expectations.
 - [x] Make only modest guard-card padding, metric sizing and spacing adjustments.
 - [x] Verify the result against the prior version in desktop/mobile light/dark views.
-- [ ] Pass typecheck, unit/artifact/build checks, then PR/CI and production acceptance.
-- [ ] Record screenshots and read-only verification of the existing completed run.
+- [x] Pass typecheck, unit/artifact/build checks, then PR/CI and production acceptance.
+- [x] Record screenshots and read-only verification of the existing completed run.
 
 No new section architecture, copy rewrite, backend change or Sandbox submission.
+
+Release evidence: [daily-subtle-polish-release.md](daily-subtle-polish-release.md).
