@@ -121,9 +121,12 @@ outside its boundary. Failure color appears with the verdict and its text label.
 Desktop sticky mode starts at 1,024px width and 720px height, with a 240svh story
 region. Stage progress ranges are 0-20%, 20-45%, 45-75% and 75-100%. Use restrained
 line drawing, translation, opacity and small scale changes. The background stays
-still. Native scroll and milestone buttons select the same state. Reverse and
-fast scrolling settle without queuing. A single gated frame scheduler stops when
-idle, offscreen or hidden.
+still. Native scroll and milestone buttons select the same state. Crossing a
+threshold starts a 360ms visual transition to a complete stage. New input retargets
+the current frame. The page keeps its native scroll position. Tests and probes
+leave before the Sandbox moves and the verdict enters, in either direction.
+Connectors join object edges and remain clear of cells and text. A single gated
+frame scheduler stops after settling, or immediately when offscreen or hidden.
 
 Narrow and short windows show four compact scenes in ordinary vertical flow.
 Reduced motion and no JavaScript render all four moments statically. Keep reading

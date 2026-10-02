@@ -11,6 +11,7 @@ const NARRATIVE_RUN = 'prod-llm__2026-09-02__47edb50'
 const RECORDED_EXECUTION = 'wrun_01M3WXWPKMF3H8Q66KZA56MZCV'
 const RAY_SURVIVORS = [1362, 300, 298, 100, 100, 55, 55, 55, 55, 50] as const
 const MILESTONES = ['Parser', 'Sandbox', 'Tests', 'Verdict'] as const
+const VISUAL_STOPS = [0.08, 0.32, 0.59, 0.92] as const
 
 async function scrollStory(story: Locator, progress: number) {
   await story.getByTestId('run-story-track').evaluate((element, fraction) => {
@@ -18,6 +19,11 @@ async function scrollStory(story: Locator, progress: number) {
     const sticky = element.querySelector<HTMLElement>('.run-story-sticky')!
     window.scrollTo({ top: window.scrollY + bounds.top - 96 + ((element as HTMLElement).offsetHeight - sticky.offsetHeight) * fraction, behavior: 'instant' })
   }, progress)
+}
+
+async function settledStory(story: Locator, stage: number) {
+  await expect(story).toHaveAttribute('data-transitioning', 'false')
+  await expect.poll(async () => Number(await story.getAttribute('data-visual-progress'))).toBeCloseTo(VISUAL_STOPS[stage]!, 3)
 }
 
 function recordedField(story: Locator) {
@@ -53,6 +59,59 @@ test.describe('recorded parser run', () => {
     }
   })
 
+  test('stopping just past a chapter boundary completes the scene without moving the page', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    await scrollStory(story, 0.10)
+    await settledStory(story, 0)
+    for (const [progress, stage] of [[0.21, 1], [0.46, 2], [0.76, 3]] as const) {
+      await scrollStory(story, progress)
+      await expect(story).toHaveAttribute('data-stage', String(stage))
+      const stoppedAt = await page.evaluate(() => window.scrollY)
+      await settledStory(story, stage)
+      await page.waitForTimeout(450)
+      expect(await page.evaluate(() => window.scrollY)).toBe(stoppedAt)
+      const visuals = await story.evaluate(element => {
+        const style = getComputedStyle(element)
+        return Object.fromEntries(['--run-sandbox', '--run-tests', '--run-checks', '--run-verdict'].map(name => [name, Number(style.getPropertyValue(name))]))
+      })
+      expect(visuals['--run-sandbox']).toBe(1)
+      expect(visuals['--run-tests']).toBe(stage === 2 ? 1 : 0)
+      expect(visuals['--run-checks']).toBe(stage === 2 ? 1 : 0)
+      expect(visuals['--run-verdict']).toBe(stage === 3 ? 1 : 0)
+    }
+  })
+
+  test('probe labels clear before the verdict appears during forward and reverse transitions', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    await scrollStory(story, 0.59)
+    await settledStory(story, 2)
+    for (const [progress, stage] of [[0.76, 3], [0.46, 2]] as const) {
+      const samples = await story.evaluate(async (element, destination) => {
+        const track = element.querySelector<HTMLElement>('[data-testid="run-story-track"]')!
+        const sticky = track.querySelector<HTMLElement>('.run-story-sticky')!
+        const top = window.scrollY + track.getBoundingClientRect().top - 96 + (track.offsetHeight - sticky.offsetHeight) * destination
+        const probes = element.querySelector('.run-scene-checks')!
+        const result = element.querySelector('.run-scene-result')!
+        const frames: { probes: number; result: number }[] = []
+        window.scrollTo({ top, behavior: 'instant' })
+        const start = performance.now()
+        await new Promise<void>(resolve => {
+          const sample = () => {
+            frames.push({ probes: Number(getComputedStyle(probes).opacity), result: Number(getComputedStyle(result).opacity) })
+            if (performance.now() - start < 550) requestAnimationFrame(sample)
+            else resolve()
+          }
+          requestAnimationFrame(sample)
+        })
+        return frames
+      }, progress)
+      expect(samples.length).toBeGreaterThan(3)
+      expect(samples.some(sample => sample.probes > 0 || sample.result > 0)).toBe(true)
+      expect(samples.filter(sample => sample.probes > 0.01 && sample.result > 0.01)).toEqual([])
+      await settledStory(story, stage)
+    }
+  })
+
   test('milestones work from the keyboard and keep focus while changing the scene', async ({ page }) => {
     const story = page.getByTestId('run-story')
     for (const [stage, name] of MILESTONES.entries()) {
@@ -61,18 +120,24 @@ test.describe('recorded parser run', () => {
       await expect(button).toBeFocused()
       await expect(button).toHaveAttribute('aria-current', 'step')
       await expect(story).toHaveAttribute('data-stage', String(stage))
+      await settledStory(story, stage)
     }
     await expect(recordedField(story)).toHaveAccessibleName('48 correct, 4 failed, 12 not applicable, out of 64 cases')
   })
 
   test('rapid direction changes settle at the current position without queued transitions', async ({ page }) => {
     const story = page.getByTestId('run-story')
-    for (const progress of [0.90, 0.10, 0.60, 0.30, 0.90]) await scrollStory(story, progress)
+    for (const progress of [0.90, 0.10, 0.60, 0.30, 0.90]) {
+      await scrollStory(story, progress)
+      await page.waitForTimeout(60)
+    }
     await expect(story).toHaveAttribute('data-stage', '3')
     await expect(story.getByRole('button', { name: 'Verdict', exact: true })).toHaveAttribute('aria-current', 'step')
     await expect.poll(() => story.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
+    await settledStory(story, 3)
     await page.waitForTimeout(700)
     await expect(story).toHaveAttribute('data-stage', '3')
+    await settledStory(story, 3)
   })
 
   test('hiding the document suspends the story and returning preserves its scroll position', async ({ page }) => {
@@ -85,7 +150,10 @@ test.describe('recorded parser run', () => {
       document.dispatchEvent(new Event('visibilitychange'))
     })
     await expect(story).toHaveAttribute('data-active', 'false')
+    await expect(story).toHaveAttribute('data-transitioning', 'false')
+    const frozen = await story.getAttribute('data-visual-progress')
     await page.waitForTimeout(400)
+    await expect(story).toHaveAttribute('data-visual-progress', frozen!)
     await expect(story).toHaveAttribute('data-stage', '2')
     await page.evaluate(() => {
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => false })
@@ -93,6 +161,48 @@ test.describe('recorded parser run', () => {
     })
     await expect(story).toHaveAttribute('data-active', 'true')
     await expect(story).toHaveAttribute('data-stage', '2')
+    await settledStory(story, 2)
+  })
+
+  test('diagram connectors leave the suite and visible labels clear at desktop widths', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    for (const width of [1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      for (const [progress, stage] of [[0.59, 2], [0.92, 3]] as const) {
+        await scrollStory(story, progress)
+        await settledStory(story, stage)
+        const collisions = await story.evaluate(element => {
+          const scene = element.querySelector('.run-scene-canvas')!
+          const visible = (node: Element) => {
+            let opacity = 1
+            for (let current: Element | null = node; current && current !== scene; current = current.parentElement) {
+              const style = getComputedStyle(current)
+              if (style.display === 'none' || style.visibility === 'hidden') return false
+              opacity *= Number(style.opacity)
+            }
+            return opacity > 0.01
+          }
+          const obstacles = [...scene.querySelectorAll('.run-input-cell, .run-inputs > text, .run-scene-checks > p, .run-scene-checks li, .run-scene-result')]
+            .filter(visible).map(node => ({ label: node.textContent?.trim() || node.getAttribute('class'), box: node.getBoundingClientRect() }))
+          const overlaps: string[] = []
+          for (const path of scene.querySelectorAll<SVGPathElement>('.run-path-base, .run-path, .run-grading-path > path')) {
+            if (!visible(path)) continue
+            const transform = path.getScreenCTM()!
+            const length = path.getTotalLength()
+            for (let offset = 0; offset <= length; offset += 2) {
+              const point = path.getPointAtLength(offset).matrixTransform(transform)
+              for (const { label, box } of obstacles) {
+                if (point.x > box.left - 1 && point.x < box.right + 1 && point.y > box.top - 1 && point.y < box.bottom + 1) {
+                  overlaps.push(`${path.getAttribute('class')} intersects ${label}`)
+                }
+              }
+            }
+          }
+          return [...new Set(overlaps)]
+        })
+        expect(collisions, `connector collisions at ${width}px, stage ${stage}`).toEqual([])
+      }
+    }
   })
 
   test('every sticky scene fits a 720px-tall desktop viewport', async ({ page }) => {
@@ -103,6 +213,7 @@ test.describe('recorded parser run', () => {
       for (const [stage, progress] of [0.08, 0.32, 0.59, 0.92].entries()) {
         await scrollStory(story, progress)
         await expect(story).toHaveAttribute('data-stage', String(stage))
+        await settledStory(story, stage)
         await expect.poll(() => story.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
         const selectors = ['.run-story-heading', '.run-rail', '.run-recording-label', '.run-scene-caption']
         if (stage === 2) selectors.push('.run-scene-checks')

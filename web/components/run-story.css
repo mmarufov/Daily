@@ -21,14 +21,12 @@
 .run-scene-canvas { position: relative; }
 .run-diagram { width: 100%; height: auto; display: block; color: var(--d-ink); overflow: visible; }
 .run-drawing-grid { opacity: .17; }
-.run-path-base { stroke: var(--d-rule); stroke-width: 1; }
-.run-path { stroke: var(--d-ink-38); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: var(--run-line-offset); }
-.run-start-dot { fill: var(--d-ink-38); }
-.run-system { transform: translateX(calc(-200px * var(--run-verdict))); }
+.run-system { transform: translateX(var(--run-system-x)); }
 .run-machine { opacity: var(--run-sandbox); }
 .run-machine-wash { opacity: calc(.7 * var(--run-machine-opacity)); }
 .run-machine-outline { stroke: var(--d-ink-38); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: var(--run-boundary-offset); opacity: var(--run-machine-opacity); }
 .run-machine-guide { stroke: var(--d-rule); stroke-width: 1; opacity: var(--run-machine-opacity); }
+.run-machine > .run-svg-label, .run-machine-marks { opacity: var(--run-machine-opacity); }
 .run-svg-label { font-family: var(--font-mono); fill: var(--d-ink-38); font-size: 10px; letter-spacing: 1.25px; }
 .run-svg-small { font-family: var(--font-mono); font-size: 11px; fill: var(--d-ink-38); }
 .run-machine-marks path { stroke: var(--d-ink-38); stroke-width: 2; }
@@ -43,10 +41,13 @@
 .run-inputs { opacity: var(--run-tests); }
 .run-input-cell { fill: var(--d-paper); stroke: var(--d-control); }
 .run-input-count { font: 28px var(--font-mono); fill: var(--d-ink); letter-spacing: -2px; }
-.run-test-packet { transform: translateX(var(--run-packet-x)); }
+.run-path-base { stroke: var(--d-rule); stroke-width: 1; }
+.run-path { stroke: var(--d-ink-38); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--run-tests)); }
+.run-test-packet { transform: translateX(calc(var(--run-packet-x) * .17)); }
 .run-test-packet rect { fill: var(--d-paper); stroke: var(--d-ink-38); }
 .run-grading-path { opacity: var(--run-verdict); }
 .run-grading-path path { stroke: var(--d-ink-38); stroke-width: 1.2; }
+.run-grading-arrow-compact { display: none; }
 .run-scene-checks { position: absolute; top: 21%; right: 0; width: 25%; opacity: var(--run-checks); pointer-events: none; }
 .run-scene-checks > p > span { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--d-ink-38); font-weight: 400; margin-top: 4px; }
 .run-scene-checks > p { font-size: 12px; font-weight: 550; margin: 0 0 18px; }
@@ -130,6 +131,11 @@
   .run-file-paper, .run-input-cell { fill: Canvas; stroke: CanvasText; }
   .run-rail button[aria-current='step'] > i { background: Highlight; }
   .run-probes li > svg, .run-probes li[data-held='false'] > svg { color: CanvasText; }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .run-grading-arrow-wide { display: none; }
+  .run-grading-arrow-compact { display: block; }
 }
 
 @media (min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference) {

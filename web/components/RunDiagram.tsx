@@ -6,15 +6,13 @@ export function RunDiagram({ data, chapter }: { data: RunStoryData; chapter?: nu
   const id = useId().replaceAll(':', '')
   const staticStyle = chapter === undefined ? undefined : storyFrame(STORY_STOPS[chapter] ?? 0) as CSSProperties
   const viewBox = chapter === 0 ? '140 30 480 340' : chapter === 1 ? '320 0 390 360' : chapter === 2 ? '25 0 650 360' : '0 0 960 380'
+  const inputPath = 'M214 149h42q8 0 8 8v21q0 8 8 8h118m-6-5 6 5-6 5'
   return <svg className="run-diagram" viewBox={viewBox} fill="none" aria-hidden="true" style={staticStyle}>
     <defs>
       <pattern id={`${id}-dots`} width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".65" fill="currentColor" /></pattern>
       <linearGradient id={`${id}-wash`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="var(--d-paper)" /><stop offset="1" stopColor="var(--d-paper-2)" /></linearGradient>
     </defs>
     <rect className="run-drawing-grid" x="24" y="12" width="912" height="336" fill={`url(#${id}-dots)`} />
-    <path className="run-path-base" d="M55 207H900" />
-    <path className="run-path" d="M55 207H900" pathLength="1" />
-    <circle className="run-start-dot" cx="55" cy="207" r="3" />
     <g className="run-system"><g className="run-machine">
       <rect className="run-machine-wash" x="345" y="36" width="300" height="294" rx="2" fill={`url(#${id}-wash)`} />
       <path className="run-machine-outline" d="M385 36h-40v40m260-40h40v40M345 290v40h40m220 0h40v-40" pathLength="1" />
@@ -43,8 +41,14 @@ export function RunDiagram({ data, chapter }: { data: RunStoryData; chapter?: nu
       <text className="run-input-count" x="72" y="260">{data.counts.total}</text>
       <text className="run-svg-small" x="109" y="259">cases</text>
       <text className="run-svg-small" x="72" y="283">{data.counts.faultInjected} fault-injected</text>
-      <g className="run-test-packet"><rect x="225" y="210" width="8" height="8" rx="2" /><rect x="243" y="210" width="8" height="8" rx="2" /><rect x="261" y="210" width="8" height="8" rx="2" /></g>
+      <path className="run-path-base" d={inputPath} />
+      <path className="run-path" d={inputPath} pathLength="1" />
+      <g className="run-test-packet"><rect x="282" y="182" width="8" height="8" rx="2" /><rect x="300" y="182" width="8" height="8" rx="2" /><rect x="318" y="182" width="8" height="8" rx="2" /></g>
     </g>
-    <g className="run-grading-path"><path d="M445 207h100m-8-6 8 6-8 6" /><text className="run-svg-label" x="163" y="358">MICROVM STOPPED · {data.events[6]!.elapsed}s</text></g>
+    <g className="run-grading-path">
+      <path className="run-grading-arrow-wide" d="M457 207h85m-7-6 7 6-7 6" />
+      <path className="run-grading-arrow-compact" d="M450 207h20m-5-5 5 5-5 5" />
+      <text className="run-svg-label" x="163" y="358">MICROVM STOPPED · {data.events[6]!.elapsed}s</text>
+    </g>
   </svg>
 }
