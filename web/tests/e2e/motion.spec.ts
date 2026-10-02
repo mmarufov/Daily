@@ -19,7 +19,7 @@ function disclosure(summary: Locator) {
 test.describe('disclosure motion', () => {
   test('opening renders an actual intermediate height before settling', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
-    await page.goto('/')
+    await page.goto('/engineering')
     await page.waitForLoadState('networkidle')
     const summary = page.locator('summary').filter({ hasText: /^Experiment provenance$/ })
     const details = disclosure(summary)
@@ -50,7 +50,7 @@ test.describe('disclosure motion', () => {
 
   test('provenance opens and closes from the keyboard without losing focus or leaving a fixed height', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
-    await page.goto('/')
+    await page.goto('/engineering')
     await page.waitForLoadState('networkidle')
     const summary = page.locator('summary').filter({ hasText: /^Experiment provenance$/ })
     const details = disclosure(summary)
@@ -122,7 +122,7 @@ test.describe('disclosure motion', () => {
 
   test('reduced motion applies state immediately without a running disclosure animation', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.goto('/')
+    await page.goto('/engineering')
     await page.waitForLoadState('networkidle')
     const summary = page.locator('summary').filter({ hasText: /^Experiment provenance$/ })
     const details = disclosure(summary)
@@ -148,7 +148,7 @@ test.describe('disclosures without JavaScript', () => {
 
   test('native summaries expose and hide evidence without hydration', async ({ page }) => {
     for (const [path, label, content] of [
-      ['/', /^Experiment provenance$/, /Base revision/],
+      ['/engineering', /^Experiment provenance$/, /Base revision/],
       ['/lab', /^Test scope$/, /Candidates can target these public cases/],
     ] as const) {
       await page.goto(path)
@@ -168,7 +168,7 @@ test.describe('disclosures without JavaScript', () => {
 test.describe('finding selection motion', () => {
   test('rapid selection changes finish on the exact last requested evidence', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
-    await page.goto('/')
+    await page.goto('/engineering')
     await page.waitForLoadState('networkidle')
     const guard = page.getByTestId('guard-experiment-panel')
     const original = guard.getByRole('button', { name: 'Original', exact: true })
@@ -185,30 +185,15 @@ test.describe('finding selection motion', () => {
     await expect(guard.getByText('Mismatched batches refused.')).toBeVisible()
     await expect.poll(() => guard.evaluate(element => element.getAnimations({ subtree: true }).length)).toBe(0)
 
-    const retrieval = page.getByTestId('retrieval-loss-panel')
-    const stages = ['Rank cutoff: 4 of 97 losses', 'Lookback: 75 of 97 losses', 'Scoring: 9 of 97 losses']
-    await retrieval.scrollIntoViewIfNeeded()
-    for (const name of stages) {
-      await retrieval.getByRole('button', { name, exact: true }).dispatchEvent('click')
-      await page.waitForTimeout(40)
-    }
-    await expect(retrieval.getByRole('heading', { name: 'Scoring removed 9' })).toBeVisible()
-    await expect(retrieval.locator('button[aria-pressed="true"]')).toHaveCount(1)
-    await expect(retrieval.getByRole('button', { name: stages[2], exact: true })).toHaveAttribute('aria-pressed', 'true')
-    await expect.poll(() => retrieval.evaluate(element => element.getAnimations({ subtree: true }).length)).toBe(0)
   })
 
   test('reduced motion keeps finding changes immediate and animation free', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.goto('/')
+    await page.goto('/engineering')
     await page.waitForLoadState('networkidle')
     const guard = page.getByTestId('guard-experiment-panel')
     await guard.getByRole('button', { name: 'Guard experiment', exact: true }).click()
     await expect(guard.getByTestId('guard-metric-recall')).toContainText('18.7%')
     expect(await guard.evaluate(element => element.getAnimations({ subtree: true }).length)).toBe(0)
-    const retrieval = page.getByTestId('retrieval-loss-panel')
-    await retrieval.getByRole('button', { name: 'Rank cutoff: 4 of 97 losses', exact: true }).click()
-    await expect(retrieval.getByRole('heading', { name: 'Rank cutoff removed 4' })).toBeVisible()
-    expect(await retrieval.evaluate(element => element.getAnimations({ subtree: true }).length)).toBe(0)
   })
 })

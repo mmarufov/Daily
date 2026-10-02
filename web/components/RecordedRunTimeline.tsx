@@ -66,7 +66,6 @@ export function RecordedRunTimelineView({ execution }: { execution: RecordedExec
       </ol>
       <p className="recorded-execution-provenance">
         Spec {outcome.grading.spec_version} · <code>{outcome.grading.spec_hash}</code> · {outcome.grading.verdict}.
-        {' '}A separate execution from the published spec 1 result above.
       </p>
       <a className="text-link recorded-execution-source" href={RECORDED_EXECUTION_HREF}>
         Inspect the recorded run <span aria-hidden="true">↗</span>

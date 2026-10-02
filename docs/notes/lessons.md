@@ -582,3 +582,12 @@ Use concrete descriptions and delete repeated qualifications before rewriting.
 Put each caveat beside its claim once. Keep source comments for constraints and
 non-obvious reasons; record debugging history in the commit or PR. For copy work,
 preserve the layout and include exact before-to-after text for review.
+
+## Copy cuts can expose layout imbalance
+
+The shortened homepage left a small centered introduction beside a tall result and
+execution log, inside two bordered surfaces. Check composition again after substantial
+copy cuts. For a long sequence, give each step a clear place and keep the main action
+visible. Use motion to explain a recorded transition. Keep prose readable while the
+visual changes. Prototype the affected homepage section before extending the change
+across the site; the prior broad composition pass was reverted.

@@ -113,29 +113,24 @@ test('Fraunces is fetched only after entering the Reader, where the editorial he
 })
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test(`${colorScheme} mode exposes readable, touch-sized instrument controls and visible keyboard focus`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
+  test(`${colorScheme} mode exposes touch-sized story controls and visible keyboard focus`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.emulateMedia({ colorScheme, reducedMotion: 'no-preference' })
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-    const hero = page.getByTestId('hero-sieve')
-    await expect(hero).toHaveAttribute('data-stage', '9')
-    const controls = [
-      hero.getByRole('combobox', { name: 'Reader fixture' }),
-      hero.getByRole('slider', { name: 'Pipeline stage' }),
-      hero.getByRole('button', { name: 'Replay', exact: true }),
-    ]
-    for (const control of controls) {
+    const story = page.getByTestId('run-story')
+    await expect(story).toHaveAttribute('data-mode', 'scroll')
+    for (const name of ['Parser', 'Sandbox', 'Tests', 'Verdict']) {
+      const control = story.getByRole('button', { name, exact: true })
       await expect(control).toBeVisible()
       const box = await control.boundingBox()
       expect(box).not.toBeNull()
       expect(box!.width).toBeGreaterThanOrEqual(44)
       expect(box!.height).toBeGreaterThanOrEqual(44)
     }
-
-    const slider = hero.getByRole('slider', { name: 'Pipeline stage' })
-    await slider.press('Home')
-    await expect(slider).toBeFocused()
-    const focus = await slider.evaluate((element) => {
+    const parser = story.getByRole('button', { name: 'Parser', exact: true })
+    await parser.press('Enter')
+    await expect(parser).toBeFocused()
+    const focus = await parser.evaluate((element) => {
       const style = getComputedStyle(element)
       return { visible: element.matches(':focus-visible'), width: parseFloat(style.outlineWidth), style: style.outlineStyle }
     })
