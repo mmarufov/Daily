@@ -218,7 +218,9 @@ test.describe('the live runner', () => {
     await page.goto('/lab')
     await page.getByRole('button', { name: 'Run in Sandbox' }).click()
     await expect(page.getByText('Caught by a fault-injected case')).toBeVisible()
-    const fault = page.locator('li').filter({ hasText: 'syn-positional-reordered' }).first()
+    const fault = page.getByRole('listitem').filter({
+      has: page.getByText('syn-positional-reordered', { exact: true }),
+    })
     await expect(fault).toContainText('equal length, internally reordered')
     await expect(fault).toContainText('instead of refusing')
     await expect(page.locator('[data-case="syn-positional-reordered"]')).toHaveAttribute('data-tone', 'wrong')
