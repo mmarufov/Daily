@@ -13,6 +13,10 @@ export function AnimatedDetails({ children, className = '', onClick, ...props }:
     active.current?.cancel()
     active.current = null
     if (element) {
+      if (destination.current === false && element.contains(document.activeElement)) {
+        const summary = element.querySelector<HTMLElement>(':scope > summary')
+        if (summary && !summary.contains(document.activeElement)) summary.focus({ preventScroll: true })
+      }
       if (destination.current !== null) element.open = destination.current
       element.style.removeProperty('overflow')
       delete element.dataset.motion
