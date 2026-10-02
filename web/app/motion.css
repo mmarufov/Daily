@@ -138,3 +138,5 @@ details.instrument-provenance[data-motion="closing"] > summary::after {
     scroll-behavior: auto !important;
   }
 }
+
+.claim[data-motion="closing"] .claim-more::after { transform: rotate(90deg); }

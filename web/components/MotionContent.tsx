@@ -6,6 +6,7 @@ import { useLayoutEffect, useRef, type ComponentProps } from 'react'
 export function MotionContent({ changeKey, children, ...props }: ComponentProps<'div'> & { changeKey: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const previousHeight = useRef<number | null>(null)
+  const interrupted = useRef<{ opacity: string; transform: string }[] | null>(null)
 
   useLayoutEffect(() => {
     const element = ref.current
@@ -20,13 +21,15 @@ export function MotionContent({ changeKey, children, ...props }: ComponentProps<
         { height: [`${from}px`, `${to}px`] },
         { duration: 260, easing: 'cubic-bezier(.22, 1, .36, 1)' },
       ))
-      for (const child of element.children) {
+      for (const [index, child] of Array.from(element.children).entries()) {
+        const start = interrupted.current?.[index]
         animations.push(child.animate(
-          { opacity: [0.55, 1], transform: ['translateY(3px)', 'translateY(0)'] },
+          { opacity: [start?.opacity ?? '0.55', '1'], transform: [start?.transform ?? 'translateY(3px)', 'translateY(0)'] },
           { duration: 220, easing: 'cubic-bezier(.22, 1, .36, 1)' },
         ))
       }
     }
+    interrupted.current = null
     const finish = () => animations.forEach((animation) => animation.cancel())
     const resize = () => {
       finish()
@@ -39,6 +42,10 @@ export function MotionContent({ changeKey, children, ...props }: ComponentProps<
     return () => {
       if (animations.some((animation) => animation.playState === 'running')) {
         previousHeight.current = element.getBoundingClientRect().height
+        interrupted.current = Array.from(element.children, (child) => {
+          const style = getComputedStyle(child)
+          return { opacity: style.opacity, transform: style.transform }
+        })
       }
       finish()
       media.removeEventListener('change', finish)
