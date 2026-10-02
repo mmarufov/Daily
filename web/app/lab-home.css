@@ -1,5 +1,5 @@
 /* Daily introduces the product; the Lab is its first featured destination. */
-.lab-landing { overflow: clip; }
+.lab-landing { min-width: 0; }
 .lab-hero { padding-block: clamp(40px, 5vw, 72px) 52px; }
 .lab-hero-grid { display: grid; grid-template-columns: minmax(0, .87fr) minmax(0, 1.13fr); gap: clamp(28px, 4vw, 64px); align-items: center; }
 .hero-copy { padding-bottom: 22px; }
@@ -59,9 +59,9 @@
 .instrument-provenance summary::-webkit-details-marker { display: none; }
 .instrument-link { display: flex; align-items: center; gap: 14px; min-height: 36px; flex-shrink: 0; font-size: 10px; text-decoration: none; color: var(--d-zone-mid); }
 .instrument-empty { min-height: 420px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.finding-section { border-top: 1px solid var(--d-rule); padding-block: 92px; }
+.finding-section { border-top: 1px solid var(--d-rule); padding-block: var(--section-space); }
 .finding-layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(32px, 6vw, 92px); align-items: start; }
-.finding-copy h2, .invitation-copy h2 { font-size: clamp(34px, 3.6vw, 48px); line-height: 1.075; letter-spacing: -.05em; font-weight: 500; max-width: 12ch; margin: 21px 0; text-wrap: balance; }
+.finding-copy h2, .section-heading h2 { font-size: clamp(34px, 3.6vw, 48px); line-height: 1.075; letter-spacing: -.05em; font-weight: 500; max-width: 16ch; margin: 16px 0 20px; text-wrap: balance; }
 .finding-copy > p:not(.eyebrow) { max-width: 35ch; color: var(--d-ink-58); font-size: 14px; line-height: 1.75; margin: 0; }
 .finding-copy .text-link { margin-top: 20px; }
 .defect-strip { display: flex; align-items: center; gap: 22px; margin-block: 28px 20px; }
@@ -70,25 +70,20 @@
 .defect-quantity span { color: var(--d-ink-38); font-size: 11px; }
 .defect-strip > span { color: var(--d-ink-38); }
 .defect-caption { font-size: 11px !important; max-width: 40ch !important; }
-.lab-invitation { padding-block: 8px 72px; }
-.invitation-inner { border: 1px solid var(--d-rule); border-radius: 10px; padding: clamp(24px, 4vw, 48px); display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; background: var(--d-paper-2); }
-.invitation-copy h2 { max-width: 13ch; margin-top: 18px; }
-.invitation-copy > p:not(.eyebrow) { max-width: 38ch; color: var(--d-ink-58); font-size: 14px; line-height: 1.7; }
-.invitation-copy .button-primary { margin-top: 16px; }
-.recorded-result { container-type: inline-size; padding: 24px; border: 1px solid var(--d-rule); border-radius: 8px; background: var(--d-paper); box-shadow: var(--shadow-1); }
-.recorded-result > .recorded-execution { border-top: 1px solid var(--d-rule); margin-top: 24px; padding-top: 24px; }
+.lab-invitation { padding-block: 24px var(--section-space); }
+.recorded-result { min-width: 0; container-type: inline-size; }
 .recorded-result-top { display: flex; gap: 16px; justify-content: space-between; align-items: center; }
-.recorded-result-top span:first-child { font-family: var(--font-mono); font-size: 11px; }
-.recorded-status { color: var(--d-signal); border: 1px solid var(--d-signal); border-radius: 4px; padding: 3px 7px; font-size: 10px; }
-.recorded-result-note { color: var(--d-ink-38); font-size: 11px; margin: 8px 0 24px; }
+.recorded-result-top span:first-child { font-family: var(--font-mono); font-size: 14px; }
+.recorded-status { color: var(--d-signal); border: 1px solid var(--d-signal); border-radius: 4px; padding: 3px 7px; font-size: 12px; }
+.recorded-result-note { color: var(--d-ink-38); font-size: 12px; margin: 8px 0 24px; }
 .recorded-case-field { display: grid; grid-template-columns: repeat(8, minmax(20px, 1fr)); gap: 4px; margin-block: 20px; }
 .recorded-case-field > .case-status-cell { aspect-ratio: 1; }
 @container (min-width: 380px) {
   .recorded-case-field { grid-template-columns: repeat(16, minmax(20px, 1fr)); }
 }
-.recorded-result-summary { color: var(--d-ink-58); font-size: 12px; margin-block: 16px 8px; }
-.invitation-facts { display: flex; gap: 30px; margin-top: 22px; color: var(--d-ink-38); font-size: 11px; }
-.invitation-facts b { display: block; color: var(--d-ink); font-weight: 500; font-size: 13px; margin-bottom: 3px; }
+.recorded-result-summary { color: var(--d-ink-58); font-size: 14px; line-height: 1.7; margin-block: 16px 8px; }
+.invitation-facts { display: flex; flex-wrap: wrap; gap: 20px 30px; margin-top: 20px; color: var(--d-ink-38); font-size: 12px; }
+.invitation-facts b { display: block; color: var(--d-ink); font-weight: 500; font-size: 14px; margin-bottom: 4px; }
 @media (hover: hover) and (pointer: fine) {
   .playback-button:hover { background: #272b2e; }
   .instrument-link:hover { color: #fafaf9; }
@@ -102,7 +97,6 @@
   .instrument-readout { padding-block: 24px; }
   .instrument-number { font-size: 45px; }
   .finding-layout { gap: 36px; }
-  .invitation-inner { gap: 30px; }
 }
 @media (max-width: 48rem) {
   .lab-hero { padding-block: 32px 34px; }
@@ -120,21 +114,16 @@
   .hero-context { margin-top: 26px; align-items: flex-start; }
   .hero-context p { max-width: 32ch; font-size: 11px; }
   .hero-context .text-link { font-size: 11px; min-height: 32px; }
-  .finding-section { padding-block: 58px; }
   .finding-layout { grid-template-columns: minmax(0,1fr); gap: 30px; }
   .finding-copy h2 { max-width: 16ch; font-size: 38px; margin-block: 16px; }
   .finding-copy > p:not(.eyebrow) { max-width: 45ch; }
   .finding-copy .text-link { margin-top: 10px; }
-  .invitation-inner { grid-template-columns: minmax(0,1fr); gap: 32px; }
-  .invitation-copy h2 { font-size: 38px; max-width: 15ch; }
 }
 @media (max-width: 25rem) {
   .instrument { padding-inline: 15px; }
   .instrument-field { grid-template-columns: repeat(48,minmax(0,1fr)); gap: 2px; }
   .instrument-total { font-size: 10px; }
   .stage-name { font-size: 14px; }
-  .recorded-result { padding: 18px; }
-  .invitation-inner { padding: 22px 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .instrument-field .sieve-cell { transition: none; animation: none; }
@@ -157,16 +146,36 @@
 .edition-synthetic { color: var(--d-caution); }
 .edition-unavailable { min-height: 320px; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
 .pipeline-layout { align-items: center; }
-.home-closing { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding-top: 60px; }
+.home-closing { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding-top: 48px; }
 .home-closing p { margin: 0; font-size: clamp(19px, 2.2vw, 28px); letter-spacing: -.035em; }
 @media (max-width: 48rem) {
   .edition-preview { padding: 23px 24px 14px; }
   .edition-wordmark { font-size: 30px; }
   .edition-stories li { padding-block: 16px; }
-  .lab-invitation { padding-bottom: 48px; }
   .home-closing { align-items: flex-start; flex-direction: column; padding-top: 40px; gap: 18px; }
 }
 @media (max-width: 25rem) {
   .edition-preview { padding-inline: 18px; }
   .invitation-facts { gap: 20px; }
+}
+
+/* Introductions and evidence each get the page width they need. */
+.section-stack { display: grid; gap: 32px; }
+.section-intro { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.section-heading h2 { margin-bottom: 0; }
+.section-description { min-width: 0; }
+.section-description > p { max-width: 62ch; margin: 0; font-size: 15px; line-height: 1.7; color: var(--d-ink-58); }
+.section-description > .button-primary { margin-top: 20px; }
+.section-description > .text-link { margin-top: 12px; }
+.lab-evidence { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--d-rule); }
+.lab-evidence > .recorded-result { padding-top: 32px; border-top: 1px solid var(--d-rule); }
+@media (min-width: 64rem) {
+  .section-intro, .lab-evidence { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 64px; }
+  .section-description { padding-top: 32px; }
+  .lab-evidence > .recorded-result { padding: 0 0 0 48px; border-top: 0; border-left: 1px solid var(--d-rule); }
+}
+@media (max-width: 63.999rem) {
+  .finding-layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .finding-copy > p:not(.eyebrow) { max-width: 62ch; }
+  .section-description > p { font-size: 14px; }
 }

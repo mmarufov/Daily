@@ -914,3 +914,19 @@ deployment and one real default-parser run. Earlier stop instructions are lifted
 - [x] Record desktop/mobile screenshots, performance and release identifiers.
 
 Release evidence: [daily-first-release.md](daily-first-release.md).
+
+## Sitewide composition refinement
+
+Approved follow-up: preserve Daily-first identity while replacing tall evidence
+cards beside short introductions with deliberate introduction, visual and support
+rows. Start from main d1ca5383 in an isolated checkout; preserve Sydney's dirty tree.
+
+- [x] Capture production baselines in light/dark themes across all five routes.
+- [x] Recompose homepage Lab evidence, guard comparison and retrieval losses.
+- [x] Refine supporting Lab, Evidence, Findings, Reader and shared spacing.
+- [ ] Verify responsiveness, accessible evidence, motion and runner state preservation.
+- [x] Pass types, units, artifact checks/staleness, build and final diff review.
+- [ ] Open PR, pass CI, merge and verify the public deployment.
+- [ ] Pass production Chromium/WebKit suite with mocked Lab endpoints.
+- [ ] Record before/after screenshots and throttled mobile performance.
+- [ ] Read-only verify existing run wrun_01M3X9RYY80MHVRYFT7GWSWCN0; no new execution.

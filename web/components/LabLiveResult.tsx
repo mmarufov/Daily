@@ -13,7 +13,7 @@ import { CaseStatusMark, type CaseStatusTone } from './CaseStatusMark'
 
 /**
  * A live run's result, in the order a visitor asks about it: did it pass,
- * what caught it, where across the 64 cases, and what the microVM reported.
+ * where across the 64 cases, what caught it, and what the microVM reported.
  *
  * Every value is read off the run. Nothing here is computed from a guess, and
  * a value the run did not report is labelled "not measured" rather than drawn
@@ -51,14 +51,14 @@ export function LiveResult({
 
   const grading = outcome.grading ?? null
   return (
-    <div className="flex flex-col gap-10">
+    <div className="lab-live-result flex flex-col gap-8">
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-3">
           {outcome.verdict !== undefined && outcome.verdict !== null ? <VerdictBadge verdict={outcome.verdict} /> : null}
           <p className="m-0 max-w-2xl text-sm text-ink-60">{outcome.reason ?? outcome.detail}</p>
         </div>
         {grading !== null ? (
-          <p className="m-0 text-xs text-ink-40">
+          <p className="m-0 text-sm text-ink-40">
             Graded outside the microVM under criteria generation {grading.spec_version}, spec{' '}
             {grading.spec_hash}. The parser declared{' '}
             <span className="text-ink-60">{grading.declared_protocol}</span>; that is checked, not
@@ -71,8 +71,8 @@ export function LiveResult({
 
       {grading !== null && grading.cases.length > 0 ? (
         <>
-          <Faults grading={grading} />
           <CaseGrid catalog={catalog} grading={grading} />
+          <Faults grading={grading} />
           <Recorded grading={grading} />
           <Criteria grading={grading} />
         </>
@@ -266,7 +266,7 @@ function Recorded({ grading }: { grading: LiveGrading }) {
       </h3>
       <ul className="m-0 flex list-none flex-col gap-px border-y border-rule p-0">
         {wrong.slice(0, 8).map((c) => (
-          <li key={c.case_id} className="grid gap-x-4 py-1.5 text-xs sm:grid-cols-[14rem_minmax(0,1fr)]">
+          <li key={c.case_id} className="grid gap-x-4 py-2.5 text-sm sm:grid-cols-[14rem_minmax(0,1fr)]">
             <span className="font-mono text-ink">{c.case_id}</span>
             <span className="text-ink-60">
               It {DID[c.status]}{c.detail !== '' && c.detail !== c.why ? `: ${c.detail}` : ''}.{' '}
@@ -289,7 +289,7 @@ function Recorded({ grading }: { grading: LiveGrading }) {
 function Criteria({ grading }: { grading: LiveGrading }) {
   return (
     <section className="relative overflow-x-auto">
-      <table className="w-full min-w-md border-collapse text-xs">
+      <table className="w-full min-w-md border-collapse text-sm">
         <caption className="label pb-2 text-left text-ink-40">
           The {grading.criteria.length} acceptance criteria
         </caption>
@@ -362,7 +362,7 @@ function Sandbox({ sandbox }: { sandbox: SandboxSummary | null }) {
             <dd className={`m-0 mt-0.5 break-all ${value === NOT_MEASURED ? 'text-unknown' : 'text-ink'}`}>
               {value}
               {note !== undefined ? (
-                <span className="block pt-1 font-sans text-[11px] text-ink-40">{note}</span>
+                <span className="block pt-1 font-sans text-xs text-ink-40">{note}</span>
               ) : null}
             </dd>
           </div>

@@ -560,3 +560,11 @@ Pair a verdict with the actual execution record: scope, isolation checks, teardo
 and independent grading. Keep recording IDs and criteria generations explicit when
 showing records side by side. Decorative category labels add no context when the
 headline already establishes the product; preserve numbering only for real sequence.
+
+## Composition: evidence needs hierarchy, not a taller container
+
+The owner liked Daily's direction but flagged tall all-in-one evidence cards next
+to short introductions as unfinished. Separate introductions, primary visuals and
+supporting notes into rows. Balance content through composition rather than adding
+filler, shrinking text, hiding key evidence or vertically centering stranded copy.
+Keep intentional functional surfaces, such as the editor and newspaper, distinct.

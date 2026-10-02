@@ -1,3 +1,4 @@
+import '../supporting-pages.css'
 import { AnimatedDetails } from '@/components/AnimatedDetails'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -104,8 +105,8 @@ export default async function EvidencePage({
       : undefined
 
   return (
-    <div className="flex flex-col">
-      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-14">
+    <div className="evidence-page flex flex-col">
+      <section className="support-intro hero frame relative flex flex-col gap-5">
         <p className="label m-0 text-ink-40">
           The ruler · artifacts {index.source === 'blob' ? 'from the published store' : 'committed in this repository'}
         </p>
@@ -122,7 +123,7 @@ export default async function EvidencePage({
         ) : null}
       </section>
 
-      <section className="frame flex flex-col gap-5 pb-10">
+      <section className="evidence-filter-section frame flex flex-col gap-5">
         {requestedButMissing ? (
           <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
             The run <span className="text-ink">{requested.run}</span> is not in the current
@@ -145,7 +146,7 @@ export default async function EvidencePage({
 
       {state.view === 'summary' ? (
         <>
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="support-section frame flex flex-col gap-6">
             <Band
               index="01"
               title={comparison === null ? 'Metrics' : 'Two runs, one scale'}
@@ -166,7 +167,7 @@ export default async function EvidencePage({
             {/* The metric table's intrinsic width exceeds a 375px viewport,
                 so it gets its own scroll port rather than pushing the page
                 sideways. */}
-            <div className="relative overflow-x-auto">
+            <div className="evidence-table-scroll relative min-w-0 overflow-x-auto">
               <MetricTable
                 primary={primary}
                 comparison={comparison}
@@ -175,7 +176,7 @@ export default async function EvidencePage({
               />
             </div>
             {state.persona === undefined ? (
-              <p className="m-0 max-w-3xl text-xs text-ink-40">
+              <p className="m-0 max-w-3xl text-sm text-ink-40">
                 The weakest-fixture column exists so an average cannot hide a reader the pipeline
                 fails. A filled dot marks a difference past the fixed &plusmn;0.02 cutoff, which is the
                 harness author&rsquo;s threshold and not a significance test.
@@ -184,7 +185,7 @@ export default async function EvidencePage({
             <Glossary />
           </section>
 
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="support-section frame flex flex-col gap-6">
             <Band index="02" title="Every fixture, no averaging" as="h2" />
             <FixtureStrip
               rows={toFixtureRows(
@@ -200,7 +201,7 @@ export default async function EvidencePage({
 
       {state.view === 'funnel' ? (
         <>
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="support-section frame flex flex-col gap-6">
             <Band
               index="01"
               title="The sieve"
@@ -213,7 +214,7 @@ export default async function EvidencePage({
             />
             {persona === undefined ? (
               <div className="flex flex-col gap-3">
-                <p className="m-0 max-w-2xl text-xs text-ink-60">
+                <p className="m-0 max-w-2xl text-sm text-ink-60">
                   One cell per candidate article, so it only means anything for a single fixture. Summing
                   ten would draw the same article ten times and call it a corpus.
                 </p>
@@ -240,7 +241,7 @@ export default async function EvidencePage({
             )}
           </section>
 
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="support-section frame flex flex-col gap-6">
             <Band
               index="02"
               title={persona === undefined ? 'Funnel, all fixtures summed' : `Funnel for ${personaName(persona.key)}`}
@@ -252,7 +253,7 @@ export default async function EvidencePage({
       ) : null}
 
       {state.view === 'stories' ? (
-        <section className="frame flex flex-col gap-6 pb-16">
+        <section className="support-section frame flex flex-col gap-6">
           <Band
             index="01"
             title={persona === undefined ? 'Stories' : `Stories for ${personaName(persona.key)}`}
@@ -261,7 +262,7 @@ export default async function EvidencePage({
           />
           {persona === undefined ? (
             <div className="flex flex-col gap-3">
-              <p className="m-0 max-w-2xl text-xs text-ink-60">
+              <p className="m-0 max-w-2xl text-sm text-ink-60">
                 Traces are recorded per fixture. Choose one.
               </p>
               <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
@@ -288,7 +289,7 @@ export default async function EvidencePage({
         </section>
       ) : null}
 
-      <section className="frame pb-12">
+      <section className="support-section frame">
         <AnimatedDetails className="border-t border-rule pt-4 text-sm">
           <summary className="disclosure min-h-11 cursor-pointer">Published scorecards and corpus inventory</summary>
           <p className="max-w-2xl text-ink-60">{index.entries.length} published scorecards, including retained baselines. Snapshots overlap; their article counts are not unique articles across the collection. {labelRows === null ? 'Label totals are unavailable.' : `${labelRows.toLocaleString()} provisional model and agent label rows across these snapshots.`}</p>
@@ -300,7 +301,7 @@ export default async function EvidencePage({
         </AnimatedDetails>
       </section>
 
-      <section className="frame flex flex-col gap-4 pb-8">
+      <section className="support-section frame flex flex-col gap-4">
         <Band index="" title="Provenance" note="What can and cannot be established" as="h2" />
         <ProvenancePanel artifact={primary} />
         {comparison !== null ? <ProvenancePanel artifact={comparison} /> : null}
@@ -364,7 +365,7 @@ function RunHeadline({
   const breakdown = outcomeBreakdown(personas)
 
   return (
-    <section className="frame flex flex-col gap-6 border-y border-rule py-7">
+    <section className="evidence-run-summary frame flex flex-col gap-6 border-y border-rule py-7">
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <h2 className="headline m-0 text-lg">{describeEntryTitle(primary)}</h2>
         {comparison !== null ? (
