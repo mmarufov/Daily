@@ -1,0 +1,6 @@
+/* Resolve aliases here, where the route's font variable exists. Root aliases
+   would otherwise inherit their already-computed system-serif fallback. */
+.reader-layout {
+  --font-editorial: var(--font-editorial-var), Charter, Georgia, serif;
+  --font-serif: var(--font-editorial);
+}

@@ -38,3 +38,21 @@ new explanation, with exact numbers appearing immediately. Selection moves on on
 shared track; press feedback is small and quick. No new entrance delays, scroll
 reveals or continuous work. Reduced motion skips movement; hidden tabs and resized
 layouts settle immediately. Completed animations release their height constraints.
+
+## Daily-first comprehension correction
+
+Daily is the umbrella identity. The opening reads "Daily makes news personal."
+and shows the first three recorded Ray edition stories with publishers, fixture
+identity and September 2, 2026 date. Geist only in this preview. Primary action:
+Explore the Lab (/lab). Secondary: Read an edition (/reader?profile=ray).
+
+Order: Daily introduction, featured Daily Lab, historical guard comparison,
+recorded pipeline sieve, retrieval losses and compact Lab closing link. The Lab
+is visible before deeper findings; the first two sections explain the parser's
+article-to-score association and the recorded 40/254 failure. Keep evidence and
+existing smooth, interruptible interactions intact.
+
+Shell: Daily home brand; Reader, Lab, Evidence, Findings navigation. Below 640px
+use two rows with every destination visible. Fraunces belongs only to Reader.
+Status grids use visible check/cross/dash/circle/exclamation marks plus legends;
+cells are at least 20px and retain accessible names. No backend/schema changes.

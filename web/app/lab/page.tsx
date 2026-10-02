@@ -31,7 +31,7 @@ export default async function LabPage() {
         <p className="eyebrow">The workspace</p>
         <h1>Put your parser through it.</h1>
         <div className="lab-intro-copy">
-          <p>Run Python in a fresh Vercel Sandbox against {catalog.length} cases. The default parser has a known gap. Run it, inspect the failure, then try a change.</p>
+          <p>These parsers interpret scoring responses from Daily's news pipeline. Run Python in a fresh Vercel Sandbox against {catalog.length} cases. The default parser has a known gap. Run it, inspect the failure, then try a change.</p>
           <div className="lab-intro-links"><a className="text-link" href="#recorded">Recorded investigations <span aria-hidden="true">↓</span></a><Link className="text-link" href="/engineering">The original defect <span aria-hidden="true">↗</span></Link></div>
         </div>
       </section>

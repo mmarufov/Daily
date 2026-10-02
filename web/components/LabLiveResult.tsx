@@ -9,6 +9,7 @@ import {
 } from '@/lib/lab/live'
 
 import { VerdictBadge } from './LabVerdict'
+import { CaseStatusMark, type CaseStatusTone } from './CaseStatusMark'
 
 /**
  * A live run's result, in the order a visitor asks about it: did it pass,
@@ -180,7 +181,7 @@ function Faults({ grading }: { grading: LiveGrading }) {
   )
 }
 
-type CellTone = 'pending' | 'correct' | 'wrong' | 'unscored' | 'outside'
+type CellTone = CaseStatusTone
 
 const CELL: Record<CellTone, { className: string; label: string }> = {
   pending: { className: 'border border-rule bg-paper', label: 'not run yet' },
@@ -218,7 +219,7 @@ export function CaseGrid({ catalog, grading }: { catalog: readonly CatalogCase[]
             {g.title} · {g.cases.length}
             <span className="ml-2 font-sans normal-case tracking-normal">{g.note}</span>
           </p>
-          <ol className="m-0 flex list-none flex-wrap gap-[3px] p-0">
+          <ol className="live-case-grid m-0 flex list-none flex-wrap gap-[3px] p-0">
             {g.cases.map((c) => {
               const t = tone(byId.get(c.case_id), outside)
               return (
@@ -227,8 +228,9 @@ export function CaseGrid({ catalog, grading }: { catalog: readonly CatalogCase[]
                   title={`${c.case_id}: ${CELL[t].label}`}
                   data-case={c.case_id}
                   data-tone={t}
-                  className={`size-3.5 ${CELL[t].className}`}
+                  className={`case-status-cell ${CELL[t].className}`}
                 >
+                  <CaseStatusMark tone={t} />
                   <span className="sr-only">
                     {c.case_id}: {CELL[t].label}
                   </span>
@@ -238,12 +240,14 @@ export function CaseGrid({ catalog, grading }: { catalog: readonly CatalogCase[]
           </ol>
         </div>
       ))}
-      <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1.5 p-0 text-xs text-ink-40" aria-hidden="true">
+      <ul className="case-status-legend" aria-hidden="true">
         {(Object.keys(CELL) as CellTone[])
           .filter((t) => used.has(t))
           .map((t) => (
-            <li key={t} className="flex items-center gap-1.5">
-              <span className={`inline-block size-3 ${CELL[t].className}`} />
+            <li key={t}>
+              <span className={`case-status-cell ${CELL[t].className}`} data-tone={t}>
+                <CaseStatusMark tone={t} />
+              </span>
               {CELL[t].label}
             </li>
           ))}

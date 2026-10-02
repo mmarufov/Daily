@@ -26,6 +26,7 @@ test.describe('Daily Lab', () => {
     // What is live and what is replayed, said where a reader starts. The
     // execution is live; the model responses it parses are not.
     await expect(page.getByText(/The default parser has a known gap/).first()).toBeVisible()
+    await expect(page.getByText(/Daily's news pipeline/).first()).toBeVisible()
   })
 
   test('shows the real offending response, not a description of one', async ({ page }) => {
@@ -143,7 +144,14 @@ test.describe('the live runner', () => {
     await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeEnabled()
     // All 64 cases, before anything has run: hollow, and split as the suite is.
     await expect(page.locator('[data-case]')).toHaveCount(64)
-    await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+    await expect(page.locator('[data-case][data-tone="pending"]')).toHaveCount(64)
+    await expect(page.locator('[data-case] [data-case-mark="pending"]')).toHaveCount(64)
+    await expect(page.locator('.case-status-legend')).toContainText('not run yet')
+    const sizes = await page.locator('[data-case]').evaluateAll((elements) => elements.map((element) => {
+      const bounds = element.getBoundingClientRect()
+      return Math.min(bounds.width, bounds.height)
+    }))
+    expect(sizes.every((size) => size >= 20)).toBe(true)
     await expect(page.getByText('Fault-injected · 22')).toBeVisible()
     await expect(page.getByText(/5 runs an hour from one address, 3 at once/)).toBeVisible()
   })
@@ -214,7 +222,22 @@ test.describe('the live runner', () => {
     await expect(fault).toContainText('equal length, internally reordered')
     await expect(fault).toContainText('instead of refusing')
     await expect(page.locator('[data-case="syn-positional-reordered"]')).toHaveAttribute('data-tone', 'wrong')
-    await expect(page.locator('[data-tone="pending"]')).toHaveCount(0)
+    await expect(page.locator('[data-case][data-tone="pending"]')).toHaveCount(0)
+    const grading = finishedRunBody(runId, 'count-guard-v1').outcome.grading
+    const outside = new Set(grading.out_of_protocol_case_ids)
+    const tones = grading.cases.map((record) => record.applicability === 'not-applicable'
+      ? outside.has(record.case_id) ? 'outside' : 'unscored'
+      : record.status === 'correct' ? 'correct' : 'wrong')
+    for (const tone of ['correct', 'wrong', 'unscored', 'outside'] as const) {
+      await expect(page.locator(`[data-case][data-tone="${tone}"] [data-case-mark="${tone}"]`))
+        .toHaveCount(tones.filter((value) => value === tone).length)
+    }
+    const legend = page.locator('.case-status-legend')
+    await expect(legend).toContainText('correct')
+    await expect(legend).toContainText('wrong')
+    await expect(legend).toContainText('not scored, another protocol')
+    await expect(legend).toContainText('associated outside its declared protocol')
+    await expect(page.locator('[data-case] [data-case-mark="outside"]').first()).toHaveAttribute('aria-hidden', 'true')
     await expect(page.getByText('Rejected').first()).toBeVisible()
     // These bundles ran locally, so there is no microVM to report, and the
     // page must say that rather than show zeros.
@@ -247,6 +270,8 @@ test.describe('the live runner', () => {
     await expect(page.getByText(/21 of the 22 faults apply to the protocol it declared/)).toBeVisible()
     await expect(page.getByText(/Not scored is not passed/)).toBeVisible()
     await expect(page.locator('[data-case="syn-positional-reordered"]')).toHaveAttribute('data-tone', 'unscored')
+    await expect(page.locator('[data-case="syn-positional-reordered"] [data-case-mark="unscored"]')).toBeVisible()
+    await expect(page.locator('.case-status-legend')).toContainText('not scored, another protocol')
     await expect(page.getByText('Accepted for review').first()).toBeVisible()
   })
 })
@@ -273,7 +298,7 @@ test.describe('runner boundary states', () => {
       await page.goto('/lab')
       await page.getByRole('button', { name: 'Run in Sandbox' }).click()
       await expect(page.getByText(message, { exact: true })).toBeVisible()
-      await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+      await expect(page.locator('[data-case][data-tone="pending"]')).toHaveCount(64)
     })
   }
   test('an expired run stays unknown after reload', async ({ page }) => {
@@ -282,7 +307,7 @@ test.describe('runner boundary states', () => {
     await expect(page.getByText('There is no run with that id.')).toBeVisible()
     await page.reload()
     await expect(page.getByText('There is no run with that id.')).toBeVisible()
-    await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+    await expect(page.locator('[data-case][data-tone="pending"]')).toHaveCount(64)
   })
   test('interrupted execution reports no verdict and only real supplied events', async ({ page }) => {
     await page.route('**/api/lab/run/wrun_interrupted', route => route.fulfill({ json: {
@@ -293,6 +318,6 @@ test.describe('runner boundary states', () => {
     await expect(page.getByText('Ended failed', { exact: true })).toBeVisible()
     await expect(page.getByText('The run ended without a verdict. Nothing about the parser was established.')).toBeVisible()
     await expect(page.locator('[data-run-stage]')).toHaveCount(1)
-    await expect(page.locator('[data-tone="pending"]')).toHaveCount(64)
+    await expect(page.locator('[data-case][data-tone="pending"]')).toHaveCount(64)
   })
 })

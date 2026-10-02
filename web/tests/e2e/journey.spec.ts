@@ -1,20 +1,32 @@
 import { expect, test } from './fixtures'
 
 /**
- * The main visitor journey: understand the Lab, then follow its recorded
- * findings into the preserved evidence explorer and reader replay.
+ * The main visitor journey: understand Daily, read a real recorded edition,
+ * and discover the Lab that tests its parser, with evidence one click away.
  */
 test.describe('visitor journey', () => {
-  test('home leads to the parser, evidence and findings, with the reader in the footer', async ({ page }) => {
+  test('home introduces Daily with Reader and Lab in the primary navigation', async ({ page }) => {
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Does the fix actually work?')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Daily, home', exact: true })).toHaveAttribute('href', '/')
     const entries = page.getByRole('banner').getByRole('navigation')
-    for (const [name, href] of [['Lab', '/lab'], ['Evidence', '/evidence'], ['Findings', '/engineering']] as const) {
+    for (const [name, href] of [['Reader', '/reader'], ['Lab', '/lab'], ['Evidence', '/evidence'], ['Findings', '/engineering']] as const) {
       await expect(entries.getByRole('link', { name, exact: true })).toHaveAttribute('href', href)
     }
-    await expect(page.getByRole('link', { name: 'Run a parser', exact: true }).first()).toHaveAttribute('href', '/lab#run')
-    await expect(page.getByRole('link', { name: 'Explore the evidence', exact: true })).toHaveAttribute('href', '/evidence')
-    await expect(page.getByRole('contentinfo').locator('a[href="/reader"]')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Explore the Lab', exact: true }).first()).toHaveAttribute('href', '/lab')
+    await expect(page.getByRole('link', { name: 'Read an edition', exact: true }).first()).toHaveAttribute('href', '/reader?profile=ray')
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Read an edition', exact: true })).toHaveAttribute('href', '/reader')
+  })
+
+  test('both hero actions reach the promised product and engineering workspace', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('link', { name: 'Read an edition', exact: true }).first().click()
+    await expect(page).toHaveURL((url) => url.pathname === '/reader' && url.searchParams.get('profile') === 'ray')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('RAY EDITION')
+    await page.getByRole('banner').getByRole('link', { name: 'Daily, home', exact: true }).click()
+    await page.getByRole('link', { name: 'Explore the Lab', exact: true }).first().click()
+    await expect(page).toHaveURL((url) => url.pathname === '/lab')
+    await expect(page.getByRole('button', { name: 'Run in Sandbox', exact: true })).toBeEnabled()
   })
 
   test('reader shows a dated replay, never today’s news', async ({ page }) => {

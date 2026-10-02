@@ -1,3 +1,9 @@
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+import type { Response } from '@playwright/test'
+
 import { expect, test } from './fixtures'
 
 /** Layout is measured on the document; a clipped table can be wider without
@@ -51,6 +57,61 @@ test('nothing is painted above the header', async ({ page }) => {
   expect(strays).toEqual([])
 })
 
+test('all four primary destinations remain visible and touch sized on a narrow phone', async ({ page }) => {
+  for (const width of [320, 375, 639]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    const banner = page.getByRole('banner')
+    const brand = banner.getByRole('link', { name: 'Daily, home', exact: true })
+    const navigation = banner.getByRole('navigation')
+    const brandBox = await brand.boundingBox()
+    const navigationBox = await navigation.boundingBox()
+    expect(navigationBox!.y).toBeGreaterThanOrEqual(brandBox!.y + brandBox!.height)
+    for (const name of ['Reader', 'Lab', 'Evidence', 'Findings']) {
+      const link = navigation.getByRole('link', { name, exact: true })
+      await expect(link).toBeInViewport()
+      const box = await link.boundingBox()
+      expect(box!.height).toBeGreaterThanOrEqual(44)
+      expect(box!.width).toBeGreaterThanOrEqual(44)
+      expect(box!.x).toBeGreaterThanOrEqual(0)
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width)
+    }
+  }
+})
+
+test('Fraunces is fetched only after entering the Reader, where the editorial headlines use it', async ({ page }) => {
+  const digest = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
+  const sourceHash = (name: string) => digest(readFileSync(join(__dirname, '..', '..', 'app', 'fonts', name)))
+  const fraunces = sourceHash('Fraunces-latin.woff2')
+  const sans = sourceHash('GeistSans-variable.woff2')
+  const mono = sourceHash('GeistMono-latin.woff2')
+  const fonts: Response[] = []
+  page.on('response', (response) => {
+    if (/\.woff2(?:\?|$)/.test(response.url())) fonts.push(response)
+  })
+
+  await page.goto('/')
+  await page.evaluate(() => document.fonts.ready.then(() => undefined))
+  // Expose both hero/nav and footer entry links to Next's viewport prefetch.
+  await page.getByRole('contentinfo').scrollIntoViewIfNeeded()
+  await page.waitForLoadState('networkidle')
+  await page.waitForTimeout(2000)
+  const homeHashes = await Promise.all(fonts.map(async (response) => digest(await response.body())))
+  expect([...new Set(homeHashes)].sort()).toEqual([sans, mono].sort())
+  expect(homeHashes).not.toContain(fraunces)
+  const loadedOnHome = fonts.length
+
+  await page.getByRole('banner').getByRole('link', { name: 'Reader', exact: true }).click()
+  await expect(page).toHaveURL((url) => url.pathname === '/reader')
+  const editorial = page.getByRole('article').locator('.editorial').first()
+  await expect(editorial).toBeVisible()
+  await page.evaluate(() => document.fonts.ready.then(() => undefined))
+  await page.waitForLoadState('networkidle')
+  const readerHashes = await Promise.all(fonts.slice(loadedOnHome).map(async (response) => digest(await response.body())))
+  expect(readerHashes).toContain(fraunces)
+  expect(await editorial.evaluate((element) => getComputedStyle(element).fontFamily)).toMatch(/fraunces/i)
+})
+
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`${colorScheme} mode exposes readable, touch-sized instrument controls and visible keyboard focus`, async ({ page }) => {
     await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
@@ -82,7 +143,47 @@ for (const colorScheme of ['light', 'dark'] as const) {
     expect(focus.width).toBeGreaterThanOrEqual(2)
     expect(focus.style).not.toBe('none')
   })
+
+  test(`${colorScheme} result cells retain visible symbols and text beyond color`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
+    await page.goto('/')
+    const field = page.getByTestId('recorded-case-field')
+    await field.scrollIntoViewIfNeeded()
+    for (const tone of ['correct', 'wrong', 'unscored']) {
+      const mark = field.locator(`[data-case-mark="${tone}"]`).first()
+      await expect(mark).toBeVisible()
+      const appearance = await mark.evaluate((element) => {
+        const style = getComputedStyle(element)
+        const bounds = element.getBoundingClientRect()
+        return { width: bounds.width, height: bounds.height, stroke: style.stroke, color: style.color }
+      })
+      expect(appearance.width).toBeGreaterThanOrEqual(12)
+      expect(appearance.height).toBeGreaterThanOrEqual(12)
+      expect(appearance.stroke).not.toBe('none')
+      expect(appearance.color).not.toBe('rgba(0, 0, 0, 0)')
+    }
+  })
 }
+
+test('forced colors preserve result marks and the counted legend', async ({ page }) => {
+  await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' })
+  await page.goto('/')
+  const field = page.getByTestId('recorded-case-field')
+  await field.scrollIntoViewIfNeeded()
+  const shapes: string[] = []
+  for (const tone of ['correct', 'wrong', 'unscored']) {
+    const mark = field.locator(`[data-case-mark="${tone}"]`).first()
+    await expect(mark).toBeVisible()
+    shapes.push(await mark.innerHTML())
+    const colors = await mark.evaluate((element) => ({
+      foreground: getComputedStyle(element).color,
+      background: getComputedStyle(element.parentElement!).backgroundColor,
+    }))
+    expect(colors.foreground).not.toBe(colors.background)
+  }
+  expect(new Set(shapes).size).toBe(3)
+  await expect(field.locator('xpath=..').getByText('48 correct', { exact: true })).toBeVisible()
+})
 
 /**
  * The tab was blank and every link to the site previewed as a grey box --

@@ -882,3 +882,19 @@ Release verification: [daily-lab-release.md](daily-lab-release.md). Full browser
 - [x] Verify keyboard, rapid reversal, reduced motion and no-JavaScript behavior.
 - [x] Run unit/type/build checks, deploy and test the public domain.
 - [x] Record final screenshots and performance observations.
+
+## Daily first, with the Lab as the main destination
+
+Approved comprehension correction: Daily is the news product; Daily Lab is its
+featured engineering workspace. Start from main 814fac63 in the isolated web
+checkout, leaving the original Sydney branch and working tree intact.
+
+- [ ] Add the pinned Ray edition preview and Daily-first hero.
+- [ ] Move the Lab invitation directly after the hero; reorder remaining evidence.
+- [ ] Restore Daily branding and primary Reader navigation, including mobile.
+- [ ] Add a shared non-color status mark and visible grid legends.
+- [ ] Scope Fraunces to Reader and prevent homepage reader-font prefetch.
+- [ ] Refresh metadata/social artwork and Lab context.
+- [ ] Verify typecheck, unit tests, artifacts, production build and final diff.
+- [ ] Deploy and verify public browser journeys, fonts, accessibility and motion.
+- [ ] Record screenshots, performance, deployment and release evidence.

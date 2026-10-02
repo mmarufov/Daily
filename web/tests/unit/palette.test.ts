@@ -82,4 +82,14 @@ describe.each([
     expect(contrast(get('--d-zone-signal'), get('--d-zone-ink'))).toBeGreaterThanOrEqual(3)
   })
 
+  it('keeps status symbols readable on filled, empty, and excluded cells', () => {
+    for (const [foreground, background] of [
+      ['--d-paper', '--d-success'], ['--d-paper', '--d-signal'],
+      ['--d-ink-58', '--d-paper-2'], ['--d-ink-38', '--d-paper'],
+      ['--d-signal', '--d-paper'],
+    ] as const) {
+      expect(contrast(get(foreground), get(background)), `${foreground} on ${background}`).toBeGreaterThanOrEqual(3)
+    }
+  })
+
 })

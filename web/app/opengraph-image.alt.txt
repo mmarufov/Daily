@@ -1,1 +1,1 @@
-Daily Lab: Does the fix actually work? A recorded pipeline of 1,362 candidates, with 50 delivered. Run a parser in Vercel Sandbox.
+Daily makes news personal. Daily Lab tests proposed parser fixes after a recorded response returned 254 verdicts for 40 articles.
