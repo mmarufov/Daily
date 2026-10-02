@@ -25,10 +25,11 @@ Validation:
   checks with two existing touch-keyboard skips. Three checks found the same
   720px-height caption overflow. After fixing it, all 57 homepage checks passed
   on `37c0e1be`. Other routes were unchanged by that spacing/SVG correction.
-- Browser coverage includes forward/reverse/rapid scrolling, milestone keyboard
+- Browser checks cover forward/reverse/rapid scrolling, milestone keyboard
   navigation, hidden tabs, idle/offscreen work, no JavaScript, reduced motion,
-  missing data, forced colors, exact counts, Reader-only font loading and mocked
-  Lab states. No Sandbox submission was made.
+  forced colors, exact counts, Reader-only font loading and mocked Lab states.
+  The unavailable recording is covered by an SSR unit test. No Sandbox
+  submission was made.
 - Light/dark screenshots at 320, 390, 768, 1024, 1440 and 1920px show no horizontal
   overflow. Every stage fits at 1024x720 and 1280x720. No page errors appeared.
 - Mobile LCP: 1100 / 984 / 996ms; CLS: 0.000169 or less. Three fresh, cache-disabled
