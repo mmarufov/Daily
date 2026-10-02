@@ -14,17 +14,17 @@ A personalized iOS news reader with reproducible ranking evaluations and a sandb
 
 ## What it does
 
-Daily turns conversational onboarding into a reader profile, discovers relevant sources, and assembles a personal news edition. Readers can search, save stories, and propose preference changes through Tune before applying them. The engineering problem is knowing whether personalization improved, where a relevant story disappeared, and whether a model's verdict was attached to the right article.
+Daily turns conversational onboarding into a reader profile, discovers relevant sources, and assembles a personal news edition. Readers can search, save stories, and propose preference changes through Tune before applying them. Three questions drove most of the engineering: whether a personalization change actually improved anything, which pipeline stage dropped a story that should have reached the reader, and whether a model's verdict was attached to the article it described.
 
 The repository connects the product to the tools used to investigate those questions: a SwiftUI app, a Python/FastAPI and PostgreSQL backend, an offline evaluation harness, and a Next.js evidence explorer and Lab.
 
 ## Engineering highlights
 
-- **Replay the real feed implementation.** The evaluation runner substitutes frozen article data, time, and cached model responses while exercising the feed service. Ten reader fixtures across three snapshots make changes comparable; traces attribute missed stories to individual pipeline stages. [Runner](backend/evals/runners.py) · [Metrics](backend/evals/metrics.py)
-- **Test the measurement system itself.** Nine fault variants exercise ranking, article/verdict association, labels, and assembly. The gate counts raised offline cache misses even when application fallback catches them, preventing a changed request from passing as a valid replay. [Fault matrix](backend/evals/degrade.py) · [Regression tests](backend/tests/test_eval_degradation.py)
-- **Separate candidate execution from evaluation.** Lab submissions run in Vercel Sandbox with networking denied. The TypeScript evaluator stays outside the Python environment; versioned criteria grade returned records and report concrete counterexamples. Durable workflows record execution and avoid automatically retrying a potentially billable sandbox step. [Sandbox](web/lib/lab/sandbox.ts) · [Evaluator](web/lib/lab/evaluator.ts) · [Workflow](web/lib/lab/orchestration.ts)
-- **Reject stale work at publication.** PostgreSQL extraction jobs use leases and claim versions. The gated ranking path additionally checks reader identity, recipe, revision, and expiry before publishing a monotonically sequenced result. [Content jobs](backend/app/services/article_content.py) · [Ranking repository](backend/app/services/ranking_repository.py)
-- **Carry authority through to the device.** Feed requests are coalesced and fenced by operation and account identity. Account-scoped storage rejects older editions and revoked article bodies; the reader displays fetched native text only after storage accepts it. [Feed coordinator](Daily/Features/News/ViewModels/NewsViewModel.swift) · [Cache](Daily/Services/BackgroundNewsFetcher.swift) · [Lifecycle tests](DailyTests/DeliveryReaderLifecycleTests.swift)
+- **Offline replay against frozen inputs.** The evaluation runner substitutes frozen article data, time, and cached model responses while exercising the feed service. Ten reader fixtures across three snapshots make changes comparable; traces attribute missed stories to individual pipeline stages. [Runner](backend/evals/runners.py) · [Metrics](backend/evals/metrics.py)
+- **Fault injection for the metrics.** Nine fault variants exercise ranking, article/verdict association, labels, and assembly. The gate counts raised offline cache misses even when application fallback catches them, preventing a changed request from passing as a valid replay. [Fault matrix](backend/evals/degrade.py) · [Regression tests](backend/tests/test_eval_degradation.py)
+- **Candidate code runs isolated from its grader.** Lab submissions run in Vercel Sandbox with networking denied. The TypeScript evaluator stays outside the Python environment; versioned criteria grade returned records and report concrete counterexamples. Durable workflows record execution and avoid automatically retrying a potentially billable sandbox step. [Sandbox](web/lib/lab/sandbox.ts) · [Evaluator](web/lib/lab/evaluator.ts) · [Workflow](web/lib/lab/orchestration.ts)
+- **Lease and version checks before publishing.** PostgreSQL extraction jobs use leases and claim versions. The gated ranking path additionally checks reader identity, recipe, revision, and expiry before publishing a monotonically sequenced result. [Content jobs](backend/app/services/article_content.py) · [Ranking repository](backend/app/services/ranking_repository.py)
+- **Account and operation fencing on iOS.** Feed requests are coalesced and fenced by operation and account identity. Account-scoped storage rejects older editions and revoked article bodies; the reader displays fetched native text only after storage accepts it. [Feed coordinator](Daily/Features/News/ViewModels/NewsViewModel.swift) · [Cache](Daily/Services/BackgroundNewsFetcher.swift) · [Lifecycle tests](DailyTests/DeliveryReaderLifecycleTests.swift)
 
 ## Architecture
 
@@ -50,21 +50,21 @@ flowchart TD
     Judge --> Lab[Case results and counterexamples]
 ```
 
-`GET /feed` reads cached editions; explicit builds and background workers perform ingestion and scoring. New retrieval, ranking, and assembly stages have independent activation gates, so their presence in the repository does not imply every feed request uses them.
+`GET /feed` reads cached editions; explicit builds and background workers perform ingestion and scoring. Retrieval, ranking, and assembly stages each sit behind their own activation gate, and several are currently off.
 
-The web reader and evidence explorer consume exported artifacts. Lab execution is separate from the news backend: it tests parser behavior, and an accepted candidate is eligible for review rather than automatically deployed.
+The web reader and evidence explorer consume exported artifacts. The Lab runs separately from the news backend and tests parser behavior only. An accepted candidate becomes eligible for human review; nothing merges automatically.
 
 ## Key engineering decisions
 
-### 1. Freeze inputs before comparing ranking changes
+### 1. Frozen inputs
 
 News, model responses, and reader state all change independently. A before/after feed comparison is difficult to interpret unless those inputs are controlled.
 
 Daily stores content-hashed snapshots and request-keyed model responses, then runs the feed implementation against a snapshot database adapter. Stage traces distinguish retrieval losses from scoring and assembly losses. Fault injection checks whether the metrics respond to known defects.
 
-This makes regressions reproducible without provider calls. The tradeoff is explicit: a changed prompt needs a new recording, and frozen, provisionally labeled fixtures measure behavior on that corpus rather than live reader satisfaction. [Evaluation methodology](backend/evals/README.md)
+Regressions are reproducible without provider calls. A changed prompt requires a new recording, and the labels are model-generated, so the numbers describe behavior on this corpus. [Evaluation methodology](backend/evals/README.md)
 
-### 2. Treat model output as an untrusted association problem
+### 2. Associating verdicts with articles
 
 A JSON response can parse successfully while assigning the right verdict to the wrong article. Checking the output count alone cannot detect a reordered batch.
 
@@ -77,15 +77,15 @@ if len(ids) != len(set(ids)) or set(ids) != set(packs):
     raise ValueError('ranker must return exact article ID set')
 ```
 
-Refusing ambiguous output can reduce the number of usable results. That is a deliberate tradeoff: a missing judgment is observable; a plausible judgment attached to the wrong story can silently corrupt ranking. The experiment tests association correctness, not whether the model's relevance judgment is good. [Parser](backend/lab/contract/versions/keyed_v2.py) · [Ranking contract](backend/app/services/ranking_contract.py)
+Refusing ambiguous output reduces the number of usable results, which is the cost of the approach. The experiment measures association correctness; relevance quality is measured separately. [Parser](backend/lab/contract/versions/keyed_v2.py) · [Ranking contract](backend/app/services/ranking_contract.py)
 
-### 3. Recheck authority when work completes
+### 3. Authority rechecks on completion
 
 An article can change, a reader can edit preferences, or a worker can lose its lease while an external request is in flight.
 
 Database claims establish who may perform work; transactional completion checks establish whether its result is still publishable. The gated ranker reserves budget before provider calls and retains reservations after ambiguous failures. On iOS, operation and session checks prevent a late response from replacing a newer edition or crossing an account boundary.
 
-These checks protect authoritative state without promising exactly-once provider execution. A crash after a provider call can still require a retry, and conservative reservations can reduce the remaining budget. [Publication checks](backend/app/services/ranking_service.py) · [Reservation logic](backend/app/services/ranking_repository.py)
+Provider execution is at-least-once. A crash after a provider call still requires a retry, and conservative reservations hold budget that a completed call would have released. [Publication checks](backend/app/services/ranking_service.py) · [Reservation logic](backend/app/services/ranking_repository.py)
 
 ## Correctness and reliability
 
@@ -106,9 +106,9 @@ The committed [fault matrix](backend/evals/results/degradation-matrix.json) reco
 | Rotate verdicts onto the wrong articles | Pooled judge precision fell from 0.6405 to 0.3278 across 24 defined reader/snapshot pairs |
 | Provider spend during replay | $0; responses came from the committed cache |
 
-The rotation experiment demonstrates sensitivity to an association defect, not an improvement in recommendation quality. The matrix also records measurement boundaries, including insensitivity to ordering within the top 12. CI checks regression against recorded baselines; absolute quality targets are a separate opt-in gate.
+The rotation experiment measures whether the metrics detect an association defect. The matrix also records where they are blind, including ordering within the top 12. CI compares against recorded baselines; absolute quality targets sit behind a separate opt-in gate.
 
-The Lab's separate parser suite contains **42 recorded batches and 22 synthetic fault cases**. Its [versioned experiment specification](web/lib/lab/spec.ts) preserves which criteria each result was judged against. Results from different specifications are not interchangeable.
+The Lab's separate parser suite contains **42 recorded batches and 22 synthetic fault cases**. Its [versioned experiment specification](web/lib/lab/spec.ts) records which criteria each result was judged against, and the specification hash travels with every verdict.
 
 ## Quick start
 
