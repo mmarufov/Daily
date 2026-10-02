@@ -1,536 +1,266 @@
-# Daily web companion
+<div align="center">
 
-A read-only web tier for [Daily](../README.md): a reader demo, an interactive explorer for the
-evaluation harness's results, and one worked debugging case study.
+# Daily Lab
 
-It does not reimplement ranking. Nothing here scores an article. The reader replays an edition
-the pipeline already assembled; the explorer renders artifacts exported from the harness's own
-scorecards.
+**Does a parser attach every model verdict to the article it describes, and refuse when it cannot?**
 
-Every figure on the site is drawn from those committed artifacts at render time. There are no
-illustrations, no placeholder data, and no hardcoded numbers in any chart. See
-[The visual system](#the-visual-system).
+Run one at [marufov.com/lab](https://marufov.com/lab). Each run boots a fresh Firecracker microVM with networking denied, and a separate TypeScript evaluator grades what comes back.
 
-## Setup
+[**Open the Lab**](https://marufov.com/lab) · [Specification](lib/lab/spec.ts) · [Evaluator](lib/lab/evaluator.ts) · [Published runs](public/lab-artifacts/) · [Evidence explorer](https://marufov.com/evidence)
+
+</div>
+
+<a href="https://marufov.com/lab">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../docs/assets/lab-verdict-dark.png">
+    <img src="../docs/assets/lab-verdict-light.png" alt="A rejected run: the fault-injected case that caught the parser, what the parser did, what a correct parser does, and a grid of 64 case results">
+  </picture>
+</a>
+
+<p align="center"><sub>The count-mismatch guard, caught by an equal-length reordered response that a length check cannot detect.</sub></p>
+
+This directory is the web tier of [Daily](../README.md), deployed on Vercel at [marufov.com](https://marufov.com). It serves Daily Lab, the [evaluation evidence explorer](https://marufov.com/evidence), [recorded editions](https://marufov.com/reader) and a [findings page](https://marufov.com/engineering). Everything it shows is computed from committed artifacts or from a run you start yourself.
+
+## What a run tests
+
+Daily's batch scorer sends a model up to 40 articles and gets back one relevance verdict per article. A parser turns that response into an association from article to verdict, or refuses with one of 15 named refusal kinds. A candidate is a single stdlib-only Python file, `candidate.py`, that implements `parse()`.
+
+| Case group | Count | Source |
+|---|---|---|
+| Recorded | 42 | Real batches replayed from the committed model-response cache: 1,480 articles from the 2026-09-02 corpus, including one response that returned 254 verdicts for 40 articles |
+| Fault-injected | 22 | Synthetic batches with ground truth by construction: reordered, duplicate, unknown and missing IDs, unusable scores, malformed and truncated responses, and execution failures |
+
+The harness returns one prediction record per case with six fields: `case_id`, `outcome` (`parsed`, `refused`, `crashed` or `timeout`), `association`, `refusal_kind`, `error` and `ms`. No field means "passed", and the trusted side strips unknown keys before grading, so a candidate cannot grade itself.
+
+| Criterion | Question | Threshold |
+|---|---|---|
+| `universal-refusal` | Does it refuse every response from which no association can be recovered? | 1.0 |
+| `association-exact` | On its own protocol, does every article receive exactly the verdict it was given? | 1.0 |
+| `protocol-violation-refusal` | Does it refuse duplicate, unknown and missing IDs and unusable scores? | 1.0 |
+| `no-crash` | Does it terminate on every case without crashing or hanging? | 1.0 |
+| `complete-evidence` | Is there a prediction record for every applicable case? | 1.0 |
+| `protocol-exclusivity` | On cases outside its declared protocol, does it refuse rather than associate anyway? | 1.0 |
+
+Every threshold is 1.0 because these are correctness properties: a parser that refuses 90% of unrecoverable responses invents associations the other 10% of the time.
+
+## Results
+
+The published set holds 39 runs, all validated by the export and rendered at `/lab/<run>`. Every run is graded under both generations of the specification.
+
+| Candidate | Kind | Runner | Generation 1 | Generation 2 |
+|---|---|---|---|---|
+| [`keyed-v2`](https://marufov.com/lab/keyed-v2-clean) | Preserved version | Allowlisted | Accepted for review | **Accepted for review**, 60 of 60 |
+| [`keyed-v2`, interrupted](https://marufov.com/lab/keyed-v2-interrupted) | Orchestrator killed mid-run | Allowlisted | Accepted for review | **Accepted for review**, after recovery |
+| [`keyed-fallback-v1`](https://marufov.com/lab/keyed-fallback-v1-sandbox) | Human-authored | microVM | Accepted for review | Rejected: `protocol-exclusivity` 0 of 4 |
+| [`count-guard-v1`](https://marufov.com/lab/count-guard-v1-clean) | Preserved version | Allowlisted | Rejected | Rejected: `association-exact` 0 of 3 |
+| [`positional-v0`](https://marufov.com/lab/positional-v0-clean) | Preserved version | Allowlisted | Rejected | Rejected: `universal-refusal` 0 of 48 |
+| `control-lenient-keyed` | Seeded control | Allowlisted | Rejected | Rejected: `protocol-violation-refusal` 3 of 9 |
+| [`control-self-reporting`](https://marufov.com/lab/control-self-reporting-clean) | Seeded control | Allowlisted | Rejected | Rejected: `universal-refusal` 0 of 48 |
+| `control-zero-filling` | Seeded control | Allowlisted | Rejected | Rejected: `universal-refusal` 0 of 48 |
+
+Allowlisted runs are committed implementations, matched by SHA-256 and replayed locally; any other source runs in a microVM. The seeded controls are deliberately defective. `control-self-reporting` adds `passed`, `score` and `all_tests_green` to its output and is rejected like any other parser. In the interrupted run the orchestrator killed itself with an attempt in flight; recovery recorded that attempt as `unknown-outcome`, ran a second attempt, and reached the same verdict as the clean run.
+
+### Agent investigations
+
+The remaining 31 runs are budgeted investigations in which a model, reached through the Vercel AI Gateway, inspects a failure, reads allowlisted source, and may propose one patch and request its evaluation. Its patch goes through the same scope gate, microVM and evaluator as a human submission, and the agent sees outcome tallies only, never the verdict.
+
+| Model | Budget | Runs | Proposals | Accepted | Spend |
+|---|---|---|---|---|---|
+| `openai/gpt-4.1` | default | 6 | 2 | 0 | $0.2433 |
+| `openai/gpt-5-mini` | default | 1 | 0 | 0 | $0.0038 |
+| `moonshotai/kimi-k2` | tight | 6 | 0 | 0 | $0.0135 |
+| `moonshotai/kimi-k2` | default | 6 | 0 | 0 | $0.1060 |
+| `moonshotai/kimi-k2` | generous | 6 | 3 | 0 | $0.2602 |
+| `moonshotai/kimi-k2` | generous, 8,192 output tokens | 6 | 3 | **2** | $0.1545 |
+| **Total** | | **31** | **8** | **2** | **$0.7812** |
+
+Budgets cap proposals, tool calls, model calls, tokens, dollars and wall-clock time: `tight` allows 3 model calls and $0.30, `default` 6 calls and $0.75, `generous` 12 calls and $1.50. Spend is as the gateway reported it per call, 2,085,632 tokens in total. Both accepted parsers came from the largest output budget: [agent-k2-generous-out-02](https://marufov.com/lab/agent-k2-generous-out-02-sandbox) and [agent-k2-generous-out-06](https://marufov.com/lab/agent-k2-generous-out-06-sandbox).
+
+## Grading
+
+[`evaluator.ts`](lib/lab/evaluator.ts) is a pure function of the prediction records and a specification. Three rules hold everywhere:
+
+- **Absence is never acceptance.** A missing record is `missing-record`, a crash or timeout is recorded as such, and a criterion with nothing applicable to check does not pass.
+- **Evidence comes before quality.** A run with incomplete evidence is `incomplete` before it can be `rejected`, and both come before `accepted-for-review`.
+- **A declared protocol is checked, never believed.** The candidate's self-declared protocol decides which cases apply to it, and `protocol-exclusivity` requires it to refuse the rest.
+
+A wrong association is reported as a counterexample: the article, its title, the verdict it should have received and the one it got, choosing the first article in request order. Acceptance means eligible for human review under one specification hash; nothing merges automatically.
+
+**Versioned specifications.** [`spec.ts`](lib/lab/spec.ts) holds each generation's question, measures, criteria and held-constant inputs, and the hash of a generation is the first 16 hex characters of the SHA-256 of its canonical JSON. Every artifact carries the hash it was judged against.
+
+| Generation | Criteria | Hash | Verdicts that moved |
+|---|---|---|---|
+| 1 | 5 | `008af8266204438a`, pinned by a test | None, first generation |
+| 2 | 6, adds `protocol-exclusivity` | `f027762ab4d08b35` | `keyed-fallback-v1`: accepted for review to rejected |
+
+Generation 2 exists because `keyed-fallback-v1` declared the keyed protocol yet still associated positional responses. Re-grading costs nothing, since grading reads only records and a specification, so every run is graded under both generations and each run page has a generation switcher. [`lab-spec-generations.test.ts`](tests/unit/lab-spec-generations.test.ts) asserts that exactly one verdict moves.
+
+## Isolation boundary
+
+| Component | Language | Runs in | Can reach |
+|---|---|---|---|
+| Candidate | Python 3.13, standard library only | Vercel Sandbox microVM: 2 vCPUs, 120 s, `deny-all` network | The harness and the 64 cases with their answers removed |
+| Harness | Python | The same microVM | Standard output |
+| Evaluator | TypeScript | A Vercel Function, outside the microVM | Records, the specification and the ground truth |
+| Orchestrator | TypeScript, Vercel Workflow | Vercel Functions | The Sandbox API through OIDC and the admission store |
+
+The trust boundary is also a process, language and machine boundary. Records leave the microVM inside a frame tagged with a random UUID, and only the last frame counts, so a decoy printed by the candidate is ignored. After the candidate finishes, four probes run in the same microVM and each must fail for the run to count:
+
+| Probe | Holds when |
+|---|---|
+| `egress-dns` | Resolving an external host fails |
+| `egress-https` | An outbound HTTPS request fails |
+| `no-evaluator-present` | No file named `evaluator.ts` exists anywhere on the filesystem |
+| `no-secrets-in-env` | No production credential is present in the environment |
+
+A failed probe voids the run before grading. All 36 probes across the 9 published microVM runs held, and each run records the sandbox ID, region and the network policy read back from the platform.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../docs/assets/lab-microvm-dark.png">
+  <img src="../docs/assets/lab-microvm-light.png" alt="MicroVM provenance for one run: sandbox ID, region iad1, deny-all policy read back from the platform, booted in 230 ms, harness ran for 478 ms, 2.45 s active CPU, and four isolation probes held">
+</picture>
+
+Two gates sit in front of the microVM:
+
+- **Patch scope.** [`scope.ts`](lib/lab/scope.ts) allows exactly one path, `backend/lab/contract/candidate.py`, up to 64 KB, with 11 distinct rejection reasons from path traversal and symlinks to NUL bytes and oversized files. It runs before admission and again as a journaled workflow step.
+- **Runner selection.** [`runner.ts`](lib/lab/runner.ts) decides from the source's SHA-256 alone. Six committed implementations run locally against recorded inputs; a one-byte edit goes to the microVM. When the sandbox is unavailable the run is `incomplete`, never executed locally.
+
+Attacks found in an external audit stay in the suite as regression tests: argument forgery, guest-file forgery, decoy and empty frames, expectation leaks and failure precedence ([`lab-adversarial.test.ts`](tests/unit/lab-adversarial.test.ts)).
+
+## Durable orchestration
+
+A run is a [Vercel Workflow](lib/lab/orchestration.ts) of journaled steps: scope, execute, an optional owner-only durable sleep of up to 300 seconds, and grade, with release in a `finally` step. The execute step catches its own failures and sets `maxRetries = 0`, overriding the SDK default of three, because a retry is a new microVM: a failed public run costs one, never four.
+
+The run state is an append-only event log with three guarantees: replay is total, publication is idempotent and cancellation is terminal. A step that started without a journaled ending is reported as `unknown-outcome`. The status route serves progress without long-polling and answers 404 for an unknown run.
+
+## Public runner
+
+Anyone can start a run with `POST /api/lab/run`. It calls no model, so the only resource a visitor spends is microVM compute, bounded by [`public-limits.ts`](lib/lab/public-limits.ts):
+
+| Limit | Value | Resets |
+|---|---|---|
+| Per address, IPv6 grouped by /64 | 5 runs | An hour after the oldest of them |
+| Concurrent, across all visitors | 3 runs | When one finishes, or its 300 s lease expires |
+| Per UTC day, across all visitors | 50 runs | 00:00 UTC |
+| Per UTC day, across all visitors | 20 minutes of microVM CPU, as the platform meters it | 00:00 UTC |
+
+Each admission is one atomic 12-command transaction against Upstash Redis that reserves every counter and then decides. A refusal is refunded, returns 429 with `Retry-After`, and names the limit that resets last. A run the platform did not meter is charged its worst case, 2 vCPUs for 120 seconds. When the store is unset or unreachable the route answers 503 and starts nothing. Each function instance remembers recent refusals for 60 seconds, so a client hammering the route costs one store transaction per instance per minute.
+
+The limits are code constants, so raising one is a reviewed commit. Every response carries an `X-Lab-Instance` header that identifies the function instance. On production, a 12-request burst that landed on 12 different instances admitted exactly the two runs its address had left, and the daily CPU counter matched the platform's meters to the millisecond. Live runs never enter the published set.
+
+## Investigator agents
+
+`POST /api/lab/investigate` is owner-only: a bearer token compared in constant time, and an unset `LAB_OWNER_TOKEN` closes the route with 503. Investigations run on the deployment, where the AI Gateway credential already lives, and address models as `provider/model` strings through the gateway. The default is `anthropic/claude-sonnet-4.5`, overridable with `LAB_MODEL`.
+
+The agent has four tools: `inspect_failure`, `read_source_excerpt` (five allowlisted files, at most 120 lines), `propose_patch` (through the scope gate) and `request_evaluation` (records only). Two dollar ceilings apply and the tighter one binds: `LAB_MAX_USD`, the operator's authorization, and `BUDGET.max_usd` in [`investigator.ts`](lib/lab/investigator.ts), the ceiling the experiment was reviewed at. `npm run lab:investigate -- --at <deployment>` starts one and writes the returned evidence into `backend/lab/` in the shape the export reads.
+
+## Evidence explorer and recorded editions
+
+| Route | What it shows |
+|---|---|
+| [`/`](https://marufov.com) | Daily, a recorded edition, a scroll-driven replay of one recorded parser run from editor to verdict, and the September 21 guard experiment |
+| [`/lab`](https://marufov.com/lab) | The runner, the case suite, recorded investigations and the grading criteria |
+| `/lab/<run>` | One run in seven sections: verdict, counterexample, patch, timeline, cases, unscored diagnostics and provenance |
+| [`/evidence`](https://marufov.com/evidence) | Any two recorded runs compared metric by metric, per fixture, through a 1,362-cell funnel, down to each story's stage trace |
+| [`/reader`](https://marufov.com/reader) | The editions the pipeline assembled for ten reader fixtures from one frozen corpus |
+| [`/engineering`](https://marufov.com/engineering) | Findings: one verdict-association defect traced from recorded batches to the keyed contract |
+
+The explorer classifies every comparison before it draws one. Same corpus, k and runner is a `code-regression` comparison; a different runner is an `algorithm` comparison; anything else is `incompatible` and is shown with its reason and no improvement arrows. Differences on fractions are in percentage points, and a metric with no known direction is drawn with none.
+
+The sieve draws one cell per candidate article, 1,362 for the default fixture, and assigns each stage exactly its recorded loss; [`sieve.test.ts`](tests/unit/sieve.test.ts) asserts both against the committed artifact. The visual system, in [DESIGN.md](DESIGN.md), keeps the chrome neutral and gives color only to readings: red for failure or loss, green for confirmed acceptance, amber for incomplete, always with text. Geist Sans, Geist Mono and Fraunces are vendored under `app/fonts/`, so a build never needs the network.
+
+## Artifact provenance and publication
+
+The harness's scorecards are an internal format. This tier consumes a versioned public artifact, and the export enforces four rules by construction:
+
+1. The revision that executed a run, the revision that stores it and the revision that built the artifact are separate fields, and none stands in for another.
+2. Importing a result is recorded as distinct from executing one.
+3. Anything unknown is written as the string `unknown`, never `null`, `0` or a guess.
+4. Timestamps come from the HEAD commit, so the same tree exports byte-identical artifacts. CI fails when the committed export is stale, and the artifacts served on marufov.com match the committed files byte for byte.
+
+```
+pull request ──▶ evaluation artifacts        no secrets, safe on forks
+                 ├─ typecheck, unit tests, production build
+                 ├─ export and validate; fail if the committed export is stale
+                 └─ upload a GitHub artifact, even when a gate fails
+                        │
+                        ▼  only a successful push to main
+             publish evidence                holds the Blob token
+                 ├─ refuse unless HEAD is an ancestor of origin/main
+                 ├─ re-validate every downloaded file by SHA-256 and size
+                 └─ upload under evidence/<revision>/, manifest last
+```
+
+The step that holds a secret never executes code a pull request could have written. The manifest goes last because it asserts completeness, and the mutable `evidence/latest/` pointer moves only for `main`.
+
+| Content | Cache policy |
+|---|---|
+| `/artifacts/*` | `public, max-age=31536000, immutable` |
+| Published artifacts on Blob | One year |
+| Published `manifest.json` | 60 seconds |
+| Lab API responses | `no-store` |
+
+## Run it locally
 
 ```bash
 cd web
 npm ci
-npm run export:all     # build the committed artifact + demo export
 npm run dev            # http://localhost:3000
 ```
 
-No credentials, no database and no provider key are needed for any of that. The export reads
-`backend/evals/results/`, `backend/evals/snapshots/` and `backend/evals/labels/`, all of which
-are committed.
-
-### Commands
+The site, the explorer and the recorded runs need no credentials, database or provider key; they read committed evidence under `backend/evals/` and `backend/lab/`. A deployed function cannot read outside its root directory, so `npm run stage:lab` copies the files the Lab's functions open into `web/lab-evidence/` before every `dev`, `build` and `test`. That directory is gitignored and rebuilt each time.
 
 | Command | What it does |
 |---|---|
 | `npm run dev` | Development server |
 | `npm run build` / `npm run start` | Production build and server |
-| `npm run typecheck` | `tsc --noEmit`, strict |
-| `npm run test` | Vitest unit tests, including the sieve and funnel arithmetic |
-| `npm run test:e2e` | Playwright, desktop + mobile, against the production build |
-| `npm run export:artifacts` | Rebuild `public/artifacts/` from the harness's scorecards |
-| `npm run export:artifacts -- --check` | Validate without writing |
-| `npm run export:demo` | Rebuild `public/demo/editions.json` |
-| `npm run export:lab` | Rebuild `public/lab-artifacts/` from `backend/lab/` |
-| `npm run export:all` | All three exports |
-| `npm run summarise` | Markdown comparison summary (used for the CI step summary) |
+| `npm run typecheck` | `tsc --noEmit` with `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` |
+| `npm test` | Vitest: more than 330 tests, including the sieve, the evaluator, the limits and export determinism |
+| `npm run test:e2e` | Playwright: more than 90 tests in desktop Chrome, Pixel 7 and iPhone 14 WebKit, against marufov.com by default, with every Lab API call intercepted |
+| `npm run export:all` | Rebuild `public/artifacts/`, `public/demo/` and `public/lab-artifacts/` from committed evidence |
+| `npm run export:artifacts -- --check` / `npm run export:lab -- --check` | Validate without writing |
 | `npm run publish:artifacts` | Upload validated artifacts to Vercel Blob |
+| `npm run lab:agent -- --sandbox-only <candidate.py>` | Run one committed candidate through the microVM boundary, with no model in the loop |
+| `npm run lab:investigate -- --at <deployment>` | Start an owner investigation on a deployment |
+
+The Lab's Python side lives in [`backend/lab/`](../backend/lab/):
+
+```bash
+cd backend
+
+# Re-record every committed implementation offline; rewrites backend/lab/records/
+python -m lab.run_known
+
+# The contract suite, including all 720 orderings of a batch: 741 passed
+python -m pytest tests/test_lab_contract.py -q
+
+# Kill the orchestrator mid-run, then resume it from its event log
+EVAL_OFFLINE=1 python -m lab.orchestrate --candidate keyed-v2 --tag demo --kill-after attempt-started
+EVAL_OFFLINE=1 python -m lab.orchestrate --candidate keyed-v2 --tag demo
+```
 
 ### Environment variables
 
-| Variable | Required | Meaning |
+| Variable | Needed for | Meaning |
 |---|---|---|
-| `ARTIFACTS_BLOB_BASE_URL` | no | Base URL of a published artifact set. When unset, or unreachable, the app falls back to the committed export under `public/artifacts/` and says so in the UI. |
-| `BLOB_READ_WRITE_TOKEN` | publish only | Vercel Blob write token. Absent, `publish:artifacts` exits 0 without uploading, so fork pull requests run the same pipeline with no secrets. |
-| `PUBLISH_AS_LATEST` | publish only | `true` moves the mutable `evidence/latest/` pointer. The trusted workflow sets it only for the default branch. |
-| `DEMO_RUN_ID` | no | Which exported run the reader demo replays. Defaults to `prod-llm__2026-09-02__47edb50`. |
-| `LAB_OWNER_TOKEN` | to start an investigation | Bearer token for `POST /api/lab/investigate`, compared in constant time. **Unset means nobody is the owner, not everybody**: the route returns 503 and no investigation can be started. On `POST /api/lab/run` it only unlocks `suspend_seconds`. Reading a run is public and needs nothing. |
-| `KV_REST_API_URL` + `KV_REST_API_TOKEN` | public runner | The Upstash Redis REST endpoint the public runner counts runs in, provisioned from the Vercel Marketplace on the free plan with auto-upgrade off. **Unset means the runner is closed**: `POST /api/lab/run` answers 503 and starts nothing, because a run nobody counted is not allowed to start. |
-| `VERCEL_TOKEN` + `VERCEL_TEAM_ID` + `VERCEL_PROJECT_ID` | local sandbox only | Credentials for `@vercel/sandbox`. On a Vercel deployment the SDK uses OIDC and needs none of them; `vercel env pull` also writes a `VERCEL_OIDC_TOKEN` that works locally. Partial credentials are treated as a misconfiguration, because OIDC supplies all three at once. |
-| `AI_GATEWAY_API_KEY` | investigator only | Routes the model call through the AI Gateway, which is what meters the spend the budget is measured against. Absent, `readiness()` refuses and no call is made. There is no mock model and no demo mode. |
-| `LAB_MAX_USD` | investigator only | An explicit per-investigation ceiling. Required even when a key is present, and refused if it exceeds `BUDGET.max_usd`: raising the limit has to be a commit somebody reads, not an env var somebody sets. |
-| `LAB_MODEL` | no | Overrides the default `anthropic/claude-sonnet-4.5`, as a `provider/model` string. |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Public runner | Upstash Redis REST endpoint for the admission counters. Unset closes the runner with 503. |
+| `VERCEL_TOKEN`, `VERCEL_TEAM_ID`, `VERCEL_PROJECT_ID` | Local sandbox runs | Credentials for `@vercel/sandbox`. Deployments use OIDC instead, and `vercel env pull` writes a `VERCEL_OIDC_TOKEN` that also works locally. |
+| `LAB_OWNER_TOKEN` | Investigations | Bearer token for `POST /api/lab/investigate`, compared in constant time. Unset means nobody is the owner. On `POST /api/lab/run` it only unlocks `suspend_seconds`. |
+| `AI_GATEWAY_API_KEY` | Investigations | Routes and meters the model calls through the AI Gateway. On a deployment the OIDC token serves the same purpose. |
+| `LAB_MAX_USD` | Investigations | The operator's per-investigation dollar authorization; the tighter of it and `BUDGET.max_usd` binds. |
+| `LAB_MODEL`, `LAB_BUDGET` | Investigations | Override the default model, or the budget through a strict schema that cannot raise `max_proposals`. |
+| `ARTIFACTS_BLOB_BASE_URL` | Optional | A published artifact set to read. Unset or unreachable falls back to the committed export, and the UI says which one it shows. |
+| `BLOB_READ_WRITE_TOKEN`, `PUBLISH_AS_LATEST` | Publication | Blob write token and the switch that moves `evidence/latest/`. Without the token, publication exits 0 having uploaded nothing. |
+| `DEMO_RUN_ID` | Optional | Which exported run `/reader` replays. Defaults to `prod-llm__2026-09-02__47edb50`. |
 
-`LAB_MAX_USD` is an *authorisation*; `BUDGET.max_usd` in `lib/lab/investigator.ts` is the
-*reviewed ceiling*. The tighter of the two binds. Refusing an authorisation above the reviewed
-ceiling, which this used to do, had the asymmetry backwards: being allowed more than the code
-will spend is not a hazard, and the refusal could be satisfied by raising the code ceiling, which
-is the opposite of what a ceiling is for.
+## Layout
 
-### Why `web/lab-evidence/` exists
-
-A deployed function cannot read `backend/`. It is outside the Vercel Root Directory, Next's file
-tracing refuses a glob that navigates out of the project root, and setting `outputFileTracingRoot`
-to the repository breaks Turbopack's own module resolution. `POST /api/lab/run` answered `ENOENT`
-in production while every local check passed.
-
-`npm run stage:lab` copies the eight files a function opens into the project, before `dev` and
-before `build`. The directory is gitignored and rebuilt each time: a second *committed* copy of
-the case suite would be a second thing that can disagree with the first. The export still reads
-`backend/` directly, and should. It runs on a developer's machine and its job is to be a function
-of the committed bytes.
-
-There is deliberately no backend URL here. See [Live mode](#live-mode-is-not-built).
-
-## The boundary between this tier and the backend
-
-Daily's backend is a **stateful process**, not a set of functions. Its startup path launches
-seven background loops (ingestion, prewarm, source quality, interest evolution, per-user
-refresh, account maintenance, ranking refresh), applies schema, and elects a leader with a
-Postgres advisory lock. It stays where it runs today. Nothing about this web tier moves it, and
-moving it would trade a working system for a demo.
-
-```
-  browser
-     │
-     ├── /            static           product introduction
-     ├── /reader      committed JSON   a replay of one assembled edition
-     ├── /evidence    artifacts        validated exports, immutable, cacheable
-     └── /engineering static           one case study
-                          ▲
-                          │  export (offline, reproducible, no credentials)
-                          │
-          backend/evals/{results,snapshots,labels}   ← committed evidence base
-                          ▲
-                          │  the harness, run separately
-                          │
-          FastAPI + Postgres daemon on its own host  ← untouched
-```
-
-The only backend change this work made is a scoped correctness fix in the batch relevance
-scorer, described in [the case study](#the-case-study) and in
-[`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment-fix/FINDING.md). No
-endpoint was added, no contract changed, and every feature gate keeps its existing default.
-
-## Artifact provenance
-
-The harness's scorecards are an internal format. The web tier consumes a separate **versioned
-public artifact**, and the export step establishes what can actually be known rather than
-assuming it. Three rules are enforced by construction:
-
-1. **Three revisions are kept apart.** The revision that *executed* an evaluation, the revision
-   that *stores* the scorecard, and the revision that *built* the artifact are three different
-   fields. None of them is allowed to stand in for another, so today's commit is never stamped
-   onto an old measurement.
-2. **Importing is not executing.** Every artifact records `origin`. All nine currently exported
-   artifacts are `imported-historical`; none was produced by a run this pipeline executed.
-3. **Unknown is written as `unknown`.** Never `null`, never `0`, never inferred from a sibling
-   field.
-
-What that surfaces about the committed evidence, all of it computed from the artifacts:
-
-- The revision that executed every stored run is **not reachable from the default branch**, so
-  "this result came from that code" cannot be verified by checking the revision out.
-- **No stored scorecard records an evaluation protocol.** The harness began emitting one later.
-  Protocol equality between two runs therefore cannot be verified, only assumed from the runner
-  name, and the explorer says so instead of showing a clean regression claim.
-- `execution_mode` is `unknown` for every run. A zero cache-miss total cannot stand in for it,
-  because the harness only counts a miss on the live network path, making the counter
-  structurally zero whenever offline replay is active.
-- One baseline file, `baseline-prod-llm.json`, carries thresholds for `2026-09-02` that
-  **disagree with the committed run scorecard** for the same runner and snapshot. It was
-  re-recorded after the timestamps embedded in it. The export detects this by comparing the two
-  documents and marks `timestamps_trustworthy: false`.
-- Runs named `proto-hybrid-judge-events` carry a warning: that name belongs to the corrected
-  default prototype pipeline, but the repository's own regression gate maps the runner key to a
-  historical legacy adapter whose protocol reproduces known defects. They are evidence about
-  that historical protocol, not validation of the corrected one.
-
-### Comparison compatibility
-
-A delta only means something if you can say what was held fixed, so comparisons are classified:
-
-| Kind | Requires | Shown |
-|---|---|---|
-| `code-regression` | same corpus, same k, same runner | directional deltas |
-| `algorithm` | same corpus, same k, different runner | directional deltas, labelled as an algorithm comparison |
-| `incompatible` | anything else | the reason, and **no** improvement arrows |
-
-Differences on fractions are expressed in **percentage points**. "Material" means the harness's
-fixed ±0.02 cutoff, which is a threshold its author chose. Ten fixtures with no variance
-estimate cannot support a significance claim, and the UI never makes one.
-
-### Metric semantics
-
-Capped recall (`must_see_in_top_k / min(n_must_see, k)`) and raw recall
-(`must_see_in_top_k / n_must_see`) are different metrics and are shown separately. Direction is
-read from an explicit map: an unrecognised metric is rendered with **no** direction rather than
-assumed to be better when it rises. Lower is better for the unwanted rate, the lookalike rate,
-the false-major rate, cost and latency.
-
-### The funnel is reconstructed, not read
-
-`stage_counts` in a scorecard records each article **once, at the furthest stage it reached**.
-Rendering those tallies as survivorship produces a funnel that grows: for fixture `ray` it would
-show `scored` at 45 and `feed` at 50. Survivors at a stage are the sum of that stage's tally and
-every later one. That reconstruction is validated against three facts recorded independently in
-the same scorecard: survivors at `feed` equals the reported feed size (50), survivors at
-`loaded_rows` equals the recorded recency window (300), and survivors at `scored` equals the
-documented 100-candidate cap, and the total exceeds the 1,358-article corpus by exactly four,
-the planted needles. `tests/unit/funnel.test.ts` asserts all of it.
-
-## Preview and publication
-
-```
-pull request ──▶ evaluation artifacts   (no secrets, runs on forks)
-                 ├─ typecheck, unit tests, production build
-                 ├─ export + validate, and fail if the committed export is stale
-                 ├─ comparison summary  → job summary, written even on failure
-                 └─ upload GitHub artifact (always, so a red gate still yields diagnostics)
-                        │
-                        ▼  workflow_run, only when the run concluded success
-             publish evidence            (trusted, holds the Blob token)
-                 ├─ re-validate everything it downloaded
-                 └─ upload under evidence/<revision>/, manifest LAST
-                        └─ evidence/latest/ only when head branch is main
-```
-
-- The pull-request job never holds publishing credentials. Publication happens in a separate
-  trusted workflow, which refuses to run unless the triggering run succeeded, so a failed run
-  is never published as if it had passed.
-- The manifest is uploaded **last**, because it asserts completeness. A reader that sees the
-  manifest can rely on every artifact it lists being present and validated.
-- Artifacts are published under a **revision-scoped prefix**. The mutable `latest` pointer moves
-  only for the default branch, so a preview deployment cannot silently consume an unrelated run.
-- There is deliberately **no schedule**. Replaying identical frozen inputs on a timer produces
-  identical numbers; the useful triggers are a change to the harness, the pipeline or this tier,
-  plus manual dispatch.
-- The export is **reproducible**: timestamps come from the HEAD commit, not the wall clock, so
-  the same tree always produces byte-identical artifacts. That is what makes the staleness check
-  meaningful.
-
-### Caching
-
-| Content | Policy | Why |
-|---|---|---|
-| `/artifacts/*` | `public, max-age=31536000, immutable` | Content is fixed for a given run id |
-| Published artifacts on Blob | one year | Same |
-| Published `manifest.json` | 60 seconds | It is the pointer; a new publication must be seen |
-| Anything personalized | never shared | There is no personalized response in this tier today, and the boundary is recorded so it stays that way |
-
-## The visual system
-
-One rule governs every surface: **colour means loss.** In any chart, table or diagram, ink is
-what survived the pipeline, vermilion is what it threw away, and slate is what cannot be verified
-either way. Nothing that worked is ever coloured, so a glance at a figure says where the system
-failed before you have read a label. Chrome (links, focus, selection) borrows the same
-vermilion, because there it carries the meaning the eye has already learned: look here.
-
-Two typefaces and no sans between them. Prose is set in Fraunces; every number, identifier, stage
-name and micro-label is set in Geist Mono. The site is a newspaper assembled by a measuring
-instrument and is meant to look like both objects at once. Both fonts are **vendored** under
-`app/fonts/` and loaded with `next/font/local`, so `npm run build` never needs network access and
-the bytes that ship are the bytes in the tree. Licences: [`app/fonts/LICENSE.md`](app/fonts/LICENSE.md).
-
-`docs/DESIGN.md` governs the iOS app and is written as an iOS-first source of truth. This tier is
-a different medium doing a different job, an evidence explorer, so it does
-not inherit those tokens. `/reader` is the one surface that stays close to the app's
-paper-and-serif register, because there it is showing the product rather than measuring it.
-
-### The figures
-
-| Figure | Where | What it draws |
-|---|---|---|
-| **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus**: 1,362 marks, not a summary of them. Stepping a stage flashes the candidates that stage removed in vermilion and settles the rest to ghost, so the discarded mass stays part of the picture. |
-| **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `Daniel` is almost solid vermilion; `Will` is mostly loss. The run's 22.1% mean hides both. |
-| **The slope** | `/evidence`, `/engineering` | Two runs on one shared 0–100% scale. Fraction metrics only: costs and latencies share no scale with a recall rate, and per-row normalisation would make a 0.4-point move look like a 40-point one. |
-| **The trace ribbon** | `/evidence` story detail | One story's journey across the same ten stages, with its death point marked. Answers "did ranking make a mistake, or did nothing ever look at this?". |
-| **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page: the counts are recorded, the merge point is not. |
-
-### Reading order
-
-Each surface leads with the figure and keeps one short paragraph beside it. The long form,
-metric definitions, where the sieve's counts come from, how the repository confirms the
-defect diagnosis, where this tier stops and the backend begins, sits behind a marked
-disclosure. Nothing was deleted to make the pages shorter; the
-depth moved one click away so the argument can be followed without wading to it. The two
-long pages (`/evidence`, `/engineering`) carry their own numbered contents as jump links.
-
-Honesty constraints the figures are held to:
-
-- The sieve's cell count equals the recorded pool exactly, and the cells assigned to each stage
-  equal that stage's recorded loss. Both are asserted in `tests/unit/sieve.test.ts` against the
-  committed artifact, not against a fixture written to pass.
-- Which article a stage removed is **not recorded anywhere**, so cells are scattered by a fixed
-  hash and the component says so: the quantities are evidence, the positions are not.
-- The sieve is drawn per fixture only. Summing ten fixtures would draw the same article up to ten
-  times and call the result a corpus, so the aggregate view offers a fixture picker instead.
-- Motion is one-shot and cancellable, `prefers-reduced-motion` jumps straight to the answer, and
-  only `background-color` animates, so 1,362 cells cost no layout work, which is what makes drawing
-  the corpus at 1:1 affordable in the first place.
-
-## Daily Lab (`/lab`)
-
-A controlled experiment on the batch relevance scorer, built on the same evidence base. It asks one
-question, *does a candidate parser associate every verdict with the article it was actually about,
-and refuse when it cannot?*, and answers it with verdicts **computed by trusted code**, never
-reported by the thing under test.
-
-| | |
+| Path | Contents |
 |---|---|
-| `backend/lab/contract/` | Three preserved versions of the association (`positional-v0` as production ships it, `count-guard-v1` from PR #59, the proposed `keyed-v2`) plus three labelled defective controls. Each is one self-contained stdlib-only file. |
-| `backend/lab/cases/` | 64 cases in two groups that are never mixed: 42 **observed** batches replayed from the committed recordings, and 22 **synthetic** fault injections with ground truth by construction. |
-| `backend/lab/harness.py` | Runs a candidate and emits prediction records. The record schema has **no field for a grade**. |
-| `backend/lab/orchestrate.py` | A resumable orchestrator whose state is an append-only event log. `--kill-after` injects a real process death so the recovery can be demonstrated. |
-| `web/lib/lab/` | The trusted side: frozen spec + hash, evaluator, patch scope gate, runner selection, durable state, artifact schema. |
-| `web/public/lab-artifacts/` | The committed, validated artifact set the site renders. |
-
-### Why the boundary holds
-
-- **A candidate cannot grade itself.** Prediction records carry no verdict field and the schema
-  strips unknown keys. `control-self-reporting` emits `passed/score/all_tests_green` and is
-  rejected like anything else.
-- **The trust boundary is also a language and process boundary**: candidate Python, evaluator
-  TypeScript, separate processes. There is nothing to monkeypatch.
-- **Missing evidence is never acceptance.** Missing records, crashes and timeouts resolve to
-  `incomplete`; a criterion with nothing applicable is `passed: false`, not vacuously true.
-- **Nothing novel runs locally.** `selectRunner` decides from the source sha256 against an
-  allowlist in trusted code; a one-byte edit goes to the sandbox.
-
-### What it does not measure, and why
-
-Relevance quality under `keyed-v2` is **unmeasured**. Sending article ids changes the request, and
-the cache is keyed on a hash of the request (`backend/evals/llm_cache.py:133`), so every recorded
-response for that runner is invalidated. New budgeted recordings would be required and none exist.
-The Lab measures contract correctness and says so on the page.
-
-It also does not reuse the −3.4pp / +15.6pp figures from
-[`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment-fix/FINDING.md). Those two
-sides executed at different revisions (`47edb50` vs `3b11a3c`, 114 files apart, 89 vs 30 cache
-keys), so they are not an A/B of the patch. The direction of that finding stands; the magnitudes
-are not a controlled comparison.
-
-### Exercised, and what is still not
-
-**Vercel Sandbox, exercised.** `keyed-fallback-v1` executed in a `python3.13` microVM under a
-platform-applied `deny-all` policy. Four negative controls run inside the same microVM, after the
-candidate, and a probe that *succeeds* is a failed probe: DNS resolution and an outbound HTTPS
-request both fail, no file named `evaluator.ts` exists anywhere on the filesystem, and no
-credential is present in the environment. The microVM id, region and the policy read back off the
-platform are recorded in each run's provenance.
-
-`egress_bytes` is an upper bound, not a measurement of candidate traffic. It includes the
-control-plane bytes spent reading the record bundle back, so it is non-zero on a run that reached
-nothing. The probes are the direct evidence.
-
-**Vercel Workflow, exercised, with one half of the durability claim still unobserved.**
-Orchestration runs as a durable workflow: the scope gate, the sandboxed execution and the grading
-are three journaled steps, and suspension uses the SDK's `sleep` rather than `setTimeout`. The
-difference is the whole claim, since `setTimeout` holds a process open for the duration and so
-demonstrates nothing about surviving the loss of one.
-
-What was observed: a run was started, suspended mid-flight, and its process was killed outright.
-The journal survived. `scopeStep` and `executeStep` remained `completed` on disk and the sleep
-remained a `wait` record with a `resumeAt`; a new process read that state and reported the run as
-still running rather than losing it or restarting it from the beginning.
-
-What was **not** observed: the resume itself. The local development world arms an in-memory timer
-when the sleep begins and has no process that scans expired waits at startup, so after the killed
-process the run stays suspended indefinitely. On Vercel the platform schedules the resumption, and
-that has not been exercised here because the preview deployment is behind Vercel Authentication
-and this branch has not been promoted to production. `WorkflowOutcome.resumed` and the per-step
-`process_id` exist so that when it is, the evidence is a pair of differing ids rather than a
-claim.
-
-`unknown-outcome` survives the port and is deliberately not something the workflow writes, an
-attempt with a start and no journaled ending is one nothing observed finishing, and the microVM
-may have completed a millisecond before the orchestrator died.
-
-**The investigator agent runs on the deployment, not on a laptop.** `AI_GATEWAY_API_KEY` is a
-Vercel *sensitive* variable: set once and never readable again, including by `vercel env pull`.
-That is the access model. "Only the authenticated owner
-starts paid work, enforced server-side" is not satisfied by copying the key onto a developer's
-machine, and a repository that audits its own sandbox for leaked credentials should not be
-exfiltrating one to run an errand.
-
-So `POST /api/lab/investigate` is owner-only and starts a workflow that runs the agent loop where
-the credential already is. `npm run lab:investigate -- --at <deployment>` starts one and writes
-the returned evidence into `backend/lab/` in the shape `export-lab.ts` already reads.
-
-`readiness()` requires `AI_GATEWAY_API_KEY` specifically. It used to accept `OPENAI_API_KEY` as a
-fallback and report the gateway as `openai-direct`, which nothing could serve. The model is
-addressed as a bare `provider/model` string, which only the Gateway routes. The call failing was
-the lesser problem: `openai-direct` would have been written into a committed trace as the gateway
-that served a call that never happened.
-
-Where this stands is recorded on `/lab`, derived from the manifest,
-so the claim weakens itself when a run proves otherwise.
-
-### The public runner
-
-Anyone can run a parser from `/lab`. `POST /api/lab/run` takes the source and starts the same
-durable workflow the owner used to start by hand: scope gate, one microVM, the trusted evaluator.
-It calls no model, so the only thing a visitor can spend is Sandbox compute, and
-`lib/lab/public-limits.ts` bounds it.
-
-| Limit | Value | Resets |
-|---|---|---|
-| Per address (IPv6 by /64) | 5 runs | an hour after the oldest of them |
-| At once, across everyone | 3 runs | when one finishes, or its 300 s lease expires |
-| Per UTC day, across everyone | 50 runs | 00:00 UTC |
-| Per UTC day, across everyone | 20 minutes of microVM active CPU, as metered | 00:00 UTC |
-
-The limits are constants, not env vars, for the reason given for `LAB_MAX_USD` above. That
-variable is not reused: it authorises model dollars, and a sandbox run has a measured CPU figure,
-not a measured dollar figure. A run the platform did not meter is charged at its worst case,
-2 vCPU for 120 s.
-
-Each decision is one Redis transaction that reserves every counter and then decides. A refusal
-is compensated, so it consumes nothing. The counts include the request itself and come out of a
-serialised transaction, so a burst can be refused spuriously but never over-admitted. A refusal
-is a 429 with `Retry-After` and a body naming the limit and its reset time. When several limits
-are hit it names the one that resets last. Per-address and daily refusals are repeated from the
-instance's memory for at most a minute, so a client hammering the route costs one store
-transaction per instance per minute, and a corrected counter still takes effect within that
-minute.
-
-`executeStep` runs exactly once (`maxRetries = 0`) and catches its own failures. The SDK default
-is three retries, and a retry here is a new microVM: one bad public run would have cost up to
-four.
-
-What a malicious visitor can do once this is open:
-
-- run arbitrary stdlib Python for up to 120 s on 2 vCPUs, with no network and no credentials, 5
-  times an hour per address;
-- with enough addresses, exhaust the day's shared allowance and close the runner until 00:00 UTC;
-- spend the Redis free tier's commands from many addresses, which closes the runner for the rest
-  of that period rather than billing anyone. A Vercel WAF rate rule would close this, and is the
-  owner's decision because it changes the project's security settings;
-- share a run link that shows their parser's own refusal kinds and crash text, labelled as the
-  parser's and length-capped. The verdict is still the evaluator's.
-
-What they cannot do: write anywhere but `backend/lab/contract/candidate.py`, exceed 64 KB, reach
-the network, a credential, the evaluator or another visitor's code, cause a model call, start an
-investigation, make a run sleep and hold a slot, multiply cost through retries, spoof an address
-on Vercel (`x-real-ip` is set by the proxy), or get a run started while the counter is down. Live
-runs are not added to the published set.
-
-### A gap the experiment found in itself, and the criterion that closed it
-
-`keyed-fallback-v1` was written to be plausible and wrong, and was **accepted**. It declares
-`keyed-v2` and falls back to positional association when a response carries no article ids.
-Positional association cases are not-applicable to a keyed-v2 declarer, correctly, but nothing
-checked that it *refused* them rather than quietly handling them. On `syn-positional-reordered`,
-the case built to expose the exact defect this experiment measures, it parsed where `keyed-v2`
-refuses, and nothing graded it.
-
-It was published first as a diagnostic, deliberately. Promoting it to a criterion re-decides
-runs that never faced it, and doing that silently is how a result gets rewritten after the fact.
-
-It is now **generation 2 of the spec**, as `protocol-exclusivity`, at threshold 1 like every
-other criterion. A declared protocol was being treated as a shield; that is right for association,
-since scoring a keyed parser on a positional recording compares two protocols on one
-protocol's inputs, and wrong for refusal. A parser that quietly handles inputs it did not declare is not
-narrower than the contract, it is wider than the contract and unmeasured in the excess.
-
-**Both generations are kept, and every run is graded under both.** Grading is a pure function of
-the records and a spec, so a second generation re-runs nothing and costs nothing. Every run page
-carries a generation switcher, and the overview flags the one run whose verdict moved.
-
-| candidate | v1 (5 criteria) | v2 (6 criteria) |
-|---|---|---|
-| `keyed-fallback-v1` | accepted-for-review | **rejected** |
-| `keyed-v2` | accepted-for-review | accepted-for-review |
-| everything else | unchanged | unchanged |
-
-Exactly one verdict moves. A criterion that moved half the field would be measuring something
-other than what it was written for, and `lab-spec-generations.test.ts` asserts that. `SPEC_V1` is
-frozen and its hash pinned at `008af8266204438a`: `specHash` digests `JSON.stringify`, so
-reordering a key would rewrite what eight committed artifacts claim they were judged against.
-
-### Commands
-
-```bash
-cd backend && venv/bin/python -m lab.run_known        # every known implementation
-venv/bin/python -m pytest tests/test_lab_contract.py  # 741, incl. all 720 permutations
-cd ../web && npm run export:lab                       # rebuild web/public/lab-artifacts/
-npm run export:lab -- --check                         # validate without writing
-npm run stage:lab                                     # copy runtime evidence into the project
-
-# The sandbox boundary, no model in the loop, so it is deterministic given a committed candidate.
-npm run lab:agent -- --sandbox-only ../backend/lab/contract/candidates/keyed_fallback_v1.py
-
-# One real investigation, run on the deployment holding the gateway key.
-LAB_OWNER_TOKEN=… npm run lab:investigate -- --at https://daily-web-rose.vercel.app
-```
-
-## The case study
-
-[`/engineering`](app/engineering/page.tsx) follows one verified defect end to end: Daily's
-production batch scorer asks for a positional array of verdicts and sends no article ids, so a
-short or duplicated response shifted every later verdict onto the wrong article. A New Jersey
-flood-adjacent roster story was rejected for "discussing a music EP"; an Uzbek policy story was
-rejected for "discussing NFL team rosters". One of the misattributed articles is a *planted
-needle*, an article injected so its correct answer is known by construction.
-
-On one runner and one corpus the PR #59 guard (still open) fires **63 times**; the worst response
-in that run returned **201 verdicts for 40 articles**. The worst parseable response in the committed
-lab cases is larger: **254 verdicts for 40 articles** (`observed-2026-09-02-040`, the case `/lab`
-shows). Every production-pipeline number in the committed
-scorecards was computed with lists shifted against their articles.
-
-Fixing it makes the measured numbers **worse**: the unwanted rate rises 15.6 points, because
-on a mismatch the guard now discards all forty verdicts rather than guessing, leaving those
-candidates with no relevance signal at all. Both facts are true at once: the old numbers were
-inflated by misattribution, and refusing to guess is expensive until the output carries ids. The
-regression baseline was **not** re-recorded. Full evidence and the decision the owner still has
-to make: [`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment-fix/FINDING.md).
-
-## Demo walkthrough
-
-1. **`/`**: the sieve runs once on load: 1,362 candidates thinning to the 50 that reached the
-   reader. Step it back to stage 02 and watch the recency window take 1,062 of them before a
-   single model call. Switch fixture and the shape changes: `tom` ends at 9 delivered, `ray` at
-   50, from the same corpus.
-2. **`/reader?profile=ray`**: the edition the pipeline actually assembled for the `ray` fixture
-   against the 2 September 2026 corpus. Note what it is: a New Jersey local-news reader handed a
-   run of NHL trade stories. The demo does not flatter the product. Scroll to *The same corpus,
-   nine other readers* for the product's central claim, checkable without reading a number.
-3. **`/evidence`**: opens on `prod-llm` against `proto-hybrid-judge-events`, same corpus, same
-   k, labelled as an algorithm comparison. The slope chart puts both runs on one scale; then read
-   *Every fixture, no averaging* below it, where `Will` sits at 0.0% capped recall.
-4. **Funnel tab, fixture `ray`**: the sieve again, this time beside the reconstructed
-   survivorship table it is drawn from.
-5. **Stories tab, filter "Lost before the scorer"**: stories the reader needed that the pipeline
-   never even scored. Open one and the trace ribbon shows how far it got.
-6. **`/engineering`**: the case study. Toggle the offset figure between *12 verdicts returned*
-   and *11 verdicts returned* to see the whole defect in one move, then follow the links straight
-   back into the explorer state that shows each misattributed story.
-
-## Live mode is not built
-
-Signing in and receiving a personally built feed is **not implemented**, and the reader page says
-so on the page as well as here. Three things block it, all of them access problems:
-
-1. The backend adds CORS middleware only when `CORS_ORIGINS` is set. It is unset; the documented
-   default is "no web clients". No browser can call the API until that changes.
-2. `POST /auth/google` verifies a Google ID token issued for the iOS client. A browser flow needs
-   a separate web OAuth client registered for this origin.
-3. Feedback must echo the `feed_request_id`, `reader_generation` and `delivery_position` from the
-   edition actually shown. Those exist only on a live delivery, so the contract cannot be
-   exercised against frozen fixtures without inventing identifiers, which the harness's own
-   delivery contract exists to prevent.
-
-Live end-to-end behaviour is therefore **unverified**. Nothing on this site should be read as
-evidence that it works, and the fixture editions are not reader evidence: they create no
-sessions, no impressions and no feedback.
-
-## What this site is careful never to claim
-
-The repository's own truth boundaries, applied here:
-
-- The ten reader profiles are **adversarial evaluation fixtures, not users**. Daily has never
-  shipped to the App Store and has no readers.
-- Labels are **model-written with an agent editorial pass**. Product-owner human review is
-  outstanding, so absolute values are provisional and only run-to-run differences are
-  gate-enforced.
-- No statistical significance, no confidence intervals: none were computed.
-- No claim about pgvector or ANN performance. No trained recommendation model exists anywhere in
-  Daily, and hybrid retrieval is implemented but default-disabled behind feature gates.
-- Offline replay cost is a reconstructed token-equivalent. Actual provider spend for the replays
-  shown here is **$0**.
+| `app/` | Routes: `/`, `/lab`, `/lab/[run]`, `/evidence`, `/reader`, `/engineering`, and the Lab API under `app/api/lab/` |
+| `components/` | The sieve, trace ribbon, slope chart, Lab runner, run timeline and case grids |
+| `lib/lab/` | The trusted side: specification and hash, evaluator, scope gate, runner selection, sandbox client, workflow, admission limits, investigator |
+| `lib/` | Artifact loading and validation, comparison classes, sieve and funnel arithmetic |
+| `scripts/` | Exports, staging, publication, agent and investigation runners |
+| `public/artifacts/`, `public/lab-artifacts/`, `public/demo/` | The committed, validated evidence the site renders |
+| `tests/unit/`, `tests/e2e/` | Vitest and Playwright suites |
