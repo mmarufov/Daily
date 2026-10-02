@@ -4,10 +4,12 @@ import { CaseStatusMark } from '@/components/CaseStatusMark'
 import { EditionPreview } from '@/components/EditionPreview'
 import { HeroSieve } from '@/components/HeroSieve'
 import { RetrievalLoss } from '@/components/RetrievalLoss'
+import { RecordedRunTimeline } from '@/components/RecordedRunTimeline'
 import { GuardExperiment } from '@/components/GuardExperiment'
 import { HOME_RUN_ID, loadHomeEvidence } from '@/lib/home-evidence'
 import './lab-home.css'
 import './findings.css'
+import '@/components/recorded-run-timeline.css'
 
 export default async function HomePage() {
   const evidence = await loadHomeEvidence()
@@ -22,7 +24,6 @@ export default async function HomePage() {
       <section className="frame lab-hero" aria-labelledby="daily-introduction">
         <div className="lab-hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow">A personalized news app</p>
             <h1 className="lab-headline" id="daily-introduction">Daily makes<br /> news personal.</h1>
             <p className="hero-description">Daily builds a news edition around a reader&apos;s interests. When its parser couldn&apos;t reliably match AI scores to articles, Daily Lab became the place to test proposed fixes.</p>
             <div className="hero-actions">
@@ -50,7 +51,7 @@ export default async function HomePage() {
           {run ? (
             <div className="recorded-result">
               <div className="recorded-result-top"><span>{run.candidate.candidate_id}</span><span className="recorded-status">{run.verdict === 'rejected' ? 'Rejected' : run.verdict}</span></div>
-              <p className="recorded-result-note">Recorded Lab result · not a live execution</p>
+              <p className="recorded-result-note">Published Lab result · criteria generation 1</p>
               <div className="recorded-case-field" data-testid="recorded-case-field" role="img" aria-label={`${correct} correct, ${applicable - correct} failed, ${excluded} not applicable, out of ${run.outcomes.length} cases`}>
                 {run.outcomes.map((outcome) => {
                   const tone = outcome.status === 'correct' ? 'correct' : outcome.status === 'not-applicable' ? 'unscored' : 'wrong'
@@ -64,8 +65,9 @@ export default async function HomePage() {
               </ul>
               <p className="recorded-result-summary">The count guard looks like a fix. {applicable - correct} applicable cases still catch it.</p>
               <Link href={evidence.recordedRunHref} className="text-link">Inspect this verdict <span aria-hidden="true">→</span></Link>
+              <RecordedRunTimeline />
             </div>
-          ) : <div className="recorded-result"><p>The recorded result is unavailable.</p><Link href="/lab" className="text-link">Open the Lab</Link></div>}
+          ) : <div className="recorded-result"><p>The published result is unavailable.</p><Link href="/lab" className="text-link">Open the Lab</Link><RecordedRunTimeline /></div>}
         </div>
       </section>
 

@@ -6,6 +6,7 @@ import type { DemoBundle } from '../../lib/demo'
 import { expect, test } from './fixtures'
 
 const NARRATIVE_RUN = 'prod-llm__2026-09-02__47edb50'
+const RECORDED_EXECUTION = 'wrun_01M3WXWPKMF3H8Q66KZA56MZCV'
 // The pinned Ray recording, independently read from the exported artifact.
 const RAY_SURVIVORS = [1362, 300, 298, 100, 100, 55, 55, 55, 55, 50] as const
 
@@ -164,6 +165,7 @@ test.describe('homepage evidence', () => {
     expect(bundle.snapshot).toBe('2026-09-02')
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
+    await expect(page.getByText('A personalized news app', { exact: true })).toHaveCount(0)
     const preview = page.getByTestId('edition-preview')
     await expect(preview).toContainText('Recorded edition')
     await expect(preview).toContainText('September 2, 2026')
@@ -266,9 +268,47 @@ test.describe('homepage evidence', () => {
 test.describe('server-rendered opening', () => {
   test.use({ javaScriptEnabled: false })
 
+  test('section 01 exposes the real execution sequence and isolation evidence without JavaScript', async ({ page }) => {
+    await page.goto('/')
+    const timeline = page.locator('#daily-lab').getByTestId('recorded-run-timeline')
+    await expect(timeline).toHaveAttribute('data-run-id', RECORDED_EXECUTION)
+    await expect(timeline).toContainText('Recorded production execution')
+    await expect(timeline).toContainText('count-guard-v1')
+    const rows = timeline.locator('ol.recorded-timeline > li')
+    const expected = [
+      ['0.00', 'scope checked: only candidate.py is written'],
+      ['0.84', 'creating microVM'],
+      ['1.07', 'uploading 5 files'],
+      ['1.20', 'running the harness'],
+      ['1.74', 'probing isolation'],
+      ['2.61', 'stopping the microVM'],
+      ['6.77', 'microVM stopped'],
+    ] as const
+    await expect(rows).toHaveCount(expected.length + 1)
+    for (const [index, [elapsed, stage]] of expected.entries()) {
+      await expect(rows.nth(index).locator('.recorded-timeline-time')).toHaveText(elapsed)
+      await expect(rows.nth(index)).toContainText(stage)
+    }
+    await expect(rows.last()).toContainText('graded outside the microVM')
+    // Grading is a terminal fact, not a made-up timestamp in the progress feed.
+    await expect(rows.last().locator('.recorded-timeline-time')).toHaveText('')
+    const probes = rows.nth(4).getByRole('list', { name: 'Recorded isolation checks' })
+    for (const label of ['DNS lookup fails', 'HTTPS request fails', 'Grader not on disk', 'No credentials in env']) {
+      const probe = probes.getByRole('listitem').filter({ hasText: label })
+      await expect(probe).toBeVisible()
+      await expect(probe).toHaveAttribute('data-held', 'true')
+      await expect(probe).toContainText('passed')
+    }
+    await expect(probes.getByRole('listitem')).toHaveCount(4)
+    await expect(timeline).toContainText('f027762ab4d08b35')
+    await expect(timeline).toContainText('A separate execution from the published spec 1 result above.')
+    await expect(timeline.locator(`a[href="/runs/${RECORDED_EXECUTION}.json"]`)).toBeVisible()
+  })
+
   test('the product, recorded headlines and both destinations render before JavaScript runs', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
+    await expect(page.getByText('A personalized news app', { exact: true })).toHaveCount(0)
     await expect(page.getByRole('link', { name: 'Explore the Lab', exact: true }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Read an edition', exact: true }).first()).toBeVisible()
     await expect(page.getByTestId('edition-preview').locator('[data-verbatim]')).toHaveCount(3)

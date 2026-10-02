@@ -553,3 +553,10 @@ Treat product -> failure -> test rig as an explicit relationship in copy and
 navigation. A prominent call to action does not require erasing product context.
 Status grids also need visible symbols, not only red/green and screen-reader text.
 Scope editorial fonts to the route that uses them and verify network requests.
+
+## Daily-first release: show the basis for trust
+
+Pair a verdict with the actual execution record: scope, isolation checks, teardown
+and independent grading. Keep recording IDs and criteria generations explicit when
+showing records side by side. Decorative category labels add no context when the
+headline already establishes the product; preserve numbering only for real sequence.

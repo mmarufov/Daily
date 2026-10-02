@@ -56,3 +56,11 @@ Shell: Daily home brand; Reader, Lab, Evidence, Findings navigation. Below 640px
 use two rows with every destination visible. Fraunces belongs only to Reader.
 Status grids use visible check/cross/dash/circle/exclamation marks plus legends;
 cells are at least 20px and retain accessible names. No backend/schema changes.
+
+### Recorded execution in section 01
+
+Port the Timeline/Probes presentation from lab-instrument 07caa9cc, not its page or
+runner. Show the named production recording and actual elapsed event timestamps,
+with four isolation checks and untimed independent grading. This spec-v2 execution
+is distinct from the adjacent published spec-v1 count-guard result. Keep that
+provenance visible. Remove the unearned hero eyebrow; keep section numbers.

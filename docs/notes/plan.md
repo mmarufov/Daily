@@ -889,12 +889,26 @@ Approved comprehension correction: Daily is the news product; Daily Lab is its
 featured engineering workspace. Start from main 814fac63 in the isolated web
 checkout, leaving the original Sydney branch and working tree intact.
 
-- [ ] Add the pinned Ray edition preview and Daily-first hero.
-- [ ] Move the Lab invitation directly after the hero; reorder remaining evidence.
-- [ ] Restore Daily branding and primary Reader navigation, including mobile.
-- [ ] Add a shared non-color status mark and visible grid legends.
-- [ ] Scope Fraunces to Reader and prevent homepage reader-font prefetch.
-- [ ] Refresh metadata/social artwork and Lab context.
-- [ ] Verify typecheck, unit tests, artifacts, production build and final diff.
+- [x] Add the pinned Ray edition preview and Daily-first hero.
+- [x] Move the Lab invitation directly after the hero; reorder remaining evidence.
+- [x] Restore Daily branding and primary Reader navigation, including mobile.
+- [x] Add a shared non-color status mark and visible grid legends.
+- [x] Scope Fraunces to Reader and prevent homepage reader-font prefetch.
+- [x] Refresh metadata/social artwork and Lab context.
+- [x] Verify typecheck, unit tests, artifacts, production build and final diff.
 - [ ] Deploy and verify public browser journeys, fonts, accessibility and motion.
 - [ ] Record screenshots, performance, deployment and release evidence.
+
+## Daily-first release completion
+
+The owner selected `mmarufov/daily-first` and authorized PR, merge, production
+deployment and one real default-parser run. Earlier stop instructions are lifted.
+
+- [x] Remove the decorative hero eyebrow; keep the numbered section sequence.
+- [x] Port only the recorded execution timeline and its source record from
+  lab-instrument commit 07caa9cc, preserving distinct run/spec provenance.
+- [ ] Rebase onto current origin/main and run the full web validation suite.
+- [ ] Open PR, verify CI, merge and confirm the public deployment.
+- [ ] Run production Chromium/WebKit checks with mocked execution endpoints.
+- [ ] Execute one real default parser on production and verify terminal grading/reload.
+- [ ] Record desktop/mobile screenshots, performance and release identifiers.
