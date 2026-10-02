@@ -11,7 +11,7 @@ import './run-story.css'
 import './recorded-run-timeline.css'
 
 const CHAPTERS = [
-  { id: 'parser', name: 'Parser', title: 'Start with a parser.', copy: 'A count guard checks the response length. This run tests what it misses.' },
+  { id: 'parser', name: 'Parser', title: 'Start with a parser.', copy: "Daily's parser matches AI scores to articles. This count guard checks the response length." },
   { id: 'sandbox', name: 'Sandbox', title: 'Give it a boundary.', copy: 'A fresh microVM. Networking denied. The grader stays outside.' },
   { id: 'tests', name: 'Tests', title: 'Put it through the cases.', copy: 'Recorded responses and injected failures exercise the parser. Four probes check isolation.' },
   { id: 'verdict', name: 'Verdict', title: 'Inspect the result.', copy: 'The microVM stops. An independent grader checks the parser output.' },
@@ -132,16 +132,16 @@ export function RunStory({ data }: { readonly data: RunStoryData | null }) {
             <div className="run-recording-label"><span><i aria-hidden="true" /> Recorded run</span><time dateTime={data.date}>{date}</time></div>
             <div className="run-scene-canvas">
               <RunDiagram data={data} />
-              <div className="run-scene-checks" aria-hidden={stage !== 2}><p>Isolation checks</p><Probes data={data} /></div>
+              <div className="run-scene-checks" aria-hidden={stage !== 2}><p>Isolation checks <span>{data.events[4]!.elapsed}s</span></p><Probes data={data} /></div>
               <div className="run-scene-result" aria-hidden={stage !== 3}><Verdict data={data} identified={enhanced} /></div>
             </div>
-            <div className="run-scene-caption"><div><span className="run-chapter-index">0{stage + 1} / {chapter.name}</span><h3>{chapter.title}</h3><p>{chapter.copy}</p></div><div className="run-event-time"><span>{timestamp}<small>s</small></span><p>{stage === 3 ? 'microVM stopped' : stage === 2 ? 'harness started' : stage === 1 ? 'creating microVM' : 'scope checked'}</p></div></div>
+            <div className="run-scene-caption"><div key={stage}><span className="run-chapter-index">0{stage + 1} / {chapter.name}</span><h3>{chapter.title}</h3><p>{chapter.copy}</p></div><div className="run-event-time"><span>{timestamp}<small>s</small></span><p>{stage === 3 ? 'microVM stopped' : stage === 2 ? 'harness started' : stage === 1 ? 'creating microVM' : 'scope checked'}</p></div></div>
           </div>
         </div> : <div className="run-story-unavailable" role="status"><p>The recorded run is unavailable.</p><p>Open the Lab to inspect or run a parser.</p></div>}
       </div>
       {data ? <div className="run-story-chapters"><p className="run-static-recording">Recorded run · {date}</p>{CHAPTERS.map((chapter, i) => <article key={chapter.id} className="run-story-chapter" data-chapter={chapter.id} data-testid="run-story-stage" data-index={i}>
         <div className="run-chapter-copy"><span className="run-chapter-index">0{i + 1} / {chapter.name}</span><h3>{chapter.title}</h3><p>{chapter.copy}</p></div>
-        <div className="run-static-visual">{i < 3 ? <RunDiagram data={data} chapter={i} /> : <Verdict data={data} identified={!enhanced} />}{i === 2 ? <Probes data={data} /> : null}</div>
+        <div className="run-static-visual">{i < 3 ? <><RunDiagram data={data} chapter={i} /><p className="run-static-caption">{i === 0 ? <><code>candidate.py</code><span>{data.preset}</span></> : i === 1 ? <><span>Vercel Sandbox</span><span>Networking denied</span></> : <><span>{data.counts.total} cases</span><span>{data.counts.faultInjected} fault-injected</span></>}</p></> : <Verdict data={data} identified={!enhanced} />}{i === 2 ? <Probes data={data} /> : null}{i === 3 ? <Link className="text-link run-static-action" href="/lab#run">Try your parser <span aria-hidden="true">↗</span></Link> : null}</div>
       </article>)}</div> : null}
     </div>
     {data ? <RecordingDetails data={data} /> : null}

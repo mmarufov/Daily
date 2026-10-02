@@ -12,17 +12,17 @@ const ramp = (p: number, from: number, to: number) => {
 }
 
 export function storyFrame(p: number): Record<string, string> {
-  const sandbox = ramp(p, 0.2, 0.36)
-  const tests = ramp(p, 0.45, 0.53)
-  const verdict = ramp(p, 0.75, 0.86)
+  const sandbox = ramp(p, 0.2, 0.28)
+  const tests = ramp(p, 0.45, 0.5)
+  const verdict = ramp(p, 0.75, 0.83)
   return {
-    '--run-file-x': `${200 * ramp(p, 0.15, 0.36)}px`,
+    '--run-file-x': `${200 * ramp(p, 0.15, 0.28)}px`,
     '--run-file-opacity': `${1 - 0.85 * verdict}`,
     '--run-sandbox': `${sandbox}`,
     '--run-boundary-offset': `${1 - sandbox}`,
     '--run-tests': `${tests * (1 - verdict)}`,
-    '--run-checks': `${ramp(p, 0.53, 0.65) * (1 - verdict)}`,
-    '--run-packet-x': `${260 * ramp(p, 0.48, 0.66)}px`,
+    '--run-checks': `${ramp(p, 0.5, 0.57) * (1 - verdict)}`,
+    '--run-packet-x': `${260 * ramp(p, 0.48, 0.58)}px`,
     '--run-verdict': `${verdict}`,
     '--run-machine-opacity': `${1 - 0.78 * verdict}`,
     '--run-line-offset': `${1 - ramp(p, 0.08, 0.85)}`,

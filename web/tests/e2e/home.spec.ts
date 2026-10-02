@@ -95,6 +95,30 @@ test.describe('recorded parser run', () => {
     await expect(story).toHaveAttribute('data-stage', '2')
   })
 
+  test('every sticky scene fits a 720px-tall desktop viewport', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    for (const width of [1024, 1280]) {
+      await page.setViewportSize({ width, height: 720 })
+      await expect(story).toHaveAttribute('data-mode', 'scroll')
+      for (const [stage, progress] of [0.08, 0.32, 0.59, 0.92].entries()) {
+        await scrollStory(story, progress)
+        await expect(story).toHaveAttribute('data-stage', String(stage))
+        await expect.poll(() => story.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
+        const selectors = ['.run-story-heading', '.run-rail', '.run-recording-label', '.run-scene-caption']
+        if (stage === 2) selectors.push('.run-scene-checks')
+        if (stage === 3) selectors.push('.run-scene-result')
+        for (const selector of selectors) {
+          const box = await story.locator(selector).boundingBox()
+          expect(box, `${selector} is missing at ${width}px, stage ${stage}`).not.toBeNull()
+          expect(box!.y, `${selector} is above the scene at ${width}px, stage ${stage}`).toBeGreaterThanOrEqual(95)
+          expect(box!.y + box!.height, `${selector} is below the viewport at ${width}px, stage ${stage}`).toBeLessThanOrEqual(720)
+          expect(box!.x).toBeGreaterThanOrEqual(0)
+          expect(box!.x + box!.width).toBeLessThanOrEqual(width)
+        }
+      }
+    }
+  })
+
   test('resizing to a short window exposes all four static chapters', async ({ page }) => {
     const story = page.getByTestId('run-story')
     await scrollStory(story, 0.60)
@@ -279,13 +303,13 @@ test.describe('server-rendered opening', () => {
     await expect(story).toHaveAttribute('data-mode', 'static')
     for (const chapter of ['parser', 'sandbox', 'tests', 'verdict']) await expect(story.locator(`.run-story-chapter[data-chapter="${chapter}"]`)).toBeVisible()
     await expect(recordedField(story)).toHaveAccessibleName('48 correct, 4 failed, 12 not applicable, out of 64 cases')
-    const summary = page.locator('summary').filter({ hasText: /^Inspect this recorded run$/ })
+    const summary = page.locator('summary').filter({ hasText: /^Inspect this recorded run/ })
     const timeline = page.getByTestId('recorded-run-timeline')
     await expect(timeline).toBeHidden()
     await summary.click()
     await expect(timeline).toHaveAttribute('data-run-id', RECORDED_EXECUTION)
-    await expect(timeline).toContainText('Recorded production execution')
-    await expect(timeline).toContainText('count-guard-v1')
+    await expect(timeline.getByRole('list', { name: 'Recorded production execution timeline', exact: true })).toBeVisible()
+    await expect(story).toContainText('count-guard-v1')
     const rows = timeline.locator('ol.recorded-timeline > li')
     const expected = [
       ['0.00', 'scope checked: only candidate.py is written'],
@@ -302,7 +326,7 @@ test.describe('server-rendered opening', () => {
       await expect(rows.nth(index)).toContainText(stage)
     }
     await expect(rows.last()).toContainText('graded outside the microVM')
-    await expect(rows.last().locator('.recorded-timeline-time')).toHaveText('')
+    await expect(rows.last().locator(':scope > span').first()).toHaveText('')
     const probes = rows.nth(4).getByRole('list', { name: 'Recorded isolation checks' })
     for (const label of ['DNS lookup fails', 'HTTPS request fails', 'Grader not on disk', 'No credentials in env']) {
       const probe = probes.getByRole('listitem').filter({ hasText: label })

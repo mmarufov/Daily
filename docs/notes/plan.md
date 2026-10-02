@@ -983,8 +983,8 @@ navigation, typography, themes and public runner.
 
 - [x] Inspect the screenshot, homepage composition and recorded execution.
 - [x] Replace the three-chapter proposal with the approved four-moment design.
-- [ ] Validate the saved execution and derive all story data from that recording.
-- [ ] Build Parser, Sandbox, Tests and Verdict as one scroll-driven diagram.
+- [x] Validate the saved execution and derive all story data from that recording.
+- [x] Build Parser, Sandbox, Tests and Verdict as one scroll-driven diagram.
 - [x] Shorten the lower homepage to a compact guard finding and evidence links.
 - [ ] Review all four moments on an HTTPS preview at desktop and mobile widths.
 - [ ] Verify static rendering, reduced motion, keyboard, touch and missing data.
