@@ -67,3 +67,10 @@ node_modules/
 
 .vercel
 .playwright-mcp/
+
+# Dev-server output and browser-tool scratch. Committed by accident in #65 and
+# #66 when a dev server ran from the repo root rather than from web/. Both
+# rebuild on every run, and .next is why GitHub reported this repo as mostly
+# JavaScript when it has 78 bytes of first-party JS outside that folder.
+.next/
+.swc/
