@@ -101,6 +101,42 @@ Follow the SwiftUI patterns from [Dimillian/Skills](https://github.com/Dimillian
 - Validate Changes: High-level summary at each step
 - Capture Lessons: Update docs/notes/lessons.md after corrections
 
+## Writing
+
+Applies to prose anywhere a reader sees it: READMEs, docs, site copy, commit
+messages, PR descriptions, code comments.
+
+**Say what a thing is, not what it is not.** "A secure cloud messenger, not a
+zero-access one" and "measures association correctness, not relevance quality"
+are the same construction. Once in a document is a choice. In every section it
+is a template.
+
+**No em dashes.** Rewrite the sentence; a comma swap leaves the same rhythm.
+Text quoted from a frozen corpus or a hashed spec is exempt and carries
+`data-verbatim`.
+
+**One caveat, stated once, where it matters.** This project's honesty is the
+product, so the caveats earn their place. Repeating the same limitation in four
+phrasings across three pages does not make it truer, it makes the page sound
+anxious. Say it plainly, once, and link to the detail.
+
+**Do not write a closing line to be quoted.** "A security boundary that has
+never rejected anything is a comment" is an aphorism, not information. If the
+paragraph already made the point, stop.
+
+**Headings name the thing, not the lesson.** "Reject stale work at publication"
+has to be decoded. "Lease and version checks before publishing" does not.
+
+**Do not announce even-handedness.** "The tradeoff is explicit" and "that is a
+deliberate tradeoff" claim a virtue the sentence should demonstrate.
+
+**Comments explain what is not obvious from the code.** A debugging narrative
+belongs in the commit message or the PR. If comments are a quarter of a file's
+non-blank lines, most of them are not earning it.
+
+**Commit subjects describe the change.** "feat: make Daily Lab a cinematic,
+runnable evaluation instrument" is a pitch. Say what moved.
+
 ## Commit Messages
 
 Use `type: small description` format.

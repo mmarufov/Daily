@@ -1,7 +1,7 @@
 # Executed candidates
 
-`backend/lab/contract/candidate.py` — the single path in
-`ALLOWED_PATCH_PATHS` — is a **slot**, not a file. A proposal is written
+`backend/lab/contract/candidate.py`, the single path in
+`ALLOWED_PATCH_PATHS`, is a **slot**, not a file. A proposal is written
 there, the scope gate rules on that path, and the sandbox executes whatever
 is in it. It holds one candidate at a time and is never committed.
 

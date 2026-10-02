@@ -1,4 +1,4 @@
-# Daily — web companion
+# Daily web companion
 
 A read-only web tier for [Daily](../README.md): a reader demo, an interactive explorer for the
 evaluation harness's results, and one worked debugging case study.
@@ -8,7 +8,7 @@ the pipeline already assembled; the explorer renders artifacts exported from the
 scorecards.
 
 Every figure on the site is drawn from those committed artifacts at render time. There are no
-illustrations, no placeholder data, and no hardcoded numbers in any chart — see
+illustrations, no placeholder data, and no hardcoded numbers in any chart. See
 [The visual system](#the-visual-system).
 
 ## Setup
@@ -45,20 +45,20 @@ are committed.
 
 | Variable | Required | Meaning |
 |---|---|---|
-| `ARTIFACTS_BLOB_BASE_URL` | no | Base URL of a published artifact set. When unset — or unreachable — the app falls back to the committed export under `public/artifacts/` and says so in the UI. |
+| `ARTIFACTS_BLOB_BASE_URL` | no | Base URL of a published artifact set. When unset, or unreachable, the app falls back to the committed export under `public/artifacts/` and says so in the UI. |
 | `BLOB_READ_WRITE_TOKEN` | publish only | Vercel Blob write token. Absent, `publish:artifacts` exits 0 without uploading, so fork pull requests run the same pipeline with no secrets. |
 | `PUBLISH_AS_LATEST` | publish only | `true` moves the mutable `evidence/latest/` pointer. The trusted workflow sets it only for the default branch. |
 | `DEMO_RUN_ID` | no | Which exported run the reader demo replays. Defaults to `prod-llm__2026-09-02__47edb50`. |
 | `LAB_OWNER_TOKEN` | to start an investigation | Bearer token for `POST /api/lab/investigate`, compared in constant time. **Unset means nobody is the owner, not everybody**: the route returns 503 and no investigation can be started. On `POST /api/lab/run` it only unlocks `suspend_seconds`. Reading a run is public and needs nothing. |
 | `KV_REST_API_URL` + `KV_REST_API_TOKEN` | public runner | The Upstash Redis REST endpoint the public runner counts runs in, provisioned from the Vercel Marketplace on the free plan with auto-upgrade off. **Unset means the runner is closed**: `POST /api/lab/run` answers 503 and starts nothing, because a run nobody counted is not allowed to start. |
-| `VERCEL_TOKEN` + `VERCEL_TEAM_ID` + `VERCEL_PROJECT_ID` | local sandbox only | Credentials for `@vercel/sandbox`. On a Vercel deployment the SDK uses OIDC and needs none of them; `vercel env pull` also writes a `VERCEL_OIDC_TOKEN` that works locally. Partial credentials are treated as a misconfiguration rather than a fallback, because OIDC supplies all three at once. |
-| `AI_GATEWAY_API_KEY` | investigator only | Routes the model call through the AI Gateway, which is what meters the spend the budget is measured against. Absent, `readiness()` refuses and no call is made — there is no mock model and no demo mode. |
+| `VERCEL_TOKEN` + `VERCEL_TEAM_ID` + `VERCEL_PROJECT_ID` | local sandbox only | Credentials for `@vercel/sandbox`. On a Vercel deployment the SDK uses OIDC and needs none of them; `vercel env pull` also writes a `VERCEL_OIDC_TOKEN` that works locally. Partial credentials are treated as a misconfiguration, because OIDC supplies all three at once. |
+| `AI_GATEWAY_API_KEY` | investigator only | Routes the model call through the AI Gateway, which is what meters the spend the budget is measured against. Absent, `readiness()` refuses and no call is made. There is no mock model and no demo mode. |
 | `LAB_MAX_USD` | investigator only | An explicit per-investigation ceiling. Required even when a key is present, and refused if it exceeds `BUDGET.max_usd`: raising the limit has to be a commit somebody reads, not an env var somebody sets. |
 | `LAB_MODEL` | no | Overrides the default `anthropic/claude-sonnet-4.5`, as a `provider/model` string. |
 
 `LAB_MAX_USD` is an *authorisation*; `BUDGET.max_usd` in `lib/lab/investigator.ts` is the
 *reviewed ceiling*. The tighter of the two binds. Refusing an authorisation above the reviewed
-ceiling — which this used to do — had the asymmetry backwards: being allowed more than the code
+ceiling, which this used to do, had the asymmetry backwards: being allowed more than the code
 will spend is not a hazard, and the refusal could be satisfied by raising the code ceiling, which
 is the opposite of what a ceiling is for.
 
@@ -72,16 +72,16 @@ in production while every local check passed.
 `npm run stage:lab` copies the eight files a function opens into the project, before `dev` and
 before `build`. The directory is gitignored and rebuilt each time: a second *committed* copy of
 the case suite would be a second thing that can disagree with the first. The export still reads
-`backend/` directly, and should — it runs on a developer's machine and its job is to be a function
-of committed bytes rather than of a build artifact.
+`backend/` directly, and should. It runs on a developer's machine and its job is to be a function
+of the committed bytes.
 
 There is deliberately no backend URL here. See [Live mode](#live-mode-is-not-built).
 
 ## The boundary between this tier and the backend
 
 Daily's backend is a **stateful process**, not a set of functions. Its startup path launches
-seven background loops — ingestion, prewarm, source quality, interest evolution, per-user
-refresh, account maintenance, ranking refresh — applies schema, and elects a leader with a
+seven background loops (ingestion, prewarm, source quality, interest evolution, per-user
+refresh, account maintenance, ranking refresh), applies schema, and elects a leader with a
 Postgres advisory lock. It stays where it runs today. Nothing about this web tier moves it, and
 moving it would trade a working system for a demo.
 
@@ -122,11 +122,11 @@ assuming it. Three rules are enforced by construction:
 3. **Unknown is written as `unknown`.** Never `null`, never `0`, never inferred from a sibling
    field.
 
-What that surfaces about the committed evidence, all of it computed rather than hardcoded:
+What that surfaces about the committed evidence, all of it computed from the artifacts:
 
 - The revision that executed every stored run is **not reachable from the default branch**, so
   "this result came from that code" cannot be verified by checking the revision out.
-- **No stored scorecard records an evaluation protocol** — the harness began emitting one later.
+- **No stored scorecard records an evaluation protocol.** The harness began emitting one later.
   Protocol equality between two runs therefore cannot be verified, only assumed from the runner
   name, and the explorer says so instead of showing a clean regression claim.
 - `execution_mode` is `unknown` for every run. A zero cache-miss total cannot stand in for it,
@@ -152,7 +152,7 @@ A delta only means something if you can say what was held fixed, so comparisons 
 | `incompatible` | anything else | the reason, and **no** improvement arrows |
 
 Differences on fractions are expressed in **percentage points**. "Material" means the harness's
-fixed ±0.02 cutoff, which is a threshold its author chose — ten fixtures with no variance
+fixed ±0.02 cutoff, which is a threshold its author chose. Ten fixtures with no variance
 estimate cannot support a significance claim, and the UI never makes one.
 
 ### Metric semantics
@@ -169,9 +169,9 @@ the false-major rate, cost and latency.
 Rendering those tallies as survivorship produces a funnel that grows: for fixture `ray` it would
 show `scored` at 45 and `feed` at 50. Survivors at a stage are the sum of that stage's tally and
 every later one. That reconstruction is validated against three facts recorded independently in
-the same scorecard — survivors at `feed` equals the reported feed size (50), survivors at
+the same scorecard: survivors at `feed` equals the reported feed size (50), survivors at
 `loaded_rows` equals the recorded recency window (300), and survivors at `scored` equals the
-documented 100-candidate cap — and the total exceeds the 1,358-article corpus by exactly four,
+documented 100-candidate cap, and the total exceeds the 1,358-article corpus by exactly four,
 the planted needles. `tests/unit/funnel.test.ts` asserts all of it.
 
 ## Preview and publication
@@ -191,7 +191,7 @@ pull request ──▶ evaluation artifacts   (no secrets, runs on forks)
 ```
 
 - The pull-request job never holds publishing credentials. Publication happens in a separate
-  trusted workflow, which refuses to run unless the triggering run succeeded — so a failed run
+  trusted workflow, which refuses to run unless the triggering run succeeded, so a failed run
   is never published as if it had passed.
 - The manifest is uploaded **last**, because it asserts completeness. A reader that sees the
   manifest can rely on every artifact it lists being present and validated.
@@ -218,7 +218,7 @@ pull request ──▶ evaluation artifacts   (no secrets, runs on forks)
 One rule governs every surface: **colour means loss.** In any chart, table or diagram, ink is
 what survived the pipeline, vermilion is what it threw away, and slate is what cannot be verified
 either way. Nothing that worked is ever coloured, so a glance at a figure says where the system
-failed before you have read a label. Chrome — links, focus, selection — borrows the same
+failed before you have read a label. Chrome (links, focus, selection) borrows the same
 vermilion, because there it carries the meaning the eye has already learned: look here.
 
 Two typefaces and no sans between them. Prose is set in Fraunces; every number, identifier, stage
@@ -228,7 +228,7 @@ instrument and is meant to look like both objects at once. Both fonts are **vend
 the bytes that ship are the bytes in the tree. Licences: [`app/fonts/LICENSE.md`](app/fonts/LICENSE.md).
 
 `docs/DESIGN.md` governs the iOS app and is written as an iOS-first source of truth. This tier is
-a different medium doing a different job — an evidence explorer, not a reading app — so it does
+a different medium doing a different job, an evidence explorer, so it does
 not inherit those tokens. `/reader` is the one surface that stays close to the app's
 paper-and-serif register, because there it is showing the product rather than measuring it.
 
@@ -236,18 +236,18 @@ paper-and-serif register, because there it is showing the product rather than me
 
 | Figure | Where | What it draws |
 |---|---|---|
-| **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus** — 1,362 marks, not a summary of them. Stepping a stage flashes the candidates that stage removed in vermilion and settles the rest to ghost, so the discarded mass stays part of the picture. |
+| **The sieve** | `/`, `/evidence` funnel view | One cell per candidate article, **1:1 with the corpus**: 1,362 marks, not a summary of them. Stepping a stage flashes the candidates that stage removed in vermilion and settles the rest to ghost, so the discarded mass stays part of the picture. |
 | **Every fixture, no averaging** | `/`, `/evidence` | A small multiple per reader fixture, composed of its story outcomes. `Daniel` is almost solid vermilion; `Will` is mostly loss. The run's 22.1% mean hides both. |
 | **The slope** | `/evidence`, `/engineering` | Two runs on one shared 0–100% scale. Fraction metrics only: costs and latencies share no scale with a recall rate, and per-row normalisation would make a 0.4-point move look like a 40-point one. |
 | **The trace ribbon** | `/evidence` story detail | One story's journey across the same ten stages, with its death point marked. Answers "did ranking make a mistake, or did nothing ever look at this?". |
-| **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page — the counts are recorded, the merge point is not. |
+| **The offset** | `/engineering` | The batch-scoring defect drawn: article slots, returned verdict slots, and the shift one merged entry causes. Labelled a schematic on the page: the counts are recorded, the merge point is not. |
 
 ### Reading order
 
-Each surface leads with the figure and keeps one short paragraph beside it. The long form —
+Each surface leads with the figure and keeps one short paragraph beside it. The long form,
 metric definitions, where the sieve's counts come from, how the repository confirms the
-defect diagnosis, where this tier stops and the backend begins — sits behind a marked
-disclosure rather than in the scroll. Nothing was deleted to make the pages shorter; the
+defect diagnosis, where this tier stops and the backend begins, sits behind a marked
+disclosure. Nothing was deleted to make the pages shorter; the
 depth moved one click away so the argument can be followed without wading to it. The two
 long pages (`/evidence`, `/engineering`) carry their own numbered contents as jump links.
 
@@ -261,14 +261,14 @@ Honesty constraints the figures are held to:
 - The sieve is drawn per fixture only. Summing ten fixtures would draw the same article up to ten
   times and call the result a corpus, so the aggregate view offers a fixture picker instead.
 - Motion is one-shot and cancellable, `prefers-reduced-motion` jumps straight to the answer, and
-  only `background-color` animates — 1,362 cells cost no layout work, which is what makes drawing
+  only `background-color` animates, so 1,362 cells cost no layout work, which is what makes drawing
   the corpus at 1:1 affordable in the first place.
 
 ## Daily Lab (`/lab`)
 
 A controlled experiment on the batch relevance scorer, built on the same evidence base. It asks one
-question — *does a candidate parser associate every verdict with the article it was actually about,
-and refuse when it cannot?* — and answers it with verdicts **computed by trusted code**, never
+question, *does a candidate parser associate every verdict with the article it was actually about,
+and refuse when it cannot?*, and answers it with verdicts **computed by trusted code**, never
 reported by the thing under test.
 
 | | |
@@ -276,7 +276,7 @@ reported by the thing under test.
 | `backend/lab/contract/` | Three preserved versions of the association (`positional-v0` as production ships it, `count-guard-v1` from PR #59, the proposed `keyed-v2`) plus three labelled defective controls. Each is one self-contained stdlib-only file. |
 | `backend/lab/cases/` | 64 cases in two groups that are never mixed: 42 **observed** batches replayed from the committed recordings, and 22 **synthetic** fault injections with ground truth by construction. |
 | `backend/lab/harness.py` | Runs a candidate and emits prediction records. The record schema has **no field for a grade**. |
-| `backend/lab/orchestrate.py` | A resumable orchestrator whose state is an append-only event log. `--kill-after` injects a real process death so the recovery can be demonstrated rather than described. |
+| `backend/lab/orchestrate.py` | A resumable orchestrator whose state is an append-only event log. `--kill-after` injects a real process death so the recovery can be demonstrated. |
 | `web/lib/lab/` | The trusted side: frozen spec + hash, evaluator, patch scope gate, runner selection, durable state, artifact schema. |
 | `web/public/lab-artifacts/` | The committed, validated artifact set the site renders. |
 
@@ -285,7 +285,7 @@ reported by the thing under test.
 - **A candidate cannot grade itself.** Prediction records carry no verdict field and the schema
   strips unknown keys. `control-self-reporting` emits `passed/score/all_tests_green` and is
   rejected like anything else.
-- **The trust boundary is also a language and process boundary** — candidate Python, evaluator
+- **The trust boundary is also a language and process boundary**: candidate Python, evaluator
   TypeScript, separate processes. There is nothing to monkeypatch.
 - **Missing evidence is never acceptance.** Missing records, crashes and timeouts resolve to
   `incomplete`; a criterion with nothing applicable is `passed: false`, not vacuously true.
@@ -307,20 +307,20 @@ are not a controlled comparison.
 
 ### Exercised, and what is still not
 
-**Vercel Sandbox — exercised.** `keyed-fallback-v1` executed in a `python3.13` microVM under a
+**Vercel Sandbox, exercised.** `keyed-fallback-v1` executed in a `python3.13` microVM under a
 platform-applied `deny-all` policy. Four negative controls run inside the same microVM, after the
 candidate, and a probe that *succeeds* is a failed probe: DNS resolution and an outbound HTTPS
 request both fail, no file named `evaluator.ts` exists anywhere on the filesystem, and no
 credential is present in the environment. The microVM id, region and the policy read back off the
 platform are recorded in each run's provenance.
 
-`egress_bytes` is an upper bound, not a measurement of candidate traffic — it includes the
+`egress_bytes` is an upper bound, not a measurement of candidate traffic. It includes the
 control-plane bytes spent reading the record bundle back, so it is non-zero on a run that reached
 nothing. The probes are the direct evidence.
 
-**Vercel Workflow — exercised, with one half of the durability claim still unobserved.**
+**Vercel Workflow, exercised, with one half of the durability claim still unobserved.**
 Orchestration runs as a durable workflow: the scope gate, the sandboxed execution and the grading
-are three journaled steps, and suspension uses the SDK's `sleep` rather than `setTimeout` — the
+are three journaled steps, and suspension uses the SDK's `sleep` rather than `setTimeout`. The
 difference is the whole claim, since `setTimeout` holds a process open for the duration and so
 demonstrates nothing about surviving the loss of one.
 
@@ -337,13 +337,13 @@ and this branch has not been promoted to production. `WorkflowOutcome.resumed` a
 `process_id` exist so that when it is, the evidence is a pair of differing ids rather than a
 claim.
 
-`unknown-outcome` survives the port and is deliberately not something the workflow writes — an
+`unknown-outcome` survives the port and is deliberately not something the workflow writes, an
 attempt with a start and no journaled ending is one nothing observed finishing, and the microVM
 may have completed a millisecond before the orchestrator died.
 
-**The investigator agent — runs on the deployment, not on a laptop.** `AI_GATEWAY_API_KEY` is a
+**The investigator agent runs on the deployment, not on a laptop.** `AI_GATEWAY_API_KEY` is a
 Vercel *sensitive* variable: set once and never readable again, including by `vercel env pull`.
-That is the access model rather than an obstacle to route around — "only the authenticated owner
+That is the access model. "Only the authenticated owner
 starts paid work, enforced server-side" is not satisfied by copying the key onto a developer's
 machine, and a repository that audits its own sandbox for leaked credentials should not be
 exfiltrating one to run an errand.
@@ -353,12 +353,12 @@ the credential already is. `npm run lab:investigate -- --at <deployment>` starts
 the returned evidence into `backend/lab/` in the shape `export-lab.ts` already reads.
 
 `readiness()` requires `AI_GATEWAY_API_KEY` specifically. It used to accept `OPENAI_API_KEY` as a
-fallback and report the gateway as `openai-direct`, which nothing could serve — the model is
+fallback and report the gateway as `openai-direct`, which nothing could serve. The model is
 addressed as a bare `provider/model` string, which only the Gateway routes. The call failing was
 the lesser problem: `openai-direct` would have been written into a committed trace as the gateway
 that served a call that never happened.
 
-Where this stands is recorded on `/lab`, derived from the manifest rather than asserted in prose,
+Where this stands is recorded on `/lab`, derived from the manifest,
 so the claim weakens itself when a run proves otherwise.
 
 ### The public runner
@@ -414,18 +414,18 @@ runs are not added to the published set.
 
 `keyed-fallback-v1` was written to be plausible and wrong, and was **accepted**. It declares
 `keyed-v2` and falls back to positional association when a response carries no article ids.
-Positional association cases are not-applicable to a keyed-v2 declarer — correctly — but nothing
+Positional association cases are not-applicable to a keyed-v2 declarer, correctly, but nothing
 checked that it *refused* them rather than quietly handling them. On `syn-positional-reordered`,
 the case built to expose the exact defect this experiment measures, it parsed where `keyed-v2`
 refuses, and nothing graded it.
 
-It was published first as a diagnostic, deliberately — promoting it to a criterion re-decides
+It was published first as a diagnostic, deliberately. Promoting it to a criterion re-decides
 runs that never faced it, and doing that silently is how a result gets rewritten after the fact.
 
 It is now **generation 2 of the spec**, as `protocol-exclusivity`, at threshold 1 like every
-other criterion. A declared protocol was being treated as a shield; that is right for association
-— scoring a keyed parser on a positional recording compares two protocols on one protocol's
-inputs — and wrong for refusal. A parser that quietly handles inputs it did not declare is not
+other criterion. A declared protocol was being treated as a shield; that is right for association,
+since scoring a keyed parser on a positional recording compares two protocols on one
+protocol's inputs, and wrong for refusal. A parser that quietly handles inputs it did not declare is not
 narrower than the contract, it is wider than the contract and unmeasured in the excess.
 
 **Both generations are kept, and every run is graded under both.** Grading is a pure function of
@@ -452,7 +452,7 @@ cd ../web && npm run export:lab                       # rebuild web/public/lab-a
 npm run export:lab -- --check                         # validate without writing
 npm run stage:lab                                     # copy runtime evidence into the project
 
-# The sandbox boundary, no model in the loop — deterministic given a committed candidate.
+# The sandbox boundary, no model in the loop, so it is deterministic given a committed candidate.
 npm run lab:agent -- --sandbox-only ../backend/lab/contract/candidates/keyed_fallback_v1.py
 
 # One real investigation, run on the deployment holding the gateway key.
@@ -466,7 +466,7 @@ production batch scorer asks for a positional array of verdicts and sends no art
 short or duplicated response shifted every later verdict onto the wrong article. A New Jersey
 flood-adjacent roster story was rejected for "discussing a music EP"; an Uzbek policy story was
 rejected for "discussing NFL team rosters". One of the misattributed articles is a *planted
-needle* — an article injected so its correct answer is known by construction.
+needle*, an article injected so its correct answer is known by construction.
 
 On one runner and one corpus the PR #59 guard (still open) fires **63 times**; the worst response
 in that run returned **201 verdicts for 40 articles**. The worst parseable response in the committed
@@ -474,7 +474,7 @@ lab cases is larger: **254 verdicts for 40 articles** (`observed-2026-09-02-040`
 shows). Every production-pipeline number in the committed
 scorecards was computed with lists shifted against their articles.
 
-Fixing it makes the measured numbers **worse** — the unwanted rate rises 15.6 points — because
+Fixing it makes the measured numbers **worse**: the unwanted rate rises 15.6 points, because
 on a mismatch the guard now discards all forty verdicts rather than guessing, leaving those
 candidates with no relevance signal at all. Both facts are true at once: the old numbers were
 inflated by misattribution, and refusing to guess is expensive until the output carries ids. The
@@ -483,29 +483,29 @@ to make: [`.context/batch-alignment-fix/FINDING.md`](../.context/batch-alignment
 
 ## Demo walkthrough
 
-1. **`/`** — the sieve runs once on load: 1,362 candidates thinning to the 50 that reached the
+1. **`/`**: the sieve runs once on load: 1,362 candidates thinning to the 50 that reached the
    reader. Step it back to stage 02 and watch the recency window take 1,062 of them before a
    single model call. Switch fixture and the shape changes: `tom` ends at 9 delivered, `ray` at
    50, from the same corpus.
-2. **`/reader?profile=ray`** — the edition the pipeline actually assembled for the `ray` fixture
+2. **`/reader?profile=ray`**: the edition the pipeline actually assembled for the `ray` fixture
    against the 2 September 2026 corpus. Note what it is: a New Jersey local-news reader handed a
    run of NHL trade stories. The demo does not flatter the product. Scroll to *The same corpus,
    nine other readers* for the product's central claim, checkable without reading a number.
-3. **`/evidence`** — opens on `prod-llm` against `proto-hybrid-judge-events`, same corpus, same
+3. **`/evidence`**: opens on `prod-llm` against `proto-hybrid-judge-events`, same corpus, same
    k, labelled as an algorithm comparison. The slope chart puts both runs on one scale; then read
    *Every fixture, no averaging* below it, where `Will` sits at 0.0% capped recall.
-4. **Funnel tab, fixture `ray`** — the sieve again, this time beside the reconstructed
+4. **Funnel tab, fixture `ray`**: the sieve again, this time beside the reconstructed
    survivorship table it is drawn from.
-5. **Stories tab, filter "Lost before the scorer"** — stories the reader needed that the pipeline
+5. **Stories tab, filter "Lost before the scorer"**: stories the reader needed that the pipeline
    never even scored. Open one and the trace ribbon shows how far it got.
-6. **`/engineering`** — the case study. Toggle the offset figure between *12 verdicts returned*
+6. **`/engineering`**: the case study. Toggle the offset figure between *12 verdicts returned*
    and *11 verdicts returned* to see the whole defect in one move, then follow the links straight
    back into the explorer state that shows each misattributed story.
 
 ## Live mode is not built
 
 Signing in and receiving a personally built feed is **not implemented**, and the reader page says
-so on the page rather than only here. Three things block it, all access rather than design:
+so on the page as well as here. Three things block it, all of them access problems:
 
 1. The backend adds CORS middleware only when `CORS_ORIGINS` is set. It is unset; the documented
    default is "no web clients". No browser can call the API until that changes.
@@ -513,7 +513,7 @@ so on the page rather than only here. Three things block it, all access rather t
    a separate web OAuth client registered for this origin.
 3. Feedback must echo the `feed_request_id`, `reader_generation` and `delivery_position` from the
    edition actually shown. Those exist only on a live delivery, so the contract cannot be
-   exercised against frozen fixtures without inventing identifiers — which the harness's own
+   exercised against frozen fixtures without inventing identifiers, which the harness's own
    delivery contract exists to prevent.
 
 Live end-to-end behaviour is therefore **unverified**. Nothing on this site should be read as

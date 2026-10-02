@@ -1,4 +1,4 @@
-# S0 — Evaluation
+# S0: Evaluation
 
 Answers one question with evidence: **did a change make the feed better or worse, and if a
 story went missing, which stage lost it?**
@@ -62,7 +62,7 @@ is re-labelled by `gpt-4.1`. Disagreements are flagged `contested`. Cost for ten
 every contested row; human rows override all other rows. Codex-assisted editorial passes use
 `source=agent`, never pretend to be human, and override only the bootstrap model rows.
 
-Tags carry the hard cases: `need_to_know` (affects life, money, safety, work — never a hobby),
+Tags carry the hard cases: `need_to_know` (affects life, money, safety, work, never a hobby),
 `exclusion_collision`, `lookalike` (right word, wrong thing), `background_routine`, `followup`,
 `major_event`, `promo`.
 
@@ -94,8 +94,8 @@ signals because the answer is known by construction.
 
 ## The gate (`tests/test_eval_gate.py`)
 
-Always: fully offline (zero cache misses), calls bounded, and **no per-snapshot metric—including
-quiet-day false-major rate—worse than `results/baseline-*.json` by more than 0.05**. Under
+Always: fully offline (zero cache misses), calls bounded, and **no per-snapshot metric, including
+quiet-day false-major rate, worse than `results/baseline-*.json` by more than 0.05**. Under
 `EVAL_GATE_STRICT=1`, false-major must be zero, world-critical events must reach every prototype
 feed, and the absolute targets from `docs/architecture/filtering-architecture-plan.md §9` apply
 (recall@12 ≥ 0.8, ≤ 1 call). Production does
@@ -125,7 +125,7 @@ python -m evals.label review --snapshot <date> --persona ray                 # h
 python -m evals.snapshot derive <date> <date>-quiet --clusters ev-01 --quiet # clones/prunes labels too
 ```
 
-## Results — 2026-08-31 snapshot, 10 personas, k = 12
+## Results: 2026-08-31 snapshot, 10 personas, k = 12
 
 Means over ten personas. Every queued must-see/contested row has an independent Codex editorial
 override with honest `source=agent` provenance; product-owner human review remains outstanding.
