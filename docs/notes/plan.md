@@ -861,13 +861,15 @@ shared visual system, truthful historical experiment, preserved public contracts
 - [x] Complete retrieval finding, guard experiment, and parser invitation.
 - [x] Rebuild Lab workspace and update supporting evidence/engineering copy.
 - [x] Refresh branding and social assets.
-- [ ] Typecheck, unit tests, artifact checks/staleness and production build.
-- [ ] Review final diff and deploy the reviewed revision.
-- [ ] Verify production browser journeys, responsive/reduced-motion states and accessibility.
-- [ ] Run one real default parser and verify terminal grading plus reloadable URL.
-- [ ] Record screenshots, deployment/revision, and performance observations.
+- [x] Typecheck, unit tests, artifact checks/staleness and production build.
+- [x] Review final diff and deploy the reviewed revision.
+- [x] Verify production browser journeys, responsive/reduced-motion states and accessibility.
+- [x] Run one real default parser and verify terminal grading plus reloadable URL.
+- [x] Record screenshots, deployment/revision, and performance observations.
 
 Source boundaries: the historical guard has not replaced the production scorer;
 case correctness differs from relevance quality; 39 published records are not 39
 Sandbox executions. Original workspace and branch stay intact. Browser tests use
 production-only configuration, intercepting submissions except the one live check.
+
+Release verification: [daily-lab-release.md](daily-lab-release.md). Full browser suite: 202 passed, two intentional mobile keyboard skips. Live run: wrun_01M3X2KSBTMEPWJJZT74HCTHX3.
