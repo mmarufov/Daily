@@ -544,3 +544,13 @@ README.md into a historical audit or an exhaustive list of shortcomings.
 The user liked the visual foundation but found interactions too simple. Treat
 opening, closing, selection and press feedback as part of the finished design.
 Verify reversibility, keyboard and reduced-motion behavior alongside screenshots.
+
+## October 1: a brief's numbers are claims too
+
+The redesign brief and the old homepage both said "two fixtures at zero". The pinned run has
+one (Will); the two-zero figure is from the 2026-08-31 quiet snapshot. The brief also said every
+verdict in the 254-verdict batch landed on the wrong article; the first three match, then the
+response slips by one, then repeats one sentence 238 times. Read the source before writing the
+sentence, derive the sentence from it where possible, and pin the value in a test
+(`tests/unit/home-evidence.test.ts`) so the copy cannot drift from the data. The same goes for
+"identical inputs": the guard experiment's two scorecards recorded different cache keys.
