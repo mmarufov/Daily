@@ -76,7 +76,7 @@ export function computeDelta(a: MetricValue, b: MetricValue, metricKey: string):
       ...NOT_COMPUTABLE,
       reason: isMissing(a) && isMissing(b)
         ? 'Neither run reported this metric.'
-        : `Only ${isMissing(a) ? 'the comparison run' : 'the baseline run'} reported this metric, so there is nothing to subtract.`,
+        : `Only ${isMissing(a) ? 'the comparison run' : 'the baseline run'} reported this metric.`,
     }
   }
 
@@ -121,11 +121,11 @@ export function describeDelta(a: MetricValue, b: MetricValue, metricKey: string)
   if (delta.verdict === 'not-computable') return delta.reason ?? 'Not computable.'
   if (delta.verdict === 'unchanged') return `${def.label} is unchanged.`
   if (delta.verdict === 'no-direction') {
-    return `${def.label} changed by ${delta.display}. This metric has no better-or-worse direction.`
+    return `${def.label} changed by ${delta.display}; direction is neutral.`
   }
   const better = delta.verdict === 'better'
   const materiality = delta.material
-    ? 'past compare.py’s fixed ±0.02 materiality cutoff'
-    : 'within compare.py’s fixed ±0.02 materiality cutoff'
-  return `${def.label} moved ${delta.display}, which is ${better ? 'better' : 'worse'} for this metric, ${materiality}. This is a fixed cutoff, not a significance test.`
+    ? 'past the fixed ±0.02 materiality cutoff'
+    : 'within the fixed ±0.02 materiality cutoff'
+  return `${def.label} moved ${delta.display}: ${better ? 'better' : 'worse'}, ${materiality}.`
 }

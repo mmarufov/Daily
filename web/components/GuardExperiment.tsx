@@ -60,12 +60,12 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
 
       <MotionContent changeKey={variant} className="guard-reading" aria-live="polite">
         <p className="finding-summary-title">
-          {isGuard ? 'Refusing the mismatch exposed the cost.' : 'A plausible number can hide a broken join.'}
+          {isGuard ? 'Mismatched batches refused.' : 'Verdicts assigned by position.'}
         </p>
         <p>
           {isGuard
-            ? 'The guard discarded batches with the wrong number of verdicts. Recall fell and unwanted delivery rose; retrieval recall stayed unchanged.'
-            : 'The original scorer assigned verdicts by position, even when the response count differed. These quality numbers include that ambiguous association.'}
+            ? 'Recall fell and unwanted delivery rose; retrieval recall stayed unchanged.'
+            : 'The scorer continued after count mismatches, leaving article associations unverified.'}
         </p>
       </MotionContent>
 
@@ -75,8 +75,7 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
           <p>recorded gate failures<span>September 21 experiment</span></p>
         </div>
         <p className="finding-muted">
-          The baseline was retained. This is a historical working-tree experiment;
-          it does not establish the current CI result or a shipped backend guard.
+          Historical working-tree experiment; the baseline was retained.
         </p>
       </div>
 
@@ -87,12 +86,9 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
             Corpus {experiment.snapshot}, {experiment.fixtures} fixtures, k={experiment.k}.
             {' '}Reported cache misses: {experiment.original.summary.cache_misses_total} original,
             {' '}{experiment.guard.summary.cache_misses_total} guard.
-            {' '}Offline replay is reported by the historical note; the original scorecard does not record execution mode.
           </p>
           <p>
-            The guard file records revision <code>{experiment.guard.source.recorded_git_sha}</code>.
-            {' '}That is the base checkout, not a verified commit of the tested guard.
-            Exact working-tree implementation bytes remain unknown.
+            Base revision <code>{experiment.guard.source.recorded_git_sha}</code>.
           </p>
           <a href="/experiments/batch-alignment.json" className="text-link">Inspect summary and source hashes ↗</a>
         </div>

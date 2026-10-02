@@ -15,7 +15,7 @@ import '../lab-workspace.css'
 
 export const metadata: Metadata = {
   title: 'Run a parser · Daily Lab',
-  description: 'Submit a Python parser to Vercel Sandbox. Inspect real execution and independent grading against recorded responses and injected failures.',
+  description: 'Run a Python parser in Vercel Sandbox. Inspect recorded and injected cases with independent grading.',
 }
 
 export default async function LabPage() {
@@ -23,15 +23,15 @@ export default async function LabPage() {
     loadLabIndex(), loadOffendingCase(), loadRunnerPresets(), loadCaseCatalog(),
   ])
   const limits = PUBLIC_RUN_LIMITS
-  const limitsLine = `Limits: ${limits.per_address.runs} runs an hour from one address, ${limits.concurrent_runs} at once, and ${limits.runs_per_day} runs or ${limits.cpu_ms_per_day / 60_000} minutes of microVM CPU a day across every visitor. Live runs are separate from the published inventory.`
+  const limitsLine = `Limits: ${limits.per_address.runs} runs/hour per address, ${limits.concurrent_runs} at once, and ${limits.runs_per_day} runs or ${limits.cpu_ms_per_day / 60_000} minutes of microVM CPU/day across all visitors. Live runs have a separate inventory.`
   const shown = manifest === null ? [] : walkthroughs(manifest)
   return (
     <div className="frame lab-page">
       <section className="lab-intro">
-        <p className="eyebrow">The workspace</p>
-        <h1>Put your parser through it.</h1>
+        <p className="eyebrow">Daily Lab</p>
+        <h1>Test a scoring parser.</h1>
         <div className="lab-intro-copy">
-          <p>These parsers interpret scoring responses from Daily's news pipeline. Run Python in a fresh Vercel Sandbox against {catalog.length} cases. The default parser has a known gap. Run it, inspect the failure, then try a change.</p>
+          <p>Test the parsers that interpret Daily's scoring responses. Run the default parser against {catalog.length} cases in Vercel Sandbox, inspect the failure, then edit it.</p>
           <div className="lab-intro-links"><a className="text-link" href="#recorded">Recorded investigations <span aria-hidden="true">↓</span></a><Link className="text-link" href="/engineering">The original defect <span aria-hidden="true">↗</span></Link></div>
         </div>
       </section>
@@ -39,7 +39,7 @@ export default async function LabPage() {
         <LabRunner presets={presets} catalog={catalog} limits={limitsLine} maxBytes={MAX_SOURCE_BYTES} />
       </section>
       <section id="recorded" className="lab-support-section">
-        <Band index="01" title="Recorded investigations" note="Published evidence, separate from your live run" />
+        <Band index="01" title="Recorded investigations" note="Published records" />
         {manifest === null ? <p role="status">The published run inventory is unavailable.</p> : (
           <ul className="lab-walkthroughs">{shown.map((w) => {
             const entry = manifest.entries.find((e) => e.file === w.file)
@@ -53,16 +53,16 @@ export default async function LabPage() {
         )}
       </section>
       <section className="lab-support-section">
-        <Band index="02" title="What a verdict means" note="Contract correctness, independently graded" />
+        <Band index="02" title="Grading criteria" note="Contract correctness, independently graded" />
         <div className="lab-criteria-summary">
           <div>
             <p className="prose m-0 mb-5">{EXPERIMENT.question}</p>
             <Reveal label="What it measures" items={EXPERIMENT.measures} verbatim />
             <Reveal label="What it does not measure" items={EXPERIMENT.does_not_measure} verbatim />
             <Reveal label="Versioned and hashed criteria" items={[
-              'Both criteria generations and their verdicts are retained. The second generation closes a gap found after earlier runs.',
-              'Every verdict identifies its criteria hash. Changing a threshold creates a new comparison rather than rewriting an old result.',
-              'Accepted for review means contract checks passed under those criteria. It does not mean shipped, production ready, or better news relevance.',
+              'Both criteria generations retain their verdicts; the second closes a gap found in earlier runs.',
+              'Each verdict carries a criteria hash. New thresholds preserve earlier results.',
+              'Acceptance qualifies the parser for human review under those criteria.',
             ]} />
           </div>
           <dl className="lab-readouts">
@@ -72,10 +72,10 @@ export default async function LabPage() {
             <Readout term="Grading" value="Independent" note="Computed from prediction records" />
           </dl>
         </div>
-        <AnimatedDetails className="lab-disclosure"><summary>The response that started it</summary>
+        <AnimatedDetails className="lab-disclosure"><summary>Recorded response</summary>
           {offending ? <OffendingCase data={offending} /> : <p>The recorded batch is unavailable.</p>}
         </AnimatedDetails>
-        <AnimatedDetails className="lab-disclosure"><summary>Every published run <span>{manifest?.entries.length ?? 0} records</span></summary>
+        <AnimatedDetails className="lab-disclosure"><summary>Published runs <span>{manifest?.entries.length ?? 0} records</span></summary>
           <ul className="lab-inventory">{manifest?.entries.map(entry => <li key={entry.file}>
             <Link href={`/lab/${entry.file.replace(/\.json$/, '')}`}>
               <span className="lab-inventory-id">{entry.candidate_id}</span>
@@ -86,12 +86,12 @@ export default async function LabPage() {
             </Link>
           </li>)}</ul>
         </AnimatedDetails>
-        <AnimatedDetails className="lab-disclosure"><summary>Limits of this evidence</summary>
+        <AnimatedDetails className="lab-disclosure"><summary>Test scope</summary>
           <div className="grid gap-6 pb-6 text-sm text-ink-60 md:grid-cols-2">
-            <p className="m-0">The cases are public, and candidates can be written against them. Passing establishes performance on these fixtures. It does not establish generalisation or measure the relevance of a news feed.</p>
-            <p className="m-0">Execution is live; model responses are recorded or injected. Grading calls no model. Agent-authored published runs separately report the model calls used to write their candidates.</p>
-            <p className="m-0">The runner preserves its admission checks, execution limits, denied networking and independent grader. A browser event is shown only when the service supplies it; case verdicts arrive with terminal grading.</p>
-            <p className="m-0">A complete identity contract changes the scoring request. Evaluating its news quality would require new model recordings; parser correctness alone cannot establish that result.</p>
+            <p className="m-0">Candidates can target these public cases. Results apply to these fixtures.</p>
+            <p className="m-0">Runs execute against recorded or injected responses. Grading makes no model calls; agent-authored runs report candidate-writing calls separately.</p>
+            <p className="m-0">The runner enforces admission and execution limits, denies networking and grades independently. Events come from the service; case verdicts arrive when grading finishes.</p>
+            <p className="m-0">Evaluating news quality with an ID-based scoring request needs new model recordings.</p>
           </div>
         </AnimatedDetails>
       </section>

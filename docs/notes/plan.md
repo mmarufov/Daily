@@ -957,3 +957,18 @@ original Sydney checkout untouched. Historical release notes remain as records.
 No new section architecture, copy rewrite, backend change or Sandbox submission.
 
 Release evidence: [daily-subtle-polish-release.md](daily-subtle-polish-release.md).
+
+## Public copy and comment cleanup
+
+Start from main a30f7992 in an isolated checkout. Keep the current design and
+behavior. Use direct descriptions, shorter copy and one caveat beside each claim.
+
+- [x] Shorten the five public pages and shared text; record every wording change.
+- [x] Update text assertions and commit site copy separately.
+- [ ] Trim comments in README-linked files and prove executable tokens unchanged.
+- [ ] Run types, units, artifact/build checks and mocked browser acceptance on HTTPS preview.
+- [ ] Capture all five pages at 1440px and 390px and compare visible word counts.
+- [ ] Open one PR with two commits and a complete before-to-after wording list.
+
+Keep numeric values, recorded data, URLs, markup structure and execution behavior.
+Use existing disclosures/links for detailed provenance. Production stays unchanged.

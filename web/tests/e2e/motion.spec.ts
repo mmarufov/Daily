@@ -75,7 +75,7 @@ test.describe('disclosure motion', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/lab')
     await page.waitForLoadState('networkidle')
-    const summary = page.locator('summary').filter({ hasText: /^Limits of this evidence$/ })
+    const summary = page.locator('summary').filter({ hasText: /^Test scope$/ })
     const details = disclosure(summary)
     await summary.scrollIntoViewIfNeeded()
     // Dispatch directly because actionability's stability wait would serialize
@@ -86,7 +86,7 @@ test.describe('disclosure motion', () => {
     await page.waitForTimeout(60)
     await summary.dispatchEvent('click')
     await expectSettled(details, true)
-    await expect(details.getByText(/The cases are public/)).toBeVisible()
+    await expect(details.getByText(/Candidates can target these public cases/)).toBeVisible()
 
     await summary.dispatchEvent('click')
     await page.waitForTimeout(60)
@@ -94,7 +94,7 @@ test.describe('disclosure motion', () => {
     await page.waitForTimeout(60)
     await summary.dispatchEvent('click')
     await expectSettled(details, false)
-    await expect(details.getByText(/The cases are public/)).toBeHidden()
+    await expect(details.getByText(/Candidates can target these public cases/)).toBeHidden()
     await summary.click()
     await expectSettled(details, true)
   })
@@ -103,7 +103,7 @@ test.describe('disclosure motion', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/lab')
     await page.waitForLoadState('networkidle')
-    const summary = page.locator('summary').filter({ hasText: /^Every published run/ })
+    const summary = page.locator('summary').filter({ hasText: /^Published runs/ })
     const details = disclosure(summary)
     await summary.click()
     await expectSettled(details, true)
@@ -148,8 +148,8 @@ test.describe('disclosures without JavaScript', () => {
 
   test('native summaries expose and hide evidence without hydration', async ({ page }) => {
     for (const [path, label, content] of [
-      ['/', /^Experiment provenance$/, /Exact working-tree implementation bytes remain unknown/],
-      ['/lab', /^Limits of this evidence$/, /The cases are public/],
+      ['/', /^Experiment provenance$/, /Base revision/],
+      ['/lab', /^Test scope$/, /Candidates can target these public cases/],
     ] as const) {
       await page.goto(path)
       const summary = page.locator('summary').filter({ hasText: label })
@@ -182,7 +182,7 @@ test.describe('finding selection motion', () => {
     await expect(original).toHaveAttribute('aria-pressed', 'false')
     await expect(guard.getByTestId('guard-metric-recall')).toContainText('18.7%')
     await expect(guard.getByTestId('guard-metric-unwanted')).toContainText('42.5%')
-    await expect(guard.getByText('Refusing the mismatch exposed the cost.')).toBeVisible()
+    await expect(guard.getByText('Mismatched batches refused.')).toBeVisible()
     await expect.poll(() => guard.evaluate(element => element.getAnimations({ subtree: true }).length)).toBe(0)
 
     const retrieval = page.getByTestId('retrieval-loss-panel')

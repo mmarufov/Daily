@@ -31,7 +31,7 @@ import { explorerHref, readState, type RawSearchParams } from '@/lib/url-state'
 export const metadata: Metadata = {
   title: 'Evidence · Daily Lab',
   description:
-    'Interactive results from the Daily Lab evaluation harness: per-fixture metrics, the candidate funnel drawn at 1:1 with the corpus, and the recorded trace for individual stories.',
+    'Daily Lab results: fixture metrics, a 1:1 candidate funnel, and recorded story traces.',
 }
 
 export default async function EvidencePage({
@@ -107,17 +107,16 @@ export default async function EvidencePage({
     <div className="flex flex-col">
       <section className="hero frame relative flex flex-col gap-6 py-12 md:py-14">
         <p className="label m-0 text-ink-40">
-          The ruler · artifacts {index.source === 'blob' ? 'from the published store' : 'committed in this repository'}
+          Artifacts · {index.source === 'blob' ? 'published store' : 'repository export'}
         </p>
         <h1 className="display m-0 text-[clamp(2.25rem,6vw,4.5rem)]">Evaluation evidence</h1>
         <p className="lede measure m-0 text-ink-60">
-          Ten adversarial fixtures, three frozen corpora, and recorded traces for inspected stories.
-          Pick a run, then follow a story that should have reached a reader and did not.
+          Ten adversarial fixtures, three frozen corpora, and recorded story traces.
+          Pick a run to inspect missed stories.
         </p>
         {index.errors.length > 0 ? (
           <p className="m-0 max-w-2xl border-l-2 border-signal pl-3 text-xs text-ink-60">
-            The published artifact set was unreachable, so the committed export is shown instead.
-            Nothing is hidden, but the run ids may lag the latest publication.
+            The published store is unreachable. Showing the committed export, which may lag the latest runs.
           </p>
         ) : null}
       </section>
@@ -126,8 +125,7 @@ export default async function EvidencePage({
         {requestedButMissing ? (
           <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
             The run <span className="text-ink">{requested.run}</span> is not in the current
-            manifest, so the default is shown instead, rather than silently showing different
-            numbers.
+            manifest. Showing the default run.
           </p>
         ) : null}
 
@@ -148,7 +146,7 @@ export default async function EvidencePage({
           <section className="frame flex flex-col gap-6 pb-16">
             <Band
               index="01"
-              title={comparison === null ? 'Metrics' : 'Two runs, one scale'}
+              title={comparison === null ? 'Metrics' : 'Run comparison'}
               note={
                 state.persona === undefined
                   ? `Averaged over ${primary.personas.length} fixtures`
@@ -176,16 +174,15 @@ export default async function EvidencePage({
             </div>
             {state.persona === undefined ? (
               <p className="m-0 max-w-3xl text-xs text-ink-40">
-                The weakest-fixture column exists so an average cannot hide a reader the pipeline
-                fails. A filled dot marks a difference past the fixed &plusmn;0.02 cutoff, which is the
-                harness author&rsquo;s threshold and not a significance test.
+                Weakest fixture shows the worst result for each metric. A filled dot marks the fixed
+                &plusmn;0.02 materiality cutoff, not statistical significance.
               </p>
             ) : null}
             <Glossary />
           </section>
 
           <section className="frame flex flex-col gap-6 pb-16">
-            <Band index="02" title="Every fixture, no averaging" as="h2" />
+            <Band index="02" title="Fixture results" as="h2" />
             <FixtureStrip
               rows={toFixtureRows(
                 primary.personas,
@@ -214,8 +211,7 @@ export default async function EvidencePage({
             {persona === undefined ? (
               <div className="flex flex-col gap-3">
                 <p className="m-0 max-w-2xl text-xs text-ink-60">
-                  One cell per candidate article, so it only means anything for a single fixture. Summing
-                  ten would draw the same article ten times and call it a corpus.
+                  One cell per candidate in a single fixture. Summing fixtures would count articles repeatedly.
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
                   {personaKeys.map((key) => (
@@ -291,7 +287,7 @@ export default async function EvidencePage({
       <section className="frame pb-12">
         <AnimatedDetails className="border-t border-rule pt-4 text-sm">
           <summary className="disclosure min-h-11 cursor-pointer">Published scorecards and corpus inventory</summary>
-          <p className="max-w-2xl text-ink-60">{index.entries.length} published scorecards, including retained baselines. Snapshots overlap; their article counts are not unique articles across the collection. {labelRows === null ? 'Label totals are unavailable.' : `${labelRows.toLocaleString()} provisional model and agent label rows across these snapshots.`}</p>
+          <p className="max-w-2xl text-ink-60">{index.entries.length} published scorecards, including retained baselines. Snapshots share articles, so their counts overlap. {labelRows === null ? 'Label totals are unavailable.' : `${labelRows.toLocaleString()} provisional model and agent label rows across these snapshots.`}</p>
           <ul className="m-0 grid list-none gap-5 p-0 md:grid-cols-3">{index.manifest?.snapshots.map(snapshot => <li key={snapshot.name} className="min-w-0 border border-rule p-4">
             <p className="m-0 font-medium">{snapshot.name}</p>
             <p className="mt-2 text-ink-60">{snapshot.n_articles?.toLocaleString() ?? 'Unknown'} corpus articles</p>
@@ -301,7 +297,7 @@ export default async function EvidencePage({
       </section>
 
       <section className="frame flex flex-col gap-4 pb-8">
-        <Band index="" title="Provenance" note="What can and cannot be established" as="h2" />
+        <Band index="" title="Provenance" note="Sources and limitations" as="h2" />
         <ProvenancePanel artifact={primary} />
         {comparison !== null ? <ProvenancePanel artifact={comparison} /> : null}
       </section>
@@ -392,9 +388,8 @@ function RunHeadline({
           Across {personas.length} fixture{personas.length === 1 ? '' : 's'}:{' '}
           <span className="text-signal">{unwanted.pairs}</span> unwanted placements delivered (
           {unwanted.uniqueArticles} distinct articles), and{' '}
-          <span className="text-signal">{lostEarly.pairs}</span> wanted ones lost before the scorer
-          saw them ({lostEarly.uniqueArticles} distinct). A story lost before scoring cannot be
-          rescued by better ranking.
+          <span className="text-signal">{lostEarly.pairs}</span> wanted placements lost before scoring
+          ({lostEarly.uniqueArticles} distinct articles).
         </p>
         <ul className="m-0 flex list-none flex-col gap-1 self-start p-0 text-xs text-ink-40">
           {[...breakdown].map(([outcome, counts]) => (
@@ -428,7 +423,7 @@ function NoArtifacts({
       <h1 className="display m-0 text-3xl">No evaluation artifacts are available</h1>
       <p className="prose m-0">
         {incomplete
-          ? 'Artifact files were found but no validated manifest was, so nothing is shown rather than presenting an unverified partial set.'
+          ? 'Artifact files were found, but the validated manifest is missing.'
           : 'Nothing has been exported yet.'}{' '}
         Run <span className="text-ink-60">npm run export:artifacts</span> in{' '}
         <span className="text-ink-60">web/</span> to build the committed export from{' '}
