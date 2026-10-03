@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "registered_on": "2026-10-02",
+  "fallback": {
+    "window_minutes": 30,
+    "min_calls": 20,
+    "max_rate": 0.2
+  },
+  "embedding_coverage": {
+    "window_hours": 24,
+    "grace_minutes": 60,
+    "min_missing": 20,
+    "max_missing_share": 0.2
+  },
+  "trace_retention_days": 14,
+  "trace_buffer_max": 5000,
+  "pricing_usd_per_million_tokens": {
+    "text-embedding-3-small": {"input": 0.02, "output": 0.0},
+    "gpt-4o-mini": {"input": 0.15, "output": 0.6},
+    "gpt-4o-mini-2024-07-18": {"input": 0.15, "output": 0.6},
+    "gpt-4o": {"input": 2.5, "output": 10.0},
+    "gpt-4.1-mini": {"input": 0.4, "output": 1.6},
+    "gpt-4.1": {"input": 2.0, "output": 8.0}
+  },
+  "pricing_source": "backend/evals/llm_cache.py PRICING, verified against OpenAI's model pages on 2026-09-05"
+}
