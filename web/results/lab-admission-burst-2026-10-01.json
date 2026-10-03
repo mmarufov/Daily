@@ -1,0 +1,385 @@
+{
+  "before": {
+    "at": "2026-10-01T23:48:45.228Z",
+    "day": "2026-10-01",
+    "active": [],
+    "runs_today": "4",
+    "cpu_ms_today": "6373",
+    "my_address_entries": [
+      "0e0bb472-1763-4bc1-a0e7-060dfab4a2d8",
+      "1790896274611",
+      "1c6586d7-369b-43be-94f0-d119909b55f0",
+      "1790897453976",
+      "34100a9f-60d2-4b32-9d6f-63216437c6a1",
+      "1790898493971"
+    ]
+  },
+  "sent": "2026-10-01T23:48:45.228Z",
+  "results": [
+    {
+      "status": 429,
+      "instance": "f1d316cc",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::j2wzb-1790898525261-82027391aa99",
+      "ms": 1090,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 5,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "c06554ee",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::5wbx5-1790898525261-ea11e2223f66",
+      "ms": 1117,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 6,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "675155a5",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::mt4z9-1790898525274-7c8d35b9f1fb",
+      "ms": 945,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 5,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 202,
+      "instance": "c5d740d0",
+      "retry_after": null,
+      "vercel_id": "sfo1::iad1::5wbx5-1790898525262-685ecce71563",
+      "ms": 914,
+      "body": {
+        "run_id": "wrun_01M3WXXNTAPY95YGC2R7HYNKRM",
+        "suspend_seconds": 0,
+        "address_runs_left": 0
+      }
+    },
+    {
+      "status": 429,
+      "instance": "efd81ca2",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::2xwnj-1790898525317-d590c942cb18",
+      "ms": 869,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 5,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 202,
+      "instance": "fd0c95d7",
+      "retry_after": null,
+      "vercel_id": "sfo1::iad1::qkjdx-1790898525260-b1213a199fdf",
+      "ms": 589,
+      "body": {
+        "run_id": "wrun_01M3WXXNFSFJZ5WRVS4G8R57Y6",
+        "suspend_seconds": 0,
+        "address_runs_left": 1
+      }
+    },
+    {
+      "status": 429,
+      "instance": "524751f8",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::wg6fw-1790898525266-c8fcf282c099",
+      "ms": 1042,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 5,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "65f5fcb8",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::x78wh-1790898525270-2fb9b747d1d4",
+      "ms": 1060,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 8,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "903da75b",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::fvmmh-1790898525270-787082a5982f",
+      "ms": 1060,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 6,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "806ae2f0",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::xcm4g-1790898525268-afab93dee1aa",
+      "ms": 885,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 6,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "f00e56d6",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::bnw9b-1790898525321-071ad6ac88c5",
+      "ms": 1063,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 7,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    },
+    {
+      "status": 429,
+      "instance": "7d8356c9",
+      "retry_after": "1349",
+      "vercel_id": "sfo1::iad1::6vz9x-1790898525276-b3ae39a49caf",
+      "ms": 1014,
+      "body": {
+        "limit": "per-address",
+        "allowed": 5,
+        "used": 5,
+        "unit": "runs",
+        "resets_at": "2026-10-02T00:11:14.611Z",
+        "retry_after_seconds": 1349,
+        "error": "This address has started 5 runs in the last hour, the most it may. The next one is allowed at 00:11 UTC."
+      }
+    }
+  ],
+  "after": {
+    "at": "2026-10-01T23:48:46.421Z",
+    "day": "2026-10-01",
+    "active": [
+      "6aeb99a3-06c5-4b52-936d-d940ede74252",
+      "1790898825644",
+      "9a7722e2-155f-4303-980f-1943b99aaafe",
+      "1790898825991"
+    ],
+    "runs_today": "6",
+    "cpu_ms_today": "6373",
+    "my_address_entries": [
+      "0e0bb472-1763-4bc1-a0e7-060dfab4a2d8",
+      "1790896274611",
+      "1c6586d7-369b-43be-94f0-d119909b55f0",
+      "1790897453976",
+      "34100a9f-60d2-4b32-9d6f-63216437c6a1",
+      "1790898493971",
+      "6aeb99a3-06c5-4b52-936d-d940ede74252",
+      "1790898525644",
+      "9a7722e2-155f-4303-980f-1943b99aaafe",
+      "1790898525991"
+    ]
+  },
+  "finished": [
+    {
+      "run_id": "wrun_01M3WXXNTAPY95YGC2R7HYNKRM",
+      "status": "completed",
+      "verdict": "rejected",
+      "sandbox": {
+        "sandbox_id": "salmon-uptight-gamefowl-52cmvJ",
+        "region": "iad1",
+        "runtime": "python3.13",
+        "network_policy": "deny-all",
+        "boot_ms": 169,
+        "wall_clock_ms": 399,
+        "active_cpu_ms": 2107,
+        "egress_bytes": 35448,
+        "exit_code": 0,
+        "isolation": [
+          {
+            "name": "egress-dns",
+            "expectation": "DNS resolution of an external host fails",
+            "held": true
+          },
+          {
+            "name": "egress-https",
+            "expectation": "an outbound HTTPS request fails",
+            "held": true
+          },
+          {
+            "name": "no-evaluator-present",
+            "expectation": "the code that grades the candidate is nowhere on the filesystem",
+            "held": true
+          },
+          {
+            "name": "no-secrets-in-env",
+            "expectation": "no production credential is present in the environment",
+            "held": true
+          }
+        ]
+      },
+      "progress": [
+        {
+          "at": "2026-10-01T23:48:46.479Z",
+          "stage": "scope checked: only candidate.py is written"
+        },
+        {
+          "at": "2026-10-01T23:48:47.094Z",
+          "stage": "creating microVM"
+        },
+        {
+          "at": "2026-10-01T23:48:47.263Z",
+          "stage": "uploading 5 files"
+        },
+        {
+          "at": "2026-10-01T23:48:47.396Z",
+          "stage": "running the harness"
+        },
+        {
+          "at": "2026-10-01T23:48:47.796Z",
+          "stage": "probing isolation"
+        },
+        {
+          "at": "2026-10-01T23:48:48.436Z",
+          "stage": "stopping the microVM"
+        },
+        {
+          "at": "2026-10-01T23:48:52.659Z",
+          "stage": "microVM stopped"
+        }
+      ]
+    },
+    {
+      "run_id": "wrun_01M3WXXNFSFJZ5WRVS4G8R57Y6",
+      "status": "completed",
+      "verdict": "rejected",
+      "sandbox": {
+        "sandbox_id": "cyan-growing-whale-MJuxPD",
+        "region": "iad1",
+        "runtime": "python3.13",
+        "network_policy": "deny-all",
+        "boot_ms": 282,
+        "wall_clock_ms": 369,
+        "active_cpu_ms": 2051,
+        "egress_bytes": 35173,
+        "exit_code": 0,
+        "isolation": [
+          {
+            "name": "egress-dns",
+            "expectation": "DNS resolution of an external host fails",
+            "held": true
+          },
+          {
+            "name": "egress-https",
+            "expectation": "an outbound HTTPS request fails",
+            "held": true
+          },
+          {
+            "name": "no-evaluator-present",
+            "expectation": "the code that grades the candidate is nowhere on the filesystem",
+            "held": true
+          },
+          {
+            "name": "no-secrets-in-env",
+            "expectation": "no production credential is present in the environment",
+            "held": true
+          }
+        ]
+      },
+      "progress": [
+        {
+          "at": "2026-10-01T23:48:46.319Z",
+          "stage": "scope checked: only candidate.py is written"
+        },
+        {
+          "at": "2026-10-01T23:48:46.924Z",
+          "stage": "creating microVM"
+        },
+        {
+          "at": "2026-10-01T23:48:47.206Z",
+          "stage": "uploading 5 files"
+        },
+        {
+          "at": "2026-10-01T23:48:47.345Z",
+          "stage": "running the harness"
+        },
+        {
+          "at": "2026-10-01T23:48:47.715Z",
+          "stage": "probing isolation"
+        },
+        {
+          "at": "2026-10-01T23:48:48.345Z",
+          "stage": "stopping the microVM"
+        },
+        {
+          "at": "2026-10-01T23:48:52.511Z",
+          "stage": "microVM stopped"
+        }
+      ]
+    }
+  ],
+  "final": {
+    "at": "2026-10-01T23:48:56.534Z",
+    "day": "2026-10-01",
+    "active": [],
+    "runs_today": "6",
+    "cpu_ms_today": "10531",
+    "my_address_entries": [
+      "0e0bb472-1763-4bc1-a0e7-060dfab4a2d8",
+      "1790896274611",
+      "1c6586d7-369b-43be-94f0-d119909b55f0",
+      "1790897453976",
+      "34100a9f-60d2-4b32-9d6f-63216437c6a1",
+      "1790898493971",
+      "6aeb99a3-06c5-4b52-936d-d940ede74252",
+      "1790898525644",
+      "9a7722e2-155f-4303-980f-1943b99aaafe",
+      "1790898525991"
+    ]
+  }
+}
