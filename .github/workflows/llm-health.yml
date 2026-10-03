@@ -1,0 +1,42 @@
+name: llm health
+
+# Production's /llmz returns 503 when a pre-registered LLM health signal trips
+# (backend/evals/llm_observability/PREREGISTRATION.md). This job fails when it
+# does, so the failure reaches GitHub's notifications. A Slack incoming webhook
+# in the LLM_HEALTH_SLACK_WEBHOOK secret, if set, gets one line too.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  llmz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ask production for its LLM health
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.LLM_HEALTH_SLACK_WEBHOOK }}
+        run: |
+          code=$(curl -sS -o body.json -w '%{http_code}' --max-time 30 \
+            https://daily-backend.fly.dev/llmz) || code=000
+          echo "HTTP $code"
+          cat body.json 2>/dev/null || true
+          {
+            echo "### /llmz returned $code"
+            echo '```json'
+            jq . body.json 2>/dev/null || cat body.json 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" != "200" ]; then
+            if [ -n "$SLACK_WEBHOOK_URL" ]; then
+              tripped=$(jq -c '.tripped // []' body.json 2>/dev/null || echo '"unreadable"')
+              jq -n --arg text "Daily /llmz returned $code, tripped: $tripped" '{text: $text}' \
+                | curl -sS -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL" >/dev/null || true
+            fi
+            echo "::error::/llmz returned $code"
+            exit 1
+          fi
