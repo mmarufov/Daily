@@ -7,7 +7,7 @@ from typing import Any
 
 from fastapi import HTTPException
 
-from app.services import chat_repository
+from app.services import chat_repository, llm_trace
 from app.services.chat_streaming import (
     SectionStreamParser,
     blocks_plain_text,
@@ -811,15 +811,17 @@ class ChatService:
                 "reason": "article thread default",
             }
 
-        try:
-            route = await self.openai_service.route_chat_turn(
-                prompt=prompt,
-                thread_kind=str(thread.get("kind") or "manual"),
-                article_title=thread.get("article_title"),
-                recent_history=self._route_history(prior_messages),
-            )
-        except Exception:
-            route = {}
+        with llm_trace.scope("route_chat_turn") as trace:
+            try:
+                route = await self.openai_service.route_chat_turn(
+                    prompt=prompt,
+                    thread_kind=str(thread.get("kind") or "manual"),
+                    article_title=thread.get("article_title"),
+                    recent_history=self._route_history(prior_messages),
+                )
+            except Exception as exc:
+                trace.fallback(exc)
+                route = {}
 
         response_mode = str(route.get("response_mode") or "general_chat")
         if response_mode not in {"general_chat", "news_answer", "news_roundup", "article_qa"}:
@@ -1068,16 +1070,18 @@ class ChatService:
             "sections": intent_spec["sections"],
             "follow_ups": intent_spec["follow_ups"],
         }
-        try:
-            planner_response = await self.openai_service.plan_news_chat_response(
-                prompt=prompt,
-                thread=thread,
-                selected_articles=selected_articles,
-                prior_messages=prior_messages,
-                intent_spec=intent_spec,
-            )
-        except Exception:
-            planner_response = {}
+        with llm_trace.scope("plan_news_chat_response") as trace:
+            try:
+                planner_response = await self.openai_service.plan_news_chat_response(
+                    prompt=prompt,
+                    thread=thread,
+                    selected_articles=selected_articles,
+                    prior_messages=prior_messages,
+                    intent_spec=intent_spec,
+                )
+            except Exception as exc:
+                trace.fallback(exc)
+                planner_response = {}
 
         sections = self._normalize_sections(
             planner_response.get("section_order"),

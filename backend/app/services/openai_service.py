@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 import httpx
 from bs4 import BeautifulSoup
 from openai import OpenAI
+from app.services import llm_trace
+from app.services.llm_trace import TracedOpenAI
 from dotenv import load_dotenv
 from app.services.profile_model import (
     build_source_selection_brief,
@@ -151,7 +153,7 @@ class OpenAIService:
 
         # Project-scoped keys (sk-proj-*) already encode the project —
         # sending an extra OpenAI-Project header causes mismatched_project errors.
-        self.client = OpenAI(api_key=api_key)
+        self.client = TracedOpenAI(OpenAI(api_key=api_key))
         
         # Use model from env or default to cost-effective option
         # Note: "gpt-5" doesn't exist - using gpt-4o-mini as default
@@ -161,17 +163,19 @@ class OpenAIService:
 
     async def generate_embedding(self, text: str) -> list[float] | None:
         """Generate a 1536-dim embedding using text-embedding-3-small."""
-        try:
-            text = text[:8000]  # Model context limit
-            response = await asyncio.to_thread(
-                self.client.embeddings.create,
-                model="text-embedding-3-small",
-                input=text,
-            )
-            return response.data[0].embedding
-        except Exception as e:
-            logger.warning("Embedding generation failed: %s", e)
-            return None
+        with llm_trace.scope("generate_embedding") as trace:
+            try:
+                text = text[:8000]  # Model context limit
+                response = await asyncio.to_thread(
+                    self.client.embeddings.create,
+                    model="text-embedding-3-small",
+                    input=text,
+                )
+                return response.data[0].embedding
+            except Exception as e:
+                trace.fallback(e)
+                logger.warning("Embedding generation failed: %s", e)
+                return None
 
     async def analyze_article(
         self,
@@ -213,34 +217,35 @@ Selection Criteria: {prompt}
 
 Return JSON response with selected (boolean), relevance_score (0-1), and reasoning (string)."""
         
-        try:
-            # Run synchronous OpenAI call in thread pool
-            response = await asyncio.to_thread(
-                self.client.chat.completions.create,
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.3,  # Lower temperature for more consistent results
-            )
-            
-            import json
-            result = json.loads(response.choices[0].message.content)
-            
-            return {
-                "selected": result.get("selected", False),
-                "relevance_score": float(result.get("relevance_score", 0.0)),
-                "reasoning": result.get("reasoning", ""),
-            }
-        except Exception as e:
-            # If analysis fails, default to not selected
-            return {
-                "selected": False,
-                "relevance_score": 0.0,
-                "reasoning": f"Error during analysis: {str(e)}",
-            }
+        with llm_trace.scope("analyze_article") as trace:
+            try:
+                # Run synchronous OpenAI call in thread pool
+                response = await asyncio.to_thread(
+                    self.client.chat.completions.create,
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    response_format={"type": "json_object"},
+                    temperature=0.3,  # Lower temperature for more consistent results
+                )
+
+                result = json.loads(response.choices[0].message.content)
+
+                return {
+                    "selected": result.get("selected", False),
+                    "relevance_score": float(result.get("relevance_score", 0.0)),
+                    "reasoning": result.get("reasoning", ""),
+                }
+            except Exception as e:
+                trace.fallback(e)
+                # If analysis fails, default to not selected
+                return {
+                    "selected": False,
+                    "relevance_score": 0.0,
+                    "reasoning": f"Error during analysis: {str(e)}",
+                }
 
     async def analyze_articles_for_user(
         self,
@@ -353,26 +358,29 @@ Return JSON response with selected (boolean), relevance_score (0-1), and reasoni
         )
         user_prompt = f"User preference prompt:\n{preference_text}\n\nReturn the JSON object."
 
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(
-                    self.client.chat.completions.create,
-                    model=self.model,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.1,
-                ),
-                timeout=20.0,
-            )
-            payload = json.loads(response.choices[0].message.content)
-            normalized = _normalize_interests_payload(payload)
-            if _has_meaningful_interests(normalized):
-                return normalized
-        except Exception:
-            logger.exception("Failed to extract structured interests from ai_profile")
+        with llm_trace.scope("extract_interests_from_profile") as trace:
+            try:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        self.client.chat.completions.create,
+                        model=self.model,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.1,
+                    ),
+                    timeout=20.0,
+                )
+                payload = json.loads(response.choices[0].message.content)
+                normalized = _normalize_interests_payload(payload)
+                if _has_meaningful_interests(normalized):
+                    return normalized
+                trace.fallback(outcome="schema_invalid")
+            except Exception as exc:
+                trace.fallback(exc)
+                logger.exception("Failed to extract structured interests from ai_profile")
 
         return _heuristic_interest_extraction(preference_text)
 
@@ -444,23 +452,27 @@ Optimization goals:
             user_prompt += f"Explicit follow-up context:\n{json.dumps(explicit_context)}\n\n"
         user_prompt += "Return the JSON now."
 
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(
-                    self.client.chat.completions.create,
-                    model=self.model,
-                    messages=[
-                        {"role": "system", "content": system_prompt.strip()},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.2,
-                ),
-                timeout=45.0,
-            )
-            payload = json.loads(response.choices[0].message.content)
-        except Exception:
-            logger.exception("Failed to build complete user preferences")
+        payload = None
+        with llm_trace.scope("build_complete_user_preferences") as trace:
+            try:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        self.client.chat.completions.create,
+                        model=self.model,
+                        messages=[
+                            {"role": "system", "content": system_prompt.strip()},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.2,
+                    ),
+                    timeout=45.0,
+                )
+                payload = json.loads(response.choices[0].message.content)
+            except Exception as exc:
+                trace.fallback(exc)
+                logger.exception("Failed to build complete user preferences")
+        if payload is None:
             fallback_ai_profile = transcript[:800]
             fallback_interests = await self.extract_interests_from_profile(fallback_ai_profile)
             specificity = "mixed" if _has_meaningful_interests(fallback_interests) else "broad"
@@ -614,7 +626,13 @@ Optimization goals:
             {"role": "user", "content": user_prompt},
         ]
 
+        with llm_trace.scope("score_articles_batch") as trace:
+            return await self._score_with_retries(trace, messages, articles, fallback)
+
+    async def _score_with_retries(self, trace, messages, articles, fallback):
         import random as _random
+
+        last_exc: BaseException | None = None
         for attempt in range(3):
             try:
                 if attempt > 0:
@@ -645,6 +663,7 @@ Optimization goals:
                     ]
 
                 if len(results_list) != len(articles):
+                    trace.mark("schema_invalid")
                     logger.warning(
                         "Batch scoring returned %d results for %d articles; normalizing",
                         len(results_list),
@@ -664,11 +683,16 @@ Optimization goals:
 
                 return normalized
 
-            except asyncio.TimeoutError:
+            except asyncio.TimeoutError as exc:
+                trace.failed(exc)
+                last_exc = exc
                 logger.warning("Batch scoring timed out (attempt %d) for %d articles", attempt + 1, len(articles))
-            except Exception:
+            except Exception as exc:
+                trace.failed(exc)
+                last_exc = exc
                 logger.exception("Error in batch scoring (attempt %d)", attempt + 1)
 
+        trace.fallback(last_exc)
         return fallback
 
     def _build_scoring_profile(
@@ -804,26 +828,28 @@ Optimization goals:
             "Return the JSON now."
         )
 
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(
-                    self.client.chat.completions.create,
-                    model=self.scoring_model,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.3,
-                ),
-                timeout=20.0,
-            )
-            result = json.loads(response.choices[0].message.content)
-            phrases = result.get("expanded_phrases", [])
-            return [str(p).strip().lower() for p in phrases if str(p).strip()]
-        except Exception:
-            logger.exception("Failed to expand exclusion patterns")
-            return []
+        with llm_trace.scope("expand_exclusion_patterns") as trace:
+            try:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        self.client.chat.completions.create,
+                        model=self.scoring_model,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.3,
+                    ),
+                    timeout=20.0,
+                )
+                result = json.loads(response.choices[0].message.content)
+                phrases = result.get("expanded_phrases", [])
+                return [str(p).strip().lower() for p in phrases if str(p).strip()]
+            except Exception as exc:
+                trace.fallback(exc)
+                logger.exception("Failed to expand exclusion patterns")
+                return []
 
     async def extract_article_with_tools(self, article_url: str) -> Dict:
         """
@@ -1137,30 +1163,30 @@ Available Images:
 
 Select the best matching image (0-based index) or return -1 if none are relevant."""
         
-        try:
-            response = await asyncio.to_thread(
-                self.client.chat.completions.create,
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.3,
-            )
-            
-            result = json.loads(response.choices[0].message.content)
-            selected_index = result.get("selected_index", -1)
-            
-            if selected_index >= 0 and selected_index < len(image_candidates):
-                return image_candidates[selected_index]
-            return None
-        except Exception as e:
-            print(f"Error selecting image: {e}")
-            import traceback
-            traceback.print_exc()
-            # Fallback: return first image
-            return image_candidates[0] if image_candidates else None
+        with llm_trace.scope("select_best_image") as trace:
+            try:
+                response = await asyncio.to_thread(
+                    self.client.chat.completions.create,
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    response_format={"type": "json_object"},
+                    temperature=0.3,
+                )
+
+                result = json.loads(response.choices[0].message.content)
+                selected_index = result.get("selected_index", -1)
+
+                if selected_index >= 0 and selected_index < len(image_candidates):
+                    return image_candidates[selected_index]
+                return None
+            except Exception as e:
+                trace.fallback(e)
+                logger.exception("Error selecting image: %s", e)
+                # Fallback: return first image
+                return image_candidates[0] if image_candidates else None
 
     async def generate_briefing(self, articles: list[dict], user_profile: str) -> str | None:
         """Synthesize a 3-point morning briefing from top articles."""
@@ -1176,22 +1202,24 @@ Select the best matching image (0-based index) or return -1 if none are relevant
             "Synthesize — don't just list headlines. Explain WHY each matters to THIS user.\n"
             "Be conversational, concise, and specific. No filler."
         )
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(
-                    self.client.chat.completions.create,
-                    model=self.model,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.4,
-                    max_tokens=500,
-                ),
-                timeout=30.0,
-            )
-            content = response.choices[0].message.content.strip()
-            return content if content else None
-        except Exception as e:
-            logger.warning("Briefing generation failed: %s", e)
-            return None
+        with llm_trace.scope("generate_briefing") as trace:
+            try:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        self.client.chat.completions.create,
+                        model=self.model,
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=0.4,
+                        max_tokens=500,
+                    ),
+                    timeout=30.0,
+                )
+                content = response.choices[0].message.content.strip()
+                return content if content else None
+            except Exception as e:
+                trace.fallback(e)
+                logger.warning("Briefing generation failed: %s", e)
+                return None
 
     async def plan_news_chat_response(
         self,
