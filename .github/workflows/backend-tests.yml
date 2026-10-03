@@ -241,14 +241,14 @@ jobs:
               version = conn.execute("SELECT extversion FROM pg_extension WHERE extname = 'vector'").fetchone()
               assert version == ("0.8.0",), version
           PY
-      - name: Run required S1, S2, S3, S4, S6, S7 and S8 transaction contracts
+      - name: Run required S1, S2, S3, S4, S6, S7, S8 and LLM health transaction contracts
         run: >-
           python -m pytest tests/test_main_loops_postgres.py
           tests/test_article_content_postgres.py
           tests/test_understanding_postgres.py tests/test_event_postgres.py
           tests/test_event_suppression_loop_postgres.py
           tests/test_retrieval_postgres.py tests/test_ranking_postgres.py
-          tests/test_assembly_postgres.py
+          tests/test_assembly_postgres.py tests/test_llm_observability_postgres.py
           -q --junitxml=postgres-results.xml
       - name: Reject skipped or uncollected database suites
         run: |
@@ -256,7 +256,7 @@ jobs:
           import xml.etree.ElementTree as ET
           root = ET.parse("postgres-results.xml").getroot()
           cases = root.findall(".//testcase")
-          for module in ("test_main_loops_postgres", "test_article_content_postgres", "test_understanding_postgres", "test_event_postgres", "test_event_suppression_loop_postgres", "test_retrieval_postgres", "test_ranking_postgres", "test_assembly_postgres"):
+          for module in ("test_main_loops_postgres", "test_article_content_postgres", "test_understanding_postgres", "test_event_postgres", "test_event_suppression_loop_postgres", "test_retrieval_postgres", "test_ranking_postgres", "test_assembly_postgres", "test_llm_observability_postgres"):
               selected = [case for case in cases if module in case.get("classname", "")]
               assert selected, f"No tests executed for {module}"
               assert not any(case.find("skipped") is not None for case in selected), f"Skipped tests in {module}"
