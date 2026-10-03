@@ -197,6 +197,15 @@ def test_a_timeout_is_recorded_once_and_a_late_return_does_not_rewrite_it():
     assert (record.outcome, record.fallback) == ("timeout", True)
 
 
+def test_a_call_that_never_returns_is_written_as_a_timeout():
+    record = llm_trace.CallRecord(op="x", job="request", model=None, prompt_sha256=None)
+    llm_trace._enqueue([record])
+    assert _records() == []
+    record.started -= llm_trace.STALE_PENDING_SECONDS + 1
+    [written] = _records()
+    assert (written.outcome, written.fallback) == ("timeout", False)
+
+
 def test_batch_scoring_tags_only_the_attempt_it_gave_up_on(monkeypatch):
     async def no_sleep(_seconds):
         return None

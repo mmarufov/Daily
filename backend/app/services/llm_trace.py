@@ -147,10 +147,20 @@ def pending_count() -> int:
         return len(_buffer)
 
 
+#: A call still in flight after this long is written as a timeout, so a hung
+#: thread cannot hold its record in the buffer forever.
+STALE_PENDING_SECONDS = 600
+
+
 def drain() -> list[CallRecord]:
     """Remove and return every finished record. A record whose call is still in
     flight (its scope exited on a timeout) stays until the call returns."""
+    now = time.monotonic()
     with _lock:
+        for record in _buffer:
+            if record.outcome == _PENDING and now - record.started > STALE_PENDING_SECONDS:
+                record.outcome = "timeout"
+                record.latency_ms = int((now - record.started) * 1000)
         ready = [r for r in _buffer if r.outcome != _PENDING]
         _buffer[:] = [r for r in _buffer if r.outcome == _PENDING]
     return ready
