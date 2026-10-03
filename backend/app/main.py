@@ -44,6 +44,7 @@ from app.services import chat_repository
 from app.services.reader_repository import ReaderConflict
 from app.services.chat_service import ChatService
 from app.services.openai_service import get_openai_service
+from app.services import llm_health, llm_trace
 from app.services.profile_model import (
     build_source_selection_brief,
     derive_profile_v2_from_preferences,
@@ -138,6 +139,8 @@ async def _ingestion_loop():
     """Background task: fetch RSS feeds, extract content, clean up old articles."""
     import inspect
 
+    llm_trace.set_job("ingestion")
+
     from app.services.news_ingestion import fetch_rss_feeds, fetch_topic_feeds
     from app.services.content_extractor import extract_article_content
     from app.services.extraction_telemetry import record_extraction
@@ -211,61 +214,12 @@ async def _ingestion_loop():
                         # affect the authoritative retry counter/job state.
                         record_extraction(conn, row["article_id"], row["url"], extracted)
 
-                # 2b. Generate embeddings from the explicitly versioned
-                # analysis text. The write is fenced so a slow response cannot
-                # attach a vector to a newer body.
-                openai_svc = get_openai_service()
-                with conn.cursor() as cur:
-                    cur.execute("""
-                        SELECT id, title, summary, analysis_text,
-                               analysis_content_version
-                        FROM public.articles
-                        WHERE analysis_text IS NOT NULL
-                          AND (embedding IS NULL OR embedding_content_version
-                               IS DISTINCT FROM analysis_content_version)
-                        LIMIT 50
-                    """)
-                    embed_pending = cur.fetchall()
-
-                if embed_pending:
-                    embed_sem = asyncio.Semaphore(6)
-
-                    async def _embed_one(row):
-                        async with embed_sem:
-                            try:
-                                text = f"{row['title']}. {row.get('summary') or ''}. {(row.get('analysis_text') or '')[:2000]}"
-                                embedding = await openai_svc.generate_embedding(text)
-                                return row, embedding
-                            except Exception:
-                                logger.exception(
-                                    "Embedding generation failed for article %s",
-                                    row.get("id"),
-                                )
-                                return row, None
-
-                    embed_results = await asyncio.gather(*[_embed_one(r) for r in embed_pending])
-                    written = 0
-                    for row, embedding in embed_results:
-                        if not embedding:
-                            continue
-                        with conn.cursor() as cur:
-                            cur.execute(
-                                """
-                                UPDATE public.articles
-                                SET embedding = %s::vector,
-                                    embedding_content_version = %s
-                                WHERE id = %s
-                                  AND analysis_content_version = %s
-                                """,
-                                (
-                                    str(embedding),
-                                    row["analysis_content_version"],
-                                    row["id"],
-                                    row["analysis_content_version"],
-                                ),
-                            )
-                            written += max(cur.rowcount, 0)
-                    logger.info("Ingestion: Generated %s current embeddings", written)
+                # 2b. Embed articles whose analysis text has no current vector.
+                from app.services.article_embeddings import embed_pending
+                embedded = await embed_pending(conn, get_openai_service())
+                if embedded["attempted"]:
+                    logger.info("Ingestion: Generated %s current embeddings (%s attempted)",
+                                embedded["written"], embedded["attempted"])
 
                 # 3. Enrich articles (expand thin content, find/generate images)
                 enrichment_stats = await enrich_articles(conn)
@@ -304,6 +258,7 @@ async def _ingestion_loop():
                         "WHERE created_at < now() - make_interval(days => %s)",
                         (EXTRACTION_ATTEMPT_RETENTION_DAYS,),
                     )
+                llm_trace.prune(conn)
 
         except _NotLeader:
             pass
@@ -388,6 +343,23 @@ async def _account_maintenance_loop():
         await asyncio.sleep(3600)  # 1 hour
 
 
+def _flush_llm_traces() -> None:
+    """Write this worker's buffered LLM call records. Every worker runs its own
+    flush: request handlers trace calls in whichever worker served them."""
+    try:
+        with pool.connection() as conn:
+            llm_trace.flush(conn)
+    except Exception:
+        logger.exception("LLM trace flush failed; %s records stay buffered",
+                         llm_trace.pending_count())
+
+
+async def _llm_trace_loop():
+    while True:
+        await asyncio.sleep(30)
+        await asyncio.to_thread(_flush_llm_traces)
+
+
 async def _source_quality_loop():
     """Background task: update global source quality scores every 30 min."""
     from app.services.source_quality import update_source_quality
@@ -454,6 +426,8 @@ def _active_users_with_sources(conn) -> list[str]:
 async def _per_user_refresh_loop():
     """Background task: refresh articles from per-user sources every 30 minutes."""
     from app.services.user_source_pipeline import build_feed_for_user
+
+    llm_trace.set_job("per_user_refresh")
 
     await asyncio.sleep(120)  # Let startup settle
     logger.info("Per-user refresh loop started")
@@ -573,8 +547,10 @@ async def lifespan(app):
     per_user_task = asyncio.create_task(_per_user_refresh_loop())
     prewarm_task = asyncio.create_task(_prewarm_loop())
     account_task = asyncio.create_task(_account_maintenance_loop())
+    trace_task = asyncio.create_task(_llm_trace_loop())
     yield
-    for t in (ingestion_task, quality_task, evolution_task, per_user_task, prewarm_task, account_task):
+    for t in (ingestion_task, quality_task, evolution_task, per_user_task, prewarm_task, account_task,
+              trace_task):
         t.cancel()
         try:
             await t
@@ -591,6 +567,7 @@ async def lifespan(app):
     # with PoolClosed -- silently swallowed by _run_shadow_observation's own
     # except Exception, but a real, avoidable race on every deploy/restart.
     await _drain_shadow_observation_tasks()
+    _flush_llm_traces()
     pool.close()
 
 
@@ -744,6 +721,22 @@ async def readyz():
     except Exception:
         logger.exception("Readiness check failed")
         return JSONResponse(status_code=503, content={"status": "unready"})
+
+
+@app.get("/llmz")
+async def llmz():
+    """LLM health: 503 when a pre-registered signal trips, or when the signals
+    cannot be read. Separate from /healthz, which Fly routes traffic on."""
+    try:
+        await asyncio.to_thread(_flush_llm_traces)
+        with pool.connection() as conn:
+            report = llm_health.evaluate(conn)
+    except Exception as exc:
+        logger.exception("LLM health evaluation failed")
+        report = llm_health.unevaluable(type(exc).__name__)
+    report["git_sha"] = GIT_SHA
+    return JSONResponse(status_code=200 if report["status"] == "ok" else 503, content=report,
+                        headers={"Cache-Control": "no-store"})
 
 
 def _require_admin(request: Request) -> None:
@@ -1190,6 +1183,8 @@ def _ensure_tables(conn, force: bool = False) -> None:
                 );
             """)
             cur.execute("CREATE INDEX IF NOT EXISTS idx_feed_build_log_user_created ON public.feed_build_log (user_id, created_at DESC);")
+            # One row per OpenAI call, written by llm_trace; read by /llmz.
+            llm_trace.ensure_table(conn)
 
             # Phase 7.2: iOS crash/hang reports, from MetricKit rather than a vendor
             # SDK (see Daily/Services/DiagnosticsService.swift). `payload` is stored
