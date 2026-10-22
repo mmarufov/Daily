@@ -176,13 +176,11 @@ test.describe('accessibility basics', () => {
     }
   })
 
-  test('the explorer is keyboard operable to the first control', async ({ page, isMobile }) => {
-    // WebKit under a touch device profile does not move focus to links on Tab
-    // unless full keyboard access is enabled, which is a platform behaviour
-    // rather than a property of this page. Asserted on desktop only.
-    test.skip(isMobile, 'Tab focus is not meaningful on a touch profile')
+  test('the explorer is keyboard operable to the first control', async ({ page, isMobile, browserName }) => {
+    test.skip(isMobile, 'Touch profiles do not represent desktop keyboard navigation')
     await page.goto('/evidence')
-    await page.keyboard.press('Tab')
+    // Safari's default keyboard mode includes links with Option+Tab.
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab')
     await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused()
   })
 

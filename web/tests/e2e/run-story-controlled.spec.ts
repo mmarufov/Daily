@@ -339,6 +339,7 @@ test.describe('controlled chapter input', () => {
     await page.keyboard.press('End')
     await expect(page.getByRole('contentinfo')).toBeInViewport()
     await expect(story).toHaveAttribute('data-transitioning', 'false')
+    await expect.poll(() => page.evaluate(() => Math.abs(scrollY - (document.documentElement.scrollHeight - innerHeight)))).toBeLessThan(2)
     await page.keyboard.press('Home')
     await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(2)
   })
@@ -401,6 +402,7 @@ test.describe('controlled chapter input', () => {
       await expect(story).toHaveAttribute('data-transitioning', 'false')
       for (const chapter of await story.locator('.run-story-chapter').all()) await expect(chapter).toBeVisible()
       const top = await page.evaluate(() => visualViewport?.pageTop ?? scrollY)
+      await page.mouse.move(160, 200)
       await page.mouse.wheel(0, 350)
       await expect.poll(() => page.evaluate(() => visualViewport?.pageTop ?? scrollY)).toBeGreaterThan(top + 100)
     } finally {

@@ -7,11 +7,12 @@ type Callbacks = {
   active: (active: boolean) => void
 }
 
-const CONTROLS = 'a[href], button, input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="slider"], [role="listbox"], [role="menu"], dialog, [role="dialog"], [popover]'
+const WHEEL_CONTROLS = 'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="slider"], [role="listbox"], [role="menu"], dialog, [role="dialog"], [popover]'
+const KEY_CONTROLS = `a[href], button, ${WHEEL_CONTROLS}`
 
-function ownsInput(target: EventTarget | null) {
+function ownsInput(target: EventTarget | null, controls: string) {
   if (!(target instanceof Element)) return false
-  if (target.closest(CONTROLS)) return true
+  if (target.closest(controls)) return true
   for (let node = target; node && node !== document.body && node !== document.documentElement; node = node.parentElement!) {
     if (node.scrollHeight > node.clientHeight && /auto|scroll/.test(getComputedStyle(node).overflowY)) return true
   }
@@ -169,7 +170,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
   }
   const wheel = (event: WheelEvent) => safely(() => {
     if (event.defaultPrevented) return
-    if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || ownsInput(event.target)) {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) || ownsInput(event.target, WHEEL_CONTROLS)) {
       if (owned()) release()
       return
     }
@@ -178,7 +179,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
   const keydown = (event: KeyboardEvent) => safely(() => {
     if (event.defaultPrevented) return
     if (event.key === 'Escape' || event.key === 'Home' || event.key === 'End') { release(); return }
-    if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey && event.key !== ' ' || ownsInput(event.target)) return
+    if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey && event.key !== ' ' || ownsInput(event.target, KEY_CONTROLS)) return
     const direction = event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ' && !event.shiftKey ? 1
       : event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === ' ' && event.shiftKey ? -1 : 0
     if (!direction) return
