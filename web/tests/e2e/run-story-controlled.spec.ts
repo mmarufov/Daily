@@ -388,6 +388,30 @@ test.describe('controlled chapter input', () => {
     }
   })
 
+  test('pinch zoom releases the sequence when the visual viewport no longer fits', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'CDP exposes real visual viewport scaling in Chromium; other engines retain text and viewport fallback coverage.')
+    const story = await enterStory(page)
+    await page.mouse.wheel(0, 160)
+    await expect(story).toHaveAttribute('data-transitioning', 'true')
+    const session = await page.context().newCDPSession(page)
+    try {
+      await session.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2 })
+      await expect.poll(() => page.evaluate(() => visualViewport?.scale)).toBe(2)
+      await expect(story).toHaveAttribute('data-mode', 'static')
+      await expect(story).toHaveAttribute('data-transitioning', 'false')
+      for (const chapter of await story.locator('.run-story-chapter').all()) await expect(chapter).toBeVisible()
+      const top = await page.evaluate(() => visualViewport?.pageTop ?? scrollY)
+      await page.mouse.wheel(0, 350)
+      await expect.poll(() => page.evaluate(() => visualViewport?.pageTop ?? scrollY)).toBeGreaterThan(top + 100)
+    } finally {
+      await session.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 })
+      await session.detach()
+    }
+    await expect(story).toHaveAttribute('data-mode', /static|scroll/)
+    await expect(story).toHaveAttribute('data-transitioning', 'false')
+    await expect(story).toBeVisible()
+  })
+
   test('nested scrolling and editable input keep their native controls', async ({ page }) => {
     const story = await enterStory(page)
     await story.evaluate(element => {

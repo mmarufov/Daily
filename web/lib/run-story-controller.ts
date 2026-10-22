@@ -188,6 +188,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
   const scroll = () => safely(readPosition)
   const fits = () => {
     if (!media.matches || alreadyReading || touched || failed) return false
+    if (window.visualViewport && window.visualViewport.scale > 1.01) return false
     const previous = element.dataset.mode
     element.dataset.mode = 'scroll'
     const fits = panel.offsetHeight <= innerHeight - STORY_TOP - 8 &&
