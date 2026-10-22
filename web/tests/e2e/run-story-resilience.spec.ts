@@ -27,7 +27,7 @@ async function usableRestoredStory(page: Page) {
       const track = element.querySelector<HTMLElement>('.run-story-track')!
       const panel = element.querySelector<HTMLElement>('.run-story-sticky')!
       const progress = Math.max(0, Math.min(1, (96 - track.getBoundingClientRect().top) / Math.max(1, track.offsetHeight - panel.offsetHeight)))
-      const expected = [0.24, 0.51, 0.78].filter(boundary => progress >= boundary).length
+      const expected = Math.round(progress * 3)
       return (element as HTMLElement).dataset.stage === String(expected) && (element as HTMLElement).dataset.transitioning === 'false'
     })
   }).toBe(true)
@@ -81,7 +81,8 @@ test.describe('run story resilience', () => {
   }
 
   for (const change of ['resize', 'reduced motion'] as const) {
-    test(`${change} preserves keyboard focus when the rail becomes static`, async ({ page }) => {
+    test(`${change} preserves keyboard focus when the rail becomes static`, async ({ page, isMobile }) => {
+      test.skip(isMobile, 'This transition requires a fine pointer; touch fallbacks are covered separately.')
       const errors: string[] = []
       page.on('pageerror', error => errors.push(error.message))
       await page.goto('/')
@@ -106,7 +107,8 @@ test.describe('run story resilience', () => {
     })
   }
 
-  test('enlarged text falls back before the verdict overlaps its caption', async ({ page }) => {
+  test('enlarged text falls back before the verdict overlaps its caption', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'This transition requires a fine pointer; touch fallbacks are covered separately.')
     await page.goto('/')
     const story = page.getByTestId('run-story')
     await expect(story).toHaveAttribute('data-mode', 'scroll')
@@ -134,7 +136,8 @@ test.describe('run story resilience', () => {
     expect(Math.abs(dimensions.track - dimensions.contents)).toBeLessThan(5)
   })
 
-  test('page suspension stops work and resumption reads the current position', async ({ page }) => {
+  test('page suspension stops work and resumption reads the current position', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'This transition requires a fine pointer; touch fallbacks are covered separately.')
     await page.goto('/')
     const story = page.getByTestId('run-story')
     await scrollToStage(story, 0.3)
@@ -153,9 +156,11 @@ test.describe('run story resilience', () => {
     page.on('pageerror', error => errors.push({ message: error.message, stack: error.stack ?? '' }))
     await page.goto('/')
     const story = page.getByTestId('run-story')
-    await scrollToStage(story)
-    await expect(story).toHaveAttribute('data-stage', '2')
-    await expect(story).toHaveAttribute('data-transitioning', 'false')
+    if (await story.getAttribute('data-mode') === 'scroll') {
+      await scrollToStage(story)
+      await expect(story).toHaveAttribute('data-stage', '2')
+      await expect(story).toHaveAttribute('data-transitioning', 'false')
+    } else await story.locator('[data-chapter="tests"]').scrollIntoViewIfNeeded()
     await page.reload()
     await usableRestoredStory(page)
     await page.goto('/engineering')
@@ -216,33 +221,35 @@ test.describe('run story resilience', () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1)
   })
 
-  test('resuming inside the reverse buffer preserves the held chapter', async ({ page }) => {
+  test('suspending a controlled transition releases its input guard', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'Touch contexts use normal document flow.')
     await page.goto('/')
     const story = page.getByTestId('run-story')
-    await expect(story).toHaveAttribute('data-mode', 'scroll')
-    await scrollToStage(story, 0.25)
-    await expect(story).toHaveAttribute('data-stage', '1')
-    await expect(story).toHaveAttribute('data-transitioning', 'false')
-    await scrollToStage(story, 0.22)
-    await expect(story).toHaveAttribute('data-progress', '0.220')
+    await story.getByRole('button', { name: 'Parser', exact: true }).click()
+    await page.mouse.move(720, 450)
+    await page.mouse.wheel(0, 160)
+    await expect(story).toHaveAttribute('data-transitioning', 'true')
     await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })))
     await expect(story).toHaveAttribute('data-active', 'false')
+    await expect(story).toHaveAttribute('data-transitioning', 'false')
     await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })))
     await expect(story).toHaveAttribute('data-active', 'true')
     await expect(story).toHaveAttribute('data-stage', '1')
-    await expect(story).toHaveAttribute('data-transitioning', 'false')
-    await expect(story).toHaveAttribute('data-visual-progress', '0.320')
+    const top = await page.evaluate(() => scrollY)
+    await page.mouse.wheel(0, 350)
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(top + 200)
   })
 
-  test('a busy frame slows the transition without skipping its intermediate phases', async ({ page }) => {
+  test('a busy frame slows the transition without skipping its intermediate phases', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'This transition requires a fine pointer; touch fallbacks are covered separately.')
     await page.goto('/')
     const story = page.getByTestId('run-story')
     await expect(story).toHaveAttribute('data-mode', 'scroll')
-    await scrollToStage(story, 0.1)
+    await story.getByRole('button', { name: 'Parser', exact: true }).click()
     await expect(story).toHaveAttribute('data-active', 'true')
-    await expect(story).toHaveAttribute('data-progress', '0.100')
     await expect(story).toHaveAttribute('data-transitioning', 'false')
-    await scrollToStage(story, 0.25)
+    await page.mouse.move(720, 450)
+    await page.mouse.wheel(0, 160)
     await expect(story).toHaveAttribute('data-transitioning', 'true')
     const movement = await story.evaluate(async element => {
       const before = Number((element as HTMLElement).dataset.visualProgress)

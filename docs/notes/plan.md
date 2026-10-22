@@ -1112,3 +1112,7 @@ See [motion-hardening.md](motion-hardening.md) for the scope, sources, edge-case
 - [x] Implement graceful motion fallback and lifecycle/focus fixes.
 - [x] Verify preview in Chromium/WebKit, inspect responsive/print screenshots and measure throttled performance.
 - [x] Publish draft PR #107; leave merge and production release pending user review.
+
+## Controlled chapters, October 22
+
+See [controlled-chapters.md](controlled-chapters.md) for the approved interaction contract and verification checklist. Keep draft PR #107 unmerged.

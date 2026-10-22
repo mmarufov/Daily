@@ -1,7 +1,7 @@
 export const STORY_TOP = 96
 export const STORY_DURATION = 1000
 export const STORY_STOPS = [0.08, 0.32, 0.59, 0.92] as const
-export const STORY_MEDIA = '(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)'
+export const STORY_MEDIA = '(min-width: 1024px) and (min-height: 720px) and (prefers-reduced-motion: no-preference) and (pointer: fine)'
 
 export function storyDuration(from: number, to: number) {
   return STORY_DURATION * Math.max(1, Math.abs(to - from) / 0.33)
