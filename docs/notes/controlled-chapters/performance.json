@@ -1,0 +1,50 @@
+{
+  "url": "https://daily-kw7b6ehwl-mmarufovs-projects.vercel.app",
+  "at": "2026-10-22T16:33:44.518Z",
+  "conditions": "Headless Chromium; Pixel 7 412x839 CSS pixels; fresh context/cache disabled each of 3 samples; 4x CPU slowdown; 1.6 Mbps download, 750 Kbps upload, 150 ms RTT; macOS host; preview feedback toolbar blocked. Browser PerformanceObserver LCP and layout shifts without recent input. Laboratory data.",
+  "results": [
+    {
+      "lcp": 1060,
+      "cls": 0.0001460105391212052,
+      "longTasks": [
+        65,
+        76
+      ]
+    },
+    {
+      "lcp": 1012,
+      "cls": 0.0001460105391212052,
+      "longTasks": [
+        53
+      ]
+    },
+    {
+      "lcp": 1004,
+      "cls": 0.0001460105391212052,
+      "longTasks": [
+        50
+      ]
+    }
+  ],
+  "desktop": {
+    "cpuSlowdown": 4,
+    "transition": {
+      "frames": 70,
+      "elapsedMs": 1191.399999988079,
+      "p95FrameGapMs": 16.799999999999955,
+      "maxFrameGapMs": 16.800000000000182,
+      "panelTopMin": 96,
+      "panelTopMax": 96,
+      "stage": "1",
+      "phase": "ready"
+    },
+    "offscreen": {
+      "mutations": 0,
+      "active": "false"
+    },
+    "idle": {
+      "mutations": 0,
+      "active": "true"
+    }
+  }
+}
