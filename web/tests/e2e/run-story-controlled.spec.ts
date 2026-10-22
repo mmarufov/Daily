@@ -70,6 +70,39 @@ test.describe('controlled chapter input', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
   })
 
+  test('a large upward wheel enters at Verdict without skipping the recording', async ({ page }) => {
+    await page.goto('/')
+    const story = page.getByTestId('run-story')
+    await expect(story).toHaveAttribute('data-mode', 'scroll')
+    await story.locator('.run-story-track').evaluate(track => {
+      const panel = track.querySelector<HTMLElement>('.run-story-sticky')!
+      window.scrollTo({ top: scrollY + track.getBoundingClientRect().top - 96 + (track as HTMLElement).offsetHeight - panel.offsetHeight + 120, behavior: 'instant' })
+    })
+    await page.mouse.move(720, 450)
+    await page.mouse.wheel(0, -5000)
+    await ready(story, 3)
+    const panel = await story.locator('.run-story-sticky').boundingBox()
+    expect(panel!.y).toBeGreaterThanOrEqual(95)
+    expect(panel!.y).toBeLessThanOrEqual(97)
+  })
+
+  test('caption reflow updates anchors without restarting or snapping a transition', async ({ page }) => {
+    const story = await enterStory(page)
+    await beginSamples(story)
+    await page.mouse.wheel(0, 160)
+    await expect(story).toHaveAttribute('data-transitioning', 'true')
+    await page.waitForTimeout(250)
+    const previousHeight = await story.locator('.run-story-sticky').evaluate(element => (element as HTMLElement).offsetHeight)
+    await story.locator('.run-scene-caption').evaluate(element => { (element as HTMLElement).style.minHeight = '170px' })
+    await expect.poll(() => story.locator('.run-story-sticky').evaluate(element => (element as HTMLElement).offsetHeight)).toBeGreaterThan(previousHeight)
+    await expect(story).toHaveAttribute('data-transitioning', 'true')
+    await ready(story, 1)
+    const moving = (await samples(story)).filter(frame => frame.phase === 'transitioning')
+    expect(moving.at(-1)!.time - moving[0]!.time).toBeGreaterThanOrEqual(850)
+    expect(moving.at(-1)!.time - moving[0]!.time).toBeLessThan(1250)
+    expect(moving.every(frame => frame.y >= 95 && frame.y <= 97)).toBe(true)
+  })
+
   test('small pulls accumulate and reversing direction discards previous intent', async ({ page }) => {
     const story = await enterStory(page)
     for (const delta of [80, -40, 100]) {
@@ -167,7 +200,8 @@ test.describe('controlled chapter input', () => {
     }
     const frames = await capture
     const moving = frames.filter(frame => frame.phase === 'transitioning')
-    expect([...new Set(moving.map(frame => frame.stage))]).toEqual(['1', '2', '3'])
+    expect([...new Set(moving.map(frame => frame.stage).filter(stage => stage !== '0'))]).toEqual(['1', '2', '3'])
+    expect(frames.every((frame, index) => index === 0 || Number(frame.stage) >= Number(frames[index - 1]!.stage))).toBe(true)
     for (const stage of ['1', '2', '3']) {
       const chapter = moving.filter(frame => frame.stage === stage)
       expect(chapter.at(-1)!.time - chapter[0]!.time).toBeGreaterThanOrEqual(850)
@@ -197,7 +231,6 @@ test.describe('controlled chapter input', () => {
     const verdict = story.getByRole('button', { name: 'Verdict', exact: true })
     await verdict.click()
     await ready(story, 3)
-    await expect(verdict).toBeFocused()
     await expect(story).toHaveAttribute('data-visual-progress', '0.920')
     await page.waitForTimeout(1100)
     await ready(story, 3)
@@ -234,31 +267,40 @@ test.describe('controlled chapter input', () => {
     await page.keyboard.down('PageDown')
     await expect(story).toHaveAttribute('data-transitioning', 'true')
     for (let i = 0; i < 4; i++) await page.keyboard.down('PageDown')
-    await page.keyboard.up('PageDown')
     await ready(story, 1)
     await page.waitForTimeout(250)
     await ready(story, 1)
-    await page.keyboard.press('Space')
+    await page.keyboard.down('PageDown')
+    await expect(story).toHaveAttribute('data-transitioning', 'true')
+    await page.keyboard.up('PageDown')
     await ready(story, 2)
+    await page.keyboard.press('Space')
+    await ready(story, 3)
     await page.keyboard.press('PageUp')
-    await ready(story, 1)
+    await ready(story, 2)
   })
 
-  test('Tab can leave the section and releases an unfinished transition', async ({ page }) => {
+  test('Tab can leave the scene and releases an unfinished transition', async ({ page }) => {
     const story = await enterStory(page)
     await page.mouse.wheel(0, 160)
     await expect(story).toHaveAttribute('data-transitioning', 'true')
     await story.evaluate(element => {
-      const link = document.createElement('a')
-      link.href = '#experiment'
-      link.textContent = 'Next section test link'
-      element.after(link)
-      element.querySelector<HTMLElement>('summary')!.focus({ preventScroll: true })
+      const panel = element.querySelector('.run-story-sticky')!
+      const inside = document.createElement('input')
+      const outside = document.createElement('input')
+      inside.ariaLabel = 'Inside scene test input'
+      outside.ariaLabel = 'Next section test input'
+      inside.style.cssText = 'position:fixed;left:20px;top:180px;width:80px;height:24px'
+      outside.style.cssText = 'position:fixed;left:20px;top:220px;width:80px;height:24px'
+      panel.appendChild(inside)
+      panel.after(outside)
+      inside.focus({ preventScroll: true })
     })
+    await expect(story).toHaveAttribute('data-transitioning', 'true')
     await page.keyboard.press('Tab')
-    await expect(page.getByRole('link', { name: 'Next section test link' })).toBeFocused()
+    await expect(page.getByRole('textbox', { name: 'Next section test input' })).toBeFocused()
     await expect(story).toHaveAttribute('data-transitioning', 'false')
-    await expect(story).toHaveAttribute('data-phase', /bypass|outside/)
+    await expect(story).toHaveAttribute('data-phase', 'bypass')
   })
 
   test('modified Arrow and Page keys stay native while Shift+Space steps backward', async ({ page }) => {

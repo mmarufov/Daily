@@ -182,7 +182,7 @@ export function mountRunStory(element: HTMLElement, area: HTMLElement, panel: HT
     const direction = event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ' && !event.shiftKey ? 1
       : event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === ' ' && event.shiftKey ? -1 : 0
     if (!direction) return
-    if (event.repeat && owned()) { event.preventDefault(); return }
+    if (event.repeat && busy()) { event.preventDefault(); return }
     intent(direction * (owned() ? 160 : event.key.startsWith('Arrow') ? 40 : viewportHeight * .85), event)
   })
   const scroll = () => safely(readPosition)
