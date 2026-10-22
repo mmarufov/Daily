@@ -12,6 +12,10 @@ const LAB_API = /^https?:\/\/[^/]+\/api\/lab(?:\/|$)/
 export const test = base.extend({
   page: async ({ context, page }, use) => {
     const unmocked: string[] = []
+    // The preview feedback toolbar is separate from the application under test.
+    await context.route(url => url.origin === 'https://vercel.live' && url.pathname === '/_next-live/feedback/feedback.js', route => route.fulfill({
+      status: 200, contentType: 'application/javascript', body: '',
+    }))
     // Context routing also covers popups. Service workers are blocked by the
     // config so they cannot bypass this interception.
     await context.route(LAB_API, async (route) => {
