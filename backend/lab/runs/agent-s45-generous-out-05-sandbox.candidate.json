@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_s45_generous_out_05.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is that positional-v0 silently misassociates verdicts when the model returns a different count or order. This parser refuses on count mismatches (checking before any association), detects truncation via finish_reason, and supports both positional (when counts match) and keyed protocols (matching by article_id). It validates scores are finite and in [0,1] range, refusing with specific kinds from REFUSAL_KINDS vocabulary.",
+ "transcribed_from": "unknown"
+}

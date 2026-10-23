@@ -1,0 +1,5 @@
+{"type":"created","run_id":"article-to-verdict-association__agent-s45-generous-out-06","candidate_id":"agent-s45-generous-out-06","spec_hash":"f027762ab4d08b35","executed_at_revision":"9b8e666e2ffe3e743fdca3fe99a60883ff2e8e3e+dirty","at":"2026-10-01T23:14:58.101Z"}
+{"type":"scope-checked","allowed":true,"detail":"backend/lab/contract/candidate.py — within scope; queued for sandboxed evaluation","at":"2026-10-01T23:16:12.007Z"}
+{"type":"attempt-started","attempt_id":"article-to-verdict-association__agent-s45-generous-out-06#01","runner":"vercel-sandbox","at":"2026-10-01T23:16:14.083Z"}
+{"type":"attempt-ended","attempt_id":"article-to-verdict-association__agent-s45-generous-out-06#01","status":"succeeded","note":"sandbox plum-shocked-fly-EWmASM in iad1, exit 0 in 377ms","at":"2026-10-01T23:16:19.417Z"}
+{"type":"records-received","attempt_id":"article-to-verdict-association__agent-s45-generous-out-06#01","n_records":64,"at":"2026-10-01T23:16:19.418Z"}

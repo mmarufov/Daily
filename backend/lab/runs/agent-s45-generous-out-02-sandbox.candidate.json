@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_s45_generous_out_02.py",
+ "declared_protocol": "positional-v0",
+ "description": "The defect is that positional-v0 associates results[i] with articles[i] without validating that the counts match or checking for truncated responses. When the model returns a different number of results, the current implementation either pads with zeros or assigns mismatched verdicts. The fix is to refuse with 'count_mismatch' when lengths differ, refuse with 'truncated_response' when JSON is incomplete or finish_reason is 'length', and only accept when there's an unambiguous 1:1 positional mapping.",
+ "transcribed_from": "unknown"
+}

@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_s45_generous_out_03.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is that positional parsers silently associate results[i] with articles[i] even when counts differ or results are reordered. This parser detects the protocol (positional vs keyed) by checking for article_id in results, then: for positional, refuses on count mismatch; for keyed, uses article_id to match and refuses on duplicate/missing/unknown IDs, preventing misassociation.",
+ "transcribed_from": "unknown"
+}

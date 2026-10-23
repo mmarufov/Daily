@@ -1,0 +1,39 @@
+{
+ "model": "anthropic/claude-sonnet-4.5",
+ "gateway": "vercel-ai-gateway",
+ "gateway_auth": "oidc",
+ "started_at": "2026-10-01T22:59:22.662Z",
+ "wall_clock_ms": 9710,
+ "finish_reason": "tool-calls",
+ "stop_cause": "step-limit",
+ "tool_calls_made": 9,
+ "max_tool_calls": 6,
+ "model_calls_made": 3,
+ "budget_label": "tight",
+ "budget": {
+  "max_proposals": 1,
+  "max_tool_calls": 6,
+  "max_model_calls": 3,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 60000,
+  "max_tool_result_chars": 8000,
+  "max_usd": 0.3,
+  "wall_clock_seconds": 180
+ },
+ "budget_ceiling_usd": 0.3,
+ "usage": {
+  "input_tokens": 15128,
+  "output_tokens": 642,
+  "total_tokens": 15770
+ },
+ "tokens_used": 15770,
+ "cost_usd": 0.055014,
+ "proposed": false,
+ "evaluation_requested_by": "unknown",
+ "hypothesis": "unknown",
+ "evidence": [],
+ "scope_accepted": false,
+ "scope_reason": "no proposal was made",
+ "trace_path": "backend/lab/runs/agent-s45-tight-03-sandbox.trace.json",
+ "n_trace_steps": 15
+}

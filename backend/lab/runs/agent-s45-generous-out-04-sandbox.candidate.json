@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_s45_generous_out_04.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is that positional-v0 and count-guard-v1 associate verdicts by array position without verifying IDs. When the model returns a different count or order, every article after the first divergence gets the wrong verdict. This parser detects the protocol (positional vs keyed) from the response structure, refuses on count mismatches in positional mode, and uses article_id matching in keyed mode to ensure correct association.",
+ "transcribed_from": "unknown"
+}

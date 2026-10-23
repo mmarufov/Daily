@@ -28,6 +28,7 @@ import {
   type RecordBundle,
 } from '../lib/lab/records'
 import { EXPERIMENT, PROTOCOLS, SPECS, specHash } from '../lib/lab/spec'
+import { RecordedTraceSchema, verifyTrajectory, type PredicateResult } from '../lib/lab/trajectory'
 import { KNOWN_IMPLEMENTATIONS, SANDBOX_LIMITS, selectRunner } from '../lib/lab/runner'
 import {
   LAB_ARTIFACT_VERSION,
@@ -272,6 +273,15 @@ function sandboxFor(input: RunInput): LabRun['provenance']['sandbox'] {
   return JSON.parse(readInput(rel)) as LabRun['provenance']['sandbox']
 }
 
+function trajectoryFor(investigation: LabRun['provenance']['investigation']): PredicateResult[] | null {
+  if (investigation === null) return null
+  const parsed = RecordedTraceSchema.safeParse(JSON.parse(readInput(investigation.trace_path)))
+  if (!parsed.success) {
+    throw new Error(`${investigation.trace_path} is not a gradable trace: ${parsed.error.issues[0]?.message ?? 'invalid'}`)
+  }
+  return verifyTrajectory(parsed.data)
+}
+
 function investigationFor(input: RunInput): LabRun['provenance']['investigation'] {
   const rel = `backend/lab/runs/${input.candidate_id}-${input.tag}.investigation.json`
   if (!existsSync(join(ROOT, rel))) return null
@@ -480,9 +490,12 @@ function buildRunInScope(
   // function of the records and a spec, so a new generation costs nothing and
   // re-runs nothing -- which is exactly why re-grading has to be published
   // rather than applied silently.
+  // The trajectory of an agent-authored run, verified once from its committed
+  // trace and handed to every generation; only generation 3 grades it.
+  const trajectory = trajectoryFor(investigation)
   const gradings = SPECS.map((spec) =>
     failure === undefined
-      ? evaluate(cases, bundle, { spec })
+      ? evaluate(cases, bundle, { spec, trajectory })
       : evaluate(cases, null, { failure, spec }),
   )
   const evaluation = gradings[gradings.length - 1]

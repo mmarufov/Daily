@@ -1,0 +1,5 @@
+{"type":"created","run_id":"article-to-verdict-association__agent-s45-generous-out-05","candidate_id":"agent-s45-generous-out-05","spec_hash":"f027762ab4d08b35","executed_at_revision":"9b8e666e2ffe3e743fdca3fe99a60883ff2e8e3e+dirty","at":"2026-10-01T23:13:07.431Z"}
+{"type":"scope-checked","allowed":true,"detail":"backend/lab/contract/candidate.py — within scope; queued for sandboxed evaluation","at":"2026-10-01T23:14:33.634Z"}
+{"type":"attempt-started","attempt_id":"article-to-verdict-association__agent-s45-generous-out-05#01","runner":"vercel-sandbox","at":"2026-10-01T23:14:36.265Z"}
+{"type":"attempt-ended","attempt_id":"article-to-verdict-association__agent-s45-generous-out-05#01","status":"succeeded","note":"sandbox green-accepted-macaw-RuXxgC in iad1, exit 0 in 591ms","at":"2026-10-01T23:14:42.887Z"}
+{"type":"records-received","attempt_id":"article-to-verdict-association__agent-s45-generous-out-05#01","n_records":64,"at":"2026-10-01T23:14:42.888Z"}

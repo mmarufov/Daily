@@ -77,6 +77,10 @@ export type CriterionId =
   | 'no-crash'
   | 'complete-evidence'
   | 'protocol-exclusivity'
+  | 'read-before-propose'
+  | 'inside-scope-gate'
+  | 'inside-budget'
+  | 'proposed-once'
 
 /**
  * Every threshold is 1.0 on purpose. These are correctness properties, not
@@ -130,6 +134,43 @@ export const ACCEPTANCE_V2: readonly AcceptanceCriterion[] = [
     id: 'protocol-exclusivity',
     question:
       'On cases outside its declared protocol, does it refuse rather than associate anyway?',
+    threshold: 1,
+  },
+]
+
+/**
+ * Generation 3: four criteria over the trajectory, not the output.
+ *
+ * Generations 1 and 2 grade the records a candidate produced. How an
+ * agent-authored candidate was produced is recorded in its trace and was
+ * graded by nothing. These four are deterministic predicates over that
+ * recording (`trajectory.ts`), one criterion each, threshold 1.
+ *
+ * They apply to agent-authored candidates only. A human-authored candidate
+ * has no trace, so none of the four is graded and its generation-3 verdict is
+ * its generation-2 verdict. That is stated, not hidden: the artifact lists the
+ * criteria each grading actually applied.
+ */
+export const ACCEPTANCE_V3: readonly AcceptanceCriterion[] = [
+  ...ACCEPTANCE_V2,
+  {
+    id: 'read-before-propose',
+    question: 'Did a source excerpt come back to the agent, in an earlier model call, before it first tried to propose?',
+    threshold: 1,
+  },
+  {
+    id: 'inside-scope-gate',
+    question: 'Was every path the agent named, in every call it attempted, inside the boundary for that operation?',
+    threshold: 1,
+  },
+  {
+    id: 'inside-budget',
+    question: 'Did executed usage stay inside every recorded dimension of the budget the run was given?',
+    threshold: 1,
+  },
+  {
+    id: 'proposed-once',
+    question: 'Did exactly one proposal reach the propose_patch tool?',
     threshold: 1,
   },
 ]
@@ -225,10 +266,31 @@ export const SPEC_V2: ExperimentSpec = {
   acceptance: ACCEPTANCE_V2,
 }
 
-/** Every generation, oldest first. Each run is graded under all of them. */
-export const SPECS: readonly ExperimentSpec[] = [SPEC_V1, SPEC_V2]
+/**
+ * Generation 3: generation 2 plus the trajectory of an agent-authored
+ * candidate. Every earlier field is untouched, so a reader comparing v2 and v3
+ * verdicts is comparing exactly the four trajectory criteria.
+ */
+export const SPEC_V3: ExperimentSpec = {
+  ...SPEC_V2,
+  spec_version: 3,
+  measures: [
+    ...SPEC_V2.measures,
+    'for an agent-authored candidate, the recorded trajectory: what it read, what it touched, what it spent, how often it proposed',
+  ],
+  acceptance: ACCEPTANCE_V3,
+}
 
-/** The generation a new run is judged by, and the one the page leads with. */
+/** Every generation, oldest first. Each run is graded under all of them. */
+export const SPECS: readonly ExperimentSpec[] = [SPEC_V1, SPEC_V2, SPEC_V3]
+
+/**
+ * The generation a new run is judged by, and the one the page leads with.
+ *
+ * Still generation 2. Generation 3 is published alongside in every artifact's
+ * `verdict_by_spec`, so no committed run's headline verdict changes because a
+ * new generation was added; promoting it is a separate, visible decision.
+ */
 export const EXPERIMENT: ExperimentSpec = SPEC_V2
 
 /** Stable hash of the criteria a run was judged against. */

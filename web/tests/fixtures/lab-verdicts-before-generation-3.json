@@ -1,0 +1,161 @@
+{
+ "note": "verdict_by_spec of every committed lab run on main before generation 3 was added (origin/main 94a25809). Generation 3 must leave every one of these unchanged.",
+ "verdicts": {
+  "article-to-verdict-association__agent-g41-default-01__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-g41-default-02__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-g41-default-03__sandbox": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__agent-g41-default-04__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-g41-default-05__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-g41-default-06__sandbox": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__agent-g5m-default-01__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-default-01__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-default-02__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-default-03__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-default-04__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-default-05__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-default-06__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-01__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-02__sandbox": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__agent-k2-generous-03__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-04__sandbox": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__agent-k2-generous-05__sandbox": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__agent-k2-generous-06__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-out-01__sandbox": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__agent-k2-generous-out-02__sandbox": {
+   "1": "accepted-for-review",
+   "2": "accepted-for-review"
+  },
+  "article-to-verdict-association__agent-k2-generous-out-03__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-out-04__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-out-05__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-generous-out-06__sandbox": {
+   "1": "accepted-for-review",
+   "2": "accepted-for-review"
+  },
+  "article-to-verdict-association__agent-k2-tight-01__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-tight-02__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-tight-03__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-tight-04__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-tight-05__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__agent-k2-tight-06__sandbox": {
+   "1": "failed",
+   "2": "failed"
+  },
+  "article-to-verdict-association__control-lenient-keyed__6a3f35522825__008af826__clean": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__control-self-reporting__eee5f779191d__008af826__clean": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__control-zero-filling__32afb5fd6da8__008af826__clean": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__count-guard-v1__2c2fb884ebdf__008af826__clean": {
+   "1": "rejected",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__keyed-fallback-v1__sandbox": {
+   "1": "accepted-for-review",
+   "2": "rejected"
+  },
+  "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__clean": {
+   "1": "accepted-for-review",
+   "2": "accepted-for-review"
+  },
+  "article-to-verdict-association__keyed-v2__bcde0d5383b5__008af826__interrupted": {
+   "1": "accepted-for-review",
+   "2": "accepted-for-review"
+  },
+  "article-to-verdict-association__positional-v0__d6f155ab7bcf__008af826__clean": {
+   "1": "rejected",
+   "2": "rejected"
+  }
+ }
+}

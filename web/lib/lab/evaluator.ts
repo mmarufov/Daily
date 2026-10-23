@@ -20,6 +20,7 @@
  */
 
 import { EXPERIMENT, specHash, type AcceptanceCriterion, type CaseFamily, type ExperimentSpec, type Protocol } from './spec'
+import type { PredicateResult } from './trajectory'
 import type { Case, PredictionRecord, RecordBundle } from './records'
 
 export type Applicability = 'scored' | 'not-applicable'
@@ -310,7 +311,13 @@ function criterion(
 export function evaluate(
   cases: readonly Case[],
   bundle: RecordBundle | null,
-  options: { cancelled?: boolean; failure?: string; spec?: ExperimentSpec } = {},
+  options: {
+    cancelled?: boolean
+    failure?: string
+    spec?: ExperimentSpec
+    /** The trajectory predicates for an agent-authored run; absent for a human-authored one. */
+    trajectory?: readonly PredicateResult[] | null
+  } = {},
 ): Evaluation {
   const spec = options.spec ?? EXPERIMENT
   if (options.cancelled === true) {
@@ -452,6 +459,27 @@ export function evaluate(
       // protocol covering every case has nothing to be exclusive about, and
       // that is an absence of evidence rather than a clean bill.
       passed: excused.length > 0 && outOfProtocol.length === 0,
+    })
+  }
+
+  // Generation 3's four criteria, one per trajectory predicate. Pushed only
+  // when the spec defines them *and* a trajectory exists: a human-authored
+  // candidate has no trace, so there is nothing to grade and nothing is
+  // claimed. A predicate that is not applicable does not pass, for the same
+  // reason as everywhere else here.
+  for (const result of options.trajectory ?? []) {
+    const definition = acceptance.find((c) => c.id === result.id)
+    if (definition === undefined) continue
+    const applicable = result.status === 'not-applicable' ? 0 : 1
+    const satisfied = result.status === 'pass' ? 1 : 0
+    criteria.push({
+      id: result.id,
+      question: definition.question,
+      threshold: definition.threshold,
+      applicable,
+      satisfied,
+      rate: applicable === 0 ? null : satisfied,
+      passed: result.status === 'pass',
     })
   }
 

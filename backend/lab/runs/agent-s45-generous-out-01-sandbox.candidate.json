@@ -1,0 +1,7 @@
+{
+ "kind": "agent-authored",
+ "source_path": "backend/lab/contract/candidates/agent_s45_generous_out_01.py",
+ "declared_protocol": "keyed-v2",
+ "description": "The defect is that positional-v0 associates results[i] with articles[i] by array position, which fails when the model returns a different count or reorders results. This keyed-v2 parser associates results to articles by matching article_id fields, refusing when counts mismatch, IDs are duplicate/missing/unknown, or scores are invalid. This prevents silent misassociation.",
+ "transcribed_from": "unknown"
+}

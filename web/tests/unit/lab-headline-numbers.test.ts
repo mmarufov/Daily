@@ -11,7 +11,7 @@ import { parseCaseSuite, parseRecordBundle, type Case, type RecordBundle } from 
  *
  * lab-evaluator.test.ts checks verdicts and properties. Nothing checked the
  * counts themselves, so "positional 0/52, count guard 48/52, id-keyed 60/60,
- * 2 of 31 agent runs accepted" could drift while every verdict stayed the
+ * 2 of 49 agent runs accepted" could drift while every verdict stayed the
  * same. Each pin below is recomputed from the committed records and exports,
  * and each has a control showing the same function reports a different number
  * when the input is wrong.
@@ -102,8 +102,8 @@ describe('the three contracts, as quoted', () => {
 describe('the agent sweep, as quoted', () => {
   const runs = agentExports()
 
-  it('has 31 committed runs', () => {
-    expect(runs).toHaveLength(31)
+  it('has 49 committed runs', () => {
+    expect(runs).toHaveLength(49)
   })
 
   it('accepted exactly 2 of them for review', () => {
