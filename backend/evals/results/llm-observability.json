@@ -1,0 +1,4212 @@
+{
+  "replay": {
+    "provenance": {
+      "command": "python -m evals.llm_observability.replay --database-url <disposable server> --write",
+      "git_sha": "9c9a07c48d0652ee289b4a138a70d337a221fc21",
+      "git_dirty": false,
+      "ran_at": "2026-10-03T03:31:52+00:00",
+      "machine": "Darwin 27.0.0 arm64",
+      "python": "3.12.13",
+      "postgres": "17.10 (Homebrew)",
+      "openai_sdk": "1.12.0",
+      "policy_sha256": "3481c5f142ecdc1bb76a49613ecbd3aa1b4c02b13f5f4cf9ee9cbc2ae10c5706"
+    },
+    "summaries": {
+      "incident": {
+        "status_19_39": 200,
+        "first_503": "19:43",
+        "status_20_10": 503,
+        "ingestion_rate_20_10": 1.0,
+        "ingestion_state_20_10": "tripped",
+        "coverage_first_trip": "20:55",
+        "max_ingestion_calls_in_window": 500,
+        "attempted": 1950,
+        "traced": 1950,
+        "traced_after_reflush": 1950
+      },
+      "tagging_removed": {
+        "status_19_39": 200,
+        "first_503": "20:55",
+        "status_20_10": 200,
+        "ingestion_rate_20_10": 0.0,
+        "ingestion_state_20_10": "ok",
+        "coverage_first_trip": "20:55",
+        "max_ingestion_calls_in_window": 500,
+        "attempted": 1950,
+        "traced": 1950,
+        "traced_after_reflush": 1950
+      },
+      "no_switch": {
+        "status_19_39": 200,
+        "first_503": null,
+        "status_20_10": 200,
+        "ingestion_rate_20_10": 0.0,
+        "ingestion_state_20_10": "ok",
+        "coverage_first_trip": null,
+        "max_ingestion_calls_in_window": 100,
+        "attempted": 570,
+        "traced": 570,
+        "traced_after_reflush": 570
+      },
+      "few_calls": {
+        "status_19_39": 200,
+        "first_503": "19:46",
+        "status_20_10": 503,
+        "ingestion_rate_20_10": 1.0,
+        "ingestion_state_20_10": "insufficient_data",
+        "coverage_first_trip": "19:46",
+        "max_ingestion_calls_in_window": 10,
+        "attempted": 57,
+        "traced": 57,
+        "traced_after_reflush": 57
+      }
+    },
+    "unevaluable": {
+      "status": 503,
+      "body_status": "unevaluable",
+      "reason": "UndefinedTable"
+    },
+    "expectations": {
+      "incident: 200 at 19:39": true,
+      "incident: first 503 between 19:40 and 19:50": true,
+      "incident: 503 at 20:10 with ingestion fallback rate 1.0": true,
+      "incident: coverage first trips between 20:40 and 21:10": true,
+      "control tagging removed: 200 at 20:10": true,
+      "control no switch: never 503": true,
+      "control few calls: fallback reports insufficient data at 20:10": true,
+      "control unevaluable: 503": true
+    },
+    "timelines": {
+      "incident": [
+        {
+          "at": "18:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 20,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 30,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 40,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 50,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 60,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 70,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 80,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 90,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:31",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:34",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:37",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:39",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 10,
+            "rate": 0.1,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 10,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:43",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 110,
+            "fallbacks": 30,
+            "rate": 0.2727,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 20,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:46",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 130,
+            "fallbacks": 60,
+            "rate": 0.4615,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 30,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:49",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 160,
+            "fallbacks": 100,
+            "rate": 0.625,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 40,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:52",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 200,
+            "fallbacks": 150,
+            "rate": 0.75,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 50,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:55",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 240,
+            "fallbacks": 200,
+            "rate": 0.8333,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 60,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:58",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 280,
+            "fallbacks": 250,
+            "rate": 0.8929,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 70,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:01",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 320,
+            "fallbacks": 300,
+            "rate": 0.9375,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 80,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:04",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 360,
+            "fallbacks": 350,
+            "rate": 0.9722,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 90,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:07",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 400,
+            "fallbacks": 400,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 100,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:10",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 440,
+            "fallbacks": 440,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 110,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:13",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 470,
+            "fallbacks": 470,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 120,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:16",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 490,
+            "fallbacks": 490,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 130,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:19",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 140,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:22",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 150,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:25",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 160,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:28",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 170,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:31",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 180,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:34",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 190,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:37",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 200,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:40",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 210,
+            "missing": 10,
+            "missing_share": 0.0476,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:43",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 220,
+            "missing": 20,
+            "missing_share": 0.0909,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:46",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 230,
+            "missing": 30,
+            "missing_share": 0.1304,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:49",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 240,
+            "missing": 40,
+            "missing_share": 0.1667,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:52",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 250,
+            "missing": 50,
+            "missing_share": 0.2,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:55",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 260,
+            "missing": 60,
+            "missing_share": 0.2308,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:58",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 270,
+            "missing": 70,
+            "missing_share": 0.2593,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:01",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 280,
+            "missing": 80,
+            "missing_share": 0.2857,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:04",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 290,
+            "missing": 90,
+            "missing_share": 0.3103,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:07",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 300,
+            "missing": 100,
+            "missing_share": 0.3333,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:10",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 310,
+            "missing": 110,
+            "missing_share": 0.3548,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:13",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 320,
+            "missing": 120,
+            "missing_share": 0.375,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:16",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 330,
+            "missing": 130,
+            "missing_share": 0.3939,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:19",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 340,
+            "missing": 140,
+            "missing_share": 0.4118,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:22",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 350,
+            "missing": 150,
+            "missing_share": 0.4286,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:25",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 360,
+            "missing": 160,
+            "missing_share": 0.4444,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:28",
+          "status": 503,
+          "tripped": [
+            "fallback:ingestion",
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 500,
+            "rate": 1.0,
+            "state": "tripped"
+          },
+          "coverage": {
+            "eligible": 370,
+            "missing": 170,
+            "missing_share": 0.4595,
+            "state": "tripped"
+          }
+        }
+      ],
+      "tagging_removed": [
+        {
+          "at": "18:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 20,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 30,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 40,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 50,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 60,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 70,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 80,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 90,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:31",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:34",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:37",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:39",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 10,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 110,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 20,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 130,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 30,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 160,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 40,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 200,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 50,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 240,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 60,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 280,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 70,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 320,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 80,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 360,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 90,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 400,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 100,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 440,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 110,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 470,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 120,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 490,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 130,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 140,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 150,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 160,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 170,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:31",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 180,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:34",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 190,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:37",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 200,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 210,
+            "missing": 10,
+            "missing_share": 0.0476,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 220,
+            "missing": 20,
+            "missing_share": 0.0909,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 230,
+            "missing": 30,
+            "missing_share": 0.1304,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 240,
+            "missing": 40,
+            "missing_share": 0.1667,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 250,
+            "missing": 50,
+            "missing_share": 0.2,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:55",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 260,
+            "missing": 60,
+            "missing_share": 0.2308,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:58",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 270,
+            "missing": 70,
+            "missing_share": 0.2593,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:01",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 280,
+            "missing": 80,
+            "missing_share": 0.2857,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:04",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 290,
+            "missing": 90,
+            "missing_share": 0.3103,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:07",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 300,
+            "missing": 100,
+            "missing_share": 0.3333,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:10",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 310,
+            "missing": 110,
+            "missing_share": 0.3548,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:13",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 320,
+            "missing": 120,
+            "missing_share": 0.375,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:16",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 330,
+            "missing": 130,
+            "missing_share": 0.3939,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:19",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 340,
+            "missing": 140,
+            "missing_share": 0.4118,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:22",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 350,
+            "missing": 150,
+            "missing_share": 0.4286,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:25",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 360,
+            "missing": 160,
+            "missing_share": 0.4444,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:28",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 500,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 370,
+            "missing": 170,
+            "missing_share": 0.4595,
+            "state": "tripped"
+          }
+        }
+      ],
+      "no_switch": [
+        {
+          "at": "18:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 20,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 30,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 40,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 50,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 60,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 70,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 80,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 90,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:31",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:34",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:37",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:39",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 10,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 20,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 30,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 40,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 50,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 60,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 70,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 80,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 90,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 100,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 110,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 120,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 130,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 140,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 150,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 160,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 170,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:31",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 180,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:34",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 190,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:37",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 200,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 210,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 220,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 230,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 240,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 250,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 260,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "20:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 270,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 280,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 290,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 300,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 310,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 320,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 330,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 340,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 350,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 360,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "21:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 100,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "ok"
+          },
+          "coverage": {
+            "eligible": 370,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        }
+      ],
+      "few_calls": [
+        {
+          "at": "18:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 1,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 2,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:46",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 3,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:49",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 4,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:52",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 5,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:55",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 6,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "18:58",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 7,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:01",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 8,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:04",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 9,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:07",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:10",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:13",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:16",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:19",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:22",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:25",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:28",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:31",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:34",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:37",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:39",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 0,
+            "rate": 0.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 0,
+            "missing": 0,
+            "missing_share": 0.0,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:40",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 1,
+            "rate": 0.1,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 10,
+            "missing": 9,
+            "missing_share": 0.9,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:43",
+          "status": 200,
+          "tripped": [],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 2,
+            "rate": 0.2,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 20,
+            "missing": 18,
+            "missing_share": 0.9,
+            "state": "ok"
+          }
+        },
+        {
+          "at": "19:46",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 3,
+            "rate": 0.3,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 30,
+            "missing": 27,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "19:49",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 4,
+            "rate": 0.4,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 40,
+            "missing": 36,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "19:52",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 5,
+            "rate": 0.5,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 50,
+            "missing": 45,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "19:55",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 6,
+            "rate": 0.6,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 60,
+            "missing": 54,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "19:58",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 7,
+            "rate": 0.7,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 70,
+            "missing": 63,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:01",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 8,
+            "rate": 0.8,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 80,
+            "missing": 72,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:04",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 9,
+            "rate": 0.9,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 90,
+            "missing": 81,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:07",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 100,
+            "missing": 90,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:10",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 110,
+            "missing": 99,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:13",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 120,
+            "missing": 108,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:16",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 130,
+            "missing": 117,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:19",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 140,
+            "missing": 126,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:22",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 150,
+            "missing": 135,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:25",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 160,
+            "missing": 144,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:28",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 170,
+            "missing": 153,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:31",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 180,
+            "missing": 162,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:34",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 190,
+            "missing": 171,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:37",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 200,
+            "missing": 180,
+            "missing_share": 0.9,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:40",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 210,
+            "missing": 190,
+            "missing_share": 0.9048,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:43",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 220,
+            "missing": 200,
+            "missing_share": 0.9091,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:46",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 230,
+            "missing": 210,
+            "missing_share": 0.913,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:49",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 240,
+            "missing": 220,
+            "missing_share": 0.9167,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:52",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 250,
+            "missing": 230,
+            "missing_share": 0.92,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:55",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 260,
+            "missing": 240,
+            "missing_share": 0.9231,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "20:58",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 270,
+            "missing": 250,
+            "missing_share": 0.9259,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:01",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 280,
+            "missing": 260,
+            "missing_share": 0.9286,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:04",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 290,
+            "missing": 270,
+            "missing_share": 0.931,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:07",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 300,
+            "missing": 280,
+            "missing_share": 0.9333,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:10",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 310,
+            "missing": 290,
+            "missing_share": 0.9355,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:13",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 320,
+            "missing": 300,
+            "missing_share": 0.9375,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:16",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 330,
+            "missing": 310,
+            "missing_share": 0.9394,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:19",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 340,
+            "missing": 320,
+            "missing_share": 0.9412,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:22",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 350,
+            "missing": 330,
+            "missing_share": 0.9429,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:25",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 360,
+            "missing": 340,
+            "missing_share": 0.9444,
+            "state": "tripped"
+          }
+        },
+        {
+          "at": "21:28",
+          "status": 503,
+          "tripped": [
+            "embedding_coverage"
+          ],
+          "ingestion": {
+            "calls": 10,
+            "fallbacks": 10,
+            "rate": 1.0,
+            "state": "insufficient_data"
+          },
+          "coverage": {
+            "eligible": 370,
+            "missing": 350,
+            "missing_share": 0.9459,
+            "state": "tripped"
+          }
+        }
+      ]
+    }
+  }
+}

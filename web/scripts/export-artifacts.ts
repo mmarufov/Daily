@@ -86,10 +86,11 @@ const EVIDENCE_PATHS = [
 /**
  * Files in the results directory that are not scorecards. The degradation
  * matrix (`python -m evals.degrade`) replays injected faults against the same
- * cache; it is not a run of any feed system, so it is neither exported nor
- * allowed to move `artifact_revision`.
+ * cache, and the LLM observability record holds a replay and production
+ * readings of `/llmz`. Neither is a run of any feed system, so neither is
+ * exported nor allowed to move `artifact_revision`.
  */
-const NOT_SCORECARDS = ['degradation-matrix.json'] as const
+const NOT_SCORECARDS = ['degradation-matrix.json', 'llm-observability.json'] as const
 const EVIDENCE_PATHSPECS = [
   ...EVIDENCE_PATHS,
   ...NOT_SCORECARDS.map((f) => `:(exclude)backend/evals/results/${f}`),
