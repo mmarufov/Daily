@@ -146,7 +146,7 @@ Anyone can start a run with `POST /api/lab/run`. It calls no model, so the only 
 
 Each admission is one atomic 12-command transaction against Upstash Redis that reserves every counter and then decides. A refusal is refunded, returns 429 with `Retry-After`, and names the limit that resets last. A run the platform did not meter is charged its worst case, 2 vCPUs for 120 seconds. When the store is unset or unreachable the route answers 503 and starts nothing. Each function instance remembers recent refusals for 60 seconds, so a client hammering the route costs one store transaction per instance per minute.
 
-The limits are code constants, so raising one is a reviewed commit. Every response carries an `X-Lab-Instance` header that identifies the function instance. On production, a 12-request burst that landed on 12 different instances admitted exactly the two runs its address had left, and the daily CPU counter matched the platform's meters to the millisecond. Live runs never enter the published set.
+The limits are code constants, so raising one is a reviewed commit. Every response carries an `X-Lab-Instance` header that identifies the function instance. On production, a 12-request burst that landed on 12 different instances admitted exactly the two runs its address had left ([capture](results/lab-admission-burst-2026-10-01.json), pinned by [a test](tests/unit/lab-admission-burst.test.ts)), and the daily CPU counter matched the platform's meters to the millisecond. Live runs never enter the published set.
 
 ## Investigator agents
 
