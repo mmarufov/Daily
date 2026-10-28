@@ -1112,3 +1112,14 @@ Scope: presentation copy and unused styles only. Preserve motion, metrics, run c
 - [ ] Verify the restored application, merge the revert and confirm the production alias.
 
 See [rollback checklist](animation-rollback.md).
+
+## ASCII shark hero preview (October 28)
+
+- [x] Inspect the linked reference and preserve the restored RunStory.
+- [ ] Add an original, decorative ASCII shark background to the homepage hero.
+- [ ] Keep the headline, edition, links and foreground contrast intact.
+- [ ] Verify pause, reduced-motion, missing-browser-API and mobile behavior.
+- [ ] Publish an isolated preview and capture light/dark desktop and mobile views.
+- [ ] Leave production unchanged for owner review.
+
+Specification: pale charcoal ASCII sharks move slowly behind the opening only. No chat controls, typing bar, cursor-following, scroll interception or external media assets. Use a small canvas renderer with a static HTML/SVG fallback, capped resolution and low frame rate. Fade the background under text and at section boundaries. Keep native page scrolling and the existing parser sequence unchanged.

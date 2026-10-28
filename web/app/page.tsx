@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { SharkBackground } from '@/components/SharkBackground'
 import { EditionPreview } from '@/components/EditionPreview'
 import { GuardSummary } from '@/components/GuardSummary'
 import { RunStory } from '@/components/RunStory'
@@ -13,6 +14,8 @@ export default async function HomePage() {
 
   return (
     <div className="lab-landing">
+      <div className="hero-scene">
+      <SharkBackground />
       <section className="frame lab-hero" aria-labelledby="daily-introduction">
         <div className="lab-hero-grid">
           <div className="hero-copy">
@@ -26,6 +29,7 @@ export default async function HomePage() {
           <EditionPreview edition={evidence.editionPreview} />
         </div>
       </section>
+      </div>
 
       <RunStory data={evidence.runStory} />
       <GuardSummary experiment={evidence.guardExperiment} />
