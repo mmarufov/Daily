@@ -1149,8 +1149,8 @@ Specification: keep the gray shading and restrained color accents inside each ce
 
 ## Hero backing comparison (October 28)
 
-- [ ] Remove the soft backing behind the headline and description.
-- [ ] Keep the current shark sizes and refresh desktop/mobile preview captures.
-- [ ] Verify the preview and update PR #112, leaving production unchanged.
+- [x] Remove the soft backing behind the headline and description.
+- [x] Keep the current shark sizes and refresh desktop/mobile preview captures.
+- [x] Verify the preview and update PR #112, leaving production unchanged.
 
 This is a reversible visual comparison. Keep the existing backed version available at commit `653be1b0`.

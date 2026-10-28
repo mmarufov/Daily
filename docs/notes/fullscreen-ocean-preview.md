@@ -1,5 +1,11 @@
 # Full-screen ocean preview
 
+Current comparison: [text backing removed](https://daily-h8my0p4l7-mmarufovs-projects.vercel.app), runtime `9eee51b2`. The only site change from `653be1b0` is deletion of the `.hero-copy::before` rule. Shark sizes and all other settings are unchanged. Build and light/dark desktop/mobile checks passed; the original CSS remains in that baseline commit for exact restoration.
+
+![Text backing removed](assets/fullscreen-ocean/no-backing-desktop.png)
+
+The backed version and its checks follow.
+
 Reviewed October 28, 2026. Runtime revision: `48b2f335`. Base: `d956b2a9`.
 
 [Open the preview](https://daily-3uzd39yjz-mmarufovs-projects.vercel.app). Deployment: `dpl_HGYinuEqzAgGN21cFi5Pe889k6VF`. Production remains on the base revision.
