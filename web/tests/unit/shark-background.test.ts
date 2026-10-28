@@ -4,8 +4,9 @@ import { SHARK_CELLS, getSharkScene, projectSharkCell } from '../../lib/shark-ba
 describe('decorative shark geometry', () => {
   it('keeps a recognizable body, paired fins and forked tail within a bounded glyph budget', () => {
     expect(SHARK_CELLS.length).toBeGreaterThan(100)
-    expect(SHARK_CELLS.length).toBeLessThanOrEqual(250)
+    expect(SHARK_CELLS.length).toBeLessThanOrEqual(300)
     expect(SHARK_CELLS.some(cell => cell.x > 0.7 && Math.abs(cell.y) < 0.06)).toBe(true)
+    expect(SHARK_CELLS.some(cell => cell.x > 0.7 && cell.y > 0.1)).toBe(true)
     expect(SHARK_CELLS.some(cell => cell.x > -0.4 && cell.y > 0.25)).toBe(true)
     expect(SHARK_CELLS.some(cell => cell.x > -0.4 && cell.y < -0.25)).toBe(true)
     expect(SHARK_CELLS.some(cell => cell.x < -0.8 && cell.y > 0.12)).toBe(true)

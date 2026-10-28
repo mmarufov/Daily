@@ -59,3 +59,29 @@ test.describe('without scripts', () => {
     await expect(page.getByRole('link', { name: 'Read an edition', exact: false }).first()).toHaveAttribute('href', '/reader?profile=ray')
   })
 })
+
+test('a hidden tab freezes the background and resumes on return', async ({ page }) => {
+  await page.goto('/')
+  const canvas = page.locator(canvasSelector)
+  await expect(canvas).toBeVisible()
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => true })
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  const frozen = await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())
+  await page.waitForTimeout(350)
+  expect(await canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).toBe(frozen)
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => false })
+    document.dispatchEvent(new Event('visibilitychange'))
+  })
+  await expect.poll(() => canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())).not.toBe(frozen)
+})
+
+test('missing intersection observation leaves static artwork without a frame loop', async ({ page }) => {
+  await page.addInitScript(() => { Object.defineProperty(window, 'IntersectionObserver', { value: undefined }) })
+  await page.goto('/')
+  await expect(page.locator('[data-testid="shark-background"] svg')).toBeVisible()
+  await expect(page.locator(canvasSelector)).toBeHidden()
+  await expect(page.getByRole('link', { name: 'Explore the Lab' })).toBeVisible()
+})
