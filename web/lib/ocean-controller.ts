@@ -73,7 +73,7 @@ export function mountOcean(canvas: HTMLCanvasElement, onReady: (ready: boolean) 
     const nextWidth = Math.round(bounds.width), nextHeight = Math.round(bounds.height)
     if (nextWidth <= 0 || nextHeight <= 0) return false
     const nextDensity = Math.min(1.5, window.devicePixelRatio || 1)
-    renderer ??= new AsciiRenderer(canvas)
+    renderer ??= new AsciiRenderer(canvas, { sharkGlyphs: false })
     if (nextWidth !== width || nextHeight !== height || nextDensity !== density) {
       renderer.setFontFamily(getComputedStyle(canvas).fontFamily)
       renderer.resize(nextWidth, nextHeight, nextDensity)

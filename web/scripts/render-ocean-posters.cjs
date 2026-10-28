@@ -17,7 +17,7 @@ async function main() {
           let seed = 42;
           Math.random = () => ((seed = Math.imul(1664525, seed) + 1013904223 >>> 0) / 4294967296);
           const canvas = document.querySelector('canvas');
-          const renderer = new AsciiRenderer(canvas);
+          const renderer = new AsciiRenderer(canvas, { sharkGlyphs: false });
           renderer.setFontFamily('OceanMono');
           renderer.resize(width, height, 1);
           const world = createOceanScene(width, height, renderer.cellWidth, renderer.cellHeight);

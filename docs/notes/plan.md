@@ -1138,3 +1138,11 @@ Specification: pale charcoal ASCII sharks move slowly behind the opening only. N
 Specification: preserve existing foreground typography, 1280px frame and left/right positions. Use a minimum hero height equal to viewport minus header, allowing content to grow on short windows and mobile. The canvas fills the section with full opacity, light-mode inversion/multiply and dark-mode screen blending. Only a localized copy backing and a short bottom fade remain. Use four classic sharks at 1.4/1.1/.95/.8 on desktop and two at 1.45/1.05 on mobile. Preserve upstream travel speed, shaded glyphs, body bends and sparse fish; disable pointer attraction and splashes. Stop simulation as well as rendering while inactive and never catch up hidden time. Keep RunStory, backend and evidence unchanged.
 
 Review assets and results: [full-screen ocean preview](fullscreen-ocean-preview.md).
+
+## Shark cell colors (October 28)
+
+- [x] Draw shaded shark cells without letters or symbols, preserving the swimming and cell grid.
+- [x] Regenerate both static posters with the same rendering option.
+- [ ] Verify the deployed preview in Chromium and WebKit and update PR #112.
+
+Specification: keep the gray shading and restrained color accents inside each cell. Use cell coverage for the silhouette edges. Preserve the fish, foreground, lifecycle controls and production deployment.

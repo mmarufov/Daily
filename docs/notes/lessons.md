@@ -616,3 +616,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - The first shark background failed the requested visual effect: fixed positions, small drift, reduced opacity and broad masks made it faint and apparently stationary. Find and inspect the creator's published component before approximating a supplied reference. Verify movement in a recording, and preserve the owner's requested foreground layout.
 
 - Check fallback artwork visually at narrow widths. A loaded poster can still crop its subject; image visibility assertions alone missed the centered mobile crop.
+
+- The owner prefers shaded shark cells without the ASCII characters. Keep the source simulation, but adapt its visual texture to the requested treatment and update the static fallback too.

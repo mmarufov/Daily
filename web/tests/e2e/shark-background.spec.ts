@@ -4,19 +4,23 @@ import { expect, test } from './fixtures'
 const canvasSelector = '[data-testid="shark-background"] canvas'
 
 const posterSelector = '[data-testid="shark-background"] picture img'
-type CountedWindow = Window & { oceanDraws: number }
+type CountedWindow = Window & { oceanDraws: number; oceanText: Set<string> }
 
 async function countDraws(page: Page) {
   await page.addInitScript(() => {
     const counted = window as CountedWindow
     counted.oceanDraws = 0
+    counted.oceanText = new Set()
     const prototype = CanvasRenderingContext2D.prototype
     for (const name of ['fillText', 'drawImage'] as const) {
       const original = prototype[name]
       Object.defineProperty(prototype, name, {
         configurable: true,
         value(this: CanvasRenderingContext2D, ...args: unknown[]) {
-          if (this.canvas instanceof HTMLCanvasElement && this.canvas.matches('[data-testid="shark-background"] canvas')) counted.oceanDraws++
+          if (this.canvas instanceof HTMLCanvasElement && this.canvas.matches('[data-testid="shark-background"] canvas')) {
+            counted.oceanDraws++
+            if (name === 'fillText') counted.oceanText.add(String(args[0]))
+          }
           return Reflect.apply(original, this, args)
         },
       })
@@ -72,6 +76,8 @@ test('the decorative scene moves and keyboard pause preserves usable hero action
   const frame = () => canvas.evaluate((el: HTMLCanvasElement) => el.toDataURL())
   const first = await frame()
   await expect.poll(frame).not.toBe(first)
+  const text = await page.evaluate(() => [...(window as CountedWindow).oceanText])
+  expect(text.filter(glyph => !['-', '*', '·'].includes(glyph))).toEqual([])
   await page.getByRole('button', { name: 'Pause background animation' }).focus()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: 'Play background animation' })).toBeFocused()

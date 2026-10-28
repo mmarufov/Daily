@@ -318,7 +318,7 @@ export class AsciiRenderer {
   private fishBuckets: number[][] = FISH_ALPHAS.map(() => []);
   private fishStyles = FISH_ALPHAS.map((a) => `rgba(230,238,255,${a})`);
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(private canvas: HTMLCanvasElement, private readonly options: { sharkGlyphs?: boolean } = {}) {
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) throw new Error("2D canvas unavailable");
     this.ctx = ctx;
@@ -778,7 +778,13 @@ export class AsciiRenderer {
           roll < 0.07
             ? ACCENTS[key % ACCENTS.length]
             : `rgb(${Math.round(g * tr)},${Math.round(g * tg)},${Math.min(255, Math.round(g * tb + 6))})`;
-        ctx.fillText(set[(key >>> 8) % set.length], x + cw / 2, y + ch / 2 + 1);
+        if (this.options.sharkGlyphs === false) {
+          ctx.globalAlpha = shade;
+          ctx.fillRect(x + 1, y + 1, cw - 1, ch - 1);
+          ctx.globalAlpha = 1;
+        } else {
+          ctx.fillText(set[(key >>> 8) % set.length], x + cw / 2, y + ch / 2 + 1);
+        }
         continue;
       }
 
@@ -805,6 +811,16 @@ export class AsciiRenderer {
       // Tinted per species; the classic tint is a cool blue-grey, like a back seen through deep water.
       ctx.fillStyle = `rgb(${Math.min(255, Math.round(level * tr))},${Math.min(255, Math.round(level * tg))},${Math.min(255, Math.round(level * tb + 4))})`;
       ctx.fillRect(x + 1, y + 1, cw - 1, ch - 1);
+
+      if (this.options.sharkGlyphs === false) {
+        if (flag !== FLAG_EYE && flag !== FLAG_MARK && roll < 0.09) {
+          ctx.fillStyle = ACCENTS[key % ACCENTS.length];
+          ctx.globalAlpha = 0.35;
+          ctx.fillRect(x + 1, y + 1, cw - 1, ch - 1);
+          ctx.globalAlpha = 1;
+        }
+        continue;
+      }
 
       let color: string;
       if (flag === FLAG_EYE) color = "#9aa0ad";
