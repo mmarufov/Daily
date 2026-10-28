@@ -1123,3 +1123,16 @@ See [rollback checklist](animation-rollback.md).
 - [x] Leave production unchanged for owner review.
 
 Specification: pale charcoal ASCII sharks move slowly behind the opening only. No chat controls, typing bar, cursor-following, scroll interception or external media assets. Use a small canvas renderer with a static HTML/SVG fallback, capped resolution and low frame rate. Fade the background under text and at section boundaries. Keep native page scrolling and the existing parser sequence unchanged.
+
+## Full-screen upstream ocean (October 28)
+
+- [x] Inspect current main and the MIT-licensed upstream component at a0074c16a106f0abc665fe9712ca445f8f98ad8e.
+- [x] Vendor the original renderer and simulation with provenance and license.
+- [x] Integrate a 30fps lifecycle adapter with pause, offscreen/tab/print suspension, reduced motion and resize recovery.
+- [x] Make header and hero fill the desktop viewport, keeping the existing columns, copy, card and actions.
+- [x] Capture real-renderer posters and remove the simplified silhouettes and broad fades.
+- [ ] Verify recognizable movement, contrast and 15-second recordings across desktop/mobile themes.
+- [ ] Run typecheck, unit tests, artifact checks, build, Chromium/WebKit acceptance and throttled performance measurements.
+- [ ] Deliver a preview PR with screenshots, motion recording and results. Keep production unchanged.
+
+Specification: preserve existing foreground typography, 1280px frame and left/right positions. Use a minimum hero height equal to viewport minus header, allowing content to grow on short windows and mobile. The canvas fills the section with full opacity, light-mode inversion/multiply and dark-mode screen blending. Only a localized copy backing and a short bottom fade remain. Use four classic sharks at 1.4/1.1/.95/.8 on desktop and two at 1.45/1.05 on mobile. Preserve upstream travel speed, shaded glyphs, body bends and sparse fish; disable pointer attraction and splashes. Stop simulation as well as rendering while inactive and never catch up hidden time. Keep RunStory, backend and evidence unchanged.

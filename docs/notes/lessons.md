@@ -612,3 +612,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - The owner reported that the animation disappeared after PR #107 despite passing browser automation. Restore the preceding version when requested. Before another motion release, verify the owner's device and input path; automated wheel events do not cover every real browser setup.
 
 - After an animation rollback, keep new visual experiments isolated from the restored interaction. Review the new background on a preview before changing production.
+
+- The first shark background failed the requested visual effect: fixed positions, small drift, reduced opacity and broad masks made it faint and apparently stationary. Find and inspect the creator's published component before approximating a supplied reference. Verify movement in a recording, and preserve the owner's requested foreground layout.

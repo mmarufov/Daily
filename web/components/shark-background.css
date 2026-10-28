@@ -1,21 +1,24 @@
-.hero-scene { position: relative; isolation: isolate; }
-.hero-scene > .lab-hero { position: relative; z-index: 1; }
-.shark-background { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; color: var(--d-ink); opacity: .72; mask-image: linear-gradient(to bottom, transparent, #000 9%, #000 80%, transparent); }
-.shark-background::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 27% 51%, var(--d-paper) 4%, transparent 54%); }
-.shark-background canvas, .shark-still { position: absolute; width: 100%; height: 100%; inset: 0; }
-.shark-background canvas { visibility: hidden; }
+.hero-scene { position: relative; isolation: isolate; display: grid; min-block-size: calc(100svh - 77px); background: var(--d-paper); }
+.hero-scene > .lab-hero { position: relative; z-index: 1; display: grid; align-content: center; padding-block: 48px; }
+.shark-background { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; filter: invert(1); mix-blend-mode: multiply; mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent); }
+.shark-background canvas, .shark-still, .shark-still img { position: absolute; width: 100%; height: 100%; inset: 0; }
+.shark-background canvas { visibility: hidden; font-family: var(--font-mono); }
+.shark-still img { object-fit: cover; }
 .shark-background[data-ready='true'] canvas { visibility: visible; }
 .shark-background[data-ready='true'] .shark-still { visibility: hidden; }
-.hero-scene .lab-hero { padding-block: clamp(60px, 7vw, 100px) 80px; }
-.hero-scene .hero-copy { position: relative; }
-.hero-scene .hero-copy::before { content: ''; position: absolute; inset: -32px -18px; z-index: -1; background: radial-gradient(ellipse, var(--d-paper) 35%, transparent 72%); }
-.shark-motion-toggle { position: absolute; z-index: 2; bottom: 14px; right: max(20px, calc((100% - 1280px) / 2)); display: inline-flex; gap: 6px; align-items: center; justify-content: center; min-width: 64px; min-height: 44px; border: 0; border-radius: 6px; color: var(--d-ink-58); background: transparent; font-size: 11px; cursor: pointer; }
+.hero-scene .hero-copy { position: relative; isolation: isolate; }
+.hero-scene .hero-copy::before { content: ''; position: absolute; inset: -14px -18px; z-index: -1; background: var(--d-paper); opacity: .97; filter: blur(16px); }
+.shark-motion-toggle { position: absolute; z-index: 2; bottom: 12px; right: max(20px, calc((100% - 1280px) / 2)); display: inline-flex; gap: 6px; align-items: center; justify-content: center; min-width: 64px; min-height: 44px; border: 0; border-radius: 6px; color: var(--d-ink-58); background: var(--d-paper); font-size: 11px; cursor: pointer; }
 .shark-motion-toggle:hover { color: var(--d-ink); background: var(--d-paper-2); }
+@media (prefers-color-scheme: dark) {
+  .shark-background { filter: none; mix-blend-mode: screen; }
+}
 @media (max-width: 48rem) {
-  .hero-scene .lab-hero { padding-block: 40px 56px; }
-  .shark-background { opacity: .5; }
-  .shark-background::after { background: radial-gradient(ellipse at 37% 25%, var(--d-paper) 5%, transparent 60%); }
-  .shark-motion-toggle { bottom: 5px; right: 12px; }
+  .hero-scene > .lab-hero { padding-block: 112px 88px; }
+  .shark-motion-toggle { bottom: 12px; right: 12px; }
+}
+@media (width < 40rem) {
+  .hero-scene { min-block-size: calc(100svh - 105px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .shark-background canvas, .shark-motion-toggle { display: none; }
