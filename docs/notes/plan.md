@@ -1146,3 +1146,11 @@ Review assets and results: [full-screen ocean preview](fullscreen-ocean-preview.
 - [x] Verify the deployed preview in Chromium and WebKit and update PR #112.
 
 Specification: keep the gray shading and restrained color accents inside each cell. Use cell coverage for the silhouette edges. Preserve the fish, foreground, lifecycle controls and production deployment.
+
+## Hero backing comparison (October 28)
+
+- [ ] Remove the soft backing behind the headline and description.
+- [ ] Keep the current shark sizes and refresh desktop/mobile preview captures.
+- [ ] Verify the preview and update PR #112, leaving production unchanged.
+
+This is a reversible visual comparison. Keep the existing backed version available at commit `653be1b0`.

@@ -618,3 +618,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - Check fallback artwork visually at narrow widths. A loaded poster can still crop its subject; image visibility assertions alone missed the centered mobile crop.
 
 - The owner prefers shaded shark cells without the ASCII characters. Keep the source simulation, but adapt its visual texture to the requested treatment and update the static fallback too.
+
+- The owner wants to compare the hero with the text backing removed, while keeping shark sizes unchanged. Apply the latest correction before carrying forward an earlier visual adjustment.
