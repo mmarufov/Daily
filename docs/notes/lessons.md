@@ -610,3 +610,5 @@ A complete transition can still feel abrupt when its visible changes occupy only
 Keep the primary presentation focused on the product and its results. Put recording dates and detailed qualifications in Inspect views instead of repeating them as banners above the same visual. Use ordinary reader-facing labels in the edition preview.
 
 - The owner reported that the animation disappeared after PR #107 despite passing browser automation. Restore the preceding version when requested. Before another motion release, verify the owner's device and input path; automated wheel events do not cover every real browser setup.
+
+- After an animation rollback, keep new visual experiments isolated from the restored interaction. Review the new background on a preview before changing production.
