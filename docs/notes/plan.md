@@ -1143,6 +1143,6 @@ Review assets and results: [full-screen ocean preview](fullscreen-ocean-preview.
 
 - [x] Draw shaded shark cells without letters or symbols, preserving the swimming and cell grid.
 - [x] Regenerate both static posters with the same rendering option.
-- [ ] Verify the deployed preview in Chromium and WebKit and update PR #112.
+- [x] Verify the deployed preview in Chromium and WebKit and update PR #112.
 
 Specification: keep the gray shading and restrained color accents inside each cell. Use cell coverage for the silhouette edges. Preserve the fish, foreground, lifecycle controls and production deployment.

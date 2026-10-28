@@ -1,10 +1,10 @@
 # Full-screen ocean preview
 
-Reviewed October 28, 2026. Runtime revision: `60d1e340`. The recordings and normal-motion screenshots use `77993282`; the final CSS change only anchors the fallback poster to the top. Base: `d956b2a9`.
+Reviewed October 28, 2026. Runtime revision: `48b2f335`. Base: `d956b2a9`.
 
-[Open the preview](https://daily-dd3m8ssgs-mmarufovs-projects.vercel.app). Deployment: `dpl_CtEbcBKAacspBMMQ2sErVd3G3GgF`. Production remains on the base revision.
+[Open the preview](https://daily-3uzd39yjz-mmarufovs-projects.vercel.app). Deployment: `dpl_HGYinuEqzAgGN21cFi5Pe889k6VF`. Production remains on the base revision.
 
-The hero now fills the desktop opening. Its existing copy, actions and edition sit over the upstream shark renderer, with open water above and below. Mobile keeps the same content order and grows with the text.
+The hero now fills the desktop opening. Its existing copy, actions and edition sit over the upstream shark renderer, with open water above and below. Mobile keeps the same content order and grows with the text. The sharks use shaded color cells without letters or symbols; swimming and fish are unchanged.
 
 ## Recordings
 
@@ -25,8 +25,8 @@ The hero now fills the desktop opening. Its existing copy, actions and edition s
 
 - Typecheck, production build and artifact validation passed. Re-exporting all artifacts left the committed data unchanged.
 - Unit tests: 346 passed, one existing skip.
-- Full browser suite on `77993282`: 314 passed, seven skipped. Covers desktop Chromium, mobile Chromium and mobile WebKit with mocked runner endpoints.
-- Final poster fix on `60d1e340`: 28 ocean checks passed across the default projects, five skipped. Additional desktop WebKit ocean checks: 10 passed, one existing skip. Chromium and WebKit captures confirm the top shark stays visible with reduced motion enabled.
+- Full browser suite on `60d1e340`: 314 passed, seven skipped. Covers desktop Chromium, mobile Chromium and mobile WebKit with mocked runner endpoints.
+- Color-cell update on `48b2f335`: 28 ocean checks passed across the default projects, five skipped. Additional desktop WebKit ocean checks: 10 passed, one existing skip. The browser check rejects text glyphs in shark rendering. Chromium and WebKit captures confirm the color tiles, pause/resume and static fallback.
 - Reviewed 320, 390, 430, 820, 844, 1440 and 1920px widths, light/dark themes and a 390px-high landscape window. No horizontal overflow or page errors appeared.
 - Doubling hero text size at 390px kept both Chromium and WebKit within the viewport. The section grew to about 2116px. At 1440px it grew to about 1193px.
 - Pause/resume, resize, hidden tabs, printing, reduced motion, unavailable canvas, disabled scripts, forced colors and keyboard actions passed. The ocean stopped drawing while offscreen, including after resize.
