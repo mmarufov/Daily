@@ -1131,8 +1131,10 @@ Specification: pale charcoal ASCII sharks move slowly behind the opening only. N
 - [x] Integrate a 30fps lifecycle adapter with pause, offscreen/tab/print suspension, reduced motion and resize recovery.
 - [x] Make header and hero fill the desktop viewport, keeping the existing columns, copy, card and actions.
 - [x] Capture real-renderer posters and remove the simplified silhouettes and broad fades.
-- [ ] Verify recognizable movement, contrast and 15-second recordings across desktop/mobile themes.
-- [ ] Run typecheck, unit tests, artifact checks, build, Chromium/WebKit acceptance and throttled performance measurements.
-- [ ] Deliver a preview PR with screenshots, motion recording and results. Keep production unchanged.
+- [x] Verify recognizable movement, contrast and 15-second recordings across desktop/mobile themes.
+- [x] Run typecheck, unit tests, artifact checks, build, Chromium/WebKit acceptance and throttled performance measurements.
+- [x] Deliver a preview PR with screenshots, motion recording and results. Keep production unchanged.
 
 Specification: preserve existing foreground typography, 1280px frame and left/right positions. Use a minimum hero height equal to viewport minus header, allowing content to grow on short windows and mobile. The canvas fills the section with full opacity, light-mode inversion/multiply and dark-mode screen blending. Only a localized copy backing and a short bottom fade remain. Use four classic sharks at 1.4/1.1/.95/.8 on desktop and two at 1.45/1.05 on mobile. Preserve upstream travel speed, shaded glyphs, body bends and sparse fish; disable pointer attraction and splashes. Stop simulation as well as rendering while inactive and never catch up hidden time. Keep RunStory, backend and evidence unchanged.
+
+Review assets and results: [full-screen ocean preview](fullscreen-ocean-preview.md).
