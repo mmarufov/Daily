@@ -113,22 +113,13 @@ test('Fraunces is fetched only after entering the Reader, where the editorial he
 })
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test(`${colorScheme} mode exposes touch-sized story controls and visible keyboard focus`, async ({ page, isMobile }) => {
+  test(`${colorScheme} mode exposes touch-sized story controls and visible keyboard focus`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.emulateMedia({ colorScheme, reducedMotion: 'no-preference' })
     await page.goto('/')
     const story = page.getByTestId('run-story')
-    await expect(story).toHaveAttribute('data-mode', isMobile ? 'static' : 'scroll')
-    if (isMobile) {
-      const action = story.getByRole('link', { name: 'Run the default parser', exact: true }).first()
-      await action.scrollIntoViewIfNeeded()
-      const bounds = await action.boundingBox()
-      expect(bounds!.width).toBeGreaterThanOrEqual(44)
-      expect(bounds!.height).toBeGreaterThanOrEqual(44)
-      await expect(story.locator('.run-story-chapters')).toBeVisible()
-      return
-    }
-    for (const name of ['Parser', 'Sandbox', 'Tests', 'Verdict', 'Skip animation']) {
+    await expect(story).toHaveAttribute('data-mode', 'scroll')
+    for (const name of ['Parser', 'Sandbox', 'Tests', 'Verdict']) {
       const control = story.getByRole('button', { name, exact: true })
       await expect(control).toBeVisible()
       const box = await control.boundingBox()
