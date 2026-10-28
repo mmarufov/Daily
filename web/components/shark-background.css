@@ -3,7 +3,7 @@
 .shark-background { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; filter: invert(1); mix-blend-mode: multiply; mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent); }
 .shark-background canvas, .shark-still, .shark-still img { position: absolute; width: 100%; height: 100%; inset: 0; }
 .shark-background canvas { visibility: hidden; font-family: var(--font-mono); }
-.shark-still img { object-fit: cover; }
+.shark-still img { object-fit: cover; object-position: center top; }
 .shark-background[data-ready='true'] canvas { visibility: visible; }
 .shark-background[data-ready='true'] .shark-still { visibility: hidden; }
 .hero-scene .hero-copy { position: relative; isolation: isolate; }
