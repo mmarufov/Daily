@@ -1105,14 +1105,10 @@ Native page scrolling remains continuous. The diagram waits for the next thresho
 
 Scope: presentation copy and unused styles only. Preserve motion, metrics, run controls, missing-data states, source artifacts and routes.
 
-## Motion resilience, October 2
+## Restore the previous animation (October 28)
 
-See [motion-hardening.md](motion-hardening.md) for the scope, sources, edge-case matrix and checklist. Implement in an isolated checkout from bda6b69c. Leave the review branch unmerged and production unchanged.
+- [x] Restore the production deployment from before PR #107.
+- [x] Reverse PR #107 in an isolated worktree.
+- [ ] Verify the restored application, merge the revert and confirm the production alias.
 
-- [x] Implement graceful motion fallback and lifecycle/focus fixes.
-- [x] Verify preview in Chromium/WebKit, inspect responsive/print screenshots and measure throttled performance.
-- [x] Publish draft PR #107; leave merge and production release pending user review.
-
-## Controlled chapters, October 22
-
-See [controlled-chapters.md](controlled-chapters.md) for the approved interaction contract and verification checklist. Keep draft PR #107 unmerged.
+See [rollback checklist](animation-rollback.md).

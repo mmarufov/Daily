@@ -31,8 +31,7 @@ function recordedField(story: Locator) {
 }
 
 test.describe('recorded parser run', () => {
-  test.beforeEach(async ({ page, isMobile }) => {
-    test.skip(isMobile, 'The animated scene requires a fine pointer; static chapters are covered below.')
+  test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
@@ -50,7 +49,7 @@ test.describe('recorded parser run', () => {
     expect(await story.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
   })
 
-  test('explicit scrolling settles at the nearest recorded moment', async ({ page }) => {
+  test('scrolling forward and backward follows the four recorded moments', async ({ page }) => {
     const story = page.getByTestId('run-story')
     for (const [progress, stage] of [[0.10, 0], [0.30, 1], [0.60, 2], [0.90, 3], [0.60, 2], [0.30, 1], [0.10, 0]] as const) {
       await scrollStory(story, progress)
@@ -60,11 +59,11 @@ test.describe('recorded parser run', () => {
     }
   })
 
-  test('explicit scrolling bypasses transitions and leaves each completed scene readable', async ({ page }) => {
+  test('stopping just past a chapter boundary completes the scene without moving the page', async ({ page }) => {
     const story = page.getByTestId('run-story')
     await scrollStory(story, 0.10)
     await settledStory(story, 0)
-    for (const [progress, stage] of [[1 / 3, 1], [2 / 3, 2], [1, 3]] as const) {
+    for (const [progress, stage] of [[0.25, 1], [0.52, 2], [0.79, 3]] as const) {
       await scrollStory(story, progress)
       await expect(story).toHaveAttribute('data-stage', String(stage))
       const stoppedAt = await page.evaluate(() => window.scrollY)
@@ -82,29 +81,79 @@ test.describe('recorded parser run', () => {
     }
   })
 
+  test('small pulls hold the scene, thresholds release it, and small reversals do not retrigger it', async ({ page }) => {
+    const story = page.getByTestId('run-story')
+    await scrollStory(story, 0.10)
+    await settledStory(story, 0)
+    const trackHeight = await story.getByTestId('run-story-track').evaluate(element => element.getBoundingClientRect().height)
+    expect(trackHeight).toBeCloseTo(3 * 900, 0)
+    for (const [stage, before, after, reverseHold, reverseRelease] of [
+      [1, 0.23, 0.25, 0.22, 0.19],
+      [2, 0.50, 0.52, 0.49, 0.46],
+      [3, 0.77, 0.79, 0.76, 0.73],
+    ] as const) {
+      await scrollStory(story, before)
+      await expect(story).toHaveAttribute('data-stage', String(stage - 1))
+      await settledStory(story, stage - 1)
+      await page.waitForTimeout(150)
+      await settledStory(story, stage - 1)
+      const duration = await story.evaluate(async (element, destination) => {
+        const track = element.querySelector<HTMLElement>('[data-testid="run-story-track"]')!
+        const sticky = track.querySelector<HTMLElement>('.run-story-sticky')!
+        const top = window.scrollY + track.getBoundingClientRect().top - 96 + (track.offsetHeight - sticky.offsetHeight) * destination
+        window.scrollTo({ top, behavior: 'instant' })
+        return new Promise<number>((resolve, reject) => {
+          const requestedAt = performance.now()
+          let startedAt = 0
+          const sample = () => {
+            const now = performance.now()
+            if (element.getAttribute('data-transitioning') === 'true') startedAt ||= now
+            else if (startedAt) { resolve(now - startedAt); return }
+            if (now - requestedAt > 5000) { reject(new Error('The stage transition did not finish')); return }
+            requestAnimationFrame(sample)
+          }
+          requestAnimationFrame(sample)
+        })
+      }, after)
+      expect(duration).toBeGreaterThanOrEqual(900)
+      await settledStory(story, stage)
+      await scrollStory(story, reverseHold)
+      await expect(story).toHaveAttribute('data-stage', String(stage))
+      await settledStory(story, stage)
+      await page.waitForTimeout(150)
+      await settledStory(story, stage)
+      await scrollStory(story, reverseRelease)
+      await expect(story).toHaveAttribute('data-stage', String(stage - 1))
+      await settledStory(story, stage - 1)
+      await scrollStory(story, after)
+      await settledStory(story, stage)
+    }
+  })
+
   test('probe labels clear before the verdict appears during forward and reverse transitions', async ({ page }) => {
     const story = page.getByTestId('run-story')
-    await story.getByRole('button', { name: 'Tests', exact: true }).click()
+    await scrollStory(story, 0.59)
     await settledStory(story, 2)
-    for (const [direction, stage] of [[160, 3], [-160, 2]] as const) {
-      const capture = story.evaluate(async element => {
+    for (const [progress, stage] of [[0.79, 3], [0.60, 2]] as const) {
+      const samples = await story.evaluate(async (element, destination) => {
+        const track = element.querySelector<HTMLElement>('[data-testid="run-story-track"]')!
+        const sticky = track.querySelector<HTMLElement>('.run-story-sticky')!
+        const top = window.scrollY + track.getBoundingClientRect().top - 96 + (track.offsetHeight - sticky.offsetHeight) * destination
         const probes = element.querySelector('.run-scene-checks')!
         const result = element.querySelector('.run-scene-result')!
         const frames: { probes: number; result: number }[] = []
+        window.scrollTo({ top, behavior: 'instant' })
         const start = performance.now()
         await new Promise<void>(resolve => {
           const sample = () => {
             frames.push({ probes: Number(getComputedStyle(probes).opacity), result: Number(getComputedStyle(result).opacity) })
-            if (performance.now() - start < 1300) requestAnimationFrame(sample)
+            if (performance.now() - start < 1150) requestAnimationFrame(sample)
             else resolve()
           }
           requestAnimationFrame(sample)
         })
         return frames
-      })
-      await page.mouse.move(720, 450)
-      await page.mouse.wheel(0, direction)
-      const samples = await capture
+      }, progress)
       expect(samples.length).toBeGreaterThan(3)
       expect(samples.some(sample => sample.probes > 0 || sample.result > 0)).toBe(true)
       expect(samples.filter(sample => sample.probes > 0.01 && sample.result > 0.01)).toEqual([])
@@ -215,7 +264,7 @@ test.describe('recorded parser run', () => {
         await expect(story).toHaveAttribute('data-stage', String(stage))
         await settledStory(story, stage)
         await expect.poll(() => story.evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
-        const selectors = ['.run-story-heading', '.run-rail', '.run-skip', '.run-scene-caption']
+        const selectors = ['.run-story-heading', '.run-rail', '.run-scene-caption']
         if (stage === 2) selectors.push('.run-scene-checks')
         if (stage === 3) selectors.push('.run-scene-result')
         for (const selector of selectors) {

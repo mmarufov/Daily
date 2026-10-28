@@ -609,10 +609,4 @@ A complete transition can still feel abrupt when its visible changes occupy only
 
 Keep the primary presentation focused on the product and its results. Put recording dates and detailed qualifications in Inspect views instead of repeating them as banners above the same visual. Use ordinary reader-facing labels in the edition preview.
 
-## Motion enhancement failures
-
-A no-JavaScript test does not cover failed or delayed scripts when scripting remains enabled. Gate cinematic CSS on successful enhancement and verify the static content before hydration. Test actual content fit with text enlargement and spacing overrides, preserve focus across layout changes, and check landscape print separately from portrait.
-
-## Visible completion under fast scrolling
-
-A time-based transition can finish after its sticky section leaves the viewport. Test actual wheel bursts and sampled panel bounds. When the product calls for completed chapters, make input ownership explicit, discard queued momentum, and provide a bounded deadline and immediate escape.
+- The owner reported that the animation disappeared after PR #107 despite passing browser automation. Restore the preceding version when requested. Before another motion release, verify the owner's device and input path; automated wheel events do not cover every real browser setup.
