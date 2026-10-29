@@ -626,3 +626,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - The owner wants a visible accent reaction on first overlap. Use a fixed warm orange over all visible scene shading; a black/white contrast threshold delayed the reaction and missed the intended look.
 
 - The owner accepted the immediate overlap behavior and requested a white comparison that also covers the Reader action. Share the mask behavior across both text surfaces while preserving the link's native layout and click target.
+
+- Shared arrow-motion selectors matched the Reader's new text overlay and overrode its flex alignment. Exclude text overlays from icon selectors and verify hover alignment and print specificity whenever adding decorative children to a control.
