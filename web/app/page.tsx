@@ -1,7 +1,6 @@
 import Link from 'next/link'
 
 import { SharkBackground } from '@/components/SharkBackground'
-import { EditionPreview } from '@/components/EditionPreview'
 import { GuardSummary } from '@/components/GuardSummary'
 import { RunStory } from '@/components/RunStory'
 import { HOME_RUN_ID, loadHomeEvidence } from '@/lib/home-evidence'
@@ -34,7 +33,6 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            <EditionPreview edition={evidence.editionPreview} />
           </div>
         </section>
       </div>

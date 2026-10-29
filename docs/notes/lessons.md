@@ -628,3 +628,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - The owner accepted the immediate overlap behavior and requested a white comparison that also covers the Reader action. Share the mask behavior across both text surfaces while preserving the link's native layout and click target.
 
 - Shared arrow-motion selectors matched the Reader's new text overlay and overrode its flex alignment. Exclude text overlays from icon selectors and verify hover alignment and print specificity whenever adding decorative children to a control.
+
+- The owner chose white overlap lettering and a neutral interface. Keep selection and interaction colors separate from evidence status colors. Remove the rejected hero edition card without changing the accepted shark scale or text placement.

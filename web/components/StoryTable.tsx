@@ -109,7 +109,7 @@ export function StoryTable({ persona, state }: StoryTableProps) {
                   />
                   <Link
                     href={explorerHref(state, { story: story.id })}
-                    className="headline text-sm text-ink no-underline hover:text-signal"
+                    className="headline text-sm text-ink no-underline hover:text-ink-60"
                     data-verbatim
                   >
                     {story.title ?? story.id}

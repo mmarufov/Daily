@@ -31,8 +31,8 @@
   /* Legacy token names kept as aliases so any surface not yet rewritten
      still renders inside the new system rather than half-outside it. */
   --color-sepia: var(--d-rule);
-  --color-ochre: var(--d-signal);
-  --color-ink-blue: var(--d-signal);
+  --color-ochre: var(--d-ink);
+  --color-ink-blue: var(--d-ink);
   --color-danger: var(--d-signal);
   --color-success: var(--d-success);
   --color-caution: var(--d-caution);
@@ -64,15 +64,15 @@
 
 :root {
   color-scheme: light dark;
-  --d-paper: #fafaf9;
-  --d-paper-2: #f2f2f0;
-  --d-paper-3: #e8e8e5;
+  --d-paper: #fafafa;
+  --d-paper-2: #f5f5f5;
+  --d-paper-3: #e5e5e5;
   --d-ink: #171717;
   --d-ink-58: #525252;
   --d-ink-38: #626262;
-  --d-rule: #dededa;
-  --d-rule-strong: #a4a4a0;
-  --d-control: #858580;
+  --d-rule: #e5e5e5;
+  --d-rule-strong: #a3a3a3;
+  --d-control: #737373;
   --d-signal: #ae3d2d;
   --d-signal-wash: rgb(174 61 45 / 0.07);
   --d-loss-2: #a96859;
@@ -81,10 +81,10 @@
   --d-success: #21724b;
   --d-caution: #815c13;
   --d-ghost: rgb(23 23 23 / 0.18);
-  --d-sheet: #fffefa;
+  --d-sheet: #ffffff;
   --d-zone: #111315;
   --d-zone-plate: #1c1e20;
-  --d-zone-ink: #fafaf9;
+  --d-zone-ink: #fafafa;
   --d-zone-mid: #c0c2c3;
   --d-zone-dim: #9a9ea1;
   --d-zone-rule: #383c40;
@@ -106,15 +106,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --d-paper: #17191b;
-    --d-paper-2: #202325;
-    --d-paper-3: #2a2e31;
-    --d-ink: #f5f5f3;
-    --d-ink-58: #c4c7c8;
-    --d-ink-38: #a4a8aa;
-    --d-rule: #3c4042;
-    --d-rule-strong: #707577;
-    --d-control: #858a8c;
+    --d-paper: #171717;
+    --d-paper-2: #262626;
+    --d-paper-3: #303030;
+    --d-ink: #fafafa;
+    --d-ink-58: #d4d4d4;
+    --d-ink-38: #a3a3a3;
+    --d-rule: #404040;
+    --d-rule-strong: #737373;
+    --d-control: #a3a3a3;
     --d-signal: #ed927b;
     --d-signal-wash: rgb(237 146 123 / 0.10);
     --d-loss-2: #bd9085;
@@ -123,10 +123,10 @@
     --d-success: #89c8a5;
     --d-caution: #ddb76f;
     --d-ghost: rgb(245 245 243 / 0.16);
-    --d-sheet: #242523;
+    --d-sheet: #262626;
     --d-zone: #111315;
     --d-zone-plate: #1c1e20;
-    --d-zone-ink: #fafaf9;
+    --d-zone-ink: #fafafa;
     --d-zone-mid: #c0c2c3;
     --d-zone-dim: #9a9ea1;
     --d-zone-rule: #383c40;
@@ -155,7 +155,7 @@ body {
 }
 
 ::selection {
-  background: var(--d-signal);
+  background: var(--d-ink);
   color: var(--d-paper);
 }
 
@@ -345,7 +345,7 @@ body {
  */
 .struck {
   text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, var(--d-signal) 62%, transparent);
+  text-decoration-color: color-mix(in oklab, var(--d-ink) 62%, transparent);
   text-decoration-thickness: 0.05em;
   text-underline-offset: 0.12em;
   text-decoration-skip-ink: none;
@@ -360,7 +360,7 @@ body {
 .pip {
   inline-size: 0.5rem;
   block-size: 0.5rem;
-  background: var(--d-signal);
+  background: var(--d-ink);
   flex: none;
 }
 
@@ -393,7 +393,7 @@ body {
   inset-inline-start: 0;
   block-size: 2px;
   inline-size: 100%;
-  background: var(--d-signal);
+  background: var(--d-ink);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -921,7 +921,7 @@ body {
   inset-inline-start: 0;
   inline-size: 1.75rem;
   block-size: 1px;
-  background: var(--d-signal);
+  background: var(--d-ink);
 }
 
 /* --------------------------------------------------------- controls ----- */
@@ -942,8 +942,8 @@ body {
     background-color 140ms var(--ease-out-quart);
 
   &:hover {
-    border-color: var(--d-signal);
-    color: var(--d-signal);
+    border-color: var(--d-ink);
+    color: var(--d-ink);
   }
 }
 
@@ -959,16 +959,16 @@ body {
   }
 }
 
-/* Inline links: ink text, vermilion rule underneath, vermilion on hover. */
+/* Inline links share the neutral control palette. */
 @utility link {
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid var(--d-signal);
+  border-bottom: 1px solid var(--d-ink);
   padding-bottom: 0.05em;
   transition: color 140ms var(--ease-out-quart);
 
   &:hover {
-    color: var(--d-signal);
+    color: var(--d-ink);
   }
 }
 
@@ -1262,7 +1262,7 @@ body {
   content: "+";
   display: inline-block;
   width: 0.75em;
-  color: var(--d-signal);
+  color: var(--d-ink);
   font-weight: 500;
 }
 
@@ -1271,13 +1271,13 @@ details[open] > .disclosure::before {
 }
 
 .disclosure:hover {
-  color: var(--d-signal);
+  color: var(--d-ink);
 }
 
 /* --------------------------------------------------- accessibility ------ */
 
 :focus-visible {
-  outline: 2px solid var(--d-signal);
+  outline: 2px solid var(--d-control);
   outline-offset: 2px;
   border-radius: 1px;
 }
