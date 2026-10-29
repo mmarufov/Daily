@@ -1,6 +1,22 @@
 # Full-screen ocean preview
 
-Current preview: [white paragraph and Reader lettering](https://daily-ffsu8yz4w-mmarufovs-projects.vercel.app), runtime `53eb681d`, deployment `dpl_AWgzpbdCjLt3cJJoGzC4VgbBbMFv`.
+## Neutral interface and open hero
+
+[Current preview](https://daily-espf32wrl-mmarufovs-projects.vercel.app), runtime `5c7b6fee`, deployment `dpl_E9EF4mXxmM3GrmNXwJqng71Lzgoy`.
+
+Removed the hero edition card. The copy stays in its existing column; the Reader link remains. White overlap lettering, shark sizes and the unbacked text treatment are unchanged. Shared surfaces, text selection, link accents, chip hover, disclosure marks and focus states now use neutral colors. Status colors still identify outcomes in the evidence.
+
+Typecheck, production build and 355 unit tests passed, with one existing skip. Shark and text-overlay checks passed in 46 default-project cases and 16 desktop WebKit cases, with six existing skips. All five routes were captured at 1440px and 390px in both themes: no overflow or page errors, and neutral selection colors on every route.
+
+![Open hero](assets/fullscreen-ocean/neutral-desktop.png)
+
+[Mobile](assets/fullscreen-ocean/neutral-mobile.png) · [Text selection](assets/fullscreen-ocean/neutral-selection.png)
+
+PR #112 remains draft. No production release or Sandbox execution was submitted. The preceding white version with the edition card is preserved at `c20d9c7b`.
+
+## White lettering with the edition card
+
+Earlier preview: [white paragraph and Reader lettering](https://daily-ffsu8yz4w-mmarufovs-projects.vercel.app), runtime `53eb681d`, deployment `dpl_AWgzpbdCjLt3cJJoGzC4VgbBbMFv`.
 
 The paragraph and the Reader action's label and arrow turn white on visible scene overlap, then restore their original ink over clear water. Both use the same mask behavior. A fine charcoal stroke defines the white lettering. The Reader destination, native focus, touch target and arrow hover movement are preserved. Shark sizes and the unbacked layout are unchanged.
 

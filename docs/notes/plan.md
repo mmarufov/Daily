@@ -1183,7 +1183,7 @@ Preserve the immediate overlap trigger and the orange comparison at `50a14151`. 
 
 ## Neutral interface and open hero (October 28)
 
-- [ ] Remove the hero edition card while preserving the copy position, Reader link and shark sizes.
-- [ ] Keep white overlap lettering; use neutral surfaces, selection, links and focus states across the site.
-- [ ] Preserve semantic status colors and verify both themes, desktop/mobile layouts and Reader navigation on the hosted preview.
-- [ ] Record the preview and leave production unchanged.
+- [x] Remove the hero edition card while preserving the copy position, Reader link and shark sizes.
+- [x] Keep white overlap lettering; use neutral surfaces, selection, links and focus states across the site.
+- [x] Preserve semantic status colors and verify both themes, desktop/mobile layouts and Reader navigation on the hosted preview.
+- [x] Record the preview and leave production unchanged.
