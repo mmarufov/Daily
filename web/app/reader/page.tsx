@@ -194,7 +194,7 @@ function Headline({ story, className }: { story: DemoStory; className: string })
   return (
     <a
       href={story.url}
-      className={`${className} text-ink no-underline hover:text-signal`}
+      className={`${className} text-ink no-underline hover:text-ink-60`}
       rel="noreferrer"
       data-verbatim
     >

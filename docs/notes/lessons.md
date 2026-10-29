@@ -612,3 +612,23 @@ Keep the primary presentation focused on the product and its results. Put record
 - The owner reported that the animation disappeared after PR #107 despite passing browser automation. Restore the preceding version when requested. Before another motion release, verify the owner's device and input path; automated wheel events do not cover every real browser setup.
 
 - After an animation rollback, keep new visual experiments isolated from the restored interaction. Review the new background on a preview before changing production.
+
+- The first shark background failed the requested visual effect: fixed positions, small drift, reduced opacity and broad masks made it faint and apparently stationary. Find and inspect the creator's published component before approximating a supplied reference. Verify movement in a recording, and preserve the owner's requested foreground layout.
+
+- Check fallback artwork visually at narrow widths. A loaded poster can still crop its subject; image visibility assertions alone missed the centered mobile crop.
+
+- The owner prefers shaded shark cells without the ASCII characters. Keep the source simulation, but adapt its visual texture to the requested treatment and update the static fallback too.
+
+- The owner wants to compare the hero with the text backing removed, while keeping shark sizes unchanged. Apply the latest correction before carrying forward an earlier visual adjustment.
+
+- Removing a text backing needs a moving-frame contrast check. The hero paragraph became hard to read when a shark crossed it. Keep the accepted unbacked composition and scope the contrast adjustment to the text the owner identified.
+
+- The owner wants a visible accent reaction on first overlap. Use a fixed warm orange over all visible scene shading; a black/white contrast threshold delayed the reaction and missed the intended look.
+
+- The owner accepted the immediate overlap behavior and requested a white comparison that also covers the Reader action. Share the mask behavior across both text surfaces while preserving the link's native layout and click target.
+
+- Shared arrow-motion selectors matched the Reader's new text overlay and overrode its flex alignment. Exclude text overlays from icon selectors and verify hover alignment and print specificity whenever adding decorative children to a control.
+
+- The owner chose white overlap lettering and a neutral interface. Keep selection and interaction colors separate from evidence status colors. Remove the rejected hero edition card without changing the accepted shark scale or text placement.
+
+- The owner chose to restore the hero edition card after comparing the open layout. Restore that component exactly, retaining the accepted neutral interface and white overlap text.

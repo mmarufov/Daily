@@ -194,7 +194,7 @@
   outline: none;
   background: #111315;
   color: #d6e0e5;
-  caret-color: #a8d9bd;
+  caret-color: #fafafa;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1.85;
@@ -202,7 +202,7 @@
 }
 
 .lab-source-editor:focus-visible {
-  box-shadow: inset 0 0 0 2px #a8d9bd;
+  box-shadow: inset 0 0 0 2px #a3a3a3;
 }
 
 .lab-editor-help,

@@ -28,7 +28,7 @@
   transform: none;
 }
 
-:is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a) > span[aria-hidden="true"] {
+:is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a) > span[aria-hidden="true"]:not(.hero-overlap-ink) {
   display: inline-block;
   transition: transform var(--motion-settle) var(--motion-ease);
 }
@@ -115,7 +115,7 @@ details.instrument-provenance[data-motion="closing"] > summary::after {
     box-shadow: none;
   }
 
-  :is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a):hover > span[aria-hidden="true"] {
+  :is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a):hover > span[aria-hidden="true"]:not(.hero-overlap-ink) {
     transform: translateX(2px);
   }
 
@@ -128,7 +128,7 @@ details.instrument-provenance[data-motion="closing"] > summary::after {
 
 @media (prefers-reduced-motion: reduce) {
   :is(.button-primary, .button-secondary, .playback-button, .lab-preset, .retrieval-option, button.chip, .lab-walkthroughs > li > a),
-  :is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a) > span[aria-hidden="true"] {
+  :is(.button-primary, .button-secondary, .text-link, .instrument-link, .footer-links a) > span[aria-hidden="true"]:not(.hero-overlap-ink) {
     transform: none !important;
   }
 

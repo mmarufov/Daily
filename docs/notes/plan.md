@@ -1123,3 +1123,74 @@ See [rollback checklist](animation-rollback.md).
 - [x] Leave production unchanged for owner review.
 
 Specification: pale charcoal ASCII sharks move slowly behind the opening only. No chat controls, typing bar, cursor-following, scroll interception or external media assets. Use a small canvas renderer with a static HTML/SVG fallback, capped resolution and low frame rate. Fade the background under text and at section boundaries. Keep native page scrolling and the existing parser sequence unchanged.
+
+## Full-screen upstream ocean (October 28)
+
+- [x] Inspect current main and the MIT-licensed upstream component at a0074c16a106f0abc665fe9712ca445f8f98ad8e.
+- [x] Vendor the original renderer and simulation with provenance and license.
+- [x] Integrate a 30fps lifecycle adapter with pause, offscreen/tab/print suspension, reduced motion and resize recovery.
+- [x] Make header and hero fill the desktop viewport, keeping the existing columns, copy, card and actions.
+- [x] Capture real-renderer posters and remove the simplified silhouettes and broad fades.
+- [x] Verify recognizable movement, contrast and 15-second recordings across desktop/mobile themes.
+- [x] Run typecheck, unit tests, artifact checks, build, Chromium/WebKit acceptance and throttled performance measurements.
+- [x] Deliver a preview PR with screenshots, motion recording and results. Keep production unchanged.
+
+Specification: preserve existing foreground typography, 1280px frame and left/right positions. Use a minimum hero height equal to viewport minus header, allowing content to grow on short windows and mobile. The canvas fills the section with full opacity, light-mode inversion/multiply and dark-mode screen blending. Only a localized copy backing and a short bottom fade remain. Use four classic sharks at 1.4/1.1/.95/.8 on desktop and two at 1.45/1.05 on mobile. Preserve upstream travel speed, shaded glyphs, body bends and sparse fish; disable pointer attraction and splashes. Stop simulation as well as rendering while inactive and never catch up hidden time. Keep RunStory, backend and evidence unchanged.
+
+Review assets and results: [full-screen ocean preview](fullscreen-ocean-preview.md).
+
+## Shark cell colors (October 28)
+
+- [x] Draw shaded shark cells without letters or symbols, preserving the swimming and cell grid.
+- [x] Regenerate both static posters with the same rendering option.
+- [x] Verify the deployed preview in Chromium and WebKit and update PR #112.
+
+Specification: keep the gray shading and restrained color accents inside each cell. Use cell coverage for the silhouette edges. Preserve the fish, foreground, lifecycle controls and production deployment.
+
+## Hero backing comparison (October 28)
+
+- [x] Remove the soft backing behind the headline and description.
+- [x] Keep the current shark sizes and refresh desktop/mobile preview captures.
+- [x] Verify the preview and update PR #112, leaving production unchanged.
+
+This is a reversible visual comparison. Keep the existing backed version available at commit `653be1b0`.
+
+## Hero paragraph contrast (October 28)
+
+- [x] Check text-only contrast against swimming shark cells in light and dark themes.
+- [x] Keep the headline, actions, edition, shark sizes and unbacked layout unchanged.
+- [x] Verify desktop/mobile rendering, selection, forced colors and print on the preview.
+- [x] Publish the reviewed preview and record the comparison. Keep production unchanged.
+
+Scope: the paragraph beginning "Daily builds news editions" responds to the background directly beneath its letters. A cropped sampler clips native black or white text over cells where the original color loses contrast. It runs with the existing scene paint and uses the poster in still mode. Preserve `26e11fd2` as the exact unbacked comparison.
+
+## Orange overlap lettering (October 28)
+
+- [x] Research clipped accent-text examples with Exa.
+- [x] Replace black/white contrast selection with a fixed warm-orange overlay.
+- [x] Trigger on visible scene shading, including pale cells, and restore normal ink immediately over clear water.
+- [x] Verify motion, selection, still artwork, print, both themes and Chromium/WebKit; update the draft preview.
+
+Keep the accepted unbacked layout, shark sizes and scene lifecycle. Exclude the permanent faint grid from overlap detection. Preserve `d0dcdc35` as the preceding black/white comparison.
+
+## White paragraph and Reader action (October 28)
+
+- [x] Switch overlap lettering to white and include the Reader action's label and arrow.
+- [x] Verify both masks, the Reader destination, selection, keyboard access and inactive work.
+- [x] Record desktop/mobile captures and update the draft preview.
+
+Preserve the immediate overlap trigger and the orange comparison at `50a14151`. Keep the blur removed and the shark sizes unchanged.
+
+## Neutral interface and open hero (October 28)
+
+- [x] Remove the hero edition card while preserving the copy position, Reader link and shark sizes.
+- [x] Keep white overlap lettering; use neutral surfaces, selection, links and focus states across the site.
+- [x] Preserve semantic status colors and verify both themes, desktop/mobile layouts and Reader navigation on the hosted preview.
+- [x] Record the preview and leave production unchanged.
+
+## Restore edition and release (October 29)
+
+- [x] Restore the original Ray edition card and its browser assertions.
+- [x] Keep neutral controls, text selection and white overlap lettering.
+- [x] Run build, typecheck and unit tests. Track hosted browser checks and final CI in PR #112.
+Release authorization: merge PR #112 after its final checks, then verify marufov.com. The PR and deployment report record the final revision and screenshots.
