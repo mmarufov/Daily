@@ -1172,3 +1172,11 @@ Scope: the paragraph beginning "Daily builds news editions" responds to the back
 - [x] Verify motion, selection, still artwork, print, both themes and Chromium/WebKit; update the draft preview.
 
 Keep the accepted unbacked layout, shark sizes and scene lifecycle. Exclude the permanent faint grid from overlap detection. Preserve `d0dcdc35` as the preceding black/white comparison.
+
+## White paragraph and Reader action (October 28)
+
+- [ ] Switch overlap lettering to white and include the Reader action's label and arrow.
+- [ ] Verify both masks, the Reader destination, selection, keyboard access and inactive work.
+- [ ] Record desktop/mobile captures and update the draft preview.
+
+Preserve the immediate overlap trigger and the orange comparison at `50a14151`. Keep the blur removed and the shark sizes unchanged.

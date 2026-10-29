@@ -23,14 +23,24 @@ export function buildOverlapPath(pixels: Uint8ClampedArray, columns: number, row
 }
 
 export function mountHeroContrast(canvas: HTMLCanvasElement) {
+  const targets = typeof canvas.closest === 'function'
+    ? canvas.closest('.hero-scene')?.querySelectorAll<HTMLElement>('[data-hero-overlap]') : undefined
+  const masks = Array.from(targets ?? [], target => mountTextOverlap(canvas, target))
+  return {
+    paint() { masks.forEach(mask => mask.paint()) },
+    setReady(ready: boolean) { masks.forEach(mask => mask.setReady(ready)) },
+    destroy() { masks.forEach(mask => mask.destroy()) },
+  }
+}
+
+function mountTextOverlap(canvas: HTMLCanvasElement, target: HTMLElement) {
   const noop = { paint() {}, setReady(_ready: boolean) {}, destroy() {} }
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function' || typeof canvas.closest !== 'function'
     || typeof ResizeObserver !== 'function' || typeof IntersectionObserver !== 'function') return noop
   const scene = canvas.closest<HTMLElement>('.hero-scene')
-  const paragraph = scene?.querySelector<HTMLElement>('.hero-description')
-  const accent = paragraph?.querySelector<HTMLElement>('.hero-description-accent')
+  const accent = target.querySelector<HTMLElement>('.hero-overlap-ink')
   const poster = scene?.querySelector<HTMLImageElement>('.shark-still img')
-  if (!scene || !paragraph || !accent || !poster) return noop
+  if (!scene || !accent || !poster) return noop
   let sample: HTMLCanvasElement, context: CanvasRenderingContext2D | null
   let forced: MediaQueryList
   try {
@@ -51,7 +61,7 @@ export function mountHeroContrast(canvas: HTMLCanvasElement) {
     if (disposed || failed || !visible || document.hidden || printing || forced.matches) return
     try {
       if (dirty) {
-        const bounds = canvas.getBoundingClientRect(), text = paragraph!.getBoundingClientRect()
+        const bounds = canvas.getBoundingClientRect(), text = target.getBoundingClientRect()
         geometry = { left: text.left - bounds.left, top: text.top - bounds.top, width: text.width, height: text.height, sceneWidth: bounds.width, sceneHeight: bounds.height }
         sample.width = Math.ceil(text.width / 2)
         sample.height = Math.ceil(text.height / 2)
@@ -82,7 +92,9 @@ export function mountHeroContrast(canvas: HTMLCanvasElement) {
     resize = new ResizeObserver(invalidate)
     intersection = new IntersectionObserver(entries => { visible = entries[0]?.isIntersecting ?? false; if (visible) paint() })
     resize.observe(scene)
-    resize.observe(paragraph)
+    resize.observe(target)
+    const copy = target.closest('.hero-copy')
+    if (copy) resize.observe(copy)
     intersection.observe(scene)
     listen(window, 'resize', invalidate)
     listen(forced, 'change', invalidate)

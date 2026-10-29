@@ -31,32 +31,37 @@ test.beforeEach(async ({ page }) => {
 })
 
 for (const theme of ['light', 'dark'] as const) {
-  test(`orange lettering follows every visible cell in ${theme} mode`, async ({ page }) => {
+  test(`white paragraph and Reader lettering follow every visible cell in ${theme} mode`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme })
     await page.goto('/')
     await expect(page.getByTestId('shark-background')).toHaveAttribute('data-ready', 'true')
-    const accent = page.locator('.hero-description-accent')
+    const accent = page.locator('.hero-description .hero-overlap-ink')
+    const readerInk = page.locator('.hero-edition-link .hero-overlap-ink')
     const path = () => accent.evaluate(el => getComputedStyle(el).clipPath)
-    await expect(accent).toHaveCSS('color', 'rgb(255, 122, 45)')
+    await expect(accent).toHaveCSS('color', 'rgb(255, 255, 255)')
+    await expect(readerInk).toHaveCSS('color', 'rgb(255, 255, 255)')
     for (const shade of ['#000', '#0e0e0e']) {
       await page.evaluate(shade => { (window as ContrastWindow).contrastShade = shade }, shade)
       await expect.poll(path).toMatch(/M\s*0\s*0["') ]*$/)
+      await expect.poll(() => readerInk.evaluate(el => el.style.clipPath)).toMatch(/M\s*0\s*0["') ]*$/)
     }
     for (const shade of ['#202020', '#808080', '#fff']) {
-      const firstSample = await page.evaluate(shade => new Promise<string>(resolve => {
+      const firstSample = await page.evaluate(shade => new Promise<string[]>(resolve => {
         const state = window as ContrastWindow, before = state.contrastReads
         state.contrastShade = shade
         const inspect = () => {
-          if (state.contrastReads > before) resolve((document.querySelector('.hero-description-accent') as HTMLElement).style.clipPath)
+          if (state.contrastReads > before) resolve(Array.from(document.querySelectorAll<HTMLElement>('.hero-overlap-ink'), el => el.style.clipPath))
           else requestAnimationFrame(inspect)
         }
         requestAnimationFrame(inspect)
       }), shade)
-      expect(firstSample).toMatch(/[hHL]/)
-      await expect(accent).toHaveCSS('color', 'rgb(255, 122, 45)')
+      expect(firstSample).toHaveLength(2)
+      for (const clip of firstSample) expect(clip).toMatch(/[hHL]/)
+      await expect(accent).toHaveCSS('color', 'rgb(255, 255, 255)')
     }
     await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#000' })
     await expect.poll(path).toMatch(/M\s*0\s*0["') ]*$/)
+    await expect.poll(() => readerInk.evaluate(el => el.style.clipPath)).toMatch(/M\s*0\s*0["') ]*$/)
     await expect(page.locator('.hero-copy')).toHaveCSS('isolation', 'isolate')
     const paragraph = page.locator('.hero-description')
     const text = await paragraph.textContent()
@@ -95,7 +100,7 @@ test('print and forced colors use the single native paragraph', async ({ page })
   await page.goto('/')
   for (const media of [{ media: 'print' as const }, { media: 'screen' as const, forcedColors: 'active' as const }]) {
     await page.emulateMedia(media)
-    await expect(page.locator('.hero-description-accent')).toBeHidden()
+    for (const overlay of await page.locator('.hero-overlap-ink').all()) await expect(overlay).toBeHidden()
     await expect(page.locator('.hero-description')).toBeVisible()
   }
 })
@@ -111,4 +116,18 @@ test('a text sampling failure leaves the paragraph and swimming scene usable', a
   await expect.poll(frame).not.toBe(before)
   await expect(page.locator('.hero-description')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Explore the Lab' })).toBeVisible()
+})
+
+
+test('the overlapping Reader label and arrow keep their native link behavior', async ({ page }) => {
+  await page.goto('/')
+  const reader = page.getByRole('link', { name: 'Read an edition', exact: true })
+  await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#808080' })
+  await expect.poll(() => reader.locator('.hero-overlap-ink').evaluate(el => el.style.clipPath)).toMatch(/[hHL]/)
+  expect((await reader.ariaSnapshot()).match(/Read an edition/g)).toHaveLength(1)
+  await expect(reader).toHaveAttribute('href', '/reader?profile=ray')
+  await reader.focus()
+  await expect(reader).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/\/reader\?profile=ray$/)
 })

@@ -22,13 +22,16 @@ export default async function HomePage() {
           <div className="lab-hero-grid">
             <div className="hero-copy">
               <h1 className="lab-headline" id="daily-introduction">Daily makes<br /> news personal.</h1>
-              <p className="hero-description">
+              <p className="hero-description" data-hero-overlap>
                 {heroDescription}
-                <span className="hero-description-accent" aria-hidden="true" data-text={heroDescription} />
+                <span className="hero-overlap-ink" aria-hidden="true" data-text={heroDescription} />
               </p>
               <div className="hero-actions">
                 <Link href="/lab" className="button-primary">Explore the Lab <span aria-hidden="true">↗</span></Link>
-                <Link href="/reader?profile=ray" prefetch={false} className="text-link">Read an edition <span aria-hidden="true">→</span></Link>
+                <Link href="/reader?profile=ray" prefetch={false} className="text-link hero-edition-link" data-hero-overlap>
+                  Read an edition <span aria-hidden="true">→</span>
+                  <span className="hero-overlap-ink" aria-hidden="true" data-text="Read an edition" data-icon="→" />
+                </Link>
               </div>
             </div>
             <EditionPreview edition={evidence.editionPreview} />

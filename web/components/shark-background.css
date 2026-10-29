@@ -7,11 +7,13 @@
 .shark-background[data-ready='true'] canvas { visibility: visible; }
 .shark-background[data-ready='true'] .shark-still { visibility: hidden; }
 .hero-scene .hero-copy { position: relative; isolation: isolate; }
-.hero-scene .hero-description { position: relative; }
-.hero-description-accent { visibility: hidden; position: absolute; inset: 0; pointer-events: none; user-select: none; -webkit-user-select: none; clip-path: path('M0 0'); color: #ff7a2d; -webkit-text-stroke: .6px #602300; paint-order: stroke fill; }
-.hero-description-accent::before { content: attr(data-text); }
+.hero-scene [data-hero-overlap] { position: relative; }
+.hero-overlap-ink { visibility: hidden; position: absolute; inset: 0; pointer-events: none; user-select: none; -webkit-user-select: none; clip-path: path('M0 0'); color: #fff; -webkit-text-stroke: .6px #252525; paint-order: stroke fill; }
+.hero-overlap-ink::before { content: attr(data-text); }
+.hero-edition-link .hero-overlap-ink { display: inline-flex; align-items: center; gap: inherit; padding: inherit; }
+.hero-edition-link .hero-overlap-ink::after { content: attr(data-icon); }
 @supports (clip-path: path('M0 0')) {
-  .hero-description-accent { visibility: visible; }
+  .hero-overlap-ink { visibility: visible; }
 }
 .shark-motion-toggle { position: absolute; z-index: 2; bottom: 12px; right: max(20px, calc((100% - 1280px) / 2)); display: inline-flex; gap: 6px; align-items: center; justify-content: center; min-width: 64px; min-height: 44px; border: 0; border-radius: 6px; color: var(--d-ink-58); background: var(--d-paper); font-size: 11px; cursor: pointer; }
 .shark-motion-toggle:hover { color: var(--d-ink); background: var(--d-paper-2); }
@@ -31,5 +33,5 @@
 }
 @media print, (forced-colors: active) {
   .shark-background, .shark-motion-toggle { display: none; }
-  .hero-description-accent { display: none; }
+  .hero-overlap-ink { display: none; }
 }
