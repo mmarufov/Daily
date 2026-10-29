@@ -1,8 +1,14 @@
 # Full-screen ocean preview
 
-## Neutral interface and open hero
+## Selected composition
 
-[Current preview](https://daily-espf32wrl-mmarufovs-projects.vercel.app), runtime `5c7b6fee`, deployment `dpl_E9EF4mXxmM3GrmNXwJqng71Lzgoy`.
+The owner restored Ray's recorded edition card beside the hero copy on October 29. The white paragraph and Reader-link overlap, neutral text selection, controls and surfaces remain. Shark sizes and motion are unchanged.
+
+[Restored preview](https://daily-lhux5g62a-mmarufovs-projects.vercel.app), runtime `b9fb49bf`. Typecheck, production build and 355 unit tests passed, with one existing skip. PR #112 tracks final browser checks, CI and the authorized production release. Earlier comparisons below remain available for reference.
+
+## Open hero comparison
+
+[Open hero comparison](https://daily-espf32wrl-mmarufovs-projects.vercel.app), runtime `5c7b6fee`, deployment `dpl_E9EF4mXxmM3GrmNXwJqng71Lzgoy`.
 
 Removed the hero edition card. The copy stays in its existing column; the Reader link remains. White overlap lettering, shark sizes and the unbacked text treatment are unchanged. Shared surfaces, text selection, link accents, chip hover, disclosure marks and focus states now use neutral colors. Status colors still identify outcomes in the evidence.
 

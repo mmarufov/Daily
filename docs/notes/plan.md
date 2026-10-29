@@ -1190,7 +1190,7 @@ Preserve the immediate overlap trigger and the orange comparison at `50a14151`. 
 
 ## Restore edition and release (October 29)
 
-- [ ] Restore the original Ray edition card and its browser assertions.
-- [ ] Keep neutral controls, text selection and white overlap lettering.
-- [ ] Run build, typecheck, unit tests and hosted browser checks; confirm final CI.
-- [ ] Merge PR #112 and verify marufov.com with desktop/mobile captures.
+- [x] Restore the original Ray edition card and its browser assertions.
+- [x] Keep neutral controls, text selection and white overlap lettering.
+- [x] Run build, typecheck and unit tests. Track hosted browser checks and final CI in PR #112.
+Release authorization: merge PR #112 after its final checks, then verify marufov.com. The PR and deployment report record the final revision and screenshots.
