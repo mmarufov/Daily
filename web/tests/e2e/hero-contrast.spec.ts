@@ -11,15 +11,17 @@ test.beforeEach(async ({ page }) => {
     const proto = CanvasRenderingContext2D.prototype
     const draw = proto.drawImage, read = proto.getImageData
     proto.drawImage = function (...args: Parameters<typeof draw>) {
-      Reflect.apply(draw, this, args)
-      if (state.contrastShade && this.canvas instanceof HTMLCanvasElement
-        && this.canvas.matches('[data-testid="shark-background"] canvas')) {
-        this.save()
-        this.resetTransform()
-        this.fillStyle = state.contrastShade
-        this.fillRect(0, 0, this.canvas.width, this.canvas.height)
-        this.restore()
+      const source = args[0]
+      if (state.contrastShade && source instanceof HTMLCanvasElement
+        && source.matches('[data-testid="shark-background"] canvas')) {
+        const scene = source.getContext('2d')!
+        scene.save()
+        scene.resetTransform()
+        scene.fillStyle = state.contrastShade
+        scene.fillRect(0, 0, source.width, source.height)
+        scene.restore()
       }
+      Reflect.apply(draw, this, args)
     }
     proto.getImageData = function (...args: Parameters<typeof read>) {
       state.contrastReads++

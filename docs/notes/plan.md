@@ -1159,7 +1159,7 @@ This is a reversible visual comparison. Keep the existing backed version availab
 
 - [x] Check text-only contrast against swimming shark cells in light and dark themes.
 - [x] Keep the headline, actions, edition, shark sizes and unbacked layout unchanged.
-- [ ] Verify desktop/mobile rendering, selection, forced colors and print on the preview.
-- [ ] Publish the reviewed preview and record the comparison. Keep production unchanged.
+- [x] Verify desktop/mobile rendering, selection, forced colors and print on the preview.
+- [x] Publish the reviewed preview and record the comparison. Keep production unchanged.
 
 Scope: the paragraph beginning "Daily builds news editions" responds to the background directly beneath its letters. A cropped sampler clips native black or white text over cells where the original color loses contrast. It runs with the existing scene paint and uses the poster in still mode. Preserve `26e11fd2` as the exact unbacked comparison.

@@ -1,6 +1,24 @@
 # Full-screen ocean preview
 
-Current comparison: [text backing removed](https://daily-h8my0p4l7-mmarufovs-projects.vercel.app), runtime `9eee51b2`. The only site change from `653be1b0` is deletion of the `.hero-copy::before` rule. Shark sizes and all other settings are unchanged. Build and light/dark desktop/mobile checks passed; the original CSS remains in that baseline commit for exact restoration.
+Current preview: [adaptive paragraph contrast](https://daily-jwblgdw5u-mmarufovs-projects.vercel.app), runtime `caaac412`, deployment `dpl_BGsJQsjmDVZEjbELTpR16xZnC2YZ`. The owner accepted the unbacked composition. Only the paragraph beginning "Daily builds news editions" changes color over the swimming scene. The headline, actions, shark sizes and layout remain unchanged.
+
+The original text color stays where contrast is sufficient. Small clipped overlays supply black or white lettering over difficult cells. They preserve native text rendering, selection and a single screen-reader copy. Sampling covers the paragraph only and runs with the existing scene paint. Pause, hidden tabs and offscreen playback stop the work; reduced motion uses the poster.
+
+![Paragraph during a shark pass](assets/fullscreen-ocean/adaptive-desktop.png)
+
+[Desktop recording](assets/fullscreen-ocean/adaptive-desktop-motion.mp4) · [Mobile recording](assets/fullscreen-ocean/adaptive-mobile-motion.mp4)
+
+Typecheck, production build and 356 unit tests passed, with one existing skip. Preview browser checks: 43 passed across desktop Chromium, mobile Chromium and mobile WebKit; 15 passed in additional desktop WebKit coverage. Six existing skips cover the unsupported observation API and desktop-only layout tests. Checks include light/dark/gray cells, selection, accessibility tree, sampling failure, pause, print and forced colors. Layouts from 320px through 1920px had no horizontal overflow or page errors.
+
+Three cold mobile samples with the conditions below produced LCP of 1080, 1088 and 1024ms; CLS was 0.000146 in each. Offscreen drawing and text sampling both stayed at zero. The contrast model checks all 256 gray levels in both themes. Those checks describe solid samples; the rendered edges also depend on antialiasing and the two-pixel sampling grid.
+
+With 4x CPU throttling over five seconds, the sampler followed 28.9 scene frames per second on desktop and 29.4 on mobile. Pixel readback alone took 0.7ms and 0.6ms at p95, respectively.
+
+The exact preceding unbacked version is saved at `26e11fd2`. PR #112 remains draft, with production unchanged.
+
+## Earlier comparisons
+
+[Text backing removed](https://daily-h8my0p4l7-mmarufovs-projects.vercel.app), runtime `9eee51b2`. The only site change from `653be1b0` is deletion of the `.hero-copy::before` rule. Build and light/dark desktop/mobile checks passed; the original CSS remains in that baseline commit for exact restoration.
 
 ![Text backing removed](assets/fullscreen-ocean/no-backing-desktop.png)
 
