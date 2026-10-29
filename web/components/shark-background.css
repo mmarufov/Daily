@@ -33,5 +33,5 @@
 }
 @media print, (forced-colors: active) {
   .shark-background, .shark-motion-toggle { display: none; }
-  .hero-overlap-ink { display: none; }
+  .hero-scene .hero-overlap-ink { display: none; }
 }

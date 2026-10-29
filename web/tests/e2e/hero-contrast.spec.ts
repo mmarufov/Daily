@@ -119,15 +119,16 @@ test('a text sampling failure leaves the paragraph and swimming scene usable', a
 })
 
 
-test('the overlapping Reader label and arrow keep their native link behavior', async ({ page }) => {
+test('the overlapping Reader label and arrow keep their native link behavior', async ({ page, isMobile }) => {
   await page.goto('/')
-  const reader = page.getByRole('link', { name: 'Read an edition', exact: true })
+  const reader = page.locator('.hero-actions').getByRole('link', { name: 'Read an edition', exact: true })
   await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#808080' })
   await expect.poll(() => reader.locator('.hero-overlap-ink').evaluate(el => el.style.clipPath)).toMatch(/[hHL]/)
   expect((await reader.ariaSnapshot()).match(/Read an edition/g)).toHaveLength(1)
   await expect(reader).toHaveAttribute('href', '/reader?profile=ray')
   await reader.focus()
   await expect(reader).toBeFocused()
-  await page.keyboard.press('Enter')
+  if (isMobile) await reader.tap()
+  else await page.keyboard.press('Enter')
   await expect(page).toHaveURL(/\/reader\?profile=ray$/)
 })
