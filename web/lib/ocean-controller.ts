@@ -1,7 +1,7 @@
 import { AsciiRenderer } from '../vendor/ascii-sharks/renderer'
 import { createOceanScene, OceanClock, resizeOceanScene } from './ocean-scene'
 
-export function mountOcean(canvas: HTMLCanvasElement, onReady: (ready: boolean) => void) {
+export function mountOcean(canvas: HTMLCanvasElement, onReady: (ready: boolean) => void, onPaint?: () => void) {
   let disposed = false, failed = false, paused = false, visible = false
   let suspended = false, printing = false, needsResize = true
   let ready: boolean | undefined, frameId = 0
@@ -94,6 +94,7 @@ export function mountOcean(canvas: HTMLCanvasElement, onReady: (ready: boolean) 
       for (let step = 0; step < steps; step++) world.step(1 / 60)
       renderer.render(world, steps / 60)
       report(true)
+      try { onPaint?.() } catch { /* A text overlay failure must not stop the scene. */ }
       return true
     } catch {
       fail()

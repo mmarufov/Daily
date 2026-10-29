@@ -7,6 +7,14 @@
 .shark-background[data-ready='true'] canvas { visibility: visible; }
 .shark-background[data-ready='true'] .shark-still { visibility: hidden; }
 .hero-scene .hero-copy { position: relative; isolation: isolate; }
+.hero-scene .hero-description { position: relative; }
+.hero-description-light, .hero-description-dark { visibility: hidden; position: absolute; inset: 0; pointer-events: none; user-select: none; -webkit-user-select: none; clip-path: path('M0 0'); }
+.hero-description-light { color: #fff; }
+.hero-description-dark { color: #000; }
+.hero-description-light::before, .hero-description-dark::before { content: attr(data-text); }
+@supports (clip-path: path('M0 0')) {
+  .hero-description-light, .hero-description-dark { visibility: visible; }
+}
 .shark-motion-toggle { position: absolute; z-index: 2; bottom: 12px; right: max(20px, calc((100% - 1280px) / 2)); display: inline-flex; gap: 6px; align-items: center; justify-content: center; min-width: 64px; min-height: 44px; border: 0; border-radius: 6px; color: var(--d-ink-58); background: var(--d-paper); font-size: 11px; cursor: pointer; }
 .shark-motion-toggle:hover { color: var(--d-ink); background: var(--d-paper-2); }
 @media (prefers-color-scheme: dark) {
@@ -25,4 +33,5 @@
 }
 @media print, (forced-colors: active) {
   .shark-background, .shark-motion-toggle { display: none; }
+  .hero-description-light, .hero-description-dark { display: none; }
 }

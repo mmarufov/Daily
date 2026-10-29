@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { mountOcean } from '@/lib/ocean-controller'
+import type { mountHeroContrast } from '@/lib/hero-contrast'
 import './shark-background.css'
 
 type Ocean = ReturnType<typeof mountOcean>
@@ -17,9 +18,16 @@ export function SharkBackground() {
     const canvas = canvasRef.current
     if (!canvas) return
     let disposed = false
-    import('@/lib/ocean-controller').then(({ mountOcean }) => {
+    let contrast: ReturnType<typeof mountHeroContrast> | undefined
+    Promise.all([import('@/lib/ocean-controller'), import('@/lib/hero-contrast')]).then(([{ mountOcean }, { mountHeroContrast }]) => {
       if (disposed) return
-      const ocean = mountOcean(canvas, value => { if (!disposed) setReady(value) })
+      contrast = mountHeroContrast(canvas)
+      const ocean = mountOcean(canvas, value => {
+        if (!disposed) {
+          setReady(value)
+          contrast?.setReady(value)
+        }
+      }, () => contrast?.paint())
       oceanRef.current = ocean
       ocean.setPaused(pausedRef.current)
     }).catch(() => { if (!disposed) setReady(false) })
@@ -27,6 +35,7 @@ export function SharkBackground() {
       disposed = true
       oceanRef.current?.destroy()
       oceanRef.current = null
+      contrast?.destroy()
     }
   }, [])
 
