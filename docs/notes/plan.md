@@ -1167,8 +1167,8 @@ Scope: the paragraph beginning "Daily builds news editions" responds to the back
 ## Orange overlap lettering (October 28)
 
 - [x] Research clipped accent-text examples with Exa.
-- [ ] Replace black/white contrast selection with a fixed warm-orange overlay.
-- [ ] Trigger on visible scene shading, including pale cells, and restore normal ink immediately over clear water.
-- [ ] Verify motion, selection, still artwork, print, both themes and Chromium/WebKit; update the draft preview.
+- [x] Replace black/white contrast selection with a fixed warm-orange overlay.
+- [x] Trigger on visible scene shading, including pale cells, and restore normal ink immediately over clear water.
+- [x] Verify motion, selection, still artwork, print, both themes and Chromium/WebKit; update the draft preview.
 
 Keep the accepted unbacked layout, shark sizes and scene lifecycle. Exclude the permanent faint grid from overlap detection. Preserve `d0dcdc35` as the preceding black/white comparison.

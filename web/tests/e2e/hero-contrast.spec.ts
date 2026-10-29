@@ -43,8 +43,16 @@ for (const theme of ['light', 'dark'] as const) {
       await expect.poll(path).toMatch(/M\s*0\s*0["') ]*$/)
     }
     for (const shade of ['#202020', '#808080', '#fff']) {
-      await page.evaluate(shade => { (window as ContrastWindow).contrastShade = shade }, shade)
-      await expect.poll(path).toMatch(/[hHL]/)
+      const firstSample = await page.evaluate(shade => new Promise<string>(resolve => {
+        const state = window as ContrastWindow, before = state.contrastReads
+        state.contrastShade = shade
+        const inspect = () => {
+          if (state.contrastReads > before) resolve((document.querySelector('.hero-description-accent') as HTMLElement).style.clipPath)
+          else requestAnimationFrame(inspect)
+        }
+        requestAnimationFrame(inspect)
+      }), shade)
+      expect(firstSample).toMatch(/[hHL]/)
       await expect(accent).toHaveCSS('color', 'rgb(255, 122, 45)')
     }
     await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#000' })

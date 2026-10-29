@@ -1,6 +1,22 @@
 # Full-screen ocean preview
 
-Current preview: [adaptive paragraph contrast](https://daily-jwblgdw5u-mmarufovs-projects.vercel.app), runtime `caaac412`, deployment `dpl_BGsJQsjmDVZEjbELTpR16xZnC2YZ`. The owner accepted the unbacked composition. Only the paragraph beginning "Daily builds news editions" changes color over the swimming scene. The headline, actions, shark sizes and layout remain unchanged.
+Current preview: [orange overlap lettering](https://daily-kcrefl5hx-mmarufovs-projects.vercel.app), runtime `abc3bd50`, deployment `dpl_G2GKPSbT4t8Hzav6bYXsCAqTytcU`.
+
+The paragraph reveals warm orange (`#ff7a2d`) on the first visible shaded frame and restores its normal ink over clear water. A fine brown stroke defines the orange glyphs over gray cells. The faint permanent grid is excluded from detection. The unbacked layout, headline, actions, shark sizes and swimming are unchanged.
+
+Exa research used two searches with ten results and three fetched pages. [Michelle Barker's masked hero](https://tympanus.net/codrops/2021/05/04/dynamic-css-masks-with-custom-properties-and-gsap/) demonstrates an alternate text layer with a moving mask, hidden from screen readers. [Ana Tudor's analysis of Mandy Michael's text effect](https://css-tricks.com/methods-contrasting-text-backgrounds/) describes a clipped text copy whose color is independent of the background. Daily keeps its existing sampler and clips a single orange copy to visible scene content.
+
+Typecheck, production build and 355 unit tests passed, with one existing skip. Preview browser checks: 43 passed across the default Chromium/WebKit projects; 15 passed on desktop WebKit. Six existing skips remain. Tests verify orange on the first sampled pale, gray and bright frame, clearing over empty water, selection, print, forced colors and inactive sampling. Captures from 320px through 1920px show no horizontal overflow or page errors.
+
+![Orange lettering during overlap](assets/fullscreen-ocean/orange-desktop.png)
+
+[Desktop recording](assets/fullscreen-ocean/orange-desktop-motion.mp4) · [Mobile recording](assets/fullscreen-ocean/orange-mobile-motion.mp4) · [Mobile screenshot](assets/fullscreen-ocean/orange-mobile.png)
+
+The preceding black/white version is saved at `d0dcdc35`. PR #112 remains draft; production is unchanged.
+
+## Earlier black and white comparison
+
+[Adaptive paragraph contrast](https://daily-jwblgdw5u-mmarufovs-projects.vercel.app), runtime `caaac412`, deployment `dpl_BGsJQsjmDVZEjbELTpR16xZnC2YZ`. The owner accepted the unbacked composition. Only the paragraph beginning "Daily builds news editions" changes color over the swimming scene. The headline, actions, shark sizes and layout remain unchanged.
 
 The original text color stays where contrast is sufficient. Small clipped overlays supply black or white lettering over difficult cells. They preserve native text rendering, selection and a single screen-reader copy. Sampling covers the paragraph only and runs with the existing scene paint. Pause, hidden tabs and offscreen playback stop the work; reduced motion uses the poster.
 
