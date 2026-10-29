@@ -1187,3 +1187,10 @@ Preserve the immediate overlap trigger and the orange comparison at `50a14151`. 
 - [x] Keep white overlap lettering; use neutral surfaces, selection, links and focus states across the site.
 - [x] Preserve semantic status colors and verify both themes, desktop/mobile layouts and Reader navigation on the hosted preview.
 - [x] Record the preview and leave production unchanged.
+
+## Restore edition and release (October 29)
+
+- [ ] Restore the original Ray edition card and its browser assertions.
+- [ ] Keep neutral controls, text selection and white overlap lettering.
+- [ ] Run build, typecheck, unit tests and hosted browser checks; confirm final CI.
+- [ ] Merge PR #112 and verify marufov.com with desktop/mobile captures.

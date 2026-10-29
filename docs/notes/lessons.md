@@ -630,3 +630,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - Shared arrow-motion selectors matched the Reader's new text overlay and overrode its flex alignment. Exclude text overlays from icon selectors and verify hover alignment and print specificity whenever adding decorative children to a control.
 
 - The owner chose white overlap lettering and a neutral interface. Keep selection and interaction colors separate from evidence status colors. Remove the rejected hero edition card without changing the accepted shark scale or text placement.
+
+- The owner chose to restore the hero edition card after comparing the open layout. Restore that component exactly, retaining the accepted neutral interface and white overlap text.

@@ -1,4 +1,9 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
 import type { Locator } from '@playwright/test'
+
+import type { DemoBundle } from '../../lib/demo'
 
 import { expect, test } from './fixtures'
 
@@ -324,11 +329,25 @@ test.describe('static parser run', () => {
 })
 
 test.describe('homepage evidence', () => {
-  test('Daily opens with the product and a direct Reader link', async ({ page }) => {
+  test('Daily opens with the unchanged first three stories of the pinned Ray edition', async ({ page }) => {
+    const bundle = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'demo', 'editions.json'), 'utf8')) as DemoBundle
+    const stories = bundle.editions.find((edition) => edition.persona === 'ray')!.stories.slice(0, 3)
+    expect(bundle.run_id).toBe(NARRATIVE_RUN)
+    expect(bundle.snapshot).toBe('2026-09-02')
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
-    await expect(page.getByTestId('edition-preview')).toHaveCount(0)
-    await expect(page.locator('.hero-actions').getByRole('link', { name: 'Read an edition' })).toHaveAttribute('href', '/reader?profile=ray')
+    await expect(page.getByText('A personalized news app', { exact: true })).toHaveCount(0)
+    const preview = page.getByTestId('edition-preview')
+    await expect(preview).not.toContainText('Recorded edition')
+    await expect(preview).toContainText('September 2, 2026')
+    await expect(preview).toContainText('For Ray')
+    await expect(preview.locator('[data-verbatim]')).toHaveText(stories.map((story) => story.headline))
+    const rows = preview.locator('li')
+    await expect(rows).toHaveCount(3)
+    for (const [index, story] of stories.entries()) {
+      await expect(rows.nth(index)).toContainText(story.publication ?? 'Publication not recorded')
+      if (story.synthetic) await expect(rows.nth(index)).toContainText(/authored test story/i)
+    }
   })
 
   test('the Lab story connects Daily to a real parser execution', async ({ page }) => {
@@ -496,12 +515,12 @@ test.describe('server-rendered opening', () => {
     await expect(timeline).toBeHidden()
   })
 
-  test('the product and both destinations render before JavaScript runs', async ({ page }) => {
+  test('the product, recorded headlines and both destinations render before JavaScript runs', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
     await expect(page.getByText('A personalized news app', { exact: true })).toHaveCount(0)
     await expect(page.getByRole('link', { name: 'Explore the Lab', exact: true }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Read an edition', exact: true }).first()).toBeVisible()
-    await expect(page.getByTestId('edition-preview')).toHaveCount(0)
+    await expect(page.getByTestId('edition-preview').locator('[data-verbatim]')).toHaveCount(3)
   })
 })

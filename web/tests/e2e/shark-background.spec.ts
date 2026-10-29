@@ -44,22 +44,22 @@ async function expectPoster(page: Page) {
   await expect.poll(() => poster.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
 }
 
-test('the desktop opening fills the viewport with open water beside the copy', async ({ page, isMobile }) => {
+test('the desktop opening fills the viewport and retains its two-column foreground', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Mobile content may grow past one viewport.')
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto('/')
   const layout = await page.evaluate(() => {
     const hero = document.querySelector('.hero-scene')!.getBoundingClientRect()
     const copy = document.querySelector('.hero-copy')!.getBoundingClientRect()
+    const edition = document.querySelector('[data-testid="edition-preview"]')!.getBoundingClientRect()
     const header = document.querySelector('.site-header')!.getBoundingClientRect()
-    return { heroBottom: hero.bottom, heroTop: hero.top, headerBottom: header.bottom, copyRight: copy.right }
+    return { heroBottom: hero.bottom, heroTop: hero.top, headerBottom: header.bottom, copyRight: copy.right, editionLeft: edition.left }
   })
   expect(Math.abs(layout.heroBottom - 1000)).toBeLessThanOrEqual(2)
   expect(Math.abs(layout.heroTop - layout.headerBottom)).toBeLessThanOrEqual(2)
-  expect(layout.copyRight).toBeLessThan(720)
+  expect(layout.copyRight).toBeLessThan(layout.editionLeft)
   await expect(page.getByRole('link', { name: 'Explore the Lab' })).toBeInViewport()
-  await expect(page.getByTestId('edition-preview')).toHaveCount(0)
-  await expect(page.locator('.hero-actions').getByRole('link', { name: 'Read an edition' })).toBeInViewport()
+  await expect(page.getByTestId('edition-preview')).toBeInViewport()
   await page.mouse.move(720, 500)
   await page.mouse.wheel(0, 1100)
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(700)
