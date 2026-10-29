@@ -1,6 +1,20 @@
 # Full-screen ocean preview
 
-Current preview: [orange overlap lettering](https://daily-kcrefl5hx-mmarufovs-projects.vercel.app), runtime `abc3bd50`, deployment `dpl_G2GKPSbT4t8Hzav6bYXsCAqTytcU`.
+Current preview: [white paragraph and Reader lettering](https://daily-ffsu8yz4w-mmarufovs-projects.vercel.app), runtime `53eb681d`, deployment `dpl_AWgzpbdCjLt3cJJoGzC4VgbBbMFv`.
+
+The paragraph and the Reader action's label and arrow turn white on visible scene overlap, then restore their original ink over clear water. Both use the same mask behavior. A fine charcoal stroke defines the white lettering. The Reader destination, native focus, touch target and arrow hover movement are preserved. Shark sizes and the unbacked layout are unchanged.
+
+Typecheck, production build and 355 unit tests passed, with one existing skip. Targeted browser checks covered 46 passing cases across desktop Chromium, mobile Chromium and mobile WebKit, plus 16 on desktop WebKit. Six existing skips remain. Checks include immediate overlap on both surfaces, selection, screen-reader text, keyboard/touch navigation to Ray's edition, hover alignment, print, forced colors and inactive sampling. Captures from 320px through 1920px showed no horizontal overflow or page errors.
+
+![White paragraph and Reader lettering](assets/fullscreen-ocean/white-desktop.png)
+
+[Desktop recording](assets/fullscreen-ocean/white-desktop-motion.mp4) · [Mobile recording](assets/fullscreen-ocean/white-mobile-motion.mp4) · [Mobile screenshot](assets/fullscreen-ocean/white-mobile.png)
+
+The orange comparison is saved at `50a14151`. PR #112 remains draft; production is unchanged.
+
+## Earlier orange comparison
+
+[Orange overlap lettering](https://daily-kcrefl5hx-mmarufovs-projects.vercel.app), runtime `abc3bd50`, deployment `dpl_G2GKPSbT4t8Hzav6bYXsCAqTytcU`.
 
 The paragraph reveals warm orange (`#ff7a2d`) on the first visible shaded frame and restores its normal ink over clear water. A fine brown stroke defines the orange glyphs over gray cells. The faint permanent grid is excluded from detection. The unbacked layout, headline, actions, shark sizes and swimming are unchanged.
 

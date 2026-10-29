@@ -1175,8 +1175,8 @@ Keep the accepted unbacked layout, shark sizes and scene lifecycle. Exclude the 
 
 ## White paragraph and Reader action (October 28)
 
-- [ ] Switch overlap lettering to white and include the Reader action's label and arrow.
-- [ ] Verify both masks, the Reader destination, selection, keyboard access and inactive work.
-- [ ] Record desktop/mobile captures and update the draft preview.
+- [x] Switch overlap lettering to white and include the Reader action's label and arrow.
+- [x] Verify both masks, the Reader destination, selection, keyboard access and inactive work.
+- [x] Record desktop/mobile captures and update the draft preview.
 
 Preserve the immediate overlap trigger and the orange comparison at `50a14151`. Keep the blur removed and the shark sizes unchanged.

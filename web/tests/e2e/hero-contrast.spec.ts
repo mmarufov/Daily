@@ -124,7 +124,7 @@ test('the overlapping Reader label and arrow keep their native link behavior', a
   const reader = page.locator('.hero-actions').getByRole('link', { name: 'Read an edition', exact: true })
   await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#808080' })
   await expect.poll(() => reader.locator('.hero-overlap-ink').evaluate(el => el.style.clipPath)).toMatch(/[hHL]/)
-  await expect(reader.locator('.hero-overlap-ink')).toHaveCSS('display', 'inline-flex')
+  await expect(reader.locator('.hero-overlap-ink')).toHaveCSS('display', 'flex')
   if (!isMobile) {
     await reader.hover()
     await expect(reader.locator('.hero-overlap-ink')).toHaveCSS('transform', 'none')
