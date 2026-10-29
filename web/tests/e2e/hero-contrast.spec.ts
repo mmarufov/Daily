@@ -31,20 +31,24 @@ test.beforeEach(async ({ page }) => {
 })
 
 for (const theme of ['light', 'dark'] as const) {
-  test(`the paragraph responds to dark, light and gray cells in ${theme} mode`, async ({ page }) => {
+  test(`orange lettering follows every visible cell in ${theme} mode`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: theme })
     await page.goto('/')
     await expect(page.getByTestId('shark-background')).toHaveAttribute('data-ready', 'true')
-    const light = page.locator('.hero-description-light'), dark = page.locator('.hero-description-dark')
-    const path = (selector: string) => page.locator(selector).evaluate(el => getComputedStyle(el).clipPath)
+    const accent = page.locator('.hero-description-accent')
+    const path = () => accent.evaluate(el => getComputedStyle(el).clipPath)
+    await expect(accent).toHaveCSS('color', 'rgb(255, 122, 45)')
+    for (const shade of ['#000', '#0e0e0e']) {
+      await page.evaluate(shade => { (window as ContrastWindow).contrastShade = shade }, shade)
+      await expect.poll(path).toMatch(/M\s*0\s*0["') ]*$/)
+    }
+    for (const shade of ['#202020', '#808080', '#fff']) {
+      await page.evaluate(shade => { (window as ContrastWindow).contrastShade = shade }, shade)
+      await expect.poll(path).toMatch(/[hHL]/)
+      await expect(accent).toHaveCSS('color', 'rgb(255, 122, 45)')
+    }
     await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#000' })
-    await expect.poll(() => path('.hero-description-light')).toMatch(/M\s*0\s*0["') ]*$/)
-    await expect.poll(() => path('.hero-description-dark')).toMatch(/M\s*0\s*0["') ]*$/)
-    await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#fff' })
-    const changed = theme === 'light' ? light : dark
-    await expect.poll(() => changed.evaluate(el => el.style.clipPath)).toMatch(/[hHL]/)
-    await page.evaluate(() => { (window as ContrastWindow).contrastShade = '#808080' })
-    await expect.poll(() => dark.evaluate(el => el.style.clipPath)).toMatch(/[hHL]/)
+    await expect.poll(path).toMatch(/M\s*0\s*0["') ]*$/)
     await expect(page.locator('.hero-copy')).toHaveCSS('isolation', 'isolate')
     const paragraph = page.locator('.hero-description')
     const text = await paragraph.textContent()
@@ -83,8 +87,7 @@ test('print and forced colors use the single native paragraph', async ({ page })
   await page.goto('/')
   for (const media of [{ media: 'print' as const }, { media: 'screen' as const, forcedColors: 'active' as const }]) {
     await page.emulateMedia(media)
-    await expect(page.locator('.hero-description-light')).toBeHidden()
-    await expect(page.locator('.hero-description-dark')).toBeHidden()
+    await expect(page.locator('.hero-description-accent')).toBeHidden()
     await expect(page.locator('.hero-description')).toBeVisible()
   }
 })

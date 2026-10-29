@@ -622,3 +622,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - The owner wants to compare the hero with the text backing removed, while keeping shark sizes unchanged. Apply the latest correction before carrying forward an earlier visual adjustment.
 
 - Removing a text backing needs a moving-frame contrast check. The hero paragraph became hard to read when a shark crossed it. Keep the accepted unbacked composition and scope the contrast adjustment to the text the owner identified.
+
+- The owner wants a visible accent reaction on first overlap. Use a fixed warm orange over all visible scene shading; a black/white contrast threshold delayed the reaction and missed the intended look.

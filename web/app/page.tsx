@@ -24,8 +24,7 @@ export default async function HomePage() {
               <h1 className="lab-headline" id="daily-introduction">Daily makes<br /> news personal.</h1>
               <p className="hero-description">
                 {heroDescription}
-                <span className="hero-description-light" aria-hidden="true" data-text={heroDescription} />
-                <span className="hero-description-dark" aria-hidden="true" data-text={heroDescription} />
+                <span className="hero-description-accent" aria-hidden="true" data-text={heroDescription} />
               </p>
               <div className="hero-actions">
                 <Link href="/lab" className="button-primary">Explore the Lab <span aria-hidden="true">↗</span></Link>

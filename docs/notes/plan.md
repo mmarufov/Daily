@@ -1163,3 +1163,12 @@ This is a reversible visual comparison. Keep the existing backed version availab
 - [x] Publish the reviewed preview and record the comparison. Keep production unchanged.
 
 Scope: the paragraph beginning "Daily builds news editions" responds to the background directly beneath its letters. A cropped sampler clips native black or white text over cells where the original color loses contrast. It runs with the existing scene paint and uses the poster in still mode. Preserve `26e11fd2` as the exact unbacked comparison.
+
+## Orange overlap lettering (October 28)
+
+- [x] Research clipped accent-text examples with Exa.
+- [ ] Replace black/white contrast selection with a fixed warm-orange overlay.
+- [ ] Trigger on visible scene shading, including pale cells, and restore normal ink immediately over clear water.
+- [ ] Verify motion, selection, still artwork, print, both themes and Chromium/WebKit; update the draft preview.
+
+Keep the accepted unbacked layout, shark sizes and scene lifecycle. Exclude the permanent faint grid from overlap detection. Preserve `d0dcdc35` as the preceding black/white comparison.
