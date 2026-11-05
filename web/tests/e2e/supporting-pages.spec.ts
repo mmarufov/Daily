@@ -90,10 +90,24 @@ test('Evidence keeps incompatible comparisons visible and suppresses the compari
   await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50&compare=prod-llm__2026-08-31__47edb50')
   await expect(page.locator('.evidence-compatibility[role="alert"]')).toBeVisible()
   await expect(page.locator('.evidence-primary-metrics')).toBeVisible()
-  await expect(page.getByRole('img', { name: /comparison/ })).toHaveCount(0)
+  await expect(page.locator('.evidence-comparison-chart')).toHaveCount(0)
 })
 
 test('missing fixture metrics stay explicitly unavailable', async ({ page }) => {
   await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50&compare=&persona=unavailable-fixture')
   await expect(page.locator('.evidence-primary-metrics dd')).toHaveText(['Unavailable', 'Unavailable', 'Unavailable'])
+})
+
+
+test('supporting pages fit with doubled text and touch-sized selectors', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 })
+  for (const route of PAGES) {
+    await page.goto(route)
+    await page.addStyleTag({ content: 'html { font-size: 200% }' })
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), route).toBeLessThanOrEqual(0)
+    for (const select of await page.locator('.support-page select').all()) {
+      const bounds = await select.boundingBox()
+      expect(bounds!.height).toBeGreaterThanOrEqual(44)
+    }
+  }
 })

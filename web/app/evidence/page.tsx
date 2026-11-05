@@ -155,11 +155,11 @@ export default async function EvidencePage({
               as="h2"
             />
             {comparison !== null && comparisonRows.length > 0 ? (
-              <Slope
+              <div className="evidence-comparison-chart"><Slope
                 rows={comparisonRows}
                 aLabel={primary.provenance.runner}
                 bLabel={comparison.provenance.runner}
-              />
+              /></div>
             ) : <PrimaryMetrics primary={primary} personaKey={state.persona} />}
             <AnimatedDetails className="support-disclosure">
               <summary>Inspect all metrics</summary>
