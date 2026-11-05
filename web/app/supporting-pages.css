@@ -1,10 +1,10 @@
 /* Supporting routes share a scale without changing the homepage. */
 .support-page { --support-gap: 48px; padding-bottom: var(--support-gap); font-size: 1rem; line-height: 1.6; }
 .support-page > .support-intro, .support-page > .lab-intro { padding-top: 48px; padding-bottom: 24px; display: flex; flex-direction: column; gap: 16px; }
-.support-page h1 { margin: 0; font-family: var(--font-sans); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -.045em; font-weight: 600; }
+.support-page .support-intro h1, .support-page > h1 { margin: 0; font-family: var(--font-sans); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -.045em; font-weight: 600; }
 .support-page .lede, .support-page .prose { font-size: 1rem; line-height: 1.6; }
 .support-page .measure { max-width: 65ch; }
-.support-page :is(.eyebrow, .label, .text-micro, .band-index, .band-note, .lab-preset, .lab-case-origin, .lab-console-kicker, .lab-case-id, .lab-editor-heading, .lab-editor-hint, .lab-limit-copy) { font-size: .75rem; }
+.support-page :is(.eyebrow, .label, .text-micro, .band-index, .band-note, .lab-preset, .lab-case-origin, .lab-console-kicker, .lab-case-id, .lab-limit-copy) { font-size: .75rem; }
 .support-page .support-section { display: flex; flex-direction: column; gap: 24px; margin-top: var(--support-gap); padding-bottom: 0; }
 .support-page .support-intro + .support-section { margin-top: 0; }
 .support-page .support-section > .band { margin-bottom: 0; }
@@ -23,10 +23,10 @@
 .support-page .support-disclosures { margin-top: var(--support-gap); }
 .support-page .support-evidence-layout { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 24px; }
 
-.support-lab .lab-intro-links { align-self: flex-start; }
-.support-lab .lab-criteria-summary { gap: 24px; }
 .support-lab .lab-walkthroughs { margin-top: 0; }
 .support-lab .lab-disclosure > summary::before { content: none; }
+.support-lab :is(.lab-byte-count, .lab-console-source, .lab-editor-help, .lab-console-footnote, .lab-run-reference, .lab-source-editor) { font-size: .75rem; }
+.support-lab .lab-panel-heading { flex-wrap: wrap; }
 .support-lab .lab-source-editor::selection { color: #171717; background: #e5e5e5; }
 
 .support-reader .reader-recording { display: grid; gap: 12px; max-width: 65ch; }
@@ -35,7 +35,7 @@
 .support-reader .sheet { margin-top: 0; }
 .support-reader .reader-recording .support-disclosure { width: 100%; }
 
-.support-evidence .evidence-controls { padding: 16px 0; background: transparent; border-width: 1px 0; gap: 16px; }
+.support-evidence .evidence-controls { padding: 16px 0; background: transparent; border-width: 1px 0; border-color: var(--d-rule); gap: 16px; }
 .support-evidence .evidence-filter-form { display: flex; flex-direction: row; flex-wrap: wrap; align-items: end; gap: 16px; }
 .support-evidence .evidence-filter-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: end; flex: 1 1 640px; gap: 16px; }
 .support-evidence .evidence-filter-fields:has(#outcome-select) { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }

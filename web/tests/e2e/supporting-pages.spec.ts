@@ -66,3 +66,34 @@ test('collapsed fixture results still filter the selected run', async ({ page })
   await details.getByRole('link').filter({ hasText: 'Ray' }).click()
   await expect(page).toHaveURL(url => url.searchParams.get('run') === 'prod-llm__2026-09-02__47edb50' && url.searchParams.get('persona') === 'ray')
 })
+
+test('supporting page headings use the shared scale', async ({ page }) => {
+  for (const route of PAGES) {
+    await page.goto(route)
+    const size = await page.getByRole('heading', { level: 1 }).evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))
+    expect(size).toBeGreaterThanOrEqual(32)
+    expect(size).toBeLessThanOrEqual(48)
+  }
+})
+
+test('Evidence uses a compact summary when no comparison is selected', async ({ page }) => {
+  await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50&compare=')
+  const summary = page.locator('.evidence-primary-metrics')
+  await expect(summary).toBeVisible()
+  await expect(summary.locator('dt')).toHaveText(['Capped recall@k', 'Unwanted rate', 'Reached the scorer'])
+  for (const value of await summary.locator('dd').allTextContents()) expect(value).toMatch(/^\d+\.\d+%$/)
+  await expect(page.locator('summary', { hasText: 'Inspect all metrics' })).toBeVisible()
+  await expect(page.locator('table').first()).toBeHidden()
+})
+
+test('Evidence keeps incompatible comparisons visible and suppresses the comparison chart', async ({ page }) => {
+  await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50&compare=prod-llm__2026-08-31__47edb50')
+  await expect(page.locator('.evidence-compatibility[role="alert"]')).toBeVisible()
+  await expect(page.locator('.evidence-primary-metrics')).toBeVisible()
+  await expect(page.getByRole('img', { name: /comparison/ })).toHaveCount(0)
+})
+
+test('missing fixture metrics stay explicitly unavailable', async ({ page }) => {
+  await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50&compare=&persona=unavailable-fixture')
+  await expect(page.locator('.evidence-primary-metrics dd')).toHaveText(['Unavailable', 'Unavailable', 'Unavailable'])
+})

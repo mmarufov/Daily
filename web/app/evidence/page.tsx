@@ -141,8 +141,6 @@ export default async function EvidencePage({
         ) : null}
       </section>
 
-      <RunHeadline primary={primary} comparison={comparison} personaKey={state.persona} />
-
       {state.view === 'summary' ? (
         <>
           <section className="frame support-section flex flex-col gap-6">
@@ -286,6 +284,8 @@ export default async function EvidencePage({
           )}
         </section>
       ) : null}
+
+      <RunHeadline primary={primary} comparison={comparison} personaKey={state.persona} />
 
       <section className="frame support-section evidence-records">
         <AnimatedDetails className="support-disclosure">
