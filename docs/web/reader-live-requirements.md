@@ -8,5 +8,3 @@ A future live web Reader needs the following integration work. These are impleme
 - **Web sign-in:** register a web OAuth client for the deployed origin and confirm that `POST /auth/google` accepts its intended audience. Recheck the current backend contract instead of reusing an iOS client assumption.
 - **Feedback identifiers:** preserve `feed_request_id`, `reader_generation` and `delivery_position` from the actual live delivery when submitting feedback.
 - **End-to-end verification:** test sign-in, edition delivery, article opening and feedback against the deployed services before describing the web Reader as live.
-
-These requirements do not change the recorded Reader, its profile links or the Lab runner.
