@@ -105,6 +105,12 @@ test('supporting pages fit with doubled text and touch-sized selectors', async (
     await page.goto(route)
     await page.addStyleTag({ content: 'html { font-size: 200% }' })
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), route).toBeLessThanOrEqual(0)
+    for (const details of await page.locator('.support-page details').all()) {
+      await details.locator(':scope > summary').click()
+      await expect(details).toHaveAttribute('open', '')
+      await expect(details).not.toHaveAttribute('data-motion')
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), `${route} expanded`).toBeLessThanOrEqual(0)
     for (const select of await page.locator('.support-page select').all()) {
       const bounds = await select.boundingBox()
       expect(bounds!.height).toBeGreaterThanOrEqual(44)

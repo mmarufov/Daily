@@ -181,7 +181,7 @@ export default async function EvidencePage({
             </AnimatedDetails>
             <AnimatedDetails className="support-disclosure">
               <summary>Inspect fixture results</summary>
-              <div className="support-disclosure-body">
+              <div className="support-disclosure-body evidence-fixture-results">
                 <FixtureStrip
                   rows={toFixtureRows(
                     primary.personas,
