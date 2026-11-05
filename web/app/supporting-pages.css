@@ -100,3 +100,4 @@
 @media (forced-colors: active) {
   .support-page select { appearance: auto; background-image: none; }
 }
+.support-page .support-intro h1, .support-page summary { overflow-wrap: anywhere; }
