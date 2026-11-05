@@ -1,3 +1,4 @@
+import { AnimatedDetails } from './AnimatedDetails'
 import {
   caughtByFault,
   wrongOnRecorded,
@@ -57,16 +58,10 @@ export function LiveResult({
           {outcome.verdict !== undefined && outcome.verdict !== null ? <VerdictBadge verdict={outcome.verdict} /> : null}
           <p className="m-0 max-w-2xl text-sm text-ink-60">{outcome.reason ?? outcome.detail}</p>
         </div>
-        {grading !== null ? (
-          <p className="m-0 text-xs text-ink-40">
-            Graded outside the microVM under criteria generation {grading.spec_version}, spec{' '}
-            {grading.spec_hash}. The parser declared{' '}
-            <span className="text-ink-60">{grading.declared_protocol}</span>; that is checked, not
-            believed. {outcome.verdict === 'accepted-for-review'
-              ? 'Accepted means eligible for human review. A live run is not added to the published set.'
-              : null}
-          </p>
-        ) : null}
+        <p className="m-0 text-sm text-ink-60">
+          Results apply to these public fixtures.
+          {outcome.verdict === 'accepted-for-review' ? ' Acceptance qualifies the parser for human review.' : null}
+        </p>
       </div>
 
       {grading !== null && grading.cases.length > 0 ? (
@@ -74,7 +69,16 @@ export function LiveResult({
           <Faults grading={grading} />
           <CaseGrid catalog={catalog} grading={grading} />
           <Recorded grading={grading} />
-          <Criteria grading={grading} />
+          <AnimatedDetails className="lab-disclosure">
+            <summary>Inspect grading</summary>
+            <div className="support-disclosure-body">
+              <p className="m-0 break-words text-sm text-ink-60">
+                Graded outside the microVM under criteria generation {grading.spec_version}, spec {grading.spec_hash}.
+                {' '}Declared protocol: {grading.declared_protocol}. Live runs have a separate inventory.
+              </p>
+              <Criteria grading={grading} />
+            </div>
+          </AnimatedDetails>
         </>
       ) : null}
 

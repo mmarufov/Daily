@@ -1194,3 +1194,18 @@ Preserve the immediate overlap trigger and the orange comparison at `50a14151`. 
 - [x] Keep neutral controls, text selection and white overlap lettering.
 - [x] Run build, typecheck and unit tests. Track hosted browser checks and final CI in PR #112.
 Release authorization: merge PR #112 after its final checks, then verify marufov.com. The PR and deployment report record the final revision and screenshots.
+
+## Supporting-page cleanup (November 5)
+
+Homepage preservation: every homepage section, its source data, sharks, edition card, parser animation, spacing and motion stay unchanged. Only shared navigation changes to Lab, Case study and GitHub. Keep the existing desktop/mobile header height and footer.
+
+- [ ] Add scoped supporting-page typography, spacing and controls; simplify navigation.
+- [ ] Simplify Lab around the runner, show compact idle cases and disclose supporting records.
+- [ ] Simplify Reader around the edition; move live-web requirements to developer docs.
+- [ ] Simplify Evidence summaries and disclose duplicate metrics, inventory and provenance.
+- [ ] Recompose Case study around one visible example, the identity defect and recorded experiment.
+- [ ] Verify source bytes, recorded values, URLs, runner states, no-script/reduced-motion disclosures and responsive layouts.
+- [ ] Run typecheck, unit tests, artifact checks, build and hosted Chromium/WebKit acceptance.
+- [ ] Compare the homepage against a deterministic baseline; publish one unmerged preview PR with screenshots and removal inventory.
+
+Use the existing 1280px frame and palette. Supporting headings scale from 32px to 48px; prose is 16px, metadata at least 12px, section spacing 48px desktop/32px mobile, and introduction-to-content spacing 24px. Keep 44px controls and Reader-only editorial fonts. Preserve APIs, evaluator, quotas, schemas, artifacts and public route/query contracts.

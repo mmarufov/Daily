@@ -438,7 +438,7 @@ test.describe('pipeline evidence', () => {
     }
   })
 
-  test('the full historical comparison remains interactive in Findings', async ({ page }) => {
+  test('the full historical comparison remains interactive in Case study', async ({ page }) => {
     await page.goto('/engineering')
     const panel = page.getByTestId('guard-experiment-panel')
     const original = panel.getByRole('button', { name: 'Original', exact: true })
@@ -453,13 +453,10 @@ test.describe('pipeline evidence', () => {
     await expect(panel.getByTestId('guard-metric-recall')).toContainText('18.7%')
     await expect(panel.getByTestId('guard-metric-unwanted')).toContainText('42.5%')
     const provenance = panel.locator('details').filter({ has: page.locator('summary', { hasText: 'Experiment provenance' }) })
-    const date = provenance.getByText(/September 21|2026-09-21/)
-    const qualification = provenance.getByText(/historical working-tree experiment/i)
-    await expect(date).toBeHidden()
-    await expect(qualification).toBeHidden()
+    await expect(page.getByText('September 21 recorded experiment')).toBeVisible()
+    await expect(panel.getByText(/historical working-tree experiment/i)).toBeVisible()
+    await expect(panel.locator('.guard-failure-count')).toContainText('6')
     await provenance.locator('summary').click()
-    await expect(date).toBeVisible()
-    await expect(qualification).toBeVisible()
     await expect(provenance.getByRole('link', { name: /Inspect summary and source hashes/ })).toHaveAttribute('href', '/experiments/batch-alignment.json')
     await original.click()
     await expect(panel.getByTestId('guard-metric-recall')).toContainText('22.1%')

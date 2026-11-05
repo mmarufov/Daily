@@ -632,3 +632,5 @@ Keep the primary presentation focused on the product and its results. Put record
 - The owner chose white overlap lettering and a neutral interface. Keep selection and interaction colors separate from evidence status colors. Remove the rejected hero edition card without changing the accepted shark scale or text placement.
 
 - The owner chose to restore the hero edition card after comparing the open layout. Restore that component exactly, retaining the accepted neutral interface and white overlap text.
+
+- The owner explicitly retained the homepage and sharks during the supporting-page cleanup. Scope shared styles beneath supporting-page wrappers and verify the homepage against a deterministic baseline. Only the shared navigation is authorized to change there.

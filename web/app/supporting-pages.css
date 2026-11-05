@@ -1,0 +1,76 @@
+/* Supporting routes share a scale without changing the homepage. */
+.support-page { --support-gap: 48px; padding-bottom: var(--support-gap); font-size: 1rem; line-height: 1.6; }
+.support-page > .support-intro, .support-page > .lab-intro { padding-top: 48px; padding-bottom: 24px; display: flex; flex-direction: column; gap: 16px; }
+.support-page h1 { margin: 0; font-family: var(--font-sans); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -.045em; font-weight: 600; }
+.support-page .lede, .support-page .prose { font-size: 1rem; line-height: 1.6; }
+.support-page .measure { max-width: 65ch; }
+.support-page :is(.eyebrow, .label, .text-micro, .band-index, .band-note, .lab-preset, .lab-case-origin, .lab-console-kicker, .lab-case-id, .lab-editor-heading, .lab-editor-hint, .lab-limit-copy) { font-size: .75rem; }
+.support-page .support-section { display: flex; flex-direction: column; gap: 24px; margin-top: var(--support-gap); padding-bottom: 0; }
+.support-page .support-intro + .support-section { margin-top: 0; }
+.support-page .support-section > .band { margin-bottom: 0; }
+.support-page :is(.chip, select) { min-height: 44px; border-radius: 6px; font-size: .875rem; }
+.support-page .chip { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; }
+.support-page select { padding: 8px 12px; border-color: var(--d-control); }
+.support-page summary { min-height: 48px; cursor: pointer; font-size: .875rem; }
+.support-page .support-disclosure, .support-page .lab-disclosure { border-top: 1px solid var(--d-rule); }
+.support-page .support-disclosure > summary, .support-page .lab-disclosure > summary { display: flex; align-items: center; gap: 12px; padding: 12px 0; list-style: none; color: var(--d-ink); font-weight: 500; }
+.support-page .support-disclosure > summary::-webkit-details-marker, .support-page .lab-disclosure > summary::-webkit-details-marker { display: none; }
+.support-page .support-disclosure > summary::after, .support-page .lab-disclosure > summary::after { content: '+'; margin-left: auto; font-family: var(--font-mono); font-weight: 400; }
+.support-page .support-disclosure[open] > summary::after, .support-page .lab-disclosure[open] > summary::after { content: '−'; }
+.support-page .support-disclosure-body { display: grid; gap: 20px; min-width: 0; padding-bottom: 24px; }
+.support-page .support-disclosure-body > :first-child { margin-top: 0; }
+.support-page .support-disclosure-body > :last-child { margin-bottom: 0; }
+.support-page .support-disclosures { margin-top: var(--support-gap); }
+.support-page .support-evidence-layout { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 24px; }
+
+.support-lab .lab-intro-links { align-self: flex-start; }
+.support-lab .lab-criteria-summary { gap: 24px; }
+.support-lab .lab-walkthroughs { margin-top: 0; }
+.support-lab .lab-disclosure > summary::before { content: none; }
+.support-lab .lab-source-editor::selection { color: #171717; background: #e5e5e5; }
+
+.support-reader .reader-recording { display: grid; gap: 12px; max-width: 65ch; }
+.support-reader .reader-recording p { margin: 0; }
+.support-reader .reader-profile-picker { margin-top: 8px; }
+.support-reader .sheet { margin-top: 0; }
+.support-reader .reader-recording .support-disclosure { width: 100%; }
+
+.support-evidence .evidence-controls { padding: 16px 0; background: transparent; border-width: 1px 0; gap: 16px; }
+.support-evidence .evidence-filter-form { display: flex; flex-direction: row; flex-wrap: wrap; align-items: end; gap: 16px; }
+.support-evidence .evidence-filter-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: end; flex: 1 1 640px; gap: 16px; }
+.support-evidence .evidence-filter-fields:has(#outcome-select) { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }
+.support-evidence .evidence-controls nav { border-top: 0; padding-top: 0; }
+.support-evidence .evidence-compatibility { font-size: .875rem; }
+.support-evidence .evidence-primary-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; }
+.support-evidence .evidence-primary-metrics dt { color: var(--d-ink-38); font-size: .875rem; }
+.support-evidence .evidence-primary-metrics dd { margin: 8px 0 0; font-family: var(--font-mono); font-size: 2rem; }
+
+.support-case-study .case-primary-example, .support-case-study .case-more-examples { list-style: none; padding: 0; margin: 0; display: grid; gap: 24px; }
+.support-case-study .case-primary-example > li, .support-case-study .case-more-examples > li { padding: 0; }
+.support-case-study .case-primary-example { max-width: 65ch; border: 0; }
+.support-case-study .case-primary-example .headline { font-size: 1.25rem; }
+.support-case-study .case-more-examples { padding-bottom: 24px; border: 0; background: transparent; }
+.support-case-study .guard-panel { padding: 0; border: 0; border-radius: 0; }
+.support-case-study .guard-metric-value > span:first-child { font-size: clamp(2.5rem, 5vw, 4rem); }
+.support-case-study .guard-chart { height: 24px; }
+.support-case-study .guard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.support-case-study .guard-history-note { margin-top: 16px; max-width: 65ch; font-size: .875rem; color: var(--d-ink-38); }
+
+@media (min-width: 1024px) {
+  .support-page .support-evidence-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
+  .support-case-study .case-more-examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .support-page { --support-gap: 32px; }
+  .support-page > .support-intro, .support-page > .lab-intro { padding-top: 32px; }
+  .support-evidence .evidence-filter-fields, .support-evidence .evidence-filter-fields:has(#outcome-select) { grid-template-columns: repeat(2, minmax(0, 1fr)); flex-basis: 100%; }
+}
+@media (max-width: 639px) {
+  .support-case-study .guard-metrics, .support-evidence .evidence-primary-metrics { grid-template-columns: 1fr; }
+  .support-evidence .evidence-filter-fields, .support-evidence .evidence-filter-fields:has(#outcome-select) { grid-template-columns: 1fr; }
+}
+
+.support-lab .lab-case-counts { margin: 8px 0 16px; font-size: .875rem; color: var(--d-ink-38); }
+.support-lab .lab-criteria-content { gap: 24px; }
+.support-evidence .evidence-toolbar { display: flex; flex-direction: column; gap: 16px; }
+.support-evidence .evidence-records { display: flex; flex-direction: column; gap: 16px; }

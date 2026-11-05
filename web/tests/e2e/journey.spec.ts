@@ -5,12 +5,12 @@ import { expect, test } from './fixtures'
  * and discover the Lab that tests its parser, with evidence one click away.
  */
 test.describe('visitor journey', () => {
-  test('home introduces Daily with Reader and Lab in the primary navigation', async ({ page }) => {
+  test('home keeps product entry links with simplified primary navigation', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Daily makes news personal.')
     await expect(page.getByRole('banner').getByRole('link', { name: 'Daily, home', exact: true })).toHaveAttribute('href', '/')
     const entries = page.getByRole('banner').getByRole('navigation')
-    for (const [name, href] of [['Reader', '/reader'], ['Lab', '/lab'], ['Evidence', '/evidence'], ['Findings', '/engineering']] as const) {
+    for (const [name, href] of [['Lab', '/lab'], ['Case study', '/engineering'], ['GitHub', 'https://github.com/mmarufov/Daily']] as const) {
       await expect(entries.getByRole('link', { name, exact: true })).toHaveAttribute('href', href)
     }
     await expect(page.getByRole('link', { name: 'Explore the Lab', exact: true }).first()).toHaveAttribute('href', '/lab')
@@ -35,8 +35,9 @@ test.describe('visitor journey', () => {
     await expect(page.getByText(/Stories were published on or before/)).toBeVisible()
     // The edition stamp from DESIGN.md.
     await expect(page.getByText(/· [A-Z]+ EDITION/)).toBeVisible()
-    // Live mode is explicitly not claimed.
-    await expect(page.getByText(/not implemented here/)).toBeVisible()
+    await expect(page.getByText('Profiles are evaluation fixtures.')).toBeVisible()
+    await expect(page.getByText('Live mode', { exact: true })).toHaveCount(0)
+    await expect(page.locator('summary', { hasText: 'Inspect recording' })).toBeVisible()
   })
 
   test('reader switches profile and keeps it in the URL', async ({ page }) => {
@@ -62,16 +63,22 @@ test.describe('visitor journey', () => {
     await expect(page.getByLabel('Run')).toBeVisible()
     // The default pairing is same-corpus, different-pipeline, and says so.
     await expect(page.getByText(/Algorithm comparison/)).toBeVisible()
+    await expect(page.locator('summary', { hasText: 'Inspect all metrics' })).toBeVisible()
+    await expect(page.getByRole('table').first()).toBeHidden()
+    await page.locator('summary', { hasText: 'Inspect all metrics' }).click()
     await expect(page.getByRole('table').first()).toBeVisible()
   })
 
   test('evidence states that protocol equality cannot be verified', async ({ page }) => {
     await page.goto('/evidence')
+    await expect(page.getByText(/Protocol equality is unverified/)).toBeVisible()
+    await page.locator('summary', { hasText: 'Inspect comparison details' }).click()
     await expect(page.getByText(/Protocol equality therefore cannot be verified/)).toBeVisible()
   })
 
   test('a missing metric renders as absent, not as zero', async ({ page }) => {
     await page.goto('/evidence?persona=ray')
+    await page.locator('summary', { hasText: 'Inspect all metrics' }).click()
     const row = page.getByRole('row').filter({ hasText: 'Judge precision' }).first()
     await expect(row).toContainText('—')
     await expect(row).not.toContainText('0.0%')
@@ -136,7 +143,7 @@ test.describe('visitor journey', () => {
   test('engineering links back into the exact explorer state', async ({ page }) => {
     await page.goto('/engineering')
     await expect(page.getByRole('heading', { level: 1 })).toContainText('A safer guard.')
-    const link = page.getByRole('link', { name: /open this story’s recorded trace/ }).first()
+    const link = page.getByRole('link', { name: 'Inspect story trace' }).first()
     await link.click()
     await expect(page).toHaveURL(/story=a00407/)
     await expect(page.getByRole('complementary')).toContainText('music EP')

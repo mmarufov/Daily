@@ -65,10 +65,22 @@ export function LabRunner({
   const [source, setSource] = useState(presets[0]?.source ?? '')
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' })
   const leavingEditor = useRef(false)
+  const editorRef = useRef<HTMLTextAreaElement>(null)
+  const [presetView, setPresetView] = useState(0)
 
   const bytes = new TextEncoder().encode(source).length
   const edited = presets.find((p) => p.id === presetId)?.source !== source
   const busy = phase.kind === 'starting' || (phase.kind === 'watching' && !phase.finished)
+
+  useEffect(() => {
+    const editor = editorRef.current
+    const preset = presets.find((p) => p.id === presetId)
+    if (editor === null || preset === undefined) return
+    const parseLine = preset.source.split('\n').findIndex((line) => /^def parse\(/.test(line))
+    const lineHeight = Number.parseFloat(getComputedStyle(editor).lineHeight)
+    // Scroll the source view without changing its bytes, focus or selection.
+    editor.scrollTop = Math.max(0, parseLine - 1) * lineHeight
+  }, [presetId, presetView, presets])
 
   // A link to a run brings the page back to it.
   useEffect(() => {
@@ -164,6 +176,7 @@ export function LabRunner({
   function choose(preset: RunnerPreset) {
     setPresetId(preset.id)
     setSource(preset.source)
+    setPresetView((value) => value + 1)
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -237,6 +250,7 @@ export function LabRunner({
             </label>
             {/* The editor holds committed source or the visitor's own bytes. */}
             <textarea
+              ref={editorRef}
               id="candidate-source"
               aria-label="Python parser source"
               aria-describedby="source-byte-count source-keyboard-help"
@@ -304,7 +318,13 @@ export function LabRunner({
             <h3>The case suite</h3>
             <p>{busy ? 'Awaiting completed grading' : 'Ready to test'} · {catalog.length} cases</p>
           </div>
-          <CaseGrid catalog={catalog} grading={null} />
+          <p className="lab-case-counts">
+            {catalog.filter((c) => c.origin === 'recorded-replay').length} recorded · {catalog.filter((c) => c.origin === 'fault-injection').length} fault-injected
+          </p>
+          <AnimatedDetails className="lab-disclosure">
+            <summary>Inspect cases</summary>
+            <CaseGrid catalog={catalog} grading={null} />
+          </AnimatedDetails>
         </div>
       )}
     </div>
@@ -318,7 +338,6 @@ function Status({ phase }: { phase: Phase }) {
         <span className="lab-console-prompt" aria-hidden="true">&gt;_</span>
         <p className="lab-status-title">Ready when you are.</p>
         <p>Choose a parser or write your own, then press Run in Sandbox.</p>
-        <p className="lab-console-muted">This console will show the actual stages reported by your run.</p>
       </div>
     )
   }

@@ -57,7 +57,7 @@ test('nothing is painted above the header', async ({ page }) => {
   expect(strays).toEqual([])
 })
 
-test('all four primary destinations remain visible and touch sized on a narrow phone', async ({ page }) => {
+test('all primary destinations remain visible and touch sized on a narrow phone', async ({ page }) => {
   for (const width of [320, 375, 639]) {
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/')
@@ -67,7 +67,7 @@ test('all four primary destinations remain visible and touch sized on a narrow p
     const brandBox = await brand.boundingBox()
     const navigationBox = await navigation.boundingBox()
     expect(navigationBox!.y).toBeGreaterThanOrEqual(brandBox!.y + brandBox!.height)
-    for (const name of ['Reader', 'Lab', 'Evidence', 'Findings']) {
+    for (const name of ['Lab', 'Case study', 'GitHub']) {
       const link = navigation.getByRole('link', { name, exact: true })
       await expect(link).toBeInViewport()
       const box = await link.boundingBox()
@@ -101,7 +101,7 @@ test('Fraunces is fetched only after entering the Reader, where the editorial he
   expect(homeHashes).not.toContain(fraunces)
   const loadedOnHome = fonts.length
 
-  await page.getByRole('banner').getByRole('link', { name: 'Reader', exact: true }).click()
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Read an edition', exact: true }).click()
   await expect(page).toHaveURL((url) => url.pathname === '/reader')
   const editorial = page.getByRole('article').locator('.editorial').first()
   await expect(editorial).toBeVisible()

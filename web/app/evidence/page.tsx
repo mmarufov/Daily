@@ -25,7 +25,7 @@ import { assessCompatibility } from '@/lib/compare'
 import { defaultComparison, defaultEntry, findEntry, loadArtifact, loadIndex } from '@/lib/data'
 import { computeDelta, formatValue } from '@/lib/format'
 import { resolveMetric } from '@/lib/metrics'
-import { personaLabel, personaName } from '@/lib/personas'
+import { personaName } from '@/lib/personas'
 import { explorerHref, readState, type RawSearchParams } from '@/lib/url-state'
 
 export const metadata: Metadata = {
@@ -97,6 +97,8 @@ export default async function EvidencePage({
   const showDeltas = compatibility?.showDirectionalDeltas ?? false
   const persona = findPersona(primary, state.persona)
   const personaKeys = primary.personas.map((p) => p.key)
+  const comparisonRows = comparison !== null && showDeltas
+    ? slopeRows(primary, comparison, state.persona) : []
 
   const selectedStory =
     persona !== undefined && state.story !== undefined
@@ -104,12 +106,12 @@ export default async function EvidencePage({
       : undefined
 
   return (
-    <div className="flex flex-col">
-      <section className="hero frame relative flex flex-col gap-6 py-12 md:py-14">
+    <div className="support-page support-evidence">
+      <section className="support-intro frame">
         <p className="label m-0 text-ink-40">
           Artifacts · {index.source === 'blob' ? 'published store' : 'repository export'}
         </p>
-        <h1 className="display m-0 text-[clamp(2.25rem,6vw,4.5rem)]">Evaluation evidence</h1>
+        <h1 className="display m-0">Evaluation evidence</h1>
         <p className="lede measure m-0 text-ink-60">
           Ten adversarial fixtures, three frozen corpora, and recorded story traces.
           Pick a run to inspect missed stories.
@@ -121,7 +123,7 @@ export default async function EvidencePage({
         ) : null}
       </section>
 
-      <section className="frame flex flex-col gap-5 pb-10">
+      <section className="frame evidence-toolbar">
         {requestedButMissing ? (
           <p role="alert" className="m-0 border-l-2 border-signal pl-3 text-xs">
             The run <span className="text-ink">{requested.run}</span> is not in the current
@@ -143,7 +145,7 @@ export default async function EvidencePage({
 
       {state.view === 'summary' ? (
         <>
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="frame support-section flex flex-col gap-6">
             <Band
               index="01"
               title={comparison === null ? 'Metrics' : 'Run comparison'}
@@ -154,50 +156,51 @@ export default async function EvidencePage({
               }
               as="h2"
             />
-            {comparison !== null && showDeltas ? (
+            {comparison !== null && comparisonRows.length > 0 ? (
               <Slope
-                rows={slopeRows(primary, comparison, state.persona)}
+                rows={comparisonRows}
                 aLabel={primary.provenance.runner}
                 bLabel={comparison.provenance.runner}
               />
-            ) : null}
-            {/* The metric table's intrinsic width exceeds a 375px viewport,
-                so it gets its own scroll port rather than pushing the page
-                sideways. */}
-            <div className="relative overflow-x-auto">
-              <MetricTable
-                primary={primary}
-                comparison={comparison}
-                showDeltas={showDeltas}
-                personaKey={state.persona}
-              />
-            </div>
-            {state.persona === undefined ? (
-              <p className="m-0 max-w-3xl text-xs text-ink-40">
-                Weakest fixture shows the worst result for each metric. A filled dot marks the fixed
-                &plusmn;0.02 materiality cutoff, not statistical significance.
-              </p>
-            ) : null}
-            <Glossary />
-          </section>
-
-          <section className="frame flex flex-col gap-6 pb-16">
-            <Band index="02" title="Fixture results" as="h2" />
-            <FixtureStrip
-              rows={toFixtureRows(
-                primary.personas,
-                (key) => explorerHref(state, { persona: key, story: undefined }),
-                state.persona,
-              )}
-              caption="Select one to filter everything above."
-            />
+            ) : <PrimaryMetrics primary={primary} personaKey={state.persona} />}
+            <AnimatedDetails className="support-disclosure">
+              <summary>Inspect all metrics</summary>
+              <div className="support-disclosure-body">
+                <div className="relative overflow-x-auto">
+                  <MetricTable
+                    primary={primary}
+                    comparison={comparison}
+                    showDeltas={showDeltas}
+                    personaKey={state.persona}
+                  />
+                </div>
+                <p className="m-0 max-w-3xl text-xs text-ink-40">
+                  {state.persona === undefined ? 'Weakest fixture shows the worst result for each metric. ' : ''}
+                  A filled dot marks the fixed &plusmn;0.02 materiality cutoff, not statistical significance.
+                </p>
+                <Glossary />
+              </div>
+            </AnimatedDetails>
+            <AnimatedDetails className="support-disclosure">
+              <summary>Inspect fixture results</summary>
+              <div className="support-disclosure-body">
+                <FixtureStrip
+                  rows={toFixtureRows(
+                    primary.personas,
+                    (key) => explorerHref(state, { persona: key, story: undefined }),
+                    state.persona,
+                  )}
+                  caption="Select one to filter this view."
+                />
+              </div>
+            </AnimatedDetails>
           </section>
         </>
       ) : null}
 
       {state.view === 'funnel' ? (
         <>
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="frame support-section flex flex-col gap-6">
             <Band
               index="01"
               title="The sieve"
@@ -236,7 +239,7 @@ export default async function EvidencePage({
             )}
           </section>
 
-          <section className="frame flex flex-col gap-6 pb-16">
+          <section className="frame support-section flex flex-col gap-6">
             <Band
               index="02"
               title={persona === undefined ? 'Funnel, all fixtures summed' : `Funnel for ${personaName(persona.key)}`}
@@ -248,7 +251,7 @@ export default async function EvidencePage({
       ) : null}
 
       {state.view === 'stories' ? (
-        <section className="frame flex flex-col gap-6 pb-16">
+        <section className="frame support-section flex flex-col gap-6">
           <Band
             index="01"
             title={persona === undefined ? 'Stories' : `Stories for ${personaName(persona.key)}`}
@@ -284,20 +287,18 @@ export default async function EvidencePage({
         </section>
       ) : null}
 
-      <section className="frame pb-12">
-        <AnimatedDetails className="border-t border-rule pt-4 text-sm">
-          <summary className="disclosure min-h-11 cursor-pointer">Published scorecards and corpus inventory</summary>
+      <section className="frame support-section evidence-records">
+        <AnimatedDetails className="support-disclosure">
+          <summary>Published scorecards and corpus inventory</summary>
+          <div className="support-disclosure-body">
           <p className="max-w-2xl text-ink-60">{index.entries.length} published scorecards, including retained baselines. Snapshots share articles, so their counts overlap. {labelRows === null ? 'Label totals are unavailable.' : `${labelRows.toLocaleString()} provisional model and agent label rows across these snapshots.`}</p>
           <ul className="m-0 grid list-none gap-5 p-0 md:grid-cols-3">{index.manifest?.snapshots.map(snapshot => <li key={snapshot.name} className="min-w-0 border border-rule p-4">
             <p className="m-0 font-medium">{snapshot.name}</p>
             <p className="mt-2 text-ink-60">{snapshot.n_articles?.toLocaleString() ?? 'Unknown'} corpus articles</p>
             <p className="break-all font-mono text-xs text-ink-40">SHA-256 {snapshot.sha256}</p>
           </li>)}</ul>
+          </div>
         </AnimatedDetails>
-      </section>
-
-      <section className="frame flex flex-col gap-4 pb-8">
-        <Band index="" title="Provenance" note="Sources and limitations" as="h2" />
         <ProvenancePanel artifact={primary} />
         {comparison !== null ? <ProvenancePanel artifact={comparison} /> : null}
       </section>
@@ -319,9 +320,6 @@ function slopeRows(
     return summaryValue(artifact, metric, 'mean')
   }
 
-  // Headline metrics only. The chart answers "what moved, and which way"; the
-  // table below it answers "by exactly how much", for every metric. Drawing all
-  // fourteen in both places was the same information twice.
   return HEADLINE_METRICS.flatMap((metric) => {
     const def = resolveMetric(metric)
     if (def.kind !== 'fraction') return []
@@ -343,6 +341,24 @@ function slopeRows(
   })
 }
 
+function PrimaryMetrics({ primary, personaKey }: { primary: Artifact; personaKey: string | undefined }) {
+  const persona = personaKey === undefined ? undefined : findPersona(primary, personaKey)
+  return (
+    <dl className="evidence-primary-metrics m-0 grid gap-6 sm:grid-cols-3">
+      {['recall_at_k', 'never_rate', 'recall_at_retrieval'].map(metric => {
+        const definition = resolveMetric(metric)
+        const value = personaKey === undefined
+          ? summaryValue(primary, metric, 'mean')
+          : persona?.metrics[metric] ?? null
+        return <div key={metric}>
+          <dt className="text-sm text-ink-60">{definition.label}</dt>
+          <dd className="readout-sm m-0 mt-2 text-3xl">{value === null ? 'Unavailable' : formatValue(value, definition.kind)}</dd>
+        </div>
+      })}
+    </dl>
+  )
+}
+
 function RunHeadline({
   primary,
   comparison,
@@ -360,7 +376,7 @@ function RunHeadline({
   const breakdown = outcomeBreakdown(personas)
 
   return (
-    <section className="frame flex flex-col gap-6 border-y border-rule py-7">
+    <section className="frame support-section evidence-run-summary">
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <h2 className="headline m-0 text-lg">{describeEntryTitle(primary)}</h2>
         {comparison !== null ? (
@@ -369,19 +385,6 @@ function RunHeadline({
           </p>
         ) : null}
       </div>
-
-      <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
-        {RUN_LEVEL_METRICS.map((metric) => {
-          const def = resolveMetric(metric)
-          const value = summaryValue(primary, metric, 'mean')
-          return (
-            <div key={metric}>
-              <dt className="label m-0 text-ink-40">{def.label}</dt>
-              <dd className="readout-sm m-0 mt-1.5 text-2xl">{formatValue(value, def.kind)}</dd>
-            </div>
-          )
-        })}
-      </dl>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,34rem)_minmax(0,1fr)]">
         <p className="m-0 text-sm text-ink-60">
@@ -402,6 +405,23 @@ function RunHeadline({
           ))}
         </ul>
       </div>
+      <AnimatedDetails className="support-disclosure">
+        <summary>Inspect run details</summary>
+        <div className="support-disclosure-body">
+          <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
+            {RUN_LEVEL_METRICS.map((metric) => {
+              const def = resolveMetric(metric)
+              const value = summaryValue(primary, metric, 'mean')
+              return (
+                <div key={metric}>
+                  <dt className="label m-0 text-ink-40">{def.label}</dt>
+                  <dd className="readout-sm m-0 mt-1.5 text-2xl">{formatValue(value, def.kind)}</dd>
+                </div>
+              )
+            })}
+          </dl>
+        </div>
+      </AnimatedDetails>
     </section>
   )
 }
@@ -419,7 +439,7 @@ function NoArtifacts({
   incomplete: boolean
 }) {
   return (
-    <div className="frame flex max-w-2xl flex-col gap-4 py-16">
+    <div className="support-page support-evidence frame flex max-w-2xl flex-col gap-4 py-16">
       <h1 className="display m-0 text-3xl">No evaluation artifacts are available</h1>
       <p className="prose m-0">
         {incomplete
@@ -456,7 +476,7 @@ function LoadFailure({
   issues: readonly string[]
 }) {
   return (
-    <div className="frame flex max-w-2xl flex-col gap-3 py-16">
+    <div className="support-page support-evidence frame flex max-w-2xl flex-col gap-3 py-16">
       <h1 className="display m-0 text-3xl">{title}</h1>
       <p className="m-0 text-xs text-ink-60">{where}</p>
       <ul className="m-0 flex list-none flex-col gap-1 p-0 text-xs text-signal">

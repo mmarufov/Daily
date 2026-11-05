@@ -5,6 +5,7 @@ import { geistMono, geistSans } from './fonts'
 import './globals.css'
 import './motion.css'
 import './case-status.css'
+import './supporting-pages.css'
 
 const DESCRIPTION = 'Daily builds news editions around a reader\'s interests. Read a recorded edition, then explore Daily Lab to test the parsers inside its news pipeline.'
 
