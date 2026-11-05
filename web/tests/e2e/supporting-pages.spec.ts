@@ -63,6 +63,12 @@ test('collapsed fixture results still filter the selected run', async ({ page })
   await page.goto('/evidence?run=prod-llm__2026-09-02__47edb50')
   const details = page.locator('details').filter({ has: page.locator('summary', { hasText: 'Inspect fixture results' }) })
   await details.locator('summary').click()
+  for (const link of await details.getByRole('link').all()) {
+    const row = await link.boundingBox()
+    const bar = await link.locator(':scope > span:nth-child(2)').boundingBox()
+    expect(bar!.x).toBeGreaterThanOrEqual(row!.x)
+    expect(bar!.x + bar!.width).toBeLessThanOrEqual(row!.x + row!.width + 0.5)
+  }
   await details.getByRole('link').filter({ hasText: 'Ray' }).click()
   await expect(page).toHaveURL(url => url.searchParams.get('run') === 'prod-llm__2026-09-02__47edb50' && url.searchParams.get('persona') === 'ray')
 })
