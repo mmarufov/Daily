@@ -9,7 +9,11 @@ import type { GuardExperiment as GuardExperimentData } from '@/lib/guard-experim
 
 type Variant = 'original' | 'guard'
 
-export function GuardExperiment({ experiment }: { readonly experiment: GuardExperimentData | null }) {
+export function GuardExperiment({ experiment, showInvestigationLink = true, showHistoryNote = false }: {
+  readonly experiment: GuardExperimentData | null
+  readonly showInvestigationLink?: boolean
+  readonly showHistoryNote?: boolean
+}) {
   const [variant, setVariant] = useState<Variant>('original')
   if (experiment === null) {
     return <div className="finding-unavailable" role="status">The historical guard experiment is unavailable.</div>
@@ -75,10 +79,12 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
         </div>
       </div>
 
+      {showHistoryNote ? <p className="guard-history-note">Historical working-tree experiment with provisional labels; the baseline was retained.</p> : null}
+
       <AnimatedDetails className="finding-provenance">
         <summary>Experiment provenance</summary>
         <div className="finding-provenance-body">
-          <p>September 21, 2026. Historical working-tree experiment; the baseline was retained. Labels remain provisional.</p>
+          {showHistoryNote ? null : <p>September 21, 2026. Historical working-tree experiment; the baseline was retained. Labels remain provisional.</p>}
           <p>
             Corpus {experiment.snapshot}, {experiment.fixtures} fixtures, k={experiment.k}.
             {' '}Reported cache misses: {experiment.original.summary.cache_misses_total} original,
@@ -90,9 +96,9 @@ export function GuardExperiment({ experiment }: { readonly experiment: GuardExpe
           <a href="/experiments/batch-alignment.json" className="text-link">Inspect summary and source hashes ↗</a>
         </div>
       </AnimatedDetails>
-      <div className="guard-footer">
+      {showInvestigationLink ? <div className="guard-footer">
         <Link href="/engineering" className="text-link">Read the investigation <span aria-hidden="true">↗</span></Link>
-      </div>
+      </div> : null}
     </div>
   )
 }

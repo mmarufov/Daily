@@ -318,7 +318,7 @@ export class AsciiRenderer {
   private fishBuckets: number[][] = FISH_ALPHAS.map(() => []);
   private fishStyles = FISH_ALPHAS.map((a) => `rgba(230,238,255,${a})`);
 
-  constructor(private canvas: HTMLCanvasElement, private readonly options: { sharkGlyphs?: boolean } = {}) {
+  constructor(private canvas: HTMLCanvasElement, private readonly options: { sharkGlyphs?: boolean; ambient?: boolean; monochrome?: boolean } = {}) {
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) throw new Error("2D canvas unavailable");
     this.ctx = ctx;
@@ -398,7 +398,7 @@ export class AsciiRenderer {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.fillStyle = "#000";
     g.fillRect(0, 0, W, H);
-    paintGrid(g, W, H, cw, ch, dpr);
+    if (this.options.ambient !== false) paintGrid(g, W, H, cw, ch, dpr);
   }
 
   render(world: World, dt: number) {
@@ -406,24 +406,32 @@ export class AsciiRenderer {
     if (cols === 0) return;
     const t = world.time;
 
-    this.consumeEvents(world);
     this.rasterizeSharks(world.sharks, t);
-    this.depositWake(world);
-    this.diffuse(dt);
+    if (this.options.ambient !== false) {
+      this.consumeEvents(world);
+      this.depositWake(world);
+      this.diffuse(dt);
+    } else {
+      world.events.length = 0;
+    }
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.drawImage(this.bg, 0, 0);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    this.markFish(world);
-    this.drawDots(t);
+    if (this.options.ambient !== false) {
+      this.markFish(world);
+      this.drawDots(t);
+    }
 
     ctx.font = `600 ${Math.round(ch * 0.74)}px ${this.fontFamily}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    this.drawHeat();
-    this.drawFish();
+    if (this.options.ambient !== false) {
+      this.drawHeat();
+      this.drawFish();
+    }
     this.drawSharks(t);
   }
 
@@ -764,11 +772,11 @@ export class AsciiRenderer {
       const key = sharkKey[i];
       const shade = sharkShade[i];
       const dim = 0.7 + 0.3 * sharkDepth[i];
-      const [tr, tg, tb] = SHAPES[KINDS[sharkKind[i]]].tint;
+      const [tr, tg, tb] = this.options.monochrome ? [1, 1, 1] : SHAPES[KINDS[sharkKind[i]]].tint;
 
       // Colours re-roll on a staggered clock so the hide shimmers.
       const tick = Math.floor(t * 2.4 + (key % 997) / 97);
-      const roll = hash3(key, tick, 7);
+      const roll = this.options.monochrome ? 1 : hash3(key, tick, 7);
 
       if (flag === FLAG_EDGE) {
         // Soft, anti-aliased silhouette: no block, just a light glyph.
@@ -777,7 +785,7 @@ export class AsciiRenderer {
         ctx.fillStyle =
           roll < 0.07
             ? ACCENTS[key % ACCENTS.length]
-            : `rgb(${Math.round(g * tr)},${Math.round(g * tg)},${Math.min(255, Math.round(g * tb + 6))})`;
+            : `rgb(${Math.round(g * tr)},${Math.round(g * tg)},${Math.min(255, Math.round(g * tb + (this.options.monochrome ? 0 : 6)))})`;
         if (this.options.sharkGlyphs === false) {
           ctx.globalAlpha = shade;
           ctx.fillRect(x + 1, y + 1, cw - 1, ch - 1);
@@ -809,7 +817,7 @@ export class AsciiRenderer {
       }
       level *= dim;
       // Tinted per species; the classic tint is a cool blue-grey, like a back seen through deep water.
-      ctx.fillStyle = `rgb(${Math.min(255, Math.round(level * tr))},${Math.min(255, Math.round(level * tg))},${Math.min(255, Math.round(level * tb + 4))})`;
+      ctx.fillStyle = `rgb(${Math.min(255, Math.round(level * tr))},${Math.min(255, Math.round(level * tg))},${Math.min(255, Math.round(level * tb + (this.options.monochrome ? 0 : 4)))})`;
       ctx.fillRect(x + 1, y + 1, cw - 1, ch - 1);
 
       if (this.options.sharkGlyphs === false) {
@@ -823,11 +831,11 @@ export class AsciiRenderer {
       }
 
       let color: string;
-      if (flag === FLAG_EYE) color = "#9aa0ad";
+      if (flag === FLAG_EYE) color = this.options.monochrome ? "#a0a0a0" : "#9aa0ad";
       else if (flag === FLAG_MARK) color = `rgb(${Math.round(70 * tr)},${Math.round(70 * tg)},${Math.round(70 * tb)})`;
       else if (roll < 0.09) color = ACCENTS[key % ACCENTS.length];
       else if (roll < 0.13) color = "#ffffff";
-      else color = shade > 0.55 ? "#0e0f13" : "#1b1d24";
+      else color = this.options.monochrome ? (shade > 0.55 ? "#0f0f0f" : "#1d1d1d") : (shade > 0.55 ? "#0e0f13" : "#1b1d24");
       ctx.fillStyle = color;
       ctx.fillText(glyph, x + cw / 2, y + ch / 2 + 1);
     }

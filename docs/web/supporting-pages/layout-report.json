@@ -1,0 +1,1074 @@
+{
+  "before": [
+    {
+      "name": "home",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 5007,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 4327,
+      "headerHeight": 105,
+      "h1": "36.8px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 5246,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 5164,
+      "headerHeight": 105,
+      "h1": "36px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 4071,
+      "headerHeight": 105,
+      "h1": "44px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 5007,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 4327,
+      "headerHeight": 105,
+      "h1": "36.8px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 5246,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 5164,
+      "headerHeight": 105,
+      "h1": "36px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 4071,
+      "headerHeight": 105,
+      "h1": "44px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 4869,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 3979,
+      "headerHeight": 105,
+      "h1": "36.8px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 4653,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 4938,
+      "headerHeight": 105,
+      "h1": "36px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 3843,
+      "headerHeight": 105,
+      "h1": "44px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 4869,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 3979,
+      "headerHeight": 105,
+      "h1": "36.8px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 4653,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 4938,
+      "headerHeight": 105,
+      "h1": "36px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 3843,
+      "headerHeight": 105,
+      "h1": "44px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 4106,
+      "headerHeight": 77,
+      "h1": "70px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 2603,
+      "headerHeight": 77,
+      "h1": "38.4px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 3481,
+      "headerHeight": 77,
+      "h1": "46.08px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 3613,
+      "headerHeight": 77,
+      "h1": "46.08px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 3578,
+      "headerHeight": 77,
+      "h1": "46.08px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 4106,
+      "headerHeight": 77,
+      "h1": "70px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 2603,
+      "headerHeight": 77,
+      "h1": "38.4px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 3481,
+      "headerHeight": 77,
+      "h1": "46.08px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 3613,
+      "headerHeight": 77,
+      "h1": "46.08px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 3578,
+      "headerHeight": 77,
+      "h1": "46.08px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 4072,
+      "headerHeight": 77,
+      "h1": "74px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 2480,
+      "headerHeight": 77,
+      "h1": "68.8px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 2748,
+      "headerHeight": 77,
+      "h1": "68px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 3390,
+      "headerHeight": 77,
+      "h1": "72px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 2876,
+      "headerHeight": 77,
+      "h1": "80px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 4072,
+      "headerHeight": 77,
+      "h1": "74px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 2480,
+      "headerHeight": 77,
+      "h1": "68.8px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 2748,
+      "headerHeight": 77,
+      "h1": "68px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 3390,
+      "headerHeight": 77,
+      "h1": "72px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 2876,
+      "headerHeight": 77,
+      "h1": "80px",
+      "errors": []
+    }
+  ],
+  "after": [
+    {
+      "name": "home",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 5007,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 2403,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 2807,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 2683,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 320,
+      "theme": "light",
+      "scrollWidth": 320,
+      "height": 3164,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 5007,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 2403,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 2807,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 2683,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 320,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "height": 3164,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 4869,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 2342,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 2537,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 2545,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 390,
+      "theme": "light",
+      "scrollWidth": 390,
+      "height": 3106,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 4869,
+      "headerHeight": 105,
+      "h1": "46px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 2342,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 2537,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 2545,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 390,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "height": 3106,
+      "headerHeight": 105,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 4106,
+      "headerHeight": 77,
+      "h1": "70px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 1738,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 1979,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 1995,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 768,
+      "theme": "light",
+      "scrollWidth": 768,
+      "height": 2769,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 4106,
+      "headerHeight": 77,
+      "h1": "70px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 1738,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 1979,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 1995,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 768,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "height": 2769,
+      "headerHeight": 77,
+      "h1": "32px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 4072,
+      "headerHeight": 77,
+      "h1": "74px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 1677,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 1657,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 1928,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 1440,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "height": 2512,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "home",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 4072,
+      "headerHeight": 77,
+      "h1": "74px",
+      "errors": []
+    },
+    {
+      "name": "lab",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 1677,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "reader",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 1657,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "evidence",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 1928,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    },
+    {
+      "name": "case-study",
+      "width": 1440,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "height": 2512,
+      "headerHeight": 77,
+      "h1": "48px",
+      "errors": []
+    }
+  ],
+  "homepage": [
+    {
+      "file": "home-main-1440-dark.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-1440-light.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-320-dark.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-320-light.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-390-dark.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-390-light.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-768-dark.png",
+      "sameSize": true,
+      "identical": true
+    },
+    {
+      "file": "home-main-768-light.png",
+      "sameSize": true,
+      "identical": true
+    }
+  ],
+  "enlarged": [
+    {
+      "route": "/lab",
+      "colorScheme": "light",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "light",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "light",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "light",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "dark",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "dark",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "dark",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "dark",
+      "width": 320,
+      "scrollWidth": 320,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "light",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "light",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "light",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "light",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "dark",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "dark",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "dark",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "dark",
+      "width": 390,
+      "scrollWidth": 390,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "light",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "light",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "light",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "light",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "dark",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "dark",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "dark",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "dark",
+      "width": 768,
+      "scrollWidth": 768,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "light",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "light",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "light",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "light",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/lab",
+      "colorScheme": "dark",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/reader?profile=ray",
+      "colorScheme": "dark",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/evidence",
+      "colorScheme": "dark",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    },
+    {
+      "route": "/engineering",
+      "colorScheme": "dark",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "overflow": []
+    }
+  ]
+}

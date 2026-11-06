@@ -75,7 +75,7 @@ test.describe('disclosure motion', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/lab')
     await page.waitForLoadState('networkidle')
-    const summary = page.locator('summary').filter({ hasText: /^Test scope$/ })
+    const summary = page.locator('summary').filter({ hasText: /^Grading criteria$/ })
     const details = disclosure(summary)
     await summary.scrollIntoViewIfNeeded()
     // Dispatch directly because actionability's stability wait would serialize
@@ -86,7 +86,7 @@ test.describe('disclosure motion', () => {
     await page.waitForTimeout(60)
     await summary.dispatchEvent('click')
     await expectSettled(details, true)
-    await expect(details.getByText(/Candidates can target these public cases/)).toBeVisible()
+    await expect(details.getByText(/Results apply to these public fixtures/)).toBeVisible()
 
     await summary.dispatchEvent('click')
     await page.waitForTimeout(60)
@@ -94,7 +94,7 @@ test.describe('disclosure motion', () => {
     await page.waitForTimeout(60)
     await summary.dispatchEvent('click')
     await expectSettled(details, false)
-    await expect(details.getByText(/Candidates can target these public cases/)).toBeHidden()
+    await expect(details.getByText(/Results apply to these public fixtures/)).toBeHidden()
     await summary.click()
     await expectSettled(details, true)
   })
@@ -149,7 +149,7 @@ test.describe('disclosures without JavaScript', () => {
   test('native summaries expose and hide evidence without hydration', async ({ page }) => {
     for (const [path, label, content] of [
       ['/engineering', /^Experiment provenance$/, /Base revision/],
-      ['/lab', /^Test scope$/, /Candidates can target these public cases/],
+      ['/lab', /^Grading criteria$/, /Results apply to these public fixtures/],
     ] as const) {
       await page.goto(path)
       const summary = page.locator('summary').filter({ hasText: label })

@@ -181,21 +181,41 @@ export function ProvenancePanel({ artifact }: { artifact: Artifact }) {
 }
 
 export function CompatibilityNotice({ compatibility }: { compatibility: Compatibility }) {
-  const blocking = compatibility.kind === 'incompatible'
+  const blocking = compatibility.issues.filter(issue => issue.severity === 'blocking')
+  const caveats = compatibility.issues.filter(issue => issue.severity === 'caveat')
+  const protocol = caveats.find(issue => issue.field === 'protocol')
+  const qualifications = [
+    protocol ? (protocol.message.includes('cannot be verified')
+      ? 'Protocol equality is unverified.' : 'The recorded protocols differ.') : null,
+    caveats.some(issue => issue.field === 'labels') ? 'Label counts differ.' : null,
+  ].filter(Boolean).join(' ')
+
   return (
     <div
-      role={blocking ? 'alert' : undefined}
-      className={`border-l-2 pl-3 ${blocking ? 'border-signal' : 'border-unknown'}`}
+      role={compatibility.kind === 'incompatible' ? 'alert' : undefined}
+      className={`evidence-compatibility border-l-2 pl-3 ${blocking.length > 0 ? 'border-signal' : 'border-unknown'}`}
     >
-      <p className="m-0 text-sm text-ink">{compatibility.headline}</p>
-      {compatibility.issues.length > 0 ? (
+      <p className="m-0 text-sm text-ink">{compatibility.headline} {qualifications}</p>
+      {blocking.length > 0 ? (
         <ul className="m-0 mt-1.5 flex list-none flex-col gap-1 p-0">
-          {compatibility.issues.map((issue, index) => (
+          {blocking.map((issue, index) => (
             <li key={`${issue.field}-${index}`} className="max-w-3xl text-xs text-ink-60">
-              <span className="text-ink">{issue.field}</span>: {issue.message}
+              {issue.message}
             </li>
           ))}
         </ul>
+      ) : null}
+      {caveats.length > 0 ? (
+        <AnimatedDetails className="support-disclosure evidence-comparison-details">
+          <summary>Inspect comparison details</summary>
+          <ul className="support-disclosure-body m-0 flex list-none flex-col gap-2 p-0">
+            {caveats.map((issue, index) => (
+              <li key={`${issue.field}-${index}`} className="max-w-3xl text-xs text-ink-60">
+                <span className="text-ink">{issue.field}</span>: {issue.message}
+              </li>
+            ))}
+          </ul>
+        </AnimatedDetails>
       ) : null}
     </div>
   )

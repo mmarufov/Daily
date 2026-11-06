@@ -21,16 +21,17 @@ test.describe('Daily Lab', () => {
   test('the first screen offers the live parser and distinguishes its recorded inputs', async ({ page }) => {
     await page.goto('/lab')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Test a scoring parser.')
-    await expect(page.getByRole('link', { name: 'Recorded investigations' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Case study', exact: true }).last()).toHaveAttribute('href', '/engineering')
     await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeEnabled()
     // What is live and what is replayed, said where a reader starts. The
     // execution is live; the model responses it parses are not.
-    await expect(page.getByText(/inspect the failure, then edit it/).first()).toBeVisible()
+    await expect(page.getByText(/Inspect the failure, then edit it/).first()).toBeVisible()
     await expect(page.getByText(/Daily's scoring responses/).first()).toBeVisible()
   })
 
   test('shows the real offending response, not a description of one', async ({ page }) => {
     await page.goto('/lab')
+    await page.locator('summary').filter({ hasText: /^Recorded examples$/ }).click()
     await page.getByText('Recorded response', { exact: true }).click()
     await expect(page.getByText('Articles sent')).toBeVisible()
     await expect(page.getByText('Verdicts returned')).toBeVisible()
@@ -45,7 +46,26 @@ test.describe('Daily Lab', () => {
       const response = await page.request.get(`/lab/${slug}`)
       expect(response.status()).toBe(200)
     }
+    await page.locator('summary').filter({ hasText: /^Recorded examples$/ }).click()
     await expect(page.getByText('Seeded control').first()).toBeVisible()
+  })
+
+  test('supporting records stay collapsed and the recorded fragment targets their summary', async ({ page, isMobile }) => {
+    await page.goto('/lab#recorded')
+    const summary = page.locator('#recorded')
+    await expect(summary).toHaveText('Recorded examples')
+    for (const label of [/^Recorded examples$/, /^Grading criteria$/, /^Published runs/]) {
+      await expect(page.locator('details').filter({ has: page.locator('summary').filter({ hasText: label }) }).first()).not.toHaveAttribute('open', '')
+    }
+    if (isMobile) await summary.click()
+    else {
+      await summary.focus()
+      await page.keyboard.press('Enter')
+    }
+    await expect(page.locator('.lab-walkthroughs')).toBeVisible()
+    for (const slug of ['accepted', 'rejected', 'interrupted']) {
+      await expect(page.locator(`.lab-walkthroughs a[href="/lab/${slug}"]`)).toBeVisible()
+    }
   })
 
   test('a rejected control names the criterion it failed', async ({ page }) => {
@@ -74,6 +94,7 @@ test.describe('Daily Lab', () => {
   test('published records are distinguished from Sandbox executions', async ({ page }) => {
     const manifest = JSON.parse(readFileSync(join(__dirname, '..', '..', 'public', 'lab-artifacts', 'manifest.json'), 'utf8')) as { entries: { runner: string }[] }
     await page.goto('/lab')
+    await page.locator('summary').filter({ hasText: /^Published runs/ }).click()
     const records = page.locator('div').filter({ has: page.locator('dt', { hasText: 'Published records' }) }).last()
     await expect(records.locator('dd')).toContainText(String(manifest.entries.length))
     const executions = page.locator('div').filter({ has: page.locator('dt', { hasText: 'Sandbox executions' }) }).last()
@@ -142,7 +163,10 @@ test.describe('the live runner', () => {
     const editor = page.locator('#candidate-source')
     await expect(editor).toHaveValue(/VERSION_ID = "count-guard-v1"/)
     await expect(page.getByRole('button', { name: 'Run in Sandbox' })).toBeEnabled()
-    // All 64 cases, before anything has run: hollow, and split as the suite is.
+    await expect(page.locator('.lab-case-counts')).toHaveText('42 recorded · 22 fault-injected')
+    await expect(page.locator('[data-case]').first()).toBeHidden()
+    await page.locator('summary').filter({ hasText: /^Inspect cases$/ }).click()
+    // Pending marks retain the full suite once its disclosure is opened.
     await expect(page.locator('[data-case]')).toHaveCount(64)
     await expect(page.locator('[data-case][data-tone="pending"]')).toHaveCount(64)
     await expect(page.locator('[data-case] [data-case-mark="pending"]')).toHaveCount(64)
@@ -154,6 +178,34 @@ test.describe('the live runner', () => {
     expect(sizes.every((size) => size >= 20)).toBe(true)
     await expect(page.getByText('Fault-injected · 22')).toBeVisible()
     await expect(page.getByText(/5 runs\/hour per address, 3 at once/)).toBeVisible()
+  })
+
+  test('preset views open at parse while submitting the complete committed source', async ({ page }) => {
+    const submitted: string[] = []
+    await page.route('**/api/lab/run', route => {
+      submitted.push(route.request().postDataJSON().source)
+      return route.fulfill({ status: 503, json: { error: 'Mock runner unavailable.' } })
+    })
+    await page.goto('/lab')
+    const editor = page.getByRole('textbox', { name: 'Python parser source' })
+    for (const [id, file] of [
+      ['count-guard-v1', 'count_guard_v1.py'],
+      ['positional-v0', 'positional_v0.py'],
+      ['keyed-v2', 'keyed_v2.py'],
+    ]) {
+      const source = readFileSync(join(__dirname, '..', '..', '..', 'backend', 'lab', 'contract', 'versions', file), 'utf8')
+      await page.getByRole('button', { name: new RegExp(`^${id}`) }).click()
+      await expect(editor).toHaveValue(source)
+      await expect.poll(() => editor.evaluate((element: HTMLTextAreaElement) => {
+        const line = element.value.split('\n').findIndex(value => /^def parse\(/.test(value))
+        const lineHeight = Number.parseFloat(getComputedStyle(element).lineHeight)
+        const parseTop = line * lineHeight - element.scrollTop
+        return element.scrollTop > 0 && parseTop >= 0 && parseTop < element.clientHeight
+      })).toBe(true)
+      await page.getByRole('button', { name: 'Run in Sandbox' }).click()
+      await expect(page.getByText('Mock runner unavailable.', { exact: true })).toBeVisible()
+      expect(submitted.at(-1)).toBe(source)
+    }
   })
 
   test('a refused run says which limit was hit and when it resets', async ({ page }) => {

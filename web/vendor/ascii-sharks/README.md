@@ -6,7 +6,7 @@ Pinned revision: `a0074c16a106f0abc665fe9712ca445f8f98ad8e`
 
 The TypeScript modules have a first-line `ts-nocheck` directive because upstream does not enable Daily's unchecked-index diagnostics. The math, species and simulation modules otherwise match the pinned source. Daily owns lifecycle and responsive integration in `web/lib/ocean-controller.ts` and `web/lib/ocean-scene.ts`.
 
-The renderer adds a `sharkGlyphs: false` option for Daily's color cells. It paints partial silhouette cells using their coverage and moves the restrained accent colors into the cell fills. The default retains upstream's ASCII treatment. Both the animated scene and static posters use the color-cell option.
+The renderer adds a `sharkGlyphs: false` option for Daily's color cells. It paints partial silhouette cells using their coverage and moves the restrained accent colors into the cell fills. The default retains upstream's ASCII treatment. Both the animated scene and static posters use the color-cell option. Daily also sets `ambient: false` to omit the water grid, fish and wake layers. `monochrome: true` removes species tint and animated color accents while preserving shading. The simulation stays unchanged so shark steering retains its existing behavior.
 
 License: MIT, copyright (c) 2026 drewdi. The complete notice is in LICENSE.
 

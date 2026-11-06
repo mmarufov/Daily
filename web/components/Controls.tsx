@@ -48,8 +48,8 @@ export function Controls({ state, entries, personas }: ControlsProps) {
   const comparable = runs.filter((e) => e.run_id !== state.run)
 
   return (
-    <div className="flex flex-col gap-4 border border-rule bg-paper-secondary p-4">
-      <form ref={formRef} method="get" action="/evidence" className="flex flex-col gap-4">
+    <div className="evidence-controls flex flex-col gap-4">
+      <form ref={formRef} method="get" action="/evidence" className="evidence-filter-form flex flex-col gap-4">
         {/* The story selection is context, not a control; preserve it across
             filter changes so moving between views does not lose the trace. */}
         {state.story !== undefined ? (
@@ -57,7 +57,7 @@ export function Controls({ state, entries, personas }: ControlsProps) {
         ) : null}
         <input type="hidden" name="view" value={state.view} />
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="evidence-filter-fields grid gap-4 sm:grid-cols-2">
           <Field label="Run" htmlFor="run-select">
             <Select id="run-select" name="run" value={state.run ?? ''} onChange={submitNow}>
               {runs.map((entry) => (
@@ -83,9 +83,6 @@ export function Controls({ state, entries, personas }: ControlsProps) {
               ))}
             </Select>
           </Field>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Reader fixture" htmlFor="persona-select">
             <Select
               id="persona-select"
@@ -118,15 +115,9 @@ export function Controls({ state, entries, personas }: ControlsProps) {
               </Select>
             </Field>
           ) : null}
-        </div>
-
-        <div>
-          <button
-            type="submit"
-            className="chip"
-          >
-            Apply
-          </button>
+          <div className="evidence-filter-apply">
+            <button type="submit" className="chip">Apply</button>
+          </div>
         </div>
       </form>
 
