@@ -1209,3 +1209,26 @@ Homepage preservation: every homepage section, its source data, sharks, edition 
 - [x] Compare the homepage against a deterministic baseline; publish one unmerged preview PR with screenshots and removal inventory.
 
 Use the existing 1280px frame and palette. Supporting headings scale from 32px to 48px; prose is 16px, metadata at least 12px, section spacing 48px desktop/32px mobile, and introduction-to-content spacing 24px. Keep 44px controls and Reader-only editorial fonts. Preserve APIs, evaluator, quotas, schemas, artifacts and public route/query contracts.
+
+## Sharks-only background (November 6)
+
+The requested homepage exception removes the water grid, small fish and wake dots. Keep shark sizes, steering, silhouettes, hero layout and controls unchanged.
+
+- [x] Hide ambient renderer layers and regenerate both fallback posters.
+- [x] Verify build, types and ocean coverage; review the hosted preview in both themes.
+- [x] Deliver the comparison without merging or changing production.
+
+## Grayscale sharks (November 6)
+
+- [x] Remove colored accents and species tint from Daily's shark rendering while keeping light and shadow.
+- [x] Regenerate fallback posters and verify motion, grayscale pixels and the hosted preview.
+
+Keep the sharks-only background, size, movement, controls and foreground unchanged.
+
+## Approved release (November 6)
+
+- [ ] Commit and push the reviewed shark refinements with the supporting-page cleanup.
+- [ ] Confirm required checks, merge PR #113 and verify the production deployment.
+- [ ] Check marufov.com in both themes and run mocked browser acceptance.
+
+No new Sandbox execution is needed for this presentation release.

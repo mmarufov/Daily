@@ -77,7 +77,16 @@ test('the decorative scene moves and keyboard pause preserves usable hero action
   const first = await frame()
   await expect.poll(frame).not.toBe(first)
   const text = await page.evaluate(() => [...(window as CountedWindow).oceanText])
-  expect(text.filter(glyph => !['-', '*', '·'].includes(glyph))).toEqual([])
+  expect(text).toEqual([])
+  const coloredPixels = await canvas.evaluate((el: HTMLCanvasElement) => {
+    const pixels = el.getContext('2d')!.getImageData(0, 0, el.width, el.height).data
+    let count = 0
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i] !== pixels[i + 1] || pixels[i] !== pixels[i + 2]) count++
+    }
+    return count
+  })
+  expect(coloredPixels).toBe(0)
   await page.getByRole('button', { name: 'Pause background animation' }).focus()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: 'Play background animation' })).toBeFocused()

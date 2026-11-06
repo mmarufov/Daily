@@ -4,7 +4,11 @@ Reviewed UI revision: `c6e20d61`. Base: `ce395c0c` (current main).
 
 [Hosted preview](https://daily-ilrwfk6ar-mmarufovs-projects.vercel.app) · [PR #113](https://github.com/mmarufov/Daily/pull/113)
 
-The PR stays unmerged. Production is unchanged.
+This records the supporting-page review before the approved shark refinements. Release was approved on November 6.
+
+## Approved shark refinement
+
+[Grayscale preview](https://daily-jmhtdbfil-mmarufovs-projects.vercel.app). Both the animated canvas and fallback posters use neutral shading. Build, typecheck and 11 ocean unit tests pass; 38 hosted Chromium/WebKit cases pass with six existing skips. Canvas pixel checks confirm grayscale rendering. Desktop and mobile captures in both themes have no horizontal overflow.
 
 ## Removal inventory
 
@@ -15,7 +19,7 @@ The PR stays unmerged. Production is unchanged.
 | Evidence | Full metrics table, glossary, run statistics and fixture results | Native disclosures; existing Summary, Funnel, Stories and query controls |
 | Case study | Two repeated examples, repeated interpretations, duplicate provenance link and self-link | More recorded examples, all three traces, identity diagram and interactive guard comparison |
 
-Navigation is Lab, Case study and GitHub. Reader and Evidence remain in the footer and contextual links. The homepage's sections, source data, visuals and motion are unchanged.
+Navigation is Lab, Case study and GitHub. Reader and Evidence remain in the footer and contextual links. The initial supporting-page pass preserved the homepage. The later approved refinement removes its background grid, small fish, wake dots and colored shark accents. Shark sizing, steering, content and layout remain unchanged.
 
 ## Verification
 
